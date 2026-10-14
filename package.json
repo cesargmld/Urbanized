@@ -1,0 +1,22 @@
+{
+  "name": "urban-export-unlimited",
+  "version": "1.0.0",
+  "description": "3D city model and cartography generator - 100% Client-side and Free",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": [
+    "gis",
+    "openstreetmap",
+    "overture-maps",
+    "3d-city",
+    "cad",
+    "dxf",
+    "rhino",
+    "sketchup",
+    "archicad"
+  ],
+  "author": "",
+  "license": "MIT"
+}
