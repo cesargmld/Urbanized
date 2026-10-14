@@ -3,18 +3,15 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Model Export - 3D City & Cartography Generator</title>
-  <meta name="description" content="3D model of any place: buildings, roads, terrain. Export to AutoCAD, SketchUp, Rhino, ArchiCAD and Illustrator. Free, no sign-up.">
-  <meta property="og:title" content="urban:EXPORT">
-  <meta property="og:description" content="3D city models in a minute. AutoCAD, SketchUp, Rhino, Illustrator.">
-  <meta name="theme-color" content="#ffffff">
-  <meta name="color-scheme" content="light">
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23000'/%3E%3Cpath d='M8 23V13h5v10M15 23V8h5v15M22 23v-7h3v7' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <title>Urbanized — 3D City & Cartography Generator</title>
+  <meta name="description" content="3D model of any place: buildings, roads, terrain. Export to AutoCAD, SketchUp, Rhino, ArchiCAD and Illustrator. Free, no limits, no sign-up.">
+  <meta property="og:title" content="Urbanized">
+  <meta property="og:description" content="3D city models in seconds. AutoCAD, SketchUp, Rhino, Illustrator.">
+  <meta name="theme-color" content="#08080a">
+  <meta name="color-scheme" content="dark">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2308080a'/%3E%3Crect x='8' y='8' width='4' height='16' rx='2' fill='%23ffffff'/%3E%3Crect x='15' y='8' width='4' height='16' rx='2' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=e9ed68a96e">
+  <link rel="stylesheet" href="/css/style.css?v=2.0">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -23,340 +20,496 @@
   </script>
 </head>
 <body>
-  <nav class="nav">
-    <div class="nav-inner">
-      <div class="brand">
-        <a class="logo" href="/" style="font-weight:900;letter-spacing:-0.5px;">Model<span>:</span>EXPORT</a>
+  <div class="app-container">
+    <!-- ELEVENLABS INSPIRED SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="brand">
+          <span class="brand-bars"><i></i><i></i></span>
+          <span class="brand-text">Urbanized</span>
+          <span class="brand-badge">PRO</span>
+        </div>
+        <button class="sidebar-close" id="sidebar-close" type="button" aria-label="Close menu">&times;</button>
       </div>
-      <div class="nav-links">
+
+      <!-- Navigation Menu -->
+      <nav class="sidebar-nav">
+        <button type="button" class="nav-tab-btn active" id="nav-btn-studio">
+          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+          <span>3D Studio</span>
+        </button>
+        <button type="button" class="nav-tab-btn" id="nav-btn-map">
+          <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
+          <span>Vector Map</span>
+        </button>
+        <button type="button" class="nav-tab-btn" id="nav-btn-section">
+          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span>Terrain Section</span>
+        </button>
+        <button type="button" class="nav-tab-btn" id="nav-btn-illu">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+          <span>Illustration</span>
+        </button>
+      </nav>
+
+      <!-- Scrollable Controls -->
+      <div class="sidebar-content">
+        <form class="panel" id="panel" autocomplete="off">
+          <!-- Mode Toggle -->
+          <div class="seg mode" role="group">
+            <button type="button" data-mode="model" aria-pressed="true" data-i18n="mode.model">Model</button>
+            <button type="button" data-mode="section" aria-pressed="false" data-i18n="mode.section">Section</button>
+          </div>
+
+          <!-- ElevenLabs Pill Search Input -->
+          <div class="search" style="margin-top: 14px;">
+            <div class="search-input-wrap">
+              <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+              <input id="q" type="search" data-i18n-ph="search.ph" data-i18n-aria="search.aria" placeholder="Search city or coordinates..." aria-label="Search for a place">
+            </div>
+            <ul id="results" class="results" hidden></ul>
+          </div>
+
+          <!-- Model Generation Controls -->
+          <div id="model-tools" style="margin-top: 14px; display: flex; flex-direction: column; gap: 14px;">
+            <div class="field">
+              <div class="field-head"><span data-i18n="shape.label">Base shape</span></div>
+              <div class="seg shape" role="group">
+                <button type="button" data-shape="square" aria-pressed="true" data-i18n="shape.square">Square</button>
+                <button type="button" data-shape="circle" aria-pressed="false" data-i18n="shape.circle">Circle</button>
+              </div>
+            </div>
+
+            <div class="field">
+              <div class="field-head"><span data-i18n="size.label">Area size</span><b id="size-out">1.0 km</b></div>
+              <input id="size" type="range" min="250" max="3500" step="10" value="1000" data-i18n-aria="size.aria" aria-label="Area size">
+              <p class="size-cost" id="size-cost" hidden></p>
+            </div>
+
+            <div class="toggles">
+              <label class="toggle"><span data-i18n="layer.buildings">Buildings</span><input type="checkbox" name="buildings" checked><i></i></label>
+              <label class="toggle sub"><span data-i18n="layer.extraBuildings">Fill gaps from Overture</span><input type="checkbox" name="extraBuildings" checked><i></i></label>
+              <label class="toggle"><span data-i18n="layer.roads">Roads & rail</span><input type="checkbox" name="roads" checked><i></i></label>
+              <label class="toggle sub"><span data-i18n="layer.roadWidth">Real road width</span><input type="checkbox" name="roadWidth"><i></i></label>
+              <label class="toggle sub"><span data-i18n="layer.bridges">Bridges & interchanges</span><input type="checkbox" name="bridges" checked><i></i></label>
+              <label class="toggle"><span data-i18n="layer.terrain">Terrain</span><input type="checkbox" name="terrain" checked><i></i></label>
+              <label class="toggle"><span data-i18n="layer.contours">Contours</span><input type="checkbox" name="contours" checked><i></i></label>
+              <label class="toggle"><span data-i18n="layer.nature">Water & green</span><input type="checkbox" name="nature" checked><i></i></label>
+              <label class="toggle"><span data-i18n="layer.trees">Trees</span><input type="checkbox" name="trees" checked><i></i></label>
+              <label class="toggle sub"><span data-i18n="layer.detect">Detect trees from satellite</span><input type="checkbox" name="detect" checked><i></i></label>
+              <div class="field sub" id="sens-field">
+                <div class="field-head"><span data-i18n="layer.sensitivity">Detection sensitivity</span><b id="sens-out">50%</b></div>
+                <input id="sens" type="range" min="0" max="100" step="5" value="50" data-i18n-aria="layer.sensitivity" aria-label="Detection sensitivity">
+              </div>
+              <label class="toggle"><span data-i18n="layer.satellite">Satellite image</span><input type="checkbox" name="satellite" checked><i></i></label>
+            </div>
+
+            <div class="tool" style="background:#121317; padding:10px 12px; border-radius:10px; border:1px solid rgba(255,255,255,0.05);">
+              <div class="field-head"><span data-i18n="site.title">Site boundary</span><b id="site-info">—</b></div>
+              <div class="tool-row" style="margin-top:8px;">
+                <button type="button" class="btn btn-line btn-sm" id="site-draw" data-i18n="site.draw">Draw on map</button>
+                <button type="button" class="btn btn-line btn-sm" id="site-clear" data-i18n="site.clear" disabled>Clear</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Section Mode Controls -->
+          <div id="section-tools" hidden style="margin-top: 14px; display: flex; flex-direction: column; gap: 14px;">
+            <div class="tool" style="background:#121317; padding:12px; border-radius:10px; border:1px solid rgba(255,255,255,0.05); display:flex; flex-direction:column; gap:10px;">
+              <div class="field-head"><span data-i18n="section.title">Section profile</span><b id="sec-len">0 km</b></div>
+              <div class="tool-row">
+                <button type="button" class="btn btn-line btn-sm" id="sec-draw" data-i18n="section.draw">Draw on map</button>
+                <button type="button" class="btn btn-line btn-sm" id="sec-undo" data-i18n="section.undo" disabled>Undo</button>
+                <button type="button" class="btn btn-line btn-sm" id="sec-clear" data-i18n="section.clear" disabled>Clear</button>
+              </div>
+              <div class="field-head tool-field"><span data-i18n="section.exag">Vertical exaggeration</span>
+                <select id="sec-exag" class="mini"><option value="1">×1</option><option value="2">×2</option><option value="5">×5</option></select>
+              </div>
+              <div class="field-head tool-field"><span data-i18n="section.dir">Looking</span>
+                <select id="sec-dir" class="mini"><option value="0" data-i18n="section.dirFwd">Along the line</option><option value="1" data-i18n="section.dirBack">Back</option></select>
+              </div>
+              <button type="button" class="btn btn-primary" id="sec-build" data-i18n="section.build" disabled style="margin-top:6px;">Build section</button>
+              <p class="status" id="sec-status" aria-live="polite"></p>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- Sidebar Action Footer -->
+      <div class="sidebar-footer">
+        <button class="btn-primary" id="build" type="submit" form="panel">
+          <span>Create 3D Model</span>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+        </button>
+        <p class="status" id="status" aria-live="polite"></p>
         <button class="nav-pill" id="acct-btn" type="button" style="display:none"></button>
-        
-        <select class="lang-select" aria-label="Language"><option value="es">Español</option><option value="en">English</option></select>
       </div>
-    </div>
-  </nav>
+    </aside>
 
-  <section id="app" class="app">
-    <div class="map-wrap">
-      <div class="map-box">
-        <div id="map"></div>
-        <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
-        <div class="seg maptype" role="group">
-          <button type="button" data-base="sat" aria-pressed="true" data-i18n="map.satellite">Satellite</button>
-          <button type="button" data-base="map" aria-pressed="false" data-i18n="map.map">Map</button>
-        </div>
-      </div>
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
 
-      <form class="panel" id="panel" autocomplete="off">
-        <div class="seg mode" role="group">
-          <button type="button" data-mode="model" aria-pressed="true" data-i18n="mode.model">Model</button>
-          <button type="button" data-mode="section" aria-pressed="false" data-i18n="mode.section">Section</button>
-        </div>
-        <div class="search">
-          <input id="q" type="search" data-i18n-ph="search.ph" data-i18n-aria="search.aria" placeholder="City, address or coordinates" aria-label="Search for a place">
-          <ul id="results" class="results" hidden></ul>
-        
-          
-</div>
-
-        <div id="model-tools">
-        <div class="field">
-          <div class="field-head"><span data-i18n="shape.label">Base shape</span></div>
-          <div class="seg shape" role="group">
-            <button type="button" data-shape="square" aria-pressed="true" data-i18n="shape.square">Square</button>
-            <button type="button" data-shape="circle" aria-pressed="false" data-i18n="shape.circle">Circle</button>
+    <!-- MAIN STUDIO WORKSPACE -->
+    <main class="workspace" id="workspace">
+      <!-- Top App Bar -->
+      <header class="topbar">
+        <div class="topbar-left">
+          <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Toggle menu">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <div class="breadcrumb">
+            <span>Urbanized</span>
+            <span class="breadcrumb-sep">/</span>
+            <span class="crumb-active" id="crumb-view">3D Studio</span>
           </div>
         </div>
 
-        <div class="field">
-          <div class="field-head"><span data-i18n="size.label">Area size</span><b id="size-out">1.0 km</b></div>
-          <input id="size" type="range" min="250" max="3500" step="10" value="1000" data-i18n-aria="size.aria" aria-label="Area size">
-          <p class="size-cost" id="size-cost" hidden></p>
+        <div class="topbar-right">
+          <span class="live-badge"><i></i> Live GIS Data</span>
+          <span class="unlimited-badge">✓ Free & Unlimited</span>
+          <select class="lang-select" aria-label="Language">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+          </select>
         </div>
+      </header>
 
-        <div class="toggles">
-          <label class="toggle"><span data-i18n="layer.buildings">Buildings</span><input type="checkbox" name="buildings" checked><i></i></label>
-          <label class="toggle sub"><span data-i18n="layer.extraBuildings">Fill gaps from Overture</span><input type="checkbox" name="extraBuildings" checked><i></i></label>
-          <label class="toggle"><span data-i18n="layer.roads">Roads and rail</span><input type="checkbox" name="roads" checked><i></i></label>
-          <label class="toggle sub"><span data-i18n="layer.roadWidth">Real road width</span><input type="checkbox" name="roadWidth"><i></i></label>
-          <label class="toggle sub"><span data-i18n="layer.bridges">Bridges and interchanges</span><input type="checkbox" name="bridges" checked><i></i></label>
-          <label class="toggle"><span data-i18n="layer.terrain">Terrain</span><input type="checkbox" name="terrain" checked><i></i></label>
-          <label class="toggle"><span data-i18n="layer.contours">Contours</span><input type="checkbox" name="contours" checked><i></i></label>
-          <label class="toggle"><span data-i18n="layer.nature">Water and green</span><input type="checkbox" name="nature" checked><i></i></label>
-          <label class="toggle"><span data-i18n="layer.trees">Trees</span><input type="checkbox" name="trees" checked><i></i></label>
-          <label class="toggle sub"><span data-i18n="layer.detect">Detect trees from satellite</span><input type="checkbox" name="detect" checked><i></i></label>
-          <div class="field sub" id="sens-field">
-            <div class="field-head"><span data-i18n="layer.sensitivity">Detection sensitivity</span><b id="sens-out">50%</b></div>
-            <input id="sens" type="range" min="0" max="100" step="5" value="50" data-i18n-aria="layer.sensitivity" aria-label="Detection sensitivity">
-          </div>
-          <label class="toggle"><span data-i18n="layer.satellite">Satellite image</span><input type="checkbox" name="satellite" checked><i></i></label>
-        </div>
-
-        <div class="tool">
-          <div class="field-head"><span data-i18n="site.title">Site boundary</span><b id="site-info">—</b></div>
-          <div class="tool-row">
-            <button type="button" class="btn btn-line btn-sm" id="site-draw" data-i18n="site.draw">Draw on map</button>
-            <button type="button" class="btn btn-line btn-sm" id="site-clear" data-i18n="site.clear" disabled>Clear</button>
-          </div>
-        </div>
-
-        <div class="panel-footer">
-          <button class="btn btn-dark btn-block" id="build" type="submit">Create model</button>
-          <p class="status" id="status" aria-live="polite"></p>
-        </div>
-        </div>
-
-        <div id="section-tools" hidden>
-        <div class="tool">
-          <div class="field-head"><span data-i18n="section.title">Section</span><b id="sec-len">0 km</b></div>
-          <div class="tool-row">
-            <button type="button" class="btn btn-line btn-sm" id="sec-draw" data-i18n="section.draw">Draw on map</button>
-            <button type="button" class="btn btn-line btn-sm" id="sec-undo" data-i18n="section.undo" disabled>Undo</button>
-            <button type="button" class="btn btn-line btn-sm" id="sec-clear" data-i18n="section.clear" disabled>Clear</button>
-          </div>
-          <div class="field-head tool-field"><span data-i18n="section.exag">Vertical exaggeration</span>
-            <select id="sec-exag" class="mini"><option value="1">×1</option><option value="2">×2</option><option value="5">×5</option></select>
-          </div>
-          <div class="field-head tool-field"><span data-i18n="section.dir">Looking</span>
-            <select id="sec-dir" class="mini"><option value="0" data-i18n="section.dirFwd">Along the line</option><option value="1" data-i18n="section.dirBack">Back</option></select>
-          </div>
-          <button type="button" class="btn btn-dark btn-block btn-sm" id="sec-build" data-i18n="section.build" disabled>Build section</button>
-          <p class="status" id="sec-status" aria-live="polite"></p>
-        </div>
-        </div>
-      </form>
-    </div>
-  </section>
-
-  <section class="result" id="section-result" hidden>
-    <div class="result-head">
-      <div>
-        <h2 data-i18n="section.ready">Section is ready.</h2>
-        <p class="muted" id="sec-meta"></p>
-      </div>
-    </div>
-    <div class="result-body">
-      <div class="result-main">
-        <div class="stage">
-          <div class="flat" id="view-section"><img alt="" draggable="false"></div>
-          <span class="viewer-hint" data-i18n="viewer.hintFlat">Scroll to zoom, drag to pan, double-click to fit</span>
-        </div>
-      </div>
-      <aside class="result-side">
-        <h3 class="side-title" data-i18n="dl.title">Download</h3>
-        <div class="downloads">
-          <button class="dl" data-section="dxf"><b>AutoCAD</b><span>.dxf</span></button>
-          <button class="dl" data-section="svg"><b>Illustrator</b><span>.svg</span></button>
-          <button class="dl" data-section="png"><b data-i18n="dl.image">Image</b><span>.png</span></button>
-        </div>
-        <p class="quota" id="sec-quota"></p>
-      </aside>
-    </div>
-  </section>
-
-  <section class="result" id="result" hidden>
-      <div class="result-head">
-        <div>
-          <h2 data-i18n="result.title">Your model is ready.</h2>
-          <p class="muted" id="coords"></p>
-          <p class="lidar-note" id="lidar-note" hidden><span class="badge badge-dark">LIDAR</span> <span data-i18n="terrain.lidarNote">This area has an open lidar terrain model — it is already used in the model.</span></p>
-        </div>
-        <dl class="stats">
-          <div><dt data-i18n="stat.buildings">Buildings</dt><dd id="st-buildings">0</dd></div>
-          <div><dt data-i18n="stat.roads">Roads, km</dt><dd id="st-roads">0</dd></div>
-          <div><dt data-i18n="stat.trees">Trees</dt><dd id="st-trees">0</dd></div>
-          <div><dt data-i18n="stat.relief">Relief, m</dt><dd id="st-relief">0</dd></div>
-        </dl>
-      </div>
-      <div class="result-body">
-        <div class="result-main">
-          <div class="seg tabs" role="tablist">
-            <button type="button" role="tab" data-view="model" aria-selected="true" data-i18n="tab.model">3D model</button>
-            <button type="button" role="tab" data-view="plan" aria-selected="false" data-i18n="tab.plan">Drawing</button>
-            <button type="button" role="tab" data-view="sat" aria-selected="false" data-i18n="tab.satellite">Satellite</button>
-          </div>
-          <div class="stage">
-            <div class="viewer" id="viewer"></div>
-            <div class="flat" id="view-plan" hidden><img alt="" draggable="false"></div>
-            <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
-            <span class="viewer-hint" id="viewer-hint" data-i18n="viewer.hint">Drag to orbit, scroll to zoom</span>
-          </div>
-        </div>
-
-        <aside class="result-side">
-          <h3 class="side-title" data-i18n="dl.title">Download</h3>
-          <div class="downloads">
-            <button class="dl" data-format="dxf"><b>AutoCAD</b><span>.dxf</span></button>
-            <button class="dl" data-format="dae"><b>SketchUp 8+</b><span>.dae</span></button>
-            <button class="dl" data-format="3dm"><b>Rhino 5+</b><span>.3dm</span></button>
-            <button class="dl" data-format="svg"><b>Illustrator</b><span>.svg</span></button>
-            <button class="dl" data-format="ifc"><b>ArchiCAD</b><span>.ifc</span></button>
-            <button class="dl" data-format="fbx"><b>FBX</b><span>.fbx</span></button>
-            <button class="dl" data-format="stl"><b data-i18n="dl.stl">3D print</b><span id="stl-note">.stl</span></button>
-            <button class="dl" data-format="jpg"><b data-i18n="dl.satellite">Satellite</b><span>.jpg</span></button>
-            <div class="dl-notes">
-              <p id="quota"></p>
+      <!-- Workspace Content -->
+      <div class="workspace-content">
+        <!-- Interactive Leaflet Map Studio -->
+        <section id="app" class="studio-map-section">
+          <div class="map-box">
+            <div id="map"></div>
+            <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
+            <div class="seg maptype maptype-float" role="group">
+              <button type="button" data-base="sat" aria-pressed="true" data-i18n="map.satellite">Satellite</button>
+              <button type="button" data-base="map" aria-pressed="false" data-i18n="map.map">Map</button>
             </div>
           </div>
+        </section>
 
-          <div class="editor-cta">
-            <h3><span data-i18n="illu.section">Vector illustration</span> <span class="badge">NEW</span></h3>
-            <p class="muted" data-i18n="illu.cta">Axonometric or perspective drawing of this model: graphic presets, layers, labels — export to SVG and PNG.</p>
-            <button class="btn btn-dark btn-block" id="open-editor" type="button" data-i18n="illu.open">Open editor</button>
-          </div>
-          <div class="editor-cta">
-            <h3><span data-i18n="map.section">Vector map</span> <span class="badge">NEW</span></h3>
-            <p class="muted" data-i18n="map.cta">Top-down map with shadows, hillshade, depth map, grid and scale bar — export to SVG and PNG.</p>
-            <button class="btn btn-dark btn-block" id="open-map" type="button" data-i18n="map.open">Open map editor</button>
-          </div>
-        </aside>
-      </div>
-  </section>
+        <!-- Model 3D Result Dashboard -->
+        <section class="result result-section" id="result" hidden>
+          <div class="result-header">
+            <div class="result-title-group">
+              <h2 data-i18n="result.title">Your model is ready.</h2>
+              <p id="coords"></p>
+              <p class="lidar-note" id="lidar-note" hidden style="margin-top:6px; color:#34d399; font-size:12px;">
+                <span class="badge-new">LIDAR</span> <span data-i18n="terrain.lidarNote">This area has an open lidar terrain model — already applied.</span>
+              </p>
+            </div>
 
-  <section class="result editor" id="illustrator" hidden>
-    <div class="result-head">
-      <div>
-        <h2><span data-i18n="illu.section">Vector illustration</span> <span class="badge">NEW</span></h2>
-        <p class="muted" data-i18n="illu.hint">Drag to orbit, scroll to zoom, shift-drag to move</p>
-      </div>
-    </div>
-    <div class="stage stage-editor">
-        <div class="illu" id="view-illu">
-          <canvas id="illu-canvas"></canvas>
-          <div class="illu-panel">
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.view">View</span>
-              <div class="illu-grid">
-                <button type="button" data-illview="iso-nw" data-i18n="illu.nw">NW</button>
-                <button type="button" data-illview="iso-ne" data-i18n="illu.ne">NE</button>
-                <button type="button" data-illview="iso-sw" aria-pressed="true" data-i18n="illu.sw">SW</button>
-                <button type="button" data-illview="iso-se" data-i18n="illu.se">SE</button>
-                <button type="button" data-illview="top" data-i18n="illu.top">Top</button>
-                <button type="button" data-illview="eye" data-i18n="illu.eye">Eye</button>
+            <!-- Stats Metric Cards -->
+            <dl class="stats-grid">
+              <div class="stat-card"><dt data-i18n="stat.buildings">Buildings</dt><dd id="st-buildings">0</dd></div>
+              <div class="stat-card"><dt data-i18n="stat.roads">Roads, km</dt><dd id="st-roads">0</dd></div>
+              <div class="stat-card"><dt data-i18n="stat.trees">Trees</dt><dd id="st-trees">0</dd></div>
+              <div class="stat-card"><dt data-i18n="stat.relief">Relief, m</dt><dd id="st-relief">0</dd></div>
+            </dl>
+          </div>
+
+          <div class="result-grid">
+            <!-- 3D Stage & View Tabs -->
+            <div class="viewer-container">
+              <div class="seg tabs" role="tablist">
+                <button type="button" role="tab" data-view="model" aria-selected="true" data-i18n="tab.model">3D model</button>
+                <button type="button" role="tab" data-view="plan" aria-selected="false" data-i18n="tab.plan">Drawing</button>
+                <button type="button" role="tab" data-view="sat" aria-selected="false" data-i18n="tab.satellite">Satellite</button>
               </div>
-              <label class="toggle small"><span data-i18n="illu.perspective">Perspective</span><input type="checkbox" id="illu-persp"><i></i></label>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.style">Graphics</span>
-              <div class="illu-col">
-                <button type="button" data-illstyle="flat" aria-pressed="true" data-i18n="illu.flat">No outline</button>
-                <button type="button" data-illstyle="line" data-i18n="illu.line">Thin outline</button>
-                <button type="button" data-illstyle="mono" data-i18n="illu.mono">Black and white</button>
+              <div class="stage">
+                <div class="viewer" id="viewer"></div>
+                <div class="flat" id="view-plan" hidden><img alt="" draggable="false"></div>
+                <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
+                <span class="viewer-hint" id="viewer-hint" data-i18n="viewer.hint">Drag to orbit, scroll to zoom</span>
               </div>
             </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.layers">Layers</span>
-              <label class="toggle small"><span data-i18n="layer.buildings">Buildings</span><input type="checkbox" data-illlayer="buildings" checked><i></i></label>
-              <label class="toggle small"><span data-i18n="layer.trees">Trees</span><input type="checkbox" data-illlayer="trees" checked><i></i></label>
-              <label class="toggle small"><span data-i18n="layer.roads">Roads</span><input type="checkbox" data-illlayer="roads" checked><i></i></label>
-              <label class="toggle small"><span data-i18n="layer.nature">Water and green</span><input type="checkbox" data-illlayer="nature" checked><i></i></label>
-              <label class="toggle small"><span data-i18n="layer.contours">Contours</span><input type="checkbox" data-illlayer="contours"><i></i></label>
-              <label class="toggle small"><span data-i18n="illu.byType">Colour by building type</span><input type="checkbox" id="illu-bytype"><i></i></label>
-              <label class="toggle small"><span data-i18n="illu.legend">Legend</span><input type="checkbox" id="illu-legend" checked><i></i></label>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.colors">Colours</span>
-              <div class="swatches" id="illu-swatches"></div>
-              <div class="swatches" id="illu-class-swatches"></div>
-              <button type="button" class="btn btn-line btn-sm btn-block" id="illu-reset-colors" data-i18n="illu.resetColors">Reset colours</button>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.labels">Labels</span>
-              <div class="illu-row">
-                <button type="button" class="btn btn-line btn-sm" id="illu-label" data-i18n="illu.addLabel">Add label</button>
-                <input type="color" id="illu-color" value="#111114" data-i18n-aria="illu.labelColor" aria-label="Label colour">
+
+            <!-- Downloads & Tools Drawer -->
+            <aside class="downloads-panel">
+              <h3>
+                <span data-i18n="dl.title">Download Assets</span>
+                <span style="font-size:11px; font-weight:600; color:#34d399;">100% Free</span>
+              </h3>
+              <div class="downloads-grid downloads">
+                <button class="dl-btn dl" data-format="dxf"><b>AutoCAD</b><span>.dxf</span></button>
+                <button class="dl-btn dl" data-format="dae"><b>SketchUp 8+</b><span>.dae</span></button>
+                <button class="dl-btn dl" data-format="3dm"><b>Rhino 5+</b><span>.3dm</span></button>
+                <button class="dl-btn dl" data-format="svg"><b>Illustrator</b><span>.svg</span></button>
+                <button class="dl-btn dl" data-format="ifc"><b>ArchiCAD</b><span>.ifc</span></button>
+                <button class="dl-btn dl" data-format="fbx"><b>FBX</b><span>.fbx</span></button>
+                <button class="dl-btn dl" data-format="stl"><b data-i18n="dl.stl">3D print</b><span id="stl-note">.stl</span></button>
+                <button class="dl-btn dl" data-format="jpg"><b data-i18n="dl.satellite">Satellite</b><span>.jpg</span></button>
               </div>
-              <ul class="illu-labels" id="illu-label-list"></ul>
-            </div>
-            <div class="illu-group illu-export">
-              <button type="button" class="btn btn-dark btn-sm btn-block" data-illexport="svg" data-i18n="illu.svg">Vector .svg</button>
-              <button type="button" class="btn btn-line btn-sm btn-block" data-illexport="png" data-i18n="illu.png">Image .png</button>
+              <p id="quota" style="font-size:11px; color:#34d399; margin:4px 0 8px;"></p>
+
+              <!-- Sub-Editors Launchers -->
+              <div class="subeditor-card">
+                <div class="subeditor-card-header">
+                  <h4><span data-i18n="map.section">Vector map</span> <span class="badge-new">NEW</span></h4>
+                </div>
+                <p data-i18n="map.cta">Top-down map with shadows, hillshade, depth map, grid and scale bar — export to SVG and PNG.</p>
+                <button class="btn btn-dark btn-block btn-sm" id="open-map" type="button" data-i18n="map.open">Open map editor</button>
+              </div>
+
+              <div class="subeditor-card">
+                <div class="subeditor-card-header">
+                  <h4><span data-i18n="illu.section">Vector illustration</span> <span class="badge-new">NEW</span></h4>
+                </div>
+                <p data-i18n="illu.cta">Axonometric or perspective drawing with layers, graphic presets and labels.</p>
+                <button class="btn btn-dark btn-block btn-sm" id="open-editor" type="button" data-i18n="illu.open">Open editor</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <!-- Section Profile Result -->
+        <section class="result editor-section" id="section-result" hidden>
+          <div class="result-header">
+            <div>
+              <h2 data-i18n="section.ready">Section is ready.</h2>
+              <p id="sec-meta"></p>
             </div>
           </div>
-        </div>
-    </div>
-  </section>
+          <div class="result-grid">
+            <div class="stage">
+              <div class="flat" id="view-section"><img alt="" draggable="false"></div>
+              <span class="viewer-hint" data-i18n="viewer.hintFlat">Scroll to zoom, drag to pan, double-click to fit</span>
+            </div>
+            <aside class="downloads-panel">
+              <h3 data-i18n="dl.title">Download</h3>
+              <div class="downloads-grid downloads">
+                <button class="dl-btn dl" data-section="dxf"><b>AutoCAD</b><span>.dxf</span></button>
+                <button class="dl-btn dl" data-section="svg"><b>Illustrator</b><span>.svg</span></button>
+                <button class="dl-btn dl" data-section="png"><b data-i18n="dl.image">Image</b><span>.png</span></button>
+              </div>
+              <p class="quota" id="sec-quota" style="font-size:11px; color:#34d399;"></p>
+            </aside>
+          </div>
+        </section>
 
-  <section class="result editor" id="mapper" hidden>
-    <div class="result-head">
-      <div>
-        <h2><span data-i18n="map.section">Vector map</span> <span class="badge">NEW</span></h2>
-        <p class="muted" data-i18n="map.hint">Scroll to zoom, drag to move, double-click to fit</p>
+        <!-- Vector Map Studio Editor -->
+        <section class="result editor-section" id="mapper" hidden>
+          <div class="result-header">
+            <div>
+              <h2><span data-i18n="map.section">Vector map</span> <span class="badge-new">NEW</span></h2>
+              <p class="muted" data-i18n="map.hint">Scroll to zoom, drag to move, double-click to fit</p>
+            </div>
+          </div>
+          <div class="editor-stage">
+            <div class="illu" id="view-map">
+              <div class="flat" id="map-flat"><img alt="" draggable="false"></div>
+              <div class="illu-panel">
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="map.presets">Presets</span>
+                  <div class="illu-grid">
+                    <button type="button" data-mappreset="classic" aria-pressed="true" data-i18n="preset.classic">Classic</button>
+                    <button type="button" data-mappreset="figure" data-i18n="preset.figure">Figure-ground</button>
+                    <button type="button" data-mappreset="relief" data-i18n="preset.relief">Relief</button>
+                    <button type="button" data-mappreset="night" data-i18n="preset.night">Night</button>
+                    <button type="button" data-mappreset="blueprint" data-i18n="preset.blueprint">Blueprint</button>
+                  </div>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.layers">Layers</span>
+                  <label class="toggle"><span data-i18n="layer.buildings">Buildings</span><input type="checkbox" data-mapopt="layers.buildings"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.roads">Roads</span><input type="checkbox" data-mapopt="layers.roads"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.rail">Railways</span><input type="checkbox" data-mapopt="layers.rail"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.water">Water</span><input type="checkbox" data-mapopt="layers.water"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.green">Green areas</span><input type="checkbox" data-mapopt="layers.green"><i></i></label>
+                  <label class="toggle"><span data-i18n="layer.trees">Trees</span><input type="checkbox" data-mapopt="layers.trees"><i></i></label>
+                  <label class="toggle"><span data-i18n="layer.contours">Contours</span><input type="checkbox" data-mapopt="layers.contours"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.site">Site boundary</span><input type="checkbox" data-mapopt="layers.site"><i></i></label>
+                  <label class="toggle"><span data-i18n="illu.byType">Colour by building type</span><input type="checkbox" data-mapopt="layers.byType"><i></i></label>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="map.light">Light & relief</span>
+                  <label class="toggle"><span data-i18n="map.shadows">Shadows</span><input type="checkbox" data-mapopt="shadows.on"><i></i></label>
+                  <label class="field"><span data-i18n="map.azimuth">Sun direction</span><input type="range" min="0" max="355" step="5" data-mapopt="shadows.azimuth"></label>
+                  <label class="field"><span data-i18n="map.altitude">Sun height</span><input type="range" min="5" max="80" step="1" data-mapopt="shadows.altitude"></label>
+                  <label class="field"><span data-i18n="map.shadowStrength">Shadow strength</span><input type="range" min="0.05" max="0.8" step="0.01" data-mapopt="shadows.strength"></label>
+                  <label class="toggle"><span data-i18n="map.hillshade">Hillshade</span><input type="checkbox" data-mapopt="relief.hillshade"><i></i></label>
+                  <label class="field"><span data-i18n="map.strength">Strength</span><input type="range" min="0.05" max="1" step="0.01" data-mapopt="relief.hillshadeStrength"></label>
+                  <label class="toggle"><span data-i18n="map.depth">Depth map</span><input type="checkbox" data-mapopt="relief.depth"><i></i></label>
+                  <label class="field"><span data-i18n="map.strength">Strength</span><input type="range" min="0.05" max="1" step="0.01" data-mapopt="relief.depthStrength"></label>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="map.sheet">Sheet</span>
+                  <label class="toggle"><span data-i18n="map.scalebar">Scale bar</span><input type="checkbox" data-mapopt="overlays.scalebar"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.north">North arrow</span><input type="checkbox" data-mapopt="overlays.north"><i></i></label>
+                  <label class="toggle"><span data-i18n="map.grid">Grid</span><input type="checkbox" data-mapopt="overlays.grid"><i></i></label>
+                  <label class="field"><span data-i18n="map.outline">Outline weight</span><input type="range" min="0" max="0.4" step="0.02" data-mapopt="outlineWidth"></label>
+                  <label class="field"><span data-i18n="map.scale">Print scale</span>
+                    <select class="mini" id="map-scale" style="margin-top:4px;"></select>
+                  </label>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.colors">Colours</span>
+                  <div class="swatches" id="map-swatches"></div>
+                  <button type="button" class="btn btn-line btn-sm btn-block" id="map-reset-colors" data-i18n="illu.resetColors">Reset colours</button>
+                </div>
+                <div class="illu-group illu-export" style="margin-top:auto;">
+                  <button type="button" class="btn btn-primary btn-sm btn-block" data-mapexport="svg" data-i18n="illu.svg">Vector .svg</button>
+                  <button type="button" class="btn btn-line btn-sm btn-block" data-mapexport="png" data-i18n="illu.png">Image .png</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Vector Illustration Studio Editor -->
+        <section class="result editor-section" id="illustrator" hidden>
+          <div class="result-header">
+            <div>
+              <h2><span data-i18n="illu.section">Vector illustration</span> <span class="badge-new">NEW</span></h2>
+              <p class="muted" data-i18n="illu.hint">Drag to orbit, scroll to zoom, shift-drag to move</p>
+            </div>
+          </div>
+          <div class="editor-stage">
+            <div class="illu" id="view-illu">
+              <canvas id="illu-canvas"></canvas>
+              <div class="illu-panel">
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.view">View</span>
+                  <div class="illu-grid">
+                    <button type="button" data-illview="iso-nw" data-i18n="illu.nw">NW</button>
+                    <button type="button" data-illview="iso-ne" data-i18n="illu.ne">NE</button>
+                    <button type="button" data-illview="iso-sw" aria-pressed="true" data-i18n="illu.sw">SW</button>
+                    <button type="button" data-illview="iso-se" data-i18n="illu.se">SE</button>
+                    <button type="button" data-illview="top" data-i18n="illu.top">Top</button>
+                    <button type="button" data-illview="eye" data-i18n="illu.eye">Eye</button>
+                  </div>
+                  <label class="toggle"><span data-i18n="illu.perspective">Perspective</span><input type="checkbox" id="illu-persp"><i></i></label>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.style">Graphics</span>
+                  <div class="illu-col">
+                    <button type="button" data-illstyle="flat" aria-pressed="true" data-i18n="illu.flat">No outline</button>
+                    <button type="button" data-illstyle="line" data-i18n="illu.line">Thin outline</button>
+                    <button type="button" data-illstyle="mono" data-i18n="illu.mono">Black & white</button>
+                  </div>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.layers">Layers</span>
+                  <label class="toggle"><span data-i18n="layer.buildings">Buildings</span><input type="checkbox" data-illlayer="buildings" checked><i></i></label>
+                  <label class="toggle"><span data-i18n="layer.trees">Trees</span><input type="checkbox" data-illlayer="trees" checked><i></i></label>
+                  <label class="toggle"><span data-i18n="layer.roads">Roads</span><input type="checkbox" data-illlayer="roads" checked><i></i></label>
+                  <label class="toggle"><span data-i18n="layer.nature">Water & green</span><input type="checkbox" data-illlayer="nature" checked><i></i></label>
+                  <label class="toggle"><span data-i18n="layer.contours">Contours</span><input type="checkbox" data-illlayer="contours"><i></i></label>
+                  <label class="toggle"><span data-i18n="illu.byType">Colour by building type</span><input type="checkbox" id="illu-bytype"><i></i></label>
+                  <label class="toggle"><span data-i18n="illu.legend">Legend</span><input type="checkbox" id="illu-legend" checked><i></i></label>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.colors">Colours</span>
+                  <div class="swatches" id="illu-swatches"></div>
+                  <div class="swatches" id="illu-class-swatches"></div>
+                  <button type="button" class="btn btn-line btn-sm btn-block" id="illu-reset-colors" data-i18n="illu.resetColors">Reset colours</button>
+                </div>
+                <div class="illu-group">
+                  <span class="illu-title" data-i18n="illu.labels">Labels</span>
+                  <div class="tool-row">
+                    <button type="button" class="btn btn-line btn-sm" id="illu-label" data-i18n="illu.addLabel">Add label</button>
+                    <input type="color" id="illu-color" value="#111114" data-i18n-aria="illu.labelColor" aria-label="Label colour">
+                  </div>
+                  <ul class="illu-labels" id="illu-label-list" style="margin-top:6px; list-style:none;"></ul>
+                </div>
+                <div class="illu-group illu-export" style="margin-top:auto;">
+                  <button type="button" class="btn btn-primary btn-sm btn-block" data-illexport="svg" data-i18n="illu.svg">Vector .svg</button>
+                  <button type="button" class="btn btn-line btn-sm btn-block" data-illexport="png" data-i18n="illu.png">Image .png</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Studio Footer Credits -->
+        <footer class="studio-footer">
+          <p class="muted credits" data-i18n-html="footer.data">
+            Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, ODbL. Terrain — <a href="https://mapterhorn.com/attribution" target="_blank" rel="noopener">Mapterhorn</a>, Copernicus DEM © DLR, Airbus, ESA. Extra buildings — <a href="https://docs.overturemaps.org/attribution/" target="_blank" rel="noopener">Overture Maps</a>. Map and imagery — Esri.
+          </p>
+          <div>
+            <b>Urbanized</b> · 100% Free & Open GIS 3D Cartography
+          </div>
+        </footer>
       </div>
-    </div>
-    <div class="stage stage-editor">
-        <div class="illu" id="view-map">
-          <div class="map-view"><div class="flat" id="map-flat"><img alt=""></div></div>
-          <div class="illu-panel">
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="map.presets">Presets</span>
-              <div class="illu-grid">
-                <button type="button" data-mappreset="classic" aria-pressed="true" data-i18n="preset.classic">Classic</button>
-                <button type="button" data-mappreset="figure" data-i18n="preset.figure">Figure-ground</button>
-                <button type="button" data-mappreset="relief" data-i18n="preset.relief">Relief</button>
-                <button type="button" data-mappreset="night" data-i18n="preset.night">Night</button>
-                <button type="button" data-mappreset="blueprint" data-i18n="preset.blueprint">Blueprint</button>
-              </div>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.layers">Layers</span>
-              <label class="toggle small"><span data-i18n="layer.buildings">Buildings</span><input type="checkbox" data-mapopt="layers.buildings"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.roads">Roads</span><input type="checkbox" data-mapopt="layers.roads"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.rail">Railways</span><input type="checkbox" data-mapopt="layers.rail"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.water">Water</span><input type="checkbox" data-mapopt="layers.water"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.green">Green areas</span><input type="checkbox" data-mapopt="layers.green"><i></i></label>
-              <label class="toggle small"><span data-i18n="layer.trees">Trees</span><input type="checkbox" data-mapopt="layers.trees"><i></i></label>
-              <label class="toggle small"><span data-i18n="layer.contours">Contours</span><input type="checkbox" data-mapopt="layers.contours"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.site">Site boundary</span><input type="checkbox" data-mapopt="layers.site"><i></i></label>
-              <label class="toggle small"><span data-i18n="illu.byType">Colour by building type</span><input type="checkbox" data-mapopt="layers.byType"><i></i></label>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="map.light">Light and relief</span>
-              <label class="toggle small"><span data-i18n="map.shadows">Shadows</span><input type="checkbox" data-mapopt="shadows.on"><i></i></label>
-              <label class="mrange"><span data-i18n="map.azimuth">Sun direction</span><input type="range" min="0" max="355" step="5" data-mapopt="shadows.azimuth"></label>
-              <label class="mrange"><span data-i18n="map.altitude">Sun height</span><input type="range" min="5" max="80" step="1" data-mapopt="shadows.altitude"></label>
-              <label class="mrange"><span data-i18n="map.shadowStrength">Shadow strength</span><input type="range" min="0.05" max="0.8" step="0.01" data-mapopt="shadows.strength"></label>
-              <label class="toggle small"><span data-i18n="map.hillshade">Hillshade</span><input type="checkbox" data-mapopt="relief.hillshade"><i></i></label>
-              <label class="mrange"><span data-i18n="map.strength">Strength</span><input type="range" min="0.05" max="1" step="0.01" data-mapopt="relief.hillshadeStrength"></label>
-              <label class="toggle small"><span data-i18n="map.depth">Depth map</span><input type="checkbox" data-mapopt="relief.depth"><i></i></label>
-              <label class="mrange"><span data-i18n="map.strength">Strength</span><input type="range" min="0.05" max="1" step="0.01" data-mapopt="relief.depthStrength"></label>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="map.sheet">Sheet</span>
-              <label class="toggle small"><span data-i18n="map.scalebar">Scale bar</span><input type="checkbox" data-mapopt="overlays.scalebar"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.north">North arrow</span><input type="checkbox" data-mapopt="overlays.north"><i></i></label>
-              <label class="toggle small"><span data-i18n="map.grid">Grid</span><input type="checkbox" data-mapopt="overlays.grid"><i></i></label>
-              <label class="mrange"><span data-i18n="map.outline">Outline weight</span><input type="range" min="0" max="0.4" step="0.02" data-mapopt="outlineWidth"></label>
-              <label class="mrange"><span data-i18n="map.scale">Print scale</span>
-                <select class="mini" id="map-scale"></select>
-              </label>
-            </div>
-            <div class="illu-group">
-              <span class="illu-title" data-i18n="illu.colors">Colours</span>
-              <div class="swatches" id="map-swatches"></div>
-              <button type="button" class="btn btn-line btn-sm btn-block" id="map-reset-colors" data-i18n="illu.resetColors">Reset colours</button>
-            </div>
-            <div class="illu-group illu-export">
-              <button type="button" class="btn btn-dark btn-sm btn-block" data-mapexport="svg" data-i18n="illu.svg">Vector .svg</button>
-              <button type="button" class="btn btn-line btn-sm btn-block" data-mapexport="png" data-i18n="illu.png">Image .png</button>
-            </div>
-          </div>
-        </div>
-    </div>
-  </section>
-
-  
-
-  <footer class="footer">
-    <p class="muted credits" data-i18n-html="footer.data">Data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors, ODbL. Terrain — <a href="https://mapterhorn.com/attribution" target="_blank" rel="noopener">Mapterhorn</a>, Copernicus DEM © DLR, Airbus, ESA. Extra buildings — <a href="https://docs.overturemaps.org/attribution/" target="_blank" rel="noopener">Overture Maps</a>. Map and imagery — Esri.</p>
-    <div class="footer-right">
-      <p class="made" style="color:#666;font-size:13px;"><b>Model Export</b> · Gratuito y Libre</p>
-    </div>
-  </footer>
-
-  
+    </main>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=e9ed68a96e"></script>
+  <script type="module" src="/js/app.js?v=2.0"></script>
+  <script>
+    // ElevenLabs Sidebar Tabs & Mobile Drawer Navigation
+    (function() {
+      const sidebar = document.getElementById('sidebar');
+      const backdrop = document.getElementById('sidebar-backdrop');
+      const menuToggle = document.getElementById('menu-toggle');
+      const crumbView = document.getElementById('crumb-view');
+
+      function closeSidebar() {
+        if (sidebar) sidebar.classList.remove('open');
+      }
+      if (menuToggle) {
+        menuToggle.addEventListener('click', () => {
+          if (sidebar) sidebar.classList.toggle('open');
+        });
+      }
+      if (backdrop) {
+        backdrop.addEventListener('click', closeSidebar);
+      }
+      document.getElementById('sidebar-close')?.addEventListener('click', closeSidebar);
+
+      function setActiveNav(btnId, crumb) {
+        document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById(btnId);
+        if (btn) btn.classList.add('active');
+        if (crumbView && crumb) crumbView.textContent = crumb;
+        closeSidebar();
+      }
+
+      document.getElementById('build')?.addEventListener('click', () => {
+        const panel = document.getElementById('panel');
+        if (panel) {
+          try { panel.requestSubmit(); } catch (err) { panel.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true })); }
+        }
+      });
+
+      document.getElementById('nav-btn-studio')?.addEventListener('click', () => {
+        setActiveNav('nav-btn-studio', '3D Studio');
+        const res = document.getElementById('result');
+        if (res && !res.hidden) {
+          res.scrollIntoView({ behavior: 'smooth' });
+        } else {
+          document.getElementById('app')?.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+
+      document.getElementById('nav-btn-map')?.addEventListener('click', () => {
+        setActiveNav('nav-btn-map', 'Vector Map');
+        const openMap = document.getElementById('open-map');
+        if (openMap) openMap.click();
+        const mapper = document.getElementById('mapper');
+        if (mapper) {
+          mapper.hidden = false;
+          mapper.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+
+      document.getElementById('nav-btn-section')?.addEventListener('click', () => {
+        setActiveNav('nav-btn-section', 'Terrain Section');
+        const modeSec = document.querySelector('[data-mode="section"]');
+        if (modeSec) modeSec.click();
+        document.getElementById('app')?.scrollIntoView({ behavior: 'smooth' });
+      });
+
+      document.getElementById('nav-btn-illu')?.addEventListener('click', () => {
+        setActiveNav('nav-btn-illu', 'Vector Illustration');
+        const openEd = document.getElementById('open-editor');
+        if (openEd) openEd.click();
+        const illu = document.getElementById('illustrator');
+        if (illu) {
+          illu.hidden = false;
+          illu.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

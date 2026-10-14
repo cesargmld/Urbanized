@@ -3,7 +3,7 @@
 import { LAYERS, triangulate, UNIT_TREE, treeBody, mergeBodies, BUILDING_CLASSES } from './data.js?v=e9ed68a96e';
 import { imageryBlob } from './satellite.js?v=e9ed68a96e';
 
-const TOOL = 'urban:EXPORT';
+const TOOL = 'Urbanized';
 const f = (v) => (Math.round(v * 1000) / 1000).toString();
 
 // Цвета слоёв: индекс цвета AutoCAD (ACI) и RGB для Rhino, SketchUp и чертежа.

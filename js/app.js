@@ -335,14 +335,28 @@ function applyFlat(box) {
   box.querySelector('img').style.transform = `translate(${st.x}px, ${st.y}px) scale(${st.k})`;
 }
 function fitFlat(box) {
+  if (!box) return;
   const img = box.querySelector('img');
+  if (!img) return;
   const go = () => {
+    if (!box.clientWidth || !box.clientHeight || !img.naturalWidth || !img.naturalHeight) {
+      setTimeout(() => fitFlat(box), 50);
+      return;
+    }
     const k = Math.min(box.clientWidth / img.naturalWidth, box.clientHeight / img.naturalHeight) * 0.94;
     flatState.set(box, { k, x: (box.clientWidth - img.naturalWidth * k) / 2, y: (box.clientHeight - img.naturalHeight * k) / 2 });
     applyFlat(box);
   };
   img.complete && img.naturalWidth ? go() : (img.onload = go);
 }
+const flatResizeObs = new ResizeObserver((entries) => {
+  for (const entry of entries) {
+    const box = entry.target;
+    if (box.clientWidth > 0 && box.clientHeight > 0 && flatState.get(box)) {
+      fitFlat(box);
+    }
+  }
+});
 for (const box of document.querySelectorAll('.flat')) {
   box.addEventListener('wheel', (e) => {
     e.preventDefault();
@@ -383,6 +397,7 @@ for (const box of document.querySelectorAll('.flat')) {
   box.addEventListener('pointerup', up);
   box.addEventListener('pointercancel', up);
   box.addEventListener('dblclick', () => fitFlat(box));
+  flatResizeObs.observe(box);
 }
 
 /* ---------------- Скачивание ---------------- */
@@ -408,7 +423,7 @@ document.querySelectorAll('.dl').forEach((btn) =>
       const blob = await fmt.make(model);
       const q = await consume(model.id);
       if (!q.ok) { renderQuota(0, false); lockDownloads(true); return; }
-      const name = `urban-export_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}_${model.size}m.${fmt.ext}`;
+      const name = `urbanized_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}_${model.size}m.${fmt.ext}`;
       save(blob, name);
       billing.track(`dl:${fmt.ext}`);
     } catch (err) {
@@ -557,7 +572,7 @@ document.querySelectorAll('.dl[data-section]').forEach((btn) =>
       const blob = await fmt.make(sec);
       const q = await consume(`sec:${sec.id}`);
       if (!q.ok) return;
-      save(blob, `urban-export_section_${(sec.length / 1000).toFixed(2)}km.${fmt.ext}`);
+      save(blob, `urbanized_section_${(sec.length / 1000).toFixed(2)}km.${fmt.ext}`);
       billing.track(`sec:${fmt.ext}`);
     } catch (err) {
       console.error(err);
@@ -773,7 +788,7 @@ function renderLabelList() {
       const blob = kind === 'svg' ? illu.toSVG({ width: 2400 }) : await illu.toPNG({ width: 3200 });
       const q = await consume(model.id);
       if (!q.ok) { renderQuota(0, false); lockDownloads(true); return; }
-      save(blob, `urban-export_illustration_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}.${kind}`);
+      save(blob, `urbanized_illustration_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}.${kind}`);
       billing.track(`illu:${kind}`);
     } finally {
       b.disabled = false;
@@ -906,7 +921,7 @@ document.querySelectorAll('[data-mapexport]').forEach((b) => b.addEventListener(
     const blob = kind === 'svg' ? new Blob([svg], { type: 'image/svg+xml' }) : await mapMod.mapPNG(svg, 4000);
     const q = await consume(model.id);
     if (!q.ok) { renderQuota(0, false); lockDownloads(true); return; }
-    save(blob, `urban-export_map_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}.${kind}`);
+    save(blob, `urbanized_map_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}.${kind}`);
     billing.track(`map:${kind}`);
   } catch (err) {
     console.error(err);
@@ -946,45 +961,7 @@ onLangChange(() => {
 
 function showChannel() {}
 
-/* --- шаги страницы «примагничиваются»: одно движение колеса над шагом = переход к соседнему --- */
-{
-  const wide = matchMedia('(min-width: 761px)');
-  const navH = () => $('.nav').offsetHeight;
-  // можно ли прокрутить что-то внутри шага (панель настроек, список, панель редактора)
-  const canScroll = (el, stop, dy) => {
-    for (; el && el !== stop; el = el.parentElement) {
-      const oy = getComputedStyle(el).overflowY;
-      if ((oy === 'auto' || oy === 'scroll') && el.scrollHeight > el.clientHeight + 1) {
-        if (dy > 0 ? el.scrollTop + el.clientHeight < el.scrollHeight - 1 : el.scrollTop > 0) return true;
-      }
-    }
-    return false;
-  };
-  let lockUntil = 0, innerAt = 0;
-  addEventListener('wheel', (e) => {
-    if (e.defaultPrevented || e.ctrlKey || !wide.matches || Math.abs(e.deltaY) < Math.abs(e.deltaX)) return;
-    const sec = e.target.closest?.('.app, .result');
-    if (!sec) return; // FAQ и остальное листаются свободно
-    if (sec.offsetHeight > innerHeight - navH() + 2) return; // шаг выше экрана — обычная прокрутка
-    const now = performance.now();
-    // панель настроек (или другой список) ещё листается — это её жест
-    if (canScroll(e.target, sec, e.deltaY)) { innerAt = now; return; }
-    e.preventDefault();
-    // панель только что докрутилась до конца: тот же жест (с инерцией) страницу не листает —
-    // нужно остановиться и провести колесом ещё раз
-    if (now - innerAt < 450) { innerAt = now; return; }
-    // инерция тачпада шлёт события ещё долго: пока они идут, считаем это тем же жестом
-    if (now < lockUntil) { lockUntil = Math.max(lockUntil, now + 180); return; }
-    lockUntil = now + 700;
-    const steps = [...document.querySelectorAll('.app, .result, .faq')].filter((s) => !s.hidden);
-    const i = steps.indexOf(sec);
-    const top = sec.getBoundingClientRect().top - navH();
-    let to;
-    if (e.deltaY > 0) to = top > 2 ? sec : steps[i + 1];
-    else to = top < -2 ? sec : steps[i - 1];
-    if (to) scrollTo({ top: Math.max(0, to.getBoundingClientRect().top + scrollY - navH()), behavior: 'smooth' });
-  }, { passive: false });
-}
+
 
 /* ---------------- Кредиты: кнопка аккаунта, вход по ссылке ---------------- */
 

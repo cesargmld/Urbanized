@@ -324,7 +324,7 @@ export function sectionSVG(sec) {
     .map((t) => `<text x="${f(t.x - bounds.x0)}" y="${f(bounds.y1 - t.y)}" font-size="${t.size}" text-anchor="${t.anchor}" font-family="Roboto, sans-serif">${t.text.replace(/[<>&]/g, '')}</text>`);
 
   return new Blob([`<?xml version="1.0" encoding="UTF-8"?>
-<!-- urban:EXPORT section · ${(sec.length / 1000).toFixed(2)} km · 1:${scale} · vertical ×${sec.exaggeration} -->
+<!-- Urbanized section · ${(sec.length / 1000).toFixed(2)} km · 1:${scale} · vertical ×${sec.exaggeration} -->
 <svg xmlns="http://www.w3.org/2000/svg" width="${f(mm(w))}mm" height="${f(mm(h))}mm" viewBox="0 0 ${f(w)} ${f(h)}">
 <rect width="${f(w)}" height="${f(h)}" fill="#fff"/>
 ${group('SECTION_GRID', `fill="none" stroke="#d8d8d8" stroke-width="${lw(0.06)}"`, grid)}

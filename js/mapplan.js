@@ -262,7 +262,7 @@ export function mapSVG(model, o) {
   const vx = -m, vy = -m * 0.6, vw = size + 2 * m, vh = size + m * 0.6 + m * (o.overlays.grid ? 1.7 : 1.35);
   const mmW = (vw * 1000) / scale, mmH = (vh * 1000) / scale;
   return `<?xml version="1.0" encoding="UTF-8"?>
-<!-- urban:EXPORT · ${model.center.lat.toFixed(6)}, ${model.center.lon.toFixed(6)} · ${size} x ${size} m · 1:${scale} -->
+<!-- Urbanized · ${model.center.lat.toFixed(6)}, ${model.center.lon.toFixed(6)} · ${size} x ${size} m · 1:${scale} -->
 <svg xmlns="http://www.w3.org/2000/svg" width="${f(mmW)}mm" height="${f(mmH)}mm" viewBox="${f(vx)} ${f(vy)} ${f(vw)} ${f(vh)}">
 <defs><clipPath id="frame">${frameShape}</clipPath></defs>
 <rect id="PAPER" x="${f(vx)}" y="${f(vy)}" width="${f(vw)}" height="${f(vh)}" fill="${c.bg}"/>
