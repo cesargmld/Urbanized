@@ -157,6 +157,21 @@ export function showModel(container, model, { keepCamera = false } = {}) {
   camera.far = s * 20;
   camera.updateProjectionMatrix();
   controls.update();
+  triggerResize();
+}
+
+export function triggerResize() {
+  if (!ctx) return;
+  const { renderer, camera } = ctx;
+  const container = renderer.domElement?.parentElement;
+  if (!container) return;
+  const w = container.clientWidth || window.innerWidth;
+  const h = container.clientHeight || window.innerHeight;
+  if (w > 0 && h > 0) {
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
 }
 
 export function setCameraView(type) {
@@ -179,4 +194,5 @@ export function setCameraView(type) {
   camera.updateProjectionMatrix();
   controls.update();
 }
+
 

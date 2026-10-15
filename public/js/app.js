@@ -87,12 +87,12 @@ function drawFrame() {
   sizeInput.style.setProperty('--free', `${Math.min(100, Math.max(0, ((freeSide - lo) / (hi - lo)) * 100)).toFixed(2)}%`);
   sizeInput.classList.toggle('has-free', billing.state.billing && hi > freeSide);
 }
-document.querySelectorAll('.shape button').forEach((b) => {
+document.querySelectorAll('[data-shape]').forEach((b) => {
   b.setAttribute('aria-pressed', String(b.dataset.shape === shape));
   b.addEventListener('click', () => {
     shape = b.dataset.shape;
     store.set('ue:shape', shape);
-    document.querySelectorAll('.shape button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    document.querySelectorAll('[data-shape]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     drawFrame();
   });
 });
@@ -322,6 +322,10 @@ async function showResult(m) {
 
   if (window.switchWorkspaceView) {
     window.switchWorkspaceView('result');
+    setTimeout(async () => {
+      const p = await import('./preview.js');
+      p.triggerResize?.();
+    }, 80);
   }
 }
 
@@ -673,28 +677,22 @@ document.querySelectorAll('.dl[data-section]').forEach((btn) =>
 
 function setMode(next) {
   mode = next;
-  document.querySelectorAll('.mode button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === next)));
+  document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === next)));
   $('#model-tools').hidden = next !== 'model';
   $('#section-tools').hidden = next !== 'section';
-  $('#result').hidden = next !== 'model' || !model;
-  $('#illustrator').hidden = next !== 'model' || !model || !illuOpened;
-  $('#mapper').hidden = next !== 'model' || !model || !mapOpened;
-  $('#section-result').hidden = next !== 'section' || !secState.model;
   frame.hidden = next !== 'model';
 
   // Automatically enable drawing when switching to section mode
   if (next === 'section') {
     secState.drawing = true;
-    $('#sec-draw').setAttribute('aria-pressed', 'true');
-    $('#sec-draw').textContent = t('section.drawing');
-    const notice = $('#section-notice');
-    if (notice && secState.points.length < 2) notice.hidden = false;
+    $('#sec-draw')?.setAttribute('aria-pressed', 'true');
+    const guidance = $('#section-guidance');
+    if (guidance && secState.points.length < 2) guidance.hidden = false;
   } else {
     secState.drawing = false;
-    $('#sec-draw').setAttribute('aria-pressed', 'false');
-    $('#sec-draw').textContent = t('section.draw');
-    const notice = $('#section-notice');
-    if (notice) notice.hidden = true;
+    $('#sec-draw')?.setAttribute('aria-pressed', 'false');
+    const guidance = $('#section-guidance');
+    if (guidance) guidance.hidden = true;
   }
 
   siteRedraw();
@@ -702,7 +700,7 @@ function setMode(next) {
   map.getContainer().parentElement.classList.toggle('drawing', (next === 'section' && secState.drawing) || (next === 'model' && site.drawing));
   setTimeout(() => map.invalidateSize(), 50);
 }
-document.querySelectorAll('.mode button').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
+document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
 /* ---------------- Граница участка ---------------- */
 
