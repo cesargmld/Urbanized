@@ -1,7 +1,7 @@
 // Кредиты и оплата на странице: вход по ссылке из письма, пакеты кредитов (Paddle), списание при скачивании.
 // Если сервер без базы (или его нет — старый хостинг), режим выключен и работает прежний дневной лимит.
-import { t, lang, locale } from './i18n.js?v=4.0';
-import { PACKS, parseModelId, FREE_PER_DAY, FREE_AREA_KM2, BLOCK_KM2, CREDITS_PER_BLOCK, CREDITS_PER_EXTRA, USD_PER_CREDIT } from './pricing.js?v=4.0';
+import { t, lang, locale } from './i18n.js?v=4.1';
+import { PACKS, parseModelId, FREE_PER_DAY, FREE_AREA_KM2, BLOCK_KM2, CREDITS_PER_BLOCK, CREDITS_PER_EXTRA, USD_PER_CREDIT } from './pricing.js?v=4.1';
 
 export const state = { billing: false, checkout: false, freeLimit: FREE_PER_DAY, freeLeft: FREE_PER_DAY, counted: [], paid: [], user: null };
 const listeners = new Set();

@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=4.0">
+  <link rel="stylesheet" href="/css/style.css?v=4.1">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -576,7 +576,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=4.0"></script>
+  <script type="module" src="/js/app.js?v=4.1"></script>
   <script>
     (function() {
       const sidebar = document.getElementById('sidebar');
@@ -672,7 +672,7 @@
           setTimeout(() => window.appMap.invalidateSize(), 50);
         }
         if (viewName === 'result') {
-          import('./js/preview.js').then(p => p.triggerResize?.()).catch(() => {});
+          import('./js/preview.js?v=4.1').then(p => p.triggerResize?.()).catch(() => {});
         }
       }
 
@@ -716,7 +716,7 @@
       document.getElementById('cam-chunk')?.addEventListener('click', () => {
         document.querySelectorAll('.cam-pill-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('cam-chunk')?.classList.add('active');
-        import('./js/preview.js').then(p => {
+        import('./js/preview.js?v=4.1').then(p => {
           p.toggleChunkMode?.(true);
         }).catch(() => {});
       });
@@ -726,27 +726,27 @@
         document.getElementById('tab-chunk')?.setAttribute('aria-selected', 'true');
         document.querySelectorAll('.cam-pill-btn').forEach(b => b.classList.remove('active'));
         document.getElementById('cam-chunk')?.classList.add('active');
-        import('./js/preview.js').then(p => {
+        import('./js/preview.js?v=4.1').then(p => {
           p.toggleChunkMode?.(true);
         }).catch(() => {});
       });
 
       document.getElementById('cam-persp')?.addEventListener('click', () => {
-        import('./js/preview.js').then(p => {
+        import('./js/preview.js?v=4.1').then(p => {
           if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
           p.setCameraView?.('persp');
         }).catch(() => {});
       });
 
       document.getElementById('cam-iso')?.addEventListener('click', () => {
-        import('./js/preview.js').then(p => {
+        import('./js/preview.js?v=4.1').then(p => {
           if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
           p.setCameraView?.('iso');
         }).catch(() => {});
       });
 
       document.getElementById('cam-top')?.addEventListener('click', () => {
-        import('./js/preview.js').then(p => {
+        import('./js/preview.js?v=4.1').then(p => {
           if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
           p.setCameraView?.('top');
         }).catch(() => {});

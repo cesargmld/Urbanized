@@ -488,7 +488,7 @@ export const locale = () => LOCALES[lang] ?? 'en-US';
 const known = (code) => LANGS.some((l) => l.code === code);
 
 async function ensure(code) {
-  if (!DICT[code]) DICT[code] = (await import(`./locales/${code}.js?v=4.0`)).default;
+  if (!DICT[code]) DICT[code] = (await import(`./locales/${code}.js?v=4.1`)).default;
 }
 
 const saved = (() => { try { return localStorage.getItem('ue:lang'); } catch { return null; } })();

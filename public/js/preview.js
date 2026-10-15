@@ -2,7 +2,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
-import { triangulate, UNIT_TREE } from './data.js?v=4.0';
+import { triangulate, UNIT_TREE } from './data.js?v=4.1';
 
 let ctx;
 

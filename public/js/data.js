@@ -2,7 +2,7 @@
 // Здания, дороги, вода, зелень — OpenStreetMap (Overpass API).
 // Рельеф — Terrain Tiles (Mapzen / AWS Open Data, формат terrarium).
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
-import { fetchImagery, detectTrees, MAX_TREES } from './satellite.js?v=4.0';
+import { fetchImagery, detectTrees, MAX_TREES } from './satellite.js?v=4.1';
 
 // Публичные серверы Overpass. z — отдельная машина overpass-api.de:
 // когда общий адрес перегружен, она часто отвечает (lz4 теперь только для белого списка).
@@ -192,15 +192,17 @@ out geom;
   way["natural"="wood"](${bb});
   relation["natural"="wood"](${bb});
 );
-  const query = `direct:${bo}`;
-  const cached = await osmCacheGet(query);
+out geom;`;
+
+  const cacheKey = `direct:${bo}`;
+  const cached = await osmCacheGet(cacheKey);
   if (cached) return cached;
 
   // 1. Primary: Direct official OpenStreetMap API (instant response, 99.99% uptime, no mirror bottlenecks)
   try {
     const json = await fetchDirectOSM(frame, signal);
     if (json && json.elements && json.elements.length > 0) {
-      osmCachePut(query, json);
+      osmCachePut(cacheKey, json);
       return json;
     }
   } catch (directErr) {
@@ -236,7 +238,7 @@ out geom;
   };
   try {
     const json = dedupe(await race(urls, attempt, { first: 2, gap: 2000, signal }));
-    osmCachePut(query, json);
+    osmCachePut(cacheKey, json);
     return json;
   } catch (overpassErr) {
     console.warn('Overpass mirrors also failed:', overpassErr);
@@ -1193,7 +1195,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   osmPromise.catch(() => {}); // ошибка обрабатывается ниже
   // здания Overture (Китай, машинные контуры) — параллельно с OSM, ошибка не мешает сборке
   const extraPromise = layers.buildings && layers.extraBuildings !== false
-    ? import('./overture.js?v=4.0').then((m) => m.fetchOvertureBuildings(frame, { signal })).catch(() => null)
+    ? import('./overture.js?v=4.1').then((m) => m.fetchOvertureBuildings(frame, { signal })).catch(() => null)
     : Promise.resolve(null);
   let elev = null;
   if (layers.terrain) {
@@ -1214,7 +1216,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
       dataSource = 'osm';
     } catch (directErr) {
       console.warn('Direct OSM failed, using Overture PMTiles fallback:', directErr);
-      osm = await (await import('./overture.js?v=3.8')).fetchOvertureOSM(frame, { signal });
+      osm = await (await import('./overture.js?v=4.1')).fetchOvertureOSM(frame, { signal });
       dataSource = 'overture';
     }
   }
@@ -1239,7 +1241,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   const footprints = [], parts = [], minarets = [], bridgeParts = [];
   // дороги реальной ширины: оси собираются с запасом за рамку, чтобы у края не было скруглённых торцов
   const wideRoads = Boolean(layers.roads && layers.roadWidth);
-  const R = wideRoads ? await import('./roads.js?v=4.0').catch(() => null) : null;
+  const R = wideRoads ? await import('./roads.js?v=4.1').catch(() => null) : null;
   if (wideRoads && !R) warnings.push('status.noRoadWidth');
   const padFrame = makeFrame(lat, lon, size + 80, shape);
   const roadSegs = [];
@@ -1396,7 +1398,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   // --- Море: полигоны из береговой линии; гладь — по низкой отметке берега ---
   if (coastWays.length) {
     let sea = [];
-    try { sea = (await import('./roads.js?v=4.0')).seaPolygons(coastWays, frame); } catch { sea = []; }
+    try { sea = (await import('./roads.js?v=4.1')).seaPolygons(coastWays, frame); } catch { sea = []; }
     for (const rings of sea) {
       const zs = rings[0].map(([x, y]) => ground(x, y)).sort((a, b) => a - b);
       const z = zs[Math.floor(zs.length * 0.1)] + 0.3;

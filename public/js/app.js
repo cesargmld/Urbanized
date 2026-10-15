@@ -1,12 +1,12 @@
-import { buildModel, redetectTrees } from './data.js?v=4.0';
-import { FORMATS, stlScale } from './exporters.js?v=4.0';
-import { setCameraView, toggleChunkMode, isChunkModeActive } from './preview.js';
+import { buildModel, redetectTrees } from './data.js?v=4.1';
+import { FORMATS, stlScale } from './exporters.js?v=4.1';
+import { setCameraView, toggleChunkMode, isChunkModeActive } from './preview.js?v=4.1';
 import { classifyEcosystem } from './biodiversity.js';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.0';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.0';
-import { createIllustrator } from './illustrate.js?v=4.0';
-import * as billing from './billing.js?v=4.0';
-import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=4.0';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.1';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.1';
+import { createIllustrator } from './illustrate.js?v=4.1';
+import * as billing from './billing.js?v=4.1';
+import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=4.1';
 // цена кредитов в долларах — по малому пакету ($0,50 за кредит); в больших пакетах дешевле
 const creditsUsd = (n) => {
   const v = n * USD_PER_CREDIT;
@@ -226,7 +226,7 @@ sens.addEventListener('change', async () => {
   if (!model?.detection?.enabled || building) return;
   redetectTrees(model, sens.value / 100);
   renderMeta(model);
-  const { showModel } = await import('./preview.js?v=4.0');
+  const { showModel } = await import('./preview.js?v=4.1');
   showModel($('#viewer'), model, { keepCamera: true });
   await refreshPlan(model);
 });
@@ -305,25 +305,28 @@ panel.addEventListener('submit', async (e) => {
 
 function renderMeta(m) {
   const loc = locale();
-  $('#coords').textContent =
-    t(m.shape === 'circle' ? 'result.metaCircle' : 'result.meta', { lat: m.center.lat.toFixed(5), lon: m.center.lon.toFixed(5), size: m.size }) +
-    (m.contourInterval ? t('result.contours', { n: m.contourInterval }) : '') +
-    (m.extraBuildings ? t('result.overture', { n: m.extraBuildings.toLocaleString(loc) }) : '') +
-    (m.dataSource === 'overture' ? t('result.sourceOverture') : '') +
-    (m.grid.source ? ` · ${t(`terrain.${m.grid.source}`, { res: m.grid.res < 1 ? m.grid.res.toFixed(1) : Math.round(m.grid.res) })}` : '');
-  $('#st-buildings').textContent = m.stats.buildings.toLocaleString(loc);
-  $('#st-roads').textContent = m.stats.roadsKm.toLocaleString(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  $('#st-trees').textContent = m.stats.trees.toLocaleString(loc);
-  $('#lidar-note').hidden = m.grid.source !== 'dtm';
+  const coords = $('#coords');
+  if (coords) {
+    coords.textContent =
+      t(m.shape === 'circle' ? 'result.metaCircle' : 'result.meta', { lat: m.center.lat.toFixed(5), lon: m.center.lon.toFixed(5), size: m.size }) +
+      (m.contourInterval ? t('result.contours', { n: m.contourInterval }) : '') +
+      (m.extraBuildings ? t('result.overture', { n: m.extraBuildings.toLocaleString(loc) }) : '') +
+      (m.dataSource === 'overture' ? t('result.sourceOverture') : '') +
+      (m.grid.source ? ` · ${t(`terrain.${m.grid.source}`, { res: m.grid.res < 1 ? m.grid.res.toFixed(1) : Math.round(m.grid.res) })}` : '');
+  }
+  const stBld = $('#st-buildings'); if (stBld) stBld.textContent = m.stats.buildings.toLocaleString(loc);
+  const stRd = $('#st-roads'); if (stRd) stRd.textContent = m.stats.roadsKm.toLocaleString(loc, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const stTr = $('#st-trees'); if (stTr) stTr.textContent = m.stats.trees.toLocaleString(loc);
+  const lidarNote = $('#lidar-note'); if (lidarNote) lidarNote.hidden = m.grid.source !== 'dtm';
   const sc = stlScale(m.size);
-  $('#stl-note').textContent = t('dl.stlNote', { scale: sc, mm: Math.round((m.size * 1000) / sc) });
-  $('#st-relief').textContent = Math.round(m.stats.relief);
+  const stlNote = $('#stl-note'); if (stlNote) stlNote.textContent = t('dl.stlNote', { scale: sc, mm: Math.round((m.size * 1000) / sc) });
+  const stRelief = $('#st-relief'); if (stRelief) stRelief.textContent = Math.round(m.stats.relief);
 }
 
 async function showResult(m) {
   setMode('model');
   renderMeta(m);
-  const { showModel } = await import('./preview.js');
+  const { showModel } = await import('./preview.js?v=4.1');
   showModel($('#viewer'), m);
   await preparePreviews(m);
   applySite();
@@ -342,7 +345,7 @@ async function showResult(m) {
   if (window.switchWorkspaceView) {
     window.switchWorkspaceView('result');
     setTimeout(async () => {
-      const p = await import('./preview.js');
+      const p = await import('./preview.js?v=4.1');
       p.triggerResize?.();
     }, 80);
   }
@@ -563,17 +566,17 @@ function setSecStatus(key, opts = {}) {
 }
 
 let secBusy = false;
-$('#sec-draw').addEventListener('click', () => {
+$('#sec-draw')?.addEventListener('click', () => {
   secState.drawing = !secState.drawing;
-  $('#sec-draw').setAttribute('aria-pressed', String(secState.drawing));
-  $('#sec-draw').textContent = t(secState.drawing ? 'section.drawing' : 'section.draw');
-  $('#site-draw').textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
+  $('#sec-draw')?.setAttribute('aria-pressed', String(secState.drawing));
+  const sd = $('#sec-draw'); if (sd) sd.textContent = t(secState.drawing ? 'section.drawing' : 'section.draw');
+  const sitd = $('#site-draw'); if (sitd) sitd.textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
   siteRedraw();
   map.getContainer().parentElement.classList.toggle('drawing', secState.drawing);
   secRedraw();
 });
-$('#sec-undo').addEventListener('click', () => { secState.points.pop(); secRedraw(); });
-$('#sec-clear').addEventListener('click', () => { secState.points = []; secRedraw(); });
+$('#sec-undo')?.addEventListener('click', () => { secState.points.pop(); secRedraw(); });
+$('#sec-clear')?.addEventListener('click', () => { secState.points = []; secRedraw(); });
 map.on('click', (e) => {
   if (site.drawing) { site.points.push([e.latlng.lat, e.latlng.lng]); siteRedraw(); return; }
   if (!secState.drawing) return;
@@ -581,14 +584,14 @@ map.on('click', (e) => {
   secRedraw();
 });
 
-$('#sec-build').addEventListener('click', async () => {
+$('#sec-build')?.addEventListener('click', async () => {
   if (secBusy || secState.points.length < 2) return;
   secBusy = true;
-  $('#sec-build').disabled = true;
+  const sb = $('#sec-build'); if (sb) sb.disabled = true;
   try {
-    const exaggeration = Number($('#sec-exag').value);
+    const exaggeration = Number($('#sec-exag')?.value || 1);
     const sec = await buildSection(secState.points, { exaggeration }, (k) => setSecStatus(k, { busy: true }));
-    sec.flip = $('#sec-dir').value === '1';
+    sec.flip = $('#sec-dir')?.value === '1';
     secState.model = sec;
     billing.track('section');
     await showSection(sec);
@@ -604,12 +607,12 @@ $('#sec-build').addEventListener('click', async () => {
 
 const secRefresh = async () => {
   if (!secState.model) return;
-  secState.model.exaggeration = Number($('#sec-exag').value);
-  secState.model.flip = $('#sec-dir').value === '1';
+  secState.model.exaggeration = Number($('#sec-exag')?.value || 1);
+  secState.model.flip = $('#sec-dir')?.value === '1';
   await showSection(secState.model);
 };
-$('#sec-exag').addEventListener('change', secRefresh);
-$('#sec-dir').addEventListener('change', secRefresh);
+$('#sec-exag')?.addEventListener('change', secRefresh);
+$('#sec-dir')?.addEventListener('change', secRefresh);
 
 async function showSection(sec) {
   if (secState.url) URL.revokeObjectURL(secState.url);
@@ -839,26 +842,28 @@ function applySite() {
   if (!$('#result').hidden) refreshPlan(model);
 }
 
-$('#site-draw').addEventListener('click', () => {
+$('#site-draw')?.addEventListener('click', () => {
   site.drawing = !site.drawing;
-  if (site.drawing) { secState.drawing = false; $('#sec-draw').textContent = t('section.draw'); }
-  $('#site-draw').setAttribute('aria-pressed', String(site.drawing));
-  $('#site-draw').textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
+  if (site.drawing) { secState.drawing = false; if ($('#sec-draw')) $('#sec-draw').textContent = t('section.draw'); }
+  $('#site-draw')?.setAttribute('aria-pressed', String(site.drawing));
+  const sd = $('#site-draw'); if (sd) sd.textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
   map.getContainer().parentElement.classList.toggle('drawing', site.drawing || secState.drawing);
 });
-$('#site-clear').addEventListener('click', () => { site.points = []; siteRedraw(); });
+$('#site-clear')?.addEventListener('click', () => { site.points = []; siteRedraw(); });
 
 /* ---------------- Иллюстрация ---------------- */
 
 let illu = null, illuModel = null, placing = false, illuOpened = false;
 
-$('#open-editor').addEventListener('click', () => {
+$('#open-editor')?.addEventListener('click', () => {
   const box = $('#illustrator');
   illuOpened = true;
   billing.track('editor:illu');
-  box.hidden = false;
-  openIllustrator();
-  box.scrollIntoView({ behavior: 'smooth' });
+  if (box) {
+    box.hidden = false;
+    openIllustrator();
+    box.scrollIntoView({ behavior: 'smooth' });
+  }
 });
 
 function openIllustrator() {
@@ -969,16 +974,16 @@ function renderLabelList() {
     renderSwatches();
   }));
   document.querySelectorAll('[data-illlayer]').forEach((c) => c.addEventListener('change', () => illu?.setLayer(c.dataset.illlayer, c.checked)));
-  $('#illu-persp').addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
-  $('#illu-bytype').addEventListener('change', (e) => { illu?.setByType(e.target.checked); renderSwatches(); });
-  $('#illu-legend').addEventListener('change', (e) => illu?.setLegend(e.target.checked));
-  $('#illu-reset-colors').addEventListener('click', () => { illu?.resetColors(); renderSwatches(); });
-  $('#illu-color').addEventListener('input', (e) => illu?.setLabelColor(e.target.value));
-  $('#illu-label').addEventListener('click', () => {
+  $('#illu-persp')?.addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
+  $('#illu-bytype')?.addEventListener('change', (e) => { illu?.setByType(e.target.checked); renderSwatches(); });
+  $('#illu-legend')?.addEventListener('change', (e) => illu?.setLegend(e.target.checked));
+  $('#illu-reset-colors')?.addEventListener('click', () => { illu?.resetColors(); renderSwatches(); });
+  $('#illu-color')?.addEventListener('input', (e) => illu?.setLabelColor(e.target.value));
+  $('#illu-label')?.addEventListener('click', () => {
     placing = !placing;
     canvas.classList.toggle('picking', placing);
-    $('#illu-label').setAttribute('aria-pressed', String(placing));
-    $('#illu-label').textContent = t(placing ? 'illu.placing' : 'illu.addLabel');
+    $('#illu-label')?.setAttribute('aria-pressed', String(placing));
+    const il = $('#illu-label'); if (il) il.textContent = t(placing ? 'illu.placing' : 'illu.addLabel');
   });
   document.querySelectorAll('[data-illexport]').forEach((b) => b.addEventListener('click', async () => {
     if (!illu || !model) return;
@@ -1006,20 +1011,22 @@ const getPath = (o, path) => path.split('.').reduce((a, k) => a?.[k], o);
 const setPath = (o, path, v) => { const ks = path.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; };
 
 async function loadMapMod() {
-  mapMod ??= await import('./mapplan.js?v=4.0');
+  mapMod ??= await import('./mapplan.js?v=4.1');
   mapOpts ??= mapMod.presetOptions('classic');
   return mapMod;
 }
 
-$('#open-map').addEventListener('click', async () => {
+$('#open-map')?.addEventListener('click', async () => {
   const box = $('#mapper');
   mapOpened = true;
   billing.track('editor:map');
-  box.hidden = false;
-  await loadMapMod();
-  syncMapControls();
-  renderMap(true);
-  box.scrollIntoView({ behavior: 'smooth' });
+  if (box) {
+    box.hidden = false;
+    await loadMapMod();
+    syncMapControls();
+    renderMap(true);
+    box.scrollIntoView({ behavior: 'smooth' });
+  }
 });
 
 // перерисовка не чаще одного раза за кадр: ползунки шлют событие на каждый пиксель
@@ -1105,8 +1112,8 @@ document.querySelectorAll('[data-mapopt]').forEach((el) => el.addEventListener(e
   if (el.type === 'checkbox') syncMapControls();
   renderMap();
 }));
-$('#map-scale').addEventListener('change', (e) => { if (mapOpts) { mapOpts.scale = Number(e.target.value); renderMap(true); } });
-$('#map-reset-colors').addEventListener('click', () => {
+$('#map-scale')?.addEventListener('change', (e) => { if (mapOpts) { mapOpts.scale = Number(e.target.value); renderMap(true); } });
+$('#map-reset-colors')?.addEventListener('click', () => {
   if (!mapMod) return;
   mapOpts.colors = structuredClone(mapMod.MAP_PRESETS[mapOpts.preset].colors);
   renderMapSwatches();
