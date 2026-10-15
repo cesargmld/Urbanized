@@ -12,9 +12,9 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0a0c'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23ffffff' stroke-width='1.8'/%3E%3Cline x1='16' y1='4' x2='16' y2='28' stroke='%23ffffff' stroke-width='1' stroke-dasharray='2 2' opacity='0.45'/%3E%3Cline x1='4' y1='16' x2='28' y2='16' stroke='%23ffffff' stroke-width='1' stroke-dasharray='2 2' opacity='0.45'/%3E%3Ccircle cx='16' cy='16' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=3.7">
+  <link rel="stylesheet" href="/css/style.css?v=3.8">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -34,13 +34,6 @@
       <div class="seg maptype maptype-float" role="group">
         <button type="button" data-base="sat" aria-pressed="true" data-i18n="map.satellite">Satélite</button>
         <button type="button" data-base="map" aria-pressed="false" data-i18n="map.map">Mapa</button>
-      </div>
-
-      <!-- Section Guidance Pill -->
-      <div class="section-guidance" id="section-guidance" hidden>
-        <span class="guidance-dot"></span>
-        <span id="guidance-msg">Haz clic en 2 puntos en el mapa para marcar el corte topográfico</span>
-        <button type="button" id="guidance-cancel" class="guidance-close">&times;</button>
       </div>
 
       <!-- Section Ready Floating Trigger Pill (Non-intrusive) -->
@@ -81,7 +74,7 @@
       </div>
 
       <!-- View Switcher Tabs (3D Model / Chunk / Drawing / Satellite) -->
-      <div class="seg stage-tabs" role="tablist">
+      <div class="seg stage-tabs tabs" role="tablist">
         <button type="button" role="tab" data-view="model" aria-selected="true">Modelo 3D</button>
         <button type="button" role="tab" data-view="chunk" id="tab-chunk">Chunk 3D (Relieve)</button>
         <button type="button" role="tab" data-view="plan" aria-selected="false">Plano</button>
@@ -481,17 +474,17 @@
             <p class="status" id="sec-status" aria-live="polite"></p>
           </div>
         </div>
-      </form>
-    </div>
 
-    <!-- Panel Footer Button (Apple Grade Button) -->
-    <div class="panel-footer">
-      <button class="btn-apple-primary btn-generate" id="build" type="submit" form="panel">
-        <span>Crear Modelo 3D</span>
-        <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
-      </button>
-      <p class="status" id="status" aria-live="polite"></p>
-      <button class="nav-pill" id="acct-btn" type="button" style="display:none"></button>
+        <!-- Panel Footer Button (Apple Grade Button) -->
+        <div class="panel-footer">
+          <button class="btn-apple-primary btn-generate" id="build" type="submit">
+            <span>Crear Modelo 3D</span>
+            <svg viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+          <p class="status" id="status" aria-live="polite"></p>
+          <button class="nav-pill" id="acct-btn" type="button" style="display:none"></button>
+        </div>
+      </form>
     </div>
   </aside>
 

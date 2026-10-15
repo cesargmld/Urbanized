@@ -187,7 +187,7 @@ let quotaState = null;
 function renderQuota(remaining, current) {
   const el = $('#quota');
   if (el) {
-    el.innerHTML = '<b style="color:#10b981">✓ Descargas ilimitadas / Unlimited free</b>';
+    el.innerHTML = '';
   }
 }
 
@@ -195,6 +195,15 @@ function renderQuota(remaining, current) {
 
 const panel = $('#panel'), status = $('#status'), buildBtn = $('#build');
 let model = null, building = null;
+
+buildBtn?.addEventListener('click', (e) => {
+  e.preventDefault();
+  if (panel.requestSubmit) {
+    panel.requestSubmit();
+  } else {
+    panel.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  }
+});
 
 const terrainToggle = panel.elements.terrain, contoursToggle = panel.elements.contours;
 terrainToggle.addEventListener('change', () => {
@@ -263,12 +272,14 @@ panel.addEventListener('submit', async (e) => {
     if (panel.elements.poi_residential && !panel.elements.poi_residential.checked) {
       m.buildings = m.buildings.filter(b => b.cls !== 'residential');
     }
-    if (panel.elements.roads_major && !panel.elements.roads_major.checked) {
-      m.lines.ROADS_MAJOR = [];
-    }
-    if (panel.elements.roads_minor && !panel.elements.roads_minor.checked) {
-      m.lines.ROADS_MINOR = [];
-      m.lines.PATHS = [];
+    if (m.lines) {
+      if (panel.elements.roads_major && !panel.elements.roads_major.checked) {
+        m.lines.ROADS_MAJOR = [];
+      }
+      if (panel.elements.roads_minor && !panel.elements.roads_minor.checked) {
+        m.lines.ROADS_MINOR = [];
+        m.lines.PATHS = [];
+      }
     }
 
     model = m;
@@ -351,7 +362,8 @@ async function preparePreviews(m) {
   for (const k of Object.keys(flatUrls)) if (flatUrls[k]) URL.revokeObjectURL(flatUrls[k]);
   flatUrls.plan = URL.createObjectURL(FORMATS.svg.make(m));
   flatUrls.sat = m.imagery ? URL.createObjectURL(await FORMATS.jpg.make(m)) : null;
-  document.querySelector('.tabs [data-view="sat"]').hidden = !m.imagery;
+  const satTab = document.querySelector('[data-view="sat"]');
+  if (satTab) satTab.hidden = !m.imagery;
   for (const view of ['plan', 'sat']) {
     const img = $(`#view-${view} img`);
     if (flatUrls[view]) img.src = flatUrls[view];
@@ -362,14 +374,14 @@ async function preparePreviews(m) {
 let currentView = 'model';
 function selectView(view) {
   currentView = view;
-  document.querySelectorAll('.tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === view)));
+  document.querySelectorAll('.stage-tabs button, .tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === view)));
   $('#viewer').hidden = view !== 'model';
   $('#view-plan').hidden = view !== 'plan';
   $('#view-sat').hidden = view !== 'sat';
   $('#viewer-hint').textContent = t(view === 'model' ? 'viewer.hint' : 'viewer.hintFlat');
   if (view !== 'model') fitFlat($(`#view-${view}`));
 }
-document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', () => selectView(b.dataset.view)));
+document.querySelectorAll('.stage-tabs button, .tabs button').forEach((b) => b.addEventListener('click', () => selectView(b.dataset.view)));
 
 // Плоское превью: колесо — масштаб к курсору, перетаскивание — сдвиг.
 const flatState = new WeakMap();
@@ -699,17 +711,17 @@ map.on('moveend', () => {
 
 // Camera toolbar buttons
 $('#cam-persp')?.addEventListener('click', (e) => {
-  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.cam-pill-btn, .cam-btn').forEach(b => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('persp');
 });
 $('#cam-iso')?.addEventListener('click', (e) => {
-  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.cam-pill-btn, .cam-btn').forEach(b => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('iso');
 });
 $('#cam-top')?.addEventListener('click', (e) => {
-  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.cam-pill-btn, .cam-btn').forEach(b => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('top');
 });
