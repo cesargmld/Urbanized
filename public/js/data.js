@@ -1442,7 +1442,22 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
     const owner = f.parent ?? f;
     const z = f.ground;
     const body = buildingBody(f.rings, z + f.base, z + f.top, f.tags);
-    model.buildings.push({ name: f.name, height: f.top, cls: buildingClass(owner.tags), rings: f.rings, ...body });
+    const tags = owner.tags || {};
+    let subtype = 'other';
+    const amenity = (tags.amenity || '').toLowerCase();
+    const bldgTag = (tags.building || '').toLowerCase();
+    if (/^(school|university|college|kindergarten|research_institute)$/.test(amenity) || /^(school|university|college|kindergarten)$/.test(bldgTag)) {
+      subtype = 'education';
+    } else if (/^(hospital|clinic|doctors|pharmacy|dentist)$/.test(amenity) || /^(hospital|clinic)$/.test(bldgTag)) {
+      subtype = 'health';
+    } else if (tags.shop || /^(commercial|retail|supermarket|kiosk|office|hotel|motel|restaurant|bank|atm)$/.test(bldgTag) || /^(restaurant|cafe|fast_food|bank|atm)$/.test(amenity)) {
+      subtype = 'commercial';
+    } else if (/^(house|detached|residential|apartments|terrace|dormitory)$/.test(bldgTag) || (tags['building:use'] || '').toLowerCase() === 'residential') {
+      subtype = 'residential';
+    } else if (/^(industrial|warehouse|factory|works)$/.test(bldgTag) || tags.industrial) {
+      subtype = 'industrial';
+    }
+    model.buildings.push({ name: f.name, height: f.top, cls: buildingClass(owner.tags), subtype, tags, rings: f.rings, ...body });
   }
 
   // --- Эстакады: отрезки одного уровня сшиваются в цепочки (зазоры до 3 м).

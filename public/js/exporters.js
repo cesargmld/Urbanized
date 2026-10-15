@@ -725,7 +725,9 @@ export function toGeoJSON(model) {
         type: 'Feature',
         properties: {
           layer: 'buildings',
+          category: b.subtype || b.cls || 'other',
           building_class: b.cls || 'other',
+          subtype: b.subtype || 'other',
           height_m: b.height || 0,
           levels: b.levels || 1,
           name: b.name || ''

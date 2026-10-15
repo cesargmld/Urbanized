@@ -1,8 +1,8 @@
-import { buildModel, redetectTrees } from './data.js?v=4.1';
-import { FORMATS, stlScale } from './exporters.js?v=4.1';
-import { setCameraView, toggleChunkMode, isChunkModeActive } from './preview.js?v=4.1';
+import { buildModel, redetectTrees } from './data.js?v=4.3';
+import { FORMATS, stlScale } from './exporters.js?v=4.3';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats } from './preview.js?v=4.3';
 import { classifyEcosystem } from './biodiversity.js';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.1';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.3';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.1';
 import { createIllustrator } from './illustrate.js?v=4.1';
 import * as billing from './billing.js?v=4.1';
@@ -326,7 +326,7 @@ function renderMeta(m) {
 async function showResult(m) {
   setMode('model');
   renderMeta(m);
-  const { showModel } = await import('./preview.js?v=4.1');
+  const { showModel } = await import('./preview.js?v=4.3');
   showModel($('#viewer'), m);
   await preparePreviews(m);
   applySite();
@@ -342,10 +342,27 @@ async function showResult(m) {
   $('#dock-btn-map')?.classList.remove('disabled');
   $('#dock-btn-illu')?.classList.remove('disabled');
 
+  // Live GIS Stats Badge & Counts (Axiom Inspector)
+  try {
+    const stats = getLayerStats(m);
+    const totalEl = $('#gis-total-badge');
+    if (totalEl) totalEl.textContent = stats.totalBuildings + stats.trees;
+    const eduEl = $('#count-education'); if (eduEl) eduEl.textContent = stats.education;
+    const comEl = $('#count-commercial'); if (comEl) comEl.textContent = stats.commercial;
+    const heaEl = $('#count-health'); if (heaEl) heaEl.textContent = stats.health;
+    const resEl = $('#count-residential'); if (resEl) resEl.textContent = stats.residential;
+    const rMaj = $('#count-roads-major'); if (rMaj) rMaj.textContent = stats.roadsMajorKm + ' km';
+    const rMin = $('#count-roads-minor'); if (rMin) rMin.textContent = stats.roadsMinorKm + ' km';
+    const relEl = $('#count-relief'); if (relEl) relEl.textContent = stats.relief + ' m';
+    const trEl = $('#count-trees'); if (trEl) trEl.textContent = stats.trees;
+  } catch (err) {
+    console.warn('GIS stats error:', err);
+  }
+
   if (window.switchWorkspaceView) {
     window.switchWorkspaceView('result');
     setTimeout(async () => {
-      const p = await import('./preview.js?v=4.1');
+      const p = await import('./preview.js?v=4.3');
       p.triggerResize?.();
     }, 80);
   }
@@ -658,7 +675,7 @@ async function showSection(sec) {
   renderSecQuota();
 }
 
-// ---------------- Biodiversity, Flora & Fauna Engine ----------------
+// ---------------- Biodiversity, Flora & Fauna Engine (Organized Axiom Style) ----------------
 function updateBiodiversity() {
   const center = map.getCenter();
   const elev = (typeof model !== 'undefined' && model?.grid) ? model.grid.maxH : 0;
@@ -677,14 +694,14 @@ function updateBiodiversity() {
   const floraList = $('#bio-flora-list');
   if (floraList) {
     floraList.innerHTML = eco.flora.map(f => `
-      <div class="bio-pill-item">
-        <div class="bio-pill-header">
-          <b class="bio-sp-name">${f.name}</b>
-          <i class="bio-sp-latin">${f.latin}</i>
+      <div class="bio-card-entry">
+        <div class="bio-entry-top">
+          <b class="bio-entry-name">${f.name}</b>
+          <i class="bio-entry-latin">${f.latin}</i>
         </div>
-        <div class="bio-pill-meta">
-          <span class="bio-badge">${f.type}</span>
-          <span class="bio-note">${f.note}</span>
+        <div class="bio-entry-bottom">
+          <span class="bio-entry-badge">${f.type}</span>
+          <span class="bio-entry-note">${f.note}</span>
         </div>
       </div>
     `).join('');
@@ -693,14 +710,14 @@ function updateBiodiversity() {
   const faunaList = $('#bio-fauna-list');
   if (faunaList) {
     faunaList.innerHTML = eco.fauna.map(f => `
-      <div class="bio-pill-item">
-        <div class="bio-pill-header">
-          <b class="bio-sp-name">${f.name}</b>
-          <i class="bio-sp-latin">${f.latin}</i>
+      <div class="bio-card-entry">
+        <div class="bio-entry-top">
+          <b class="bio-entry-name">${f.name}</b>
+          <i class="bio-entry-latin">${f.latin}</i>
         </div>
-        <div class="bio-pill-meta">
-          <span class="bio-badge">${f.class}</span>
-          <span class="bio-status-tag">${f.status}</span>
+        <div class="bio-entry-bottom">
+          <span class="bio-entry-badge">${f.class}</span>
+          <span class="bio-entry-note">${f.status}</span>
         </div>
       </div>
     `).join('');
@@ -711,6 +728,9 @@ function updateBiodiversity() {
 
   const canopyEl = $('#bio-canopy');
   if (canopyEl) canopyEl.textContent = eco.canopy;
+
+  const soilEl = $('#bio-soil');
+  if (soilEl) soilEl.textContent = eco.soil;
 }
 
 window.updateBiodiversityCard = updateBiodiversity;
@@ -719,21 +739,123 @@ map.on('moveend', () => {
   if (bioCard && !bioCard.hidden) updateBiodiversity();
 });
 
-// Camera toolbar buttons
+// Biodiversity Card Subtabs & Close
+document.querySelectorAll('.bio-subtab').forEach((tab) => {
+  tab.addEventListener('click', (e) => {
+    document.querySelectorAll('.bio-subtab').forEach((t) => t.classList.remove('active'));
+    e.currentTarget.classList.add('active');
+    const tabKey = e.currentTarget.getAttribute('data-biotab');
+    ['flora', 'fauna', 'climate'].forEach((k) => {
+      const panel = $(`#panel-bio-${k}`);
+      if (panel) panel.style.display = k === tabKey ? 'flex' : 'none';
+    });
+  });
+});
+
+$('#bio-card-close')?.addEventListener('click', () => {
+  const bioCard = $('#bio-card');
+  if (bioCard) bioCard.hidden = true;
+  $('#btn-toggle-bio')?.classList.remove('active');
+  $('#dock-btn-bio')?.classList.remove('active');
+});
+
+// Biodiversity Toggle (Studio Toolbar & Left Dock)
+const toggleBioCard = () => {
+  const bioCard = $('#bio-card');
+  if (!bioCard) return;
+  const isHidden = bioCard.hidden;
+  bioCard.hidden = !isHidden;
+  $('#btn-toggle-bio')?.classList.toggle('active', isHidden);
+  $('#dock-btn-bio')?.classList.toggle('active', isHidden);
+  if (isHidden) updateBiodiversity();
+};
+$('#btn-toggle-bio')?.addEventListener('click', toggleBioCard);
+$('#dock-btn-bio')?.addEventListener('click', toggleBioCard);
+
+// Studio Toolbar: Render Mode Buttons (Modelo 3D | Maqueta 3D | Satélite)
+$('#btn-render-model')?.addEventListener('click', () => {
+  $('#btn-render-maqueta')?.classList.remove('active');
+  $('#btn-render-sat')?.classList.remove('active');
+  $('#btn-render-model')?.classList.add('active');
+  selectView('model');
+  toggleMaquetaMode(false);
+});
+
+$('#btn-render-maqueta')?.addEventListener('click', () => {
+  $('#btn-render-model')?.classList.remove('active');
+  $('#btn-render-sat')?.classList.remove('active');
+  $('#btn-render-maqueta')?.classList.add('active');
+  selectView('model');
+  toggleMaquetaMode(true);
+});
+
+$('#btn-render-sat')?.addEventListener('click', () => {
+  if (!flatUrls.sat) {
+    setStatus('status.noImagery', { error: true });
+    return;
+  }
+  $('#btn-render-model')?.classList.remove('active');
+  $('#btn-render-maqueta')?.classList.remove('active');
+  $('#btn-render-sat')?.classList.add('active');
+  selectView('sat');
+});
+
+// Studio Toolbar: Camera Perspective & Isometrics
 $('#cam-persp')?.addEventListener('click', (e) => {
-  document.querySelectorAll('.cam-pill-btn, .cam-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach(b => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('persp');
 });
 $('#cam-iso')?.addEventListener('click', (e) => {
-  document.querySelectorAll('.cam-pill-btn, .cam-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach(b => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('iso');
 });
 $('#cam-top')?.addEventListener('click', (e) => {
-  document.querySelectorAll('.cam-pill-btn, .cam-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach(b => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('top');
+});
+
+// GIS Inspector: Toggle & Collapsible Body
+const toggleGisCard = () => {
+  const card = $('#gis-filters-card');
+  if (!card) return;
+  const isHidden = card.style.display === 'none' || card.hidden;
+  card.hidden = false;
+  card.style.display = isHidden ? 'flex' : 'none';
+  $('#btn-toggle-gis')?.classList.toggle('active', isHidden);
+};
+$('#btn-toggle-gis')?.addEventListener('click', toggleGisCard);
+
+$('#gis-collapse-btn')?.addEventListener('click', () => {
+  const body = $('#gis-filters-body');
+  const btn = $('#gis-collapse-btn');
+  if (body) {
+    const isHidden = body.style.display === 'none';
+    body.style.display = isHidden ? 'flex' : 'none';
+    btn.textContent = isHidden ? '▲' : '▼';
+  }
+});
+
+// GIS Layer Visibility Checkboxes
+document.querySelectorAll('[data-gislayer]').forEach((chk) => {
+  chk.addEventListener('change', (e) => {
+    const layerKey = e.target.getAttribute('data-gislayer');
+    setLayerVisibility(layerKey, e.target.checked);
+  });
+});
+
+// Direct QGIS GeoJSON Export
+$('#btn-export-qgis-direct')?.addEventListener('click', async () => {
+  if (!model) return;
+  try {
+    const blob = await FORMATS.geojson.make(model);
+    const name = `urbanized_qgis_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}_${model.size}m.geojson`;
+    save(blob, name);
+  } catch (err) {
+    console.error('GeoJSON export error:', err);
+  }
 });
 
 

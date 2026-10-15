@@ -181,187 +181,169 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   const zMid = (model.grid?.maxH ?? 0) / 2;
   ctx.zMid = zMid;
 
-  if (chunkMode) {
-    // ----------------------------------------------------
-    // MOODBOARD IMAGE 4: CHUNK 3D (PURE TOPOGRAPHIC RELIEF)
-    // ----------------------------------------------------
-    scene.background = new THREE.Color(0x000000);
+  // Initialize Layer Groups for QGIS instant interactive toggling
+  const layerGroups = {
+    terrain: new THREE.Group(),
+    education: new THREE.Group(),
+    commercial: new THREE.Group(),
+    health: new THREE.Group(),
+    residential: new THREE.Group(),
+    other_buildings: new THREE.Group(),
+    roads_major: new THREE.Group(),
+    roads_minor: new THREE.Group(),
+    water: new THREE.Group(),
+    green: new THREE.Group(),
+    trees: new THREE.Group(),
+    contours: new THREE.Group(),
+    skirt: new THREE.Group()
+  };
+  ctx.layerGroups = layerGroups;
+  Object.values(layerGroups).forEach((g) => group.add(g));
 
-    // Dramatic high-contrast directional lighting for razor-sharp ridge relief
+  const isMaqueta = chunkModeActive;
+
+  // Lighting & Background setup
+  if (isMaqueta) {
+    scene.background = new THREE.Color(0x090a0c);
     ctx.sun = ctx.sun || scene.children.find((c) => c.isDirectionalLight);
     if (ctx.sun) {
-      ctx.sun.position.set(-1.1, -1.0, 1.7);
-      ctx.sun.intensity = 2.4;
+      ctx.sun.position.set(-1.1, -1.0, 1.8);
+      ctx.sun.intensity = 2.2;
     }
+  } else {
+    scene.background = new THREE.Color(0x0c0c0e);
+    if (ctx.sun) {
+      ctx.sun.position.set(-0.6, -0.9, 1.4);
+      ctx.sun.intensity = 1.6;
+    }
+  }
 
-    if (model.terrain) {
-      // 1. Sculptural monochrome terrain
-      const geo = meshGeometry([model.terrain]);
-      const mat = new THREE.MeshStandardMaterial({
-        color: 0xdedede,
-        roughness: 0.82,
-        metalness: 0.04,
+  // 1. Terrain & Skirt
+  if (model.terrain) {
+    const geo = meshGeometry([model.terrain]);
+    let mat;
+    if (isMaqueta) {
+      // Monochrome architectural plaster
+      mat = new THREE.MeshStandardMaterial({
+        color: 0xf0f0f4,
+        roughness: 0.90,
+        metalness: 0.02,
         polygonOffset: true,
-        polygonOffsetFactor: 1,
-        polygonOffsetUnits: 1
+        polygonOffsetFactor: 2,
+        polygonOffsetUnits: 2
       });
-      group.add(new THREE.Mesh(geo, mat));
+    } else {
+      mat = new THREE.MeshLambertMaterial({
+        color: 0xe4e0d6,
+        polygonOffset: true,
+        polygonOffsetFactor: 2,
+        polygonOffsetUnits: 2
+      });
+      if (model.imagery) {
+        const pos = geo.attributes.position, uv = new Float32Array(pos.count * 2), h = s / 2;
+        for (let i = 0; i < pos.count; i++) { uv[2 * i] = (pos.getX(i) + h) / s; uv[2 * i + 1] = (pos.getY(i) + h) / s; }
+        geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
+        const n = Math.min(2048, model.imagery.canvas.width);
+        const tex = document.createElement('canvas');
+        tex.width = tex.height = n;
+        const tctx = tex.getContext('2d');
+        tctx.drawImage(model.imagery.canvas, 0, 0, n, n);
+        mat.map = new THREE.CanvasTexture(tex);
+        mat.map.colorSpace = THREE.SRGBColorSpace;
+        mat.map.anisotropy = 8;
+        mat.color.set(0xffffff);
+      }
+    }
+    layerGroups.terrain.add(new THREE.Mesh(geo, mat));
 
-      // 2. Solid extruded architectural block skirt / strata base
+    // Skirt pedestal base in Maqueta mode (Physical architectural block)
+    if (isMaqueta && model.grid) {
       const minH = model.grid?.minH ?? 0;
       const baseZ = minH - s * 0.07;
       const skirtGeo = buildTerrainSkirtGeometry(model.grid, s, baseZ);
       const skirtMat = new THREE.MeshStandardMaterial({
-        color: 0x121214,
+        color: 0x141418,
         roughness: 0.94,
         metalness: 0.02
       });
-      group.add(new THREE.Mesh(skirtGeo, skirtMat));
-
-      // Subtle base wireframe outline
+      layerGroups.skirt.add(new THREE.Mesh(skirtGeo, skirtMat));
       const skirtEdges = new THREE.LineSegments(
         new THREE.EdgesGeometry(skirtGeo, 30),
-        new THREE.LineBasicMaterial({ color: 0x333338, transparent: true, opacity: 0.45 })
+        new THREE.LineBasicMaterial({ color: 0x2e2e34, transparent: true, opacity: 0.5 })
       );
-      group.add(skirtEdges);
-
-      // 3. Topographic Beacon Pins (Image 4 Mare Nubium Style)
-      if (model.grid) {
-        const half = s / 2;
-        const n = model.grid.n;
-        const step = s / n;
-        let peakX = 0, peakY = 0, peakZ = -Infinity;
-        let secX = 0, secY = 0, secZ = -Infinity;
-
-        for (let j = 0; j < n; j++) {
-          for (let i = 0; i < n; i++) {
-            const x = -half + i * step, y = -half + j * step;
-            const z = model.grid.heightAt(x, y);
-            if (z > peakZ) {
-              peakZ = z; peakX = x; peakY = y;
-            }
-          }
-        }
-
-        // Secondary peak (at least 25% away from main peak)
-        for (let j = 0; j < n; j++) {
-          for (let i = 0; i < n; i++) {
-            const x = -half + i * step, y = -half + j * step;
-            const z = model.grid.heightAt(x, y);
-            const dist = Math.hypot(x - peakX, y - peakY);
-            if (dist > s * 0.3 && z > secZ) {
-              secZ = z; secX = x; secY = y;
-            }
-          }
-        }
-
-        // Add Peak 1 Beacon Pin
-        const dotGeo = new THREE.SphereGeometry(s * 0.007, 16, 16);
-        const dotMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
-        const peakDot = new THREE.Mesh(dotGeo, dotMat);
-        peakDot.position.set(peakX, peakY, peakZ + 1);
-        group.add(peakDot);
-
-        const pinHeight1 = s * 0.32;
-        const line1 = createDashedHairline(
-          new THREE.Vector3(peakX, peakY, peakZ),
-          new THREE.Vector3(peakX, peakY, peakZ + pinHeight1),
-          s
-        );
-        group.add(line1);
-
-        const sprite1 = createTextSprite('01', `CUMBRE · ${Math.round(peakZ)}m`, s);
-        sprite1.position.set(peakX, peakY, peakZ + pinHeight1 + s * 0.02);
-        group.add(sprite1);
-
-        // Add Peak 2 Beacon Pin if significant
-        if (secZ > -Infinity && Math.abs(peakZ - secZ) < s * 0.4) {
-          const secDot = new THREE.Mesh(dotGeo, dotMat);
-          secDot.position.set(secX, secY, secZ + 1);
-          group.add(secDot);
-
-          const pinHeight2 = s * 0.25;
-          const line2 = createDashedHairline(
-            new THREE.Vector3(secX, secY, secZ),
-            new THREE.Vector3(secX, secY, secZ + pinHeight2),
-            s
-          );
-          group.add(line2);
-
-          const sprite2 = createTextSprite('02', `TOPOGRAFÍA · ${Math.round(secZ)}m`, s);
-          sprite2.position.set(secX, secY, secZ + pinHeight2 + s * 0.02);
-          group.add(sprite2);
-        }
-      }
+      layerGroups.skirt.add(skirtEdges);
     }
-
-    if (!keepCamera) {
-      controls.target.set(0, 0, zMid);
-      camera.position.set(s * 0.92, -s * 0.92, s * 0.88 + zMid);
-      camera.near = s / 1000;
-      camera.far = s * 25;
-      camera.updateProjectionMatrix();
-      controls.update();
-      triggerResize();
-    }
-    return;
   }
 
-  // ----------------------------------------------------
-  // STANDARD 3D STUDIO MODEL (URBAN CARTOGRAPHY)
-  // ----------------------------------------------------
-  scene.background = new THREE.Color(0x0c0c0e);
-  if (ctx.sun) {
-    ctx.sun.position.set(-0.6, -0.9, 1.4);
-    ctx.sun.intensity = 1.6;
+  // 2. Buildings (Separated by QGIS POI subcategories!)
+  const categorized = {
+    education: [],
+    commercial: [],
+    health: [],
+    residential: [],
+    other_buildings: []
+  };
+
+  for (const b of model.buildings || []) {
+    const sub = b.subtype || 'other_buildings';
+    if (categorized[sub]) categorized[sub].push(b);
+    else categorized.other_buildings.push(b);
   }
 
-  if (model.terrain) {
-    const geo = meshGeometry([model.terrain]);
-    const mat = new THREE.MeshLambertMaterial({ color: 0xe4e0d6, polygonOffset: true, polygonOffsetFactor: 2, polygonOffsetUnits: 2 });
-    if (model.imagery) {
-      const pos = geo.attributes.position, uv = new Float32Array(pos.count * 2), h = s / 2;
-      for (let i = 0; i < pos.count; i++) { uv[2 * i] = (pos.getX(i) + h) / s; uv[2 * i + 1] = (pos.getY(i) + h) / s; }
-      geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-      const n = Math.min(2048, model.imagery.canvas.width);
-      const tex = document.createElement('canvas');
-      tex.width = tex.height = n;
-      const tctx = tex.getContext('2d');
-      tctx.drawImage(model.imagery.canvas, 0, 0, n, n);
-      mat.map = new THREE.CanvasTexture(tex);
-      mat.map.colorSpace = THREE.SRGBColorSpace;
-      mat.map.anisotropy = 8;
-      mat.color.set(0xffffff);
-    }
-    group.add(new THREE.Mesh(geo, mat));
+  const bldgMat = isMaqueta
+    ? new THREE.MeshStandardMaterial({ color: 0xfcfcfd, roughness: 0.85, metalness: 0.03, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+    : new THREE.MeshLambertMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+
+  const edgeColor = isMaqueta ? 0x24242a : 0x000000;
+  const edgeOp = isMaqueta ? 0.42 : 0.55;
+
+  for (const [catKey, bList] of Object.entries(categorized)) {
+    if (!bList.length) continue;
+    const geo = meshGeometry(bList);
+    const edges = edgeGeometry(bList);
+    const targetGroup = layerGroups[catKey] || layerGroups.other_buildings;
+    targetGroup.add(new THREE.Mesh(geo, bldgMat));
+    targetGroup.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: edgeOp })));
   }
-  if (model.trees.length) {
-    const unit = meshGeometry([UNIT_TREE]);
-    const trees = new THREE.InstancedMesh(unit, new THREE.MeshLambertMaterial({ color: 0x5fa545 }), model.trees.length);
-    const mtx = new THREE.Matrix4();
-    model.trees.forEach((t, i) => trees.setMatrixAt(i, mtx.makeScale(t.r, t.r, t.h).setPosition(t.x, t.y, t.z)));
-    group.add(trees);
-  }
-  if (model.buildings.length) {
-    group.add(new THREE.Mesh(meshGeometry(model.buildings), new THREE.MeshLambertMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })));
-    group.add(new THREE.LineSegments(edgeGeometry(model.buildings), new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.55 })));
-  }
+
+  // 3. Roads, Railways & Paths
   const road = (layers) => layers.flatMap((l) => (model.lines[l] ?? []).map((pts) => ({ pts, closed: false })));
-  const add = (items, color, opacity) => items.length && group.add(new THREE.LineSegments(lineGeometry(items, 0.9), new THREE.LineBasicMaterial({ color, transparent: true, opacity })));
-  const overlay = (color, opacity, factor) => new THREE.MeshLambertMaterial({ color, transparent: opacity < 1, opacity, polygonOffset: true, polygonOffsetFactor: factor, polygonOffsetUnits: factor, depthWrite: opacity >= 1 });
-  if (model.roadMeshes?.length) {
-    for (const rm of model.roadMeshes) {
-      const isRoad = rm.layer === 'ROADS_AREA';
-      group.add(new THREE.Mesh(meshGeometry([rm]), overlay(isRoad ? 0x8e8e93 : 0xcdb894, isRoad ? 0.9 : 0.75, isRoad ? -5 : -4)));
-    }
+  const addLinesTo = (targetGroup, items, color, opacity) => {
+    if (!items.length) return;
+    targetGroup.add(new THREE.LineSegments(lineGeometry(items, 0.9), new THREE.LineBasicMaterial({ color, transparent: true, opacity })));
+  };
+
+  if (isMaqueta) {
+    addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0x484954, 0.85);
+    addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR', 'PATHS']), 0x32333b, 0.65);
+    addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x2a2b32, 0.8);
   } else {
-    add(road(['ROADS_MAJOR']), 0xe8912d, 0.95);
-    add(road(['ROADS_MINOR']), 0x6e6e73, 0.7);
-    add(road(['PATHS']), 0xb08a5e, 0.6);
+    if (model.roadMeshes?.length) {
+      const overlay = (color, opacity, factor) => new THREE.MeshLambertMaterial({ color, transparent: opacity < 1, opacity, polygonOffset: true, polygonOffsetFactor: factor, polygonOffsetUnits: factor, depthWrite: opacity >= 1 });
+      for (const rm of model.roadMeshes) {
+        const isRoad = rm.layer === 'ROADS_AREA';
+        layerGroups.roads_minor.add(new THREE.Mesh(meshGeometry([rm]), overlay(isRoad ? 0x8e8e93 : 0xcdb894, isRoad ? 0.9 : 0.75, isRoad ? -5 : -4)));
+      }
+    } else {
+      addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0xe8912d, 0.95);
+      addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR']), 0x6e6e73, 0.7);
+      addLinesTo(layerGroups.roads_minor, road(['PATHS']), 0xb08a5e, 0.6);
+    }
+    addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x55555a, 0.9);
   }
-  add(road(['RAILWAYS']), 0x55555a, 0.9);
-  if (model.water?.length) group.add(new THREE.Mesh(meshGeometry(model.water), overlay(0x6fa8d6, 1, -4)));
-  const greens = (model.areas.GREEN ?? []).filter((r) => r.length > 2).map((ring) => {
+
+  // 4. Water
+  if (model.water?.length) {
+    const waterColor = isMaqueta ? 0xcbd5e1 : 0x6fa8d6;
+    const waterOp = isMaqueta ? 0.85 : 1.0;
+    const waterMat = isMaqueta
+      ? new THREE.MeshStandardMaterial({ color: waterColor, roughness: 0.25, metalness: 0.1, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })
+      : new THREE.MeshLambertMaterial({ color: waterColor, transparent: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+    layerGroups.water.add(new THREE.Mesh(meshGeometry(model.water), waterMat));
+  }
+
+  // 5. Green Areas
+  const greens = (model.areas?.GREEN ?? []).filter((r) => r.length > 2).map((ring) => {
     const flat = [];
     for (const [x, y] of ring) flat.push(x, y);
     const tri = earcut(flat, [], 2);
@@ -369,31 +351,84 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     for (let i = 0; i < tri.length; i += 3) faces.push({ v: [tri[i], tri[i + 1], tri[i + 2]] });
     return { verts: ring, faces };
   });
-  if (greens.length) group.add(new THREE.Mesh(meshGeometry(greens), overlay(0x8fbf6a, 0.55, -3)));
-  if (model.bridges?.length) {
-    group.add(new THREE.Mesh(meshGeometry(model.bridges), new THREE.MeshLambertMaterial({ color: 0xd9d6cf, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })));
-    group.add(new THREE.LineSegments(edgeGeometry(model.bridges), new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4 })));
+  if (greens.length) {
+    const greenMat = isMaqueta
+      ? new THREE.MeshStandardMaterial({ color: 0xe5e7eb, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })
+      : new THREE.MeshLambertMaterial({ color: 0x8fbf6a, transparent: true, opacity: 0.55, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+    layerGroups.green.add(new THREE.Mesh(meshGeometry(greens), greenMat));
   }
-  add(model.contours.map((c) => ({ pts: c.pts, closed: c.closed })), 0xb88a5a, 0.6);
 
-  if (keepCamera) return;
-  controls.target.set(0, 0, zMid);
-  camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
-  camera.near = s / 1000;
-  camera.far = s * 20;
-  camera.updateProjectionMatrix();
-  controls.update();
-  triggerResize();
+  // 6. Contours (Topography)
+  if (model.contours?.length) {
+    const cColor = isMaqueta ? 0x606270 : 0xb88a5a;
+    addLinesTo(layerGroups.contours, model.contours.map((c) => ({ pts: c.pts, closed: c.closed })), cColor, 0.65);
+  }
+
+  // 7. Trees
+  if (model.trees?.length) {
+    const unit = meshGeometry([UNIT_TREE]);
+    const treeMat = isMaqueta
+      ? new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, metalness: 0.01 })
+      : new THREE.MeshLambertMaterial({ color: 0x5fa545 });
+    const trees = new THREE.InstancedMesh(unit, treeMat, model.trees.length);
+    const mtx = new THREE.Matrix4();
+    model.trees.forEach((t, i) => trees.setMatrixAt(i, mtx.makeScale(t.r, t.r, t.h).setPosition(t.x, t.y, t.z)));
+    layerGroups.trees.add(trees);
+  }
+
+  // 8. Bridges
+  if (model.bridges?.length) {
+    layerGroups.roads_major.add(new THREE.Mesh(meshGeometry(model.bridges), new THREE.MeshLambertMaterial({ color: isMaqueta ? 0xf5f5f7 : 0xd9d6cf, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })));
+    layerGroups.roads_major.add(new THREE.LineSegments(edgeGeometry(model.bridges), new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4 })));
+  }
+
+  // Camera placement
+  if (!keepCamera) {
+    controls.target.set(0, 0, zMid);
+    if (isMaqueta) {
+      camera.position.set(s * 0.88, -s * 0.88, s * 0.82 + zMid);
+    } else {
+      camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
+    }
+    camera.near = s / 1000;
+    camera.far = s * 25;
+    camera.updateProjectionMatrix();
+    controls.update();
+    triggerResize();
+  }
 }
 
-export function toggleChunkMode(enabled) {
+export function setLayerVisibility(key, visible) {
+  if (!ctx || !ctx.layerGroups) return;
+  const g = ctx.layerGroups[key];
+  if (g) g.visible = Boolean(visible);
+}
+
+export function getLayerStats(model) {
+  const m = model || ctx?.lastModel;
+  if (!m) return { education: 0, commercial: 0, health: 0, residential: 0, other_buildings: 0, roadsMajorKm: '0', roadsMinorKm: '0', totalBuildings: 0, trees: 0, relief: 0 };
+  const counts = { education: 0, commercial: 0, health: 0, residential: 0, other_buildings: 0 };
+  for (const b of m.buildings || []) {
+    const sub = b.subtype || 'other_buildings';
+    if (counts[sub] !== undefined) counts[sub]++;
+    else counts.other_buildings++;
+  }
+  return {
+    ...counts,
+    roadsMajorKm: ((m.lines?.ROADS_MAJOR?.length || 0) * (m.size / 1000) * 0.08).toFixed(1),
+    roadsMinorKm: ((m.lines?.ROADS_MINOR?.length || 0) * (m.size / 1000) * 0.12).toFixed(1),
+    totalBuildings: m.buildings?.length || 0,
+    trees: m.trees?.length || 0,
+    relief: Math.round(m.stats?.relief || 0)
+  };
+}
+
+export function toggleMaquetaMode(enabled) {
   if (!ctx || !ctx.lastModel) return;
-  showModel(null, ctx.lastModel, { keepCamera: false, chunkMode: enabled });
+  showModel(null, ctx.lastModel, { keepCamera: true, chunkMode: enabled });
 }
-
-export function isChunkModeActive() {
-  return chunkModeActive;
-}
+export const toggleChunkMode = toggleMaquetaMode;
+export const isMaquetaModeActive = () => chunkModeActive;
 
 export function triggerResize() {
   if (!ctx) return;

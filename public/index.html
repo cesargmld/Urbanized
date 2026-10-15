@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=4.1">
+  <link rel="stylesheet" href="/css/style.css?v=4.3">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -53,33 +53,150 @@
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
       </div>
 
-      <!-- Floating Camera Toolbar (Moodboard / Apple Pill) -->
-      <div class="camera-toolbar">
-        <button type="button" class="cam-pill-btn active" id="cam-persp" title="Perspectiva 3D libre">
-          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-          <span>Perspectiva</span>
-        </button>
-        <button type="button" class="cam-pill-btn" id="cam-iso" title="Proyección Isométrica / Axonometría a 45°">
-          <svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21"></polyline><line x1="3" y1="21" x2="21" y2="3"></line></svg>
-          <span>Isométrica 45°</span>
-        </button>
-        <button type="button" class="cam-pill-btn" id="cam-chunk" title="Modo Chunk 3D (Relieve Topográfico Puro · Moodboard)">
-          <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-          <span>Chunk 3D</span>
-        </button>
-        <button type="button" class="cam-pill-btn" id="cam-top" title="Vista superior cenital (Planta)">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-          <span>Planta (Top)</span>
-        </button>
+      <!-- Unified Studio Floating Island Bar (Axiom Architecture Grade) -->
+      <div class="unified-studio-toolbar" id="studio-toolbar">
+        <!-- Render Mode Switcher -->
+        <div class="studio-seg-group">
+          <button type="button" class="studio-pill-btn active" id="btn-render-model" data-render="model" title="Modelo 3D Cartográfico">
+            <span>Modelo 3D</span>
+          </button>
+          <button type="button" class="studio-pill-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta Monocromática Física (Yeso & Pedestal)">
+            <span class="btn-indicator-dot"></span>
+            <span>Maqueta 3D</span>
+          </button>
+          <button type="button" class="studio-pill-btn" id="btn-render-sat" data-render="sat" title="Ortomosaico satelital">
+            <span>Satélite</span>
+          </button>
+        </div>
+
+        <div class="studio-sep"></div>
+
+        <!-- Camera Views -->
+        <div class="studio-seg-group">
+          <button type="button" class="studio-pill-btn active" id="cam-persp" title="Perspectiva 3D libre">
+            <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
+            <span>Perspectiva</span>
+          </button>
+          <button type="button" class="studio-pill-btn" id="cam-iso" title="Proyección Isométrica / Axonométrica 45°">
+            <svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21"></polyline><line x1="3" y1="21" x2="21" y2="3"></line></svg>
+            <span>Isométrica 45°</span>
+          </button>
+          <button type="button" class="studio-pill-btn" id="cam-top" title="Vista cenital (Planta Top)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            <span>Planta</span>
+          </button>
+        </div>
+
+        <div class="studio-sep"></div>
+
+        <!-- GIS & Bio Overlays -->
+        <div class="studio-seg-group">
+          <button type="button" class="studio-pill-btn active" id="btn-toggle-gis" title="Alternar panel de capas e infraestructura GIS">
+            <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            <span>Capas GIS</span>
+          </button>
+          <button type="button" class="studio-pill-btn" id="btn-toggle-bio" title="Flora y Fauna del bioma">
+            <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
+            <span>Biodiversidad</span>
+          </button>
+        </div>
       </div>
 
-      <!-- View Switcher Tabs (3D Model / Chunk / Drawing / Satellite) -->
-      <div class="seg stage-tabs tabs" role="tablist">
-        <button type="button" role="tab" data-view="model" aria-selected="true">Modelo 3D</button>
-        <button type="button" role="tab" data-view="chunk" id="tab-chunk">Chunk 3D (Relieve)</button>
-        <button type="button" role="tab" data-view="plan" aria-selected="false">Plano</button>
-        <button type="button" role="tab" data-view="sat" aria-selected="false">Satélite</button>
-      </div>
+      <!-- FLOATING QGIS INSPECTOR & FILTERS (AXIOM GIS STYLE) -->
+      <aside class="gis-filters-card" id="gis-filters-card">
+        <div class="gis-card-header" id="gis-filters-header">
+          <div class="gis-header-left">
+            <svg class="gis-icon" viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+            <span>Filtros & Capas GIS</span>
+            <span class="gis-total-badge" id="gis-total-badge">0</span>
+          </div>
+          <button type="button" class="gis-collapse-btn" id="gis-collapse-btn" aria-label="Colapsar panel">▲</button>
+        </div>
+
+        <div class="gis-card-body" id="gis-filters-body">
+          <!-- Equipamiento & POIs -->
+          <div class="gis-group">
+            <span class="gis-group-title">EQUIPAMIENTO & POIs</span>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="education" checked>
+              <span class="gis-bullet" style="background:#5ba4e6;"></span>
+              <span class="gis-label">Escuelas & Educación</span>
+              <span class="gis-count" id="count-education">0</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="commercial" checked>
+              <span class="gis-bullet" style="background:#f59e0b;"></span>
+              <span class="gis-label">Comercios & Oficinas</span>
+              <span class="gis-count" id="count-commercial">0</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="health" checked>
+              <span class="gis-bullet" style="background:#ef4444;"></span>
+              <span class="gis-label">Salud & Hospitales</span>
+              <span class="gis-count" id="count-health">0</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="residential" checked>
+              <span class="gis-bullet" style="background:#a78bfa;"></span>
+              <span class="gis-label">Residencial & Vivienda</span>
+              <span class="gis-count" id="count-residential">0</span>
+            </label>
+          </div>
+
+          <!-- Movilidad -->
+          <div class="gis-group">
+            <span class="gis-group-title">MOVILIDAD & RED VIAL</span>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="roads_major" checked>
+              <span class="gis-bullet" style="background:#fb923c;"></span>
+              <span class="gis-label">Avenidas principales</span>
+              <span class="gis-count" id="count-roads-major">0 km</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="roads_minor" checked>
+              <span class="gis-bullet" style="background:#9ca3af;"></span>
+              <span class="gis-label">Calles secundarias</span>
+              <span class="gis-count" id="count-roads-minor">0 km</span>
+            </label>
+          </div>
+
+          <!-- Medio Físico -->
+          <div class="gis-group">
+            <span class="gis-group-title">MEDIO FÍSICO & TOPOGRAFÍA</span>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="water" checked>
+              <span class="gis-bullet" style="background:#38bdf8;"></span>
+              <span class="gis-label">Hidrología & Ríos</span>
+              <span class="gis-count">Capa</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="contours" checked>
+              <span class="gis-bullet" style="background:#d97706;"></span>
+              <span class="gis-label">Curvas de nivel (Cotas)</span>
+              <span class="gis-count" id="count-relief">0 m</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="trees" checked>
+              <span class="gis-bullet" style="background:#22c55e;"></span>
+              <span class="gis-label">Árboles & Vegetación</span>
+              <span class="gis-count" id="count-trees">0</span>
+            </label>
+            <label class="gis-row">
+              <input type="checkbox" data-gislayer="terrain" checked>
+              <span class="gis-bullet" style="background:#71717a;"></span>
+              <span class="gis-label">Superficie Terreno 3D</span>
+              <span class="gis-count">Base</span>
+            </label>
+          </div>
+
+          <div class="gis-group-actions">
+            <button type="button" class="btn-gis-export" id="btn-export-qgis-direct" title="Descargar capa GeoJSON para QGIS">
+              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              <span>Exportar GeoJSON (QGIS)</span>
+            </button>
+          </div>
+        </div>
+      </aside>
 
       <!-- Telemetry Cards (Reference Image Style: ALT, WGH, SPD, PWR) -->
       <div class="telemetry-bar">
@@ -488,45 +605,53 @@
     </div>
   </aside>
 
-  <!-- FLOATING BIODIVERSITY & ECOSYSTEM CARD (FLORA & FAUNA) -->
+  <!-- FLOATING BIODIVERSITY & ECOSYSTEM CARD (FLORA & FAUNA · ORGANIZED AXIOM STYLE) -->
   <aside class="floating-bio-card" id="bio-card" hidden>
     <div class="bio-card-header">
       <div class="bio-title-wrap">
-        <span class="mono-tag">■ BIOMA & BIODIVERSIDAD</span>
+        <span class="mono-tag">■ ECOLOGÍA & BIOMA REGIONAL</span>
         <h3 id="bio-biome-name">Ecosistema Local</h3>
         <p id="bio-coords" class="mono-coords">—</p>
       </div>
       <button type="button" class="bio-close-btn" id="bio-card-close" aria-label="Cerrar">&times;</button>
     </div>
-    <div class="bio-card-body">
-      <div class="bio-biome-summary" id="bio-summary">
-        Detectando bioma de la región...
-      </div>
 
-      <div class="bio-section">
-        <div class="bio-section-title">
-          <svg viewBox="0 0 24 24"><path d="M12 2L9 9l-7 1 5 5-1 7 6-3 6 3-1-7 5-5-7-1-3-7z"/></svg>
-          <span>Flora Autóctona Predominante</span>
-        </div>
+    <!-- Segmented Tab Switcher -->
+    <div class="bio-tabs-bar" role="tablist">
+      <button type="button" class="bio-subtab active" data-biotab="flora" id="tab-bio-flora">🌿 Flora (5)</button>
+      <button type="button" class="bio-subtab" data-biotab="fauna" id="tab-bio-fauna">🐾 Fauna (5)</button>
+      <button type="button" class="bio-subtab" data-biotab="climate" id="tab-bio-climate">🌦️ Suelo & Clima</button>
+    </div>
+
+    <div class="bio-card-body">
+      <!-- 1. Flora Tab Panel -->
+      <div class="bio-tab-panel active" id="panel-bio-flora">
         <div class="bio-species-list" id="bio-flora-list"></div>
       </div>
 
-      <div class="bio-section">
-        <div class="bio-section-title">
-          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
-          <span>Fauna Silvestre Característica</span>
-        </div>
+      <!-- 2. Fauna Tab Panel -->
+      <div class="bio-tab-panel" id="panel-bio-fauna" style="display:none;">
         <div class="bio-species-list" id="bio-fauna-list"></div>
       </div>
 
-      <div class="bio-stats-grid">
-        <div class="bio-stat">
-          <span class="bio-stat-label">CLIMA</span>
-          <b class="bio-stat-val" id="bio-climate">—</b>
+      <!-- 3. Climate & Soil Tab Panel -->
+      <div class="bio-tab-panel" id="panel-bio-climate" style="display:none;">
+        <div class="bio-biome-summary" id="bio-summary">
+          Detectando bioma de la región...
         </div>
-        <div class="bio-stat">
-          <span class="bio-stat-label">DOSEL VEGETAL</span>
-          <b class="bio-stat-val" id="bio-canopy">—</b>
+        <div class="bio-stats-grid">
+          <div class="bio-stat">
+            <span class="bio-stat-label">RÉGIMEN CLIMÁTICO</span>
+            <b class="bio-stat-val" id="bio-climate">—</b>
+          </div>
+          <div class="bio-stat">
+            <span class="bio-stat-label">DOSEL VEGETAL</span>
+            <b class="bio-stat-val" id="bio-canopy">—</b>
+          </div>
+          <div class="bio-stat" style="grid-column: span 2;">
+            <span class="bio-stat-label">TIPO DE SUELO & DRENAJE</span>
+            <b class="bio-stat-val" id="bio-soil">—</b>
+          </div>
         </div>
       </div>
     </div>
@@ -576,7 +701,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=4.1"></script>
+  <script type="module" src="/js/app.js?v=4.3"></script>
   <script>
     (function() {
       const sidebar = document.getElementById('sidebar');
@@ -672,7 +797,7 @@
           setTimeout(() => window.appMap.invalidateSize(), 50);
         }
         if (viewName === 'result') {
-          import('./js/preview.js?v=4.1').then(p => p.triggerResize?.()).catch(() => {});
+          import('./js/preview.js?v=4.3').then(p => p.triggerResize?.()).catch(() => {});
         }
       }
 
@@ -710,46 +835,6 @@
         const openEd = document.getElementById('open-editor');
         if (openEd) openEd.click();
         switchView('illustrator');
-      });
-
-      // Chunk 3D camera button (Moodboard Image 4)
-      document.getElementById('cam-chunk')?.addEventListener('click', () => {
-        document.querySelectorAll('.cam-pill-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('cam-chunk')?.classList.add('active');
-        import('./js/preview.js?v=4.1').then(p => {
-          p.toggleChunkMode?.(true);
-        }).catch(() => {});
-      });
-
-      document.getElementById('tab-chunk')?.addEventListener('click', () => {
-        document.querySelectorAll('.stage-tabs button').forEach(b => b.setAttribute('aria-selected', 'false'));
-        document.getElementById('tab-chunk')?.setAttribute('aria-selected', 'true');
-        document.querySelectorAll('.cam-pill-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById('cam-chunk')?.classList.add('active');
-        import('./js/preview.js?v=4.1').then(p => {
-          p.toggleChunkMode?.(true);
-        }).catch(() => {});
-      });
-
-      document.getElementById('cam-persp')?.addEventListener('click', () => {
-        import('./js/preview.js?v=4.1').then(p => {
-          if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
-          p.setCameraView?.('persp');
-        }).catch(() => {});
-      });
-
-      document.getElementById('cam-iso')?.addEventListener('click', () => {
-        import('./js/preview.js?v=4.1').then(p => {
-          if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
-          p.setCameraView?.('iso');
-        }).catch(() => {});
-      });
-
-      document.getElementById('cam-top')?.addEventListener('click', () => {
-        import('./js/preview.js?v=4.1').then(p => {
-          if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
-          p.setCameraView?.('top');
-        }).catch(() => {});
       });
 
       document.getElementById('guidance-cancel')?.addEventListener('click', () => {
