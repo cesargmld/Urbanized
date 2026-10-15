@@ -81,13 +81,7 @@ function drawFrame() {
   frame.style.width = frame.style.height = `${px}px`;
   frame.classList.toggle('circle', shape === 'circle');
   $('#frame-label').textContent = `${sizeKm()} × ${sizeKm()} ${t('km')}`;
-  $('#size-out').textContent = `${sizeKm()} ${t('km')} · ${areaKm2()} ${t('km2')}`;
-  const coordsEl = $('#axiom-area-coords');
-  if (coordsEl) {
-    coordsEl.textContent = `${Math.abs(c.lat).toFixed(4)}° ${c.lat >= 0 ? 'N' : 'S'}, ${Math.abs(c.lng).toFixed(4)}° ${c.lng >= 0 ? 'E' : 'W'}`;
-  }
-  const generalCoords = $('#coords');
-  if (generalCoords) generalCoords.textContent = `${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}`;
+  $('#size-out').textContent = `${sizeKm()} ${t('km')}`;
   // цена площади: бесплатно до 5 км², дальше — кредиты при скачивании
   const costEl = $('#size-cost');
   const extra = billing.state.billing ? sizeCredits(areaOf(size, shape)) : 0;
@@ -188,10 +182,7 @@ document.addEventListener('click', (e) => { if (!e.target.closest('.search')) re
 function goTo(lat, lon, title) {
   results.hidden = true;
   if (title) {
-    const shortTitle = title.split(',')[0].trim();
-    const areaTitle = $('#axiom-area-title');
-    if (areaTitle) areaTitle.textContent = shortTitle;
-    q.value = shortTitle;
+    q.value = title.split(',')[0].trim();
   }
   map.setView([lat, lon], Math.max(map.getZoom(), 15));
 }

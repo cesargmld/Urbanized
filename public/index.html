@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Urbanized — 3D City & Cartography Studio</title>
-  <meta name="description" content="Generador 3D de ciudades, cartografía vectorial y topografía. Exportación a AutoCAD, SketchUp, Rhino, Illustrator y QGIS/Blender GeoJSON.">
+  <meta name="description" content="Generador 3D de ciudades, cartografía vectorial y topografía. Exportación a AutoCAD, SketchUp, Rhino, Illustrator y QGIS.">
   <meta property="og:title" content="Urbanized">
   <meta property="og:description" content="Modelos 3D de ciudades en segundos. AutoCAD, Rhino, Illustrator, GeoJSON.">
   <meta name="theme-color" content="#08090b">
@@ -12,9 +12,9 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0a0c'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23ffffff' stroke-width='1.8'/%3E%3Cline x1='16' y1='4' x2='16' y2='28' stroke='%23ffffff' stroke-width='1' stroke-dasharray='2 2' opacity='0.45'/%3E%3Cline x1='4' y1='16' x2='28' y2='16' stroke='%23ffffff' stroke-width='1' stroke-dasharray='2 2' opacity='0.45'/%3E%3Ccircle cx='16' cy='16' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=5.0">
+  <link rel="stylesheet" href="/css/style.css?v=5.5">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -24,7 +24,7 @@
 </head>
 <body class="axiom-app">
   <!-- ========================================================
-       1. TOP APPLICATION HEADER (Image 3 Style)
+       1. TOP APPLICATION HEADER (Image 3 Axiom Style)
        ======================================================== -->
   <header class="axiom-topbar">
     <div class="axiom-topbar-left">
@@ -37,10 +37,9 @@
         </svg>
         <span class="axiom-brand-title">URBANIZED</span>
       </div>
-      <span class="axiom-tag">STUDIO</span>
     </div>
 
-    <!-- Center Search Bar / Dynamic Island -->
+    <!-- Center Search Bar (Dynamic Island style) -->
     <div class="axiom-topbar-center">
       <div class="axiom-search-box search">
         <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
@@ -53,27 +52,16 @@
       </div>
     </div>
 
-    <!-- Right Controls: View Switcher Nav + Live Status + Lang -->
+    <!-- Right Controls: View Switchers & Language -->
     <div class="axiom-topbar-right">
       <nav class="axiom-view-nav" role="tablist">
-        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="Vista de Mapa 2D">
-          <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
-          <span>Mapa 2D</span>
+        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="Vista de Mapa">
+          <span>Mapa</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="3D Studio">
-          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-          <span>3D Studio</span>
-        </button>
-        <button type="button" class="axiom-view-btn" id="view-btn-section" data-view="section" title="Corte Topográfico">
-          <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
-          <span>Corte</span>
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="Modelo 3D">
+          <span>Modelo 3D</span>
         </button>
       </nav>
-
-      <span class="axiom-live-badge" title="GIS Conectado en Vivo">
-        <span class="axiom-live-dot"></span>
-        <span>Live GIS</span>
-      </span>
 
       <select class="axiom-lang-select lang-pill" aria-label="Idioma">
         <option value="es">ES</option>
@@ -83,777 +71,211 @@
   </header>
 
   <!-- ========================================================
-       2. MAIN APPLICATION WORKSPACE (Two-Column Layout)
+       2. MAIN WORKSPACE
        ======================================================== -->
   <main class="axiom-workspace">
-    <!-- LEFT COLUMN: PERSISTENT ARCHITECTURAL INSPECTOR (Image 2 Style) -->
-    <aside class="axiom-inspector" id="axiom-inspector">
-      <form id="panel" autocomplete="off" class="axiom-inspector-form">
-        <!-- Inspector Header (Image 2 style) -->
-        <div class="axiom-insp-header">
-          <div class="axiom-insp-header-top">
-            <h1 class="axiom-insp-title" id="axiom-area-title">Roma Norte, CDMX</h1>
-            <span class="axiom-insp-badge" id="insp-status-badge">Listo</span>
-          </div>
-          <div class="axiom-insp-meta">
-            <span class="axiom-meta-size" id="size-out">1.0 × 1.0 km · 1.00 km²</span>
-            <span class="axiom-meta-coords" id="axiom-area-coords">19.4195° N, 99.1622° W</span>
-          </div>
+    <!-- VIEW 1: MAP SELECTION (The initial screen - Clean & Spacious) -->
+    <div id="app" class="screen-layer active">
+      <div id="map"></div>
+      <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
 
-          <!-- Quick Action Buttons Row (Image 2 style: 4 minimal icons) -->
-          <div class="axiom-quick-actions">
-            <button type="button" class="axiom-action-btn dl" data-format="dxf" title="Exportar AutoCAD .dxf">
-              <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-              <span>AutoCAD</span>
-            </button>
-            <button type="button" class="axiom-action-btn dl" data-format="geojson" title="Exportar GeoJSON para QGIS">
-              <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-              <span>QGIS</span>
-            </button>
-            <button type="button" class="axiom-action-btn dl" data-format="svg" title="Exportar Vectorial .svg">
-              <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
-              <span>Illustrator</span>
-            </button>
-            <button type="button" class="axiom-action-btn dl" data-format="3dm" title="Exportar Rhino 3D .3dm">
-              <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-              <span>Rhino</span>
-            </button>
-          </div>
+      <!-- Floating Island Inside Map (Satélite vs Mapa Oscuro) -->
+      <div class="axiom-map-island" id="map-axiom-bar">
+        <div class="axiom-island-capsule">
+          <button type="button" class="axiom-island-btn active" id="map-btn-sat" data-base="sat" title="Vista Satelital">
+            <span class="axiom-island-dot active"></span>
+            <span>Satélite</span>
+          </button>
+          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Cartografía Arquitectónica Oscura">
+            <span class="axiom-island-dot"></span>
+            <span>Mapa Oscuro</span>
+          </button>
         </div>
+      </div>
 
-        <!-- Hairline Divider -->
-        <div class="axiom-hairline"></div>
-
-        <!-- Inspector Navigation Tabs -->
-        <nav class="axiom-insp-tabs" role="tablist">
-          <button type="button" class="axiom-insp-tab active" data-tab="params">Parámetros</button>
-          <button type="button" class="axiom-insp-tab" data-tab="gis">Capas GIS</button>
-          <button type="button" class="axiom-insp-tab" data-tab="radii">Radios</button>
-          <button type="button" class="axiom-insp-tab" data-tab="bio">Bioma</button>
-          <button type="button" class="axiom-insp-tab" data-tab="export">Descargas</button>
-        </nav>
-
-        <!-- Inspector Scrollable Panes Body -->
-        <div class="axiom-insp-body">
-          <!-- ==============================================
-               TAB 1: PARÁMETROS
-               ============================================== -->
-          <div class="axiom-tab-pane active" id="pane-params">
-            <!-- Mode Switcher (Hidden / Sync) -->
-            <div class="seg mode-seg" role="group" style="display:none;">
-              <button type="button" data-mode="model" aria-pressed="true">Modelo 3D</button>
-              <button type="button" data-mode="section" aria-pressed="false">Corte</button>
-            </div>
-
-            <!-- Shape Selector -->
-            <div class="axiom-pane-group">
-              <span class="axiom-group-label">Forma de la Base</span>
-              <div class="axiom-seg-group shape-seg" role="group">
-                <button type="button" class="axiom-seg-btn active" data-shape="square" aria-pressed="true">Cuadrado</button>
-                <button type="button" class="axiom-seg-btn" data-shape="circle" aria-pressed="false">Círculo</button>
-              </div>
-            </div>
-
-            <!-- Area Slider -->
-            <div class="axiom-pane-group">
-              <div class="axiom-group-header">
-                <span class="axiom-group-label">Dimensión del Modelo</span>
-                <span class="axiom-group-val" id="axiom-slider-val">1.0 km</span>
-              </div>
-              <input id="size" type="range" min="250" max="3500" step="10" value="1000" aria-label="Dimensiones" class="axiom-range">
-              <p class="size-cost" id="size-cost" hidden></p>
-            </div>
-
-            <!-- Site Boundary Tool -->
-            <div class="axiom-pane-group">
-              <div class="axiom-group-header">
-                <span class="axiom-group-label">Polígono de Predio</span>
-                <b class="axiom-badge-dim" id="site-info">—</b>
-              </div>
-              <div class="axiom-btn-row">
-                <button type="button" class="axiom-pill-btn" id="site-draw">Trazar en mapa</button>
-                <button type="button" class="axiom-pill-btn" id="site-clear" disabled>Limpiar</button>
-              </div>
-            </div>
-
-            <!-- Section Tools (Corte Topográfico) -->
-            <div class="axiom-pane-group" id="pane-section-box">
-              <div class="axiom-group-header">
-                <span class="axiom-group-label">Corte Topográfico</span>
-                <b class="axiom-badge-dim" id="sec-len">0 km</b>
-              </div>
-              <div class="axiom-btn-row">
-                <button type="button" class="axiom-pill-btn" id="sec-draw">Trazar corte</button>
-                <button type="button" class="axiom-pill-btn" id="sec-undo" disabled>Deshacer</button>
-                <button type="button" class="axiom-pill-btn" id="sec-clear" disabled>Limpiar</button>
-              </div>
-              <div class="axiom-row-split" style="margin-top:10px;">
-                <span class="axiom-row-label">Exageración</span>
-                <select id="sec-exag" class="axiom-mini-select">
-                  <option value="1">×1</option>
-                  <option value="2">×2</option>
-                  <option value="5">×5</option>
-                </select>
-              </div>
-              <div class="axiom-row-split" style="margin-top:6px;">
-                <span class="axiom-row-label">Orientación</span>
-                <select id="sec-dir" class="axiom-mini-select">
-                  <option value="0">Adelante</option>
-                  <option value="1">Atrás</option>
-                </select>
-              </div>
-              <button type="button" class="axiom-secondary-cta" id="sec-build" disabled style="margin-top:10px;">Construir Corte</button>
-              <p class="status" id="sec-status" aria-live="polite"></p>
-            </div>
-
-            <!-- Detailed Layer Checkboxes in Form -->
-            <div class="axiom-pane-group" style="padding-bottom:0;">
-              <span class="axiom-group-label">Opciones de Extracción</span>
-              <div class="axiom-specs-table">
-                <label class="axiom-spec-row">
-                  <span class="axiom-spec-left">
-                    <input type="checkbox" name="buildings" checked>
-                    <span class="axiom-spec-name">Edificios</span>
-                  </span>
-                  <span class="axiom-spec-val">OSM + Overture</span>
-                </label>
-                <label class="axiom-spec-row">
-                  <span class="axiom-spec-left">
-                    <input type="checkbox" name="roads" checked>
-                    <span class="axiom-spec-name">Vías y Calzadas</span>
-                  </span>
-                  <span class="axiom-spec-val">Vector</span>
-                </label>
-                <label class="axiom-spec-row">
-                  <span class="axiom-spec-left">
-                    <input type="checkbox" name="terrain" checked>
-                    <span class="axiom-spec-name">Terreno 3D & DEM</span>
-                  </span>
-                  <span class="axiom-spec-val">Malla 3D</span>
-                </label>
-                <label class="axiom-spec-row">
-                  <span class="axiom-spec-left">
-                    <input type="checkbox" name="contours" checked>
-                    <span class="axiom-spec-name">Curvas de Nivel</span>
-                  </span>
-                  <span class="axiom-spec-val">Cotas</span>
-                </label>
-                <label class="axiom-spec-row">
-                  <span class="axiom-spec-left">
-                    <input type="checkbox" name="trees" checked>
-                    <span class="axiom-spec-name">Árboles y Vegetación</span>
-                  </span>
-                  <span class="axiom-spec-val">Instancias</span>
-                </label>
-                <label class="axiom-spec-row">
-                  <span class="axiom-spec-left">
-                    <input type="checkbox" name="satellite" checked>
-                    <span class="axiom-spec-name">Ortomosaico Satélite</span>
-                  </span>
-                  <span class="axiom-spec-val">Textura</span>
-                </label>
-              </div>
-              <!-- Hidden inputs required by app.js -->
-              <input type="checkbox" name="poi_schools" checked hidden>
-              <input type="checkbox" name="poi_commercial" checked hidden>
-              <input type="checkbox" name="poi_residential" checked hidden>
-              <input type="checkbox" name="extraBuildings" checked hidden>
-              <input type="checkbox" name="roads_major" checked hidden>
-              <input type="checkbox" name="roads_minor" checked hidden>
-              <input type="checkbox" name="roadWidth" hidden>
-              <input type="checkbox" name="bridges" checked hidden>
-              <input type="checkbox" name="nature" checked hidden>
-              <input type="checkbox" name="detect" checked hidden>
-              <input id="sens" type="range" min="0" max="100" step="5" value="50" hidden>
-              <b id="sens-out" style="display:none;">50%</b>
-              <div id="sens-field" style="display:none;"></div>
+      <!-- Clean Floating Setup Card on the Map -->
+      <aside class="axiom-setup-card" id="axiom-setup-card">
+        <form id="panel" autocomplete="off" class="axiom-setup-form">
+          <!-- Shape Switcher -->
+          <div class="axiom-control-row">
+            <span class="axiom-label">Forma</span>
+            <div class="axiom-seg shape-seg" role="group">
+              <button type="button" class="axiom-seg-item active" data-shape="square" aria-pressed="true">Cuadrado</button>
+              <button type="button" class="axiom-seg-item" data-shape="circle" aria-pressed="false">Círculo</button>
             </div>
           </div>
 
-          <!-- ==============================================
-               TAB 2: CAPAS GIS (Image 2 Specs List Style)
-               ============================================== -->
-          <div class="axiom-tab-pane" id="pane-gis" style="display:none;">
-            <div class="axiom-pane-desc">
-              Especificaciones de infraestructura, equipamiento y medio físico urbano.
+          <!-- Area Slider -->
+          <div class="axiom-control-row">
+            <div class="axiom-row-between">
+              <span class="axiom-label">Área</span>
+              <span class="axiom-val" id="size-out">1.0 km</span>
             </div>
-
-            <!-- Specs Table with hairline dividers (Image 2) -->
-            <div class="axiom-specs-table">
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#5ba4e6;"></span>
-                  <span class="axiom-spec-name">Escuelas & Educación</span>
-                </span>
-                <span class="axiom-spec-val" id="count-education">0</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#f59e0b;"></span>
-                  <span class="axiom-spec-name">Comercios & Oficinas</span>
-                </span>
-                <span class="axiom-spec-val" id="count-commercial">0</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#ef4444;"></span>
-                  <span class="axiom-spec-name">Salud & Hospitales</span>
-                </span>
-                <span class="axiom-spec-val" id="count-health">0</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#a78bfa;"></span>
-                  <span class="axiom-spec-name">Residencial & Vivienda</span>
-                </span>
-                <span class="axiom-spec-val" id="count-residential">0</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#fb923c;"></span>
-                  <span class="axiom-spec-name">Avenidas principales</span>
-                </span>
-                <span class="axiom-spec-val" id="count-roads-major">0 km</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#9ca3af;"></span>
-                  <span class="axiom-spec-name">Calles secundarias</span>
-                </span>
-                <span class="axiom-spec-val" id="count-roads-minor">0 km</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#d97706;"></span>
-                  <span class="axiom-spec-name">Relieve / Desnivel</span>
-                </span>
-                <span class="axiom-spec-val" id="count-relief">0 m</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#22c55e;"></span>
-                  <span class="axiom-spec-name">Árboles & Vegetación</span>
-                </span>
-                <span class="axiom-spec-val" id="count-trees">0 reg.</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#38bdf8;"></span>
-                  <span class="axiom-spec-name">Hidrología & Ríos</span>
-                </span>
-                <span class="axiom-spec-val">Activo</span>
-              </div>
-              <div class="axiom-spec-row">
-                <span class="axiom-spec-left">
-                  <span class="axiom-spec-dot" style="background:#71717a;"></span>
-                  <span class="axiom-spec-name">Superficie Terreno DEM</span>
-                </span>
-                <span class="axiom-spec-val">Base</span>
-              </div>
-            </div>
-
-            <!-- Direct QGIS Export Button -->
-            <div style="margin-top:14px;">
-              <button type="button" class="axiom-secondary-cta" id="btn-export-qgis-direct" title="Descargar capas GeoJSON para QGIS">
-                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span>Exportar GeoJSON (QGIS)</span>
-              </button>
-            </div>
-            <span id="gis-total-badge" style="display:none;">0</span>
-            <span id="gis-header-badge" style="display:none;">0</span>
+            <input id="size" type="range" min="250" max="3500" step="10" value="1000" aria-label="Dimensiones" class="axiom-range">
+            <p class="size-cost" id="size-cost" hidden></p>
           </div>
 
-          <!-- ==============================================
-               TAB 3: RADIOS (Image 5 Walking Distance Style)
-               ============================================== -->
-          <div class="axiom-tab-pane" id="pane-radii" style="display:none;">
-            <!-- Walking Switch Row -->
-            <div class="axiom-pane-group">
-              <label class="walk-switch-row" title="Alternar visualización de radios">
-                <input type="checkbox" id="walk-switch-active" checked>
-                <i class="walk-switch-slider"></i>
-                <span class="walk-switch-label">Walking distance</span>
-              </label>
-
-              <!-- Time Chips (Image 5) -->
-              <div class="walk-time-tabs" role="tablist" style="margin-top:12px;">
-                <button type="button" class="walk-time-tab" data-walktime="5">5 min</button>
-                <button type="button" class="walk-time-tab" data-walktime="10">10 min</button>
-                <button type="button" class="walk-time-tab active" data-walktime="15">15 min</button>
-                <button type="button" class="walk-time-tab" data-walktime="all">Todos</button>
-              </div>
-            </div>
-
-            <!-- Proximity Rings Stack -->
-            <div class="radii-metrics-stack">
-              <div class="radii-metric-card active" data-ring="5">
-                <div class="radii-metric-header">
-                  <span class="radii-ring-dot" style="background:#f95738;"></span>
-                  <b>Radio 5 min (400 m)</b>
-                  <span class="radii-coverage-tag">Acceso Inmediato</span>
-                </div>
-                <p class="radii-metric-desc">Caminabilidad directa. Micro-movilidad, paradas de transporte y servicios diarios.</p>
-                <div class="radii-stat-chips">
-                  <span class="radii-chip" id="walk-pois-5">~8 POIs esenciales</span>
-                  <span class="radii-chip">Área ~0.50 km²</span>
-                </div>
-              </div>
-
-              <div class="radii-metric-card active" data-ring="10">
-                <div class="radii-metric-header">
-                  <span class="radii-ring-dot" style="background:rgba(249, 87, 56, 0.75);"></span>
-                  <b>Radio 10 min (800 m)</b>
-                  <span class="radii-coverage-tag">Cuenca Barrial</span>
-                </div>
-                <p class="radii-metric-desc">Entorno vecinal. Educación básica, comercio barrial, áreas verdes y clínicas.</p>
-                <div class="radii-stat-chips">
-                  <span class="radii-chip" id="walk-pois-10">~24 equipamientos</span>
-                  <span class="radii-chip">Área ~2.01 km²</span>
-                </div>
-              </div>
-
-              <div class="radii-metric-card active" data-ring="15">
-                <div class="radii-metric-header">
-                  <span class="radii-ring-dot" style="background:rgba(249, 87, 56, 0.45);"></span>
-                  <b>Radio 15 min (1,200 m)</b>
-                  <span class="radii-coverage-tag">Umbral 15-Min</span>
-                </div>
-                <p class="radii-metric-desc">Límite estándar de la Ciudad de 15 Minutos. Red de transporte estructurante y centros urbanos.</p>
-                <div class="radii-stat-chips">
-                  <span class="radii-chip" id="walk-pois-15">~60+ entidades</span>
-                  <span class="radii-chip">Área ~4.52 km²</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- Export Isochrones Button -->
-            <div style="margin-top:14px;">
-              <button type="button" class="axiom-secondary-cta" id="btn-export-isochrones" title="Descargar polígonos GeoJSON de isócronas para QGIS">
-                <svg viewBox="0 0 24 24" width="14" height="14"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
-                <span>Exportar Isócronas GeoJSON (QGIS)</span>
-              </button>
-            </div>
-            <p id="radii-coords" style="display:none;"></p>
-          </div>
-
-          <!-- ==============================================
-               TAB 4: BIOMA & ECOSISTEMA
-               ============================================== -->
-          <div class="axiom-tab-pane" id="pane-bio" style="display:none;">
-            <div class="axiom-pane-group">
-              <span class="axiom-group-label">Ecosistema Regional</span>
-              <h3 id="bio-biome-name" class="bio-biome-title">Bosque Templado de Montaña</h3>
-              <p id="bio-coords" class="mono-coords">—</p>
-            </div>
-
-            <!-- Subtabs -->
-            <div class="bio-tabs-bar" role="tablist">
-              <button type="button" class="bio-subtab active" data-biotab="flora" id="tab-bio-flora">🌿 Flora (5)</button>
-              <button type="button" class="bio-subtab" data-biotab="fauna" id="tab-bio-fauna">🐾 Fauna (5)</button>
-              <button type="button" class="bio-subtab" data-biotab="climate" id="tab-bio-climate">🌦️ Clima & Suelo</button>
-            </div>
-
-            <!-- Flora List -->
-            <div class="bio-tab-panel active" id="panel-bio-flora">
-              <div class="bio-species-list" id="bio-flora-list"></div>
-            </div>
-
-            <!-- Fauna List -->
-            <div class="bio-tab-panel" id="panel-bio-fauna" style="display:none;">
-              <div class="bio-species-list" id="bio-fauna-list"></div>
-            </div>
-
-            <!-- Climate & Soil -->
-            <div class="bio-tab-panel" id="panel-bio-climate" style="display:none;">
-              <div class="bio-biome-summary" id="bio-summary">
-                Detectando bioma de la región...
-              </div>
-              <div class="bio-stats-grid">
-                <div class="bio-stat">
-                  <span class="bio-stat-label">RÉGIMEN CLIMÁTICO</span>
-                  <b class="bio-stat-val" id="bio-climate">—</b>
-                </div>
-                <div class="bio-stat">
-                  <span class="bio-stat-label">DOSEL VEGETAL</span>
-                  <b class="bio-stat-val" id="bio-canopy">—</b>
-                </div>
-                <div class="bio-stat" style="grid-column: span 2;">
-                  <span class="bio-stat-label">TIPO DE SUELO & DRENAJE</span>
-                  <b class="bio-stat-val" id="bio-soil">—</b>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- ==============================================
-               TAB 5: DESCARGAS / EXPORTAR
-               ============================================== -->
-          <div class="axiom-tab-pane" id="pane-export" style="display:none;">
-            <div class="axiom-pane-desc">
-              Descarga formatos compatibles con software CAD, BIM, GIS y motores 3D.
-            </div>
-            <div class="downloads-grid downloads">
-              <button type="button" class="dl-card dl" data-format="dxf"><b>AutoCAD</b><span>.dxf</span></button>
-              <button type="button" class="dl-card dl" data-format="svg"><b>Illustrator</b><span>.svg</span></button>
-              <button type="button" class="dl-card dl" data-format="geojson"><b>GeoJSON</b><span>.geojson (QGIS)</span></button>
-              <button type="button" class="dl-card dl" data-format="3dm"><b>Rhino</b><span>.3dm</span></button>
-              <button type="button" class="dl-card dl" data-format="dae"><b>SketchUp</b><span>.dae</span></button>
-              <button type="button" class="dl-card dl" data-format="ifc"><b>ArchiCAD</b><span>.ifc</span></button>
-              <button type="button" class="dl-card dl" data-format="fbx"><b>FBX</b><span>.fbx</span></button>
-              <button type="button" class="dl-card dl" data-format="stl"><b>3D Print</b><span id="stl-note">.stl</span></button>
-              <button type="button" class="dl-card dl" data-format="jpg"><b>Satélite</b><span>.jpg</span></button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Hairline Divider -->
-        <div class="axiom-hairline"></div>
-
-        <!-- Inspector Footer: The Big Coral CTA Button (Image 2) -->
-        <div class="axiom-insp-footer">
-          <button class="axiom-cta-build" id="build" type="submit">
+          <!-- Prominent Coral Build Button -->
+          <button class="axiom-cta-btn" id="build" type="submit">
             <span>Crear Modelo 3D</span>
             <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </button>
           <p class="status" id="status" aria-live="polite"></p>
-          <p id="coords" class="export-coords" style="display:none;"></p>
-          <p id="quota" style="display:none;"></p>
-          <button class="nav-pill" id="acct-btn" type="button" style="display:none"></button>
-        </div>
-      </form>
-    </aside>
 
-    <!-- RIGHT COLUMN: FRAMED ARCHITECTURAL STAGE (Image 4 Style) -->
-    <section class="axiom-stage" id="axiom-stage">
-      <!-- 1. Leaflet Interactive Map -->
-      <div id="app" class="screen-layer active">
-        <div id="map"></div>
-        <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
-
-        <!-- Top Floating Dynamic Island Inside Map (Image 4 Style) -->
-        <div class="axiom-map-island" id="map-axiom-bar">
-          <div class="axiom-island-capsule">
-            <button type="button" class="axiom-island-btn active" id="map-btn-sat" data-base="sat" title="Vista Satelital">
-              <span class="axiom-island-dot active"></span>
-              <span>Satélite</span>
-            </button>
-            <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Cartografía Arquitectónica Oscura">
-              <span class="axiom-island-dot"></span>
-              <span>Mapa Oscuro</span>
-            </button>
-            <span class="axiom-island-sep"></span>
-            <button type="button" class="axiom-island-btn" id="map-btn-walk" title="Círculos de caminabilidad (5 / 10 / 15 min)">
-              <svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
-              <span>Radios</span>
-            </button>
-          </div>
-
-          <!-- Floating Walking Distance Pill (Image 5) -->
-          <div class="walk-distance-pill" id="walk-distance-pill" hidden>
-            <label class="walk-switch-row" title="Alternar radios de caminabilidad">
-              <input type="checkbox" id="map-walk-switch" checked>
-              <i class="walk-switch-slider"></i>
-              <span class="walk-switch-label">Walking distance</span>
-            </label>
-            <div class="walk-range-group">
-              <button type="button" class="walk-btn" data-walk="5">5 min</button>
-              <button type="button" class="walk-btn" data-walk="10">10 min</button>
-              <button type="button" class="walk-btn active" data-walk="15">15 min</button>
-              <button type="button" class="walk-btn" data-walk="all">Todos</button>
+          <!-- Hidden inputs required by app.js data query engine -->
+          <div style="display:none;" aria-hidden="true">
+            <div class="seg mode-seg" role="group">
+              <button type="button" data-mode="model" aria-pressed="true">Modelo 3D</button>
+              <button type="button" data-mode="section" aria-pressed="false">Corte</button>
             </div>
+            <input type="checkbox" name="buildings" checked>
+            <input type="checkbox" name="poi_schools" checked>
+            <input type="checkbox" name="poi_commercial" checked>
+            <input type="checkbox" name="poi_residential" checked>
+            <input type="checkbox" name="extraBuildings" checked>
+            <input type="checkbox" name="roads" checked>
+            <input type="checkbox" name="roads_major" checked>
+            <input type="checkbox" name="roads_minor" checked>
+            <input type="checkbox" name="roadWidth">
+            <input type="checkbox" name="bridges" checked>
+            <input type="checkbox" name="terrain" checked>
+            <input type="checkbox" name="contours" checked>
+            <input type="checkbox" name="nature" checked>
+            <input type="checkbox" name="trees" checked>
+            <input type="checkbox" name="detect" checked>
+            <input id="sens" type="range" min="0" max="100" step="5" value="50">
+            <b id="sens-out">50%</b>
+            <div id="sens-field"></div>
+            <input type="checkbox" name="satellite" checked>
+            <button type="button" id="site-draw"></button>
+            <button type="button" id="site-clear"></button>
+            <span id="site-info"></span>
+            <button type="button" id="sec-draw"></button>
+            <button type="button" id="sec-undo"></button>
+            <button type="button" id="sec-clear"></button>
+            <select id="sec-exag"><option value="1">1</option></select>
+            <select id="sec-dir"><option value="0">0</option></select>
+            <button type="button" id="sec-build"></button>
+            <span id="sec-status"></span>
+            <span id="sec-len"></span>
+            <button class="nav-pill" id="acct-btn" type="button"></button>
           </div>
-        </div>
+        </form>
+      </aside>
+    </div>
 
-        <!-- Section Ready Floating Trigger Pill -->
-        <div class="section-ready-pill" id="section-ready-pill" hidden>
-          <span class="sec-ready-dot"></span>
-          <span class="sec-ready-title">■ Perfil de corte calculado</span>
-          <button type="button" class="btn-open-section-modal" id="btn-open-section-modal">Ver Análisis & Cotas</button>
-        </div>
+    <!-- VIEW 2: 3D STUDIO (The Result Screen when model finishes) -->
+    <div id="result" class="screen-layer">
+      <div class="viewer-wrap">
+        <div class="viewer" id="viewer"></div>
+        <div class="flat" id="view-plan" hidden><img alt="" draggable="false"></div>
+        <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
+        <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
       </div>
 
-      <!-- 2. Three.js 3D Studio Canvas -->
-      <div id="result" class="screen-layer">
-        <div class="viewer-wrap">
-          <div class="viewer" id="viewer"></div>
-          <div class="flat" id="view-plan" hidden><img alt="" draggable="false"></div>
-          <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
-          <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
+      <!-- Studio Floating Top Bar Inside 3D Stage -->
+      <header class="studio-top-bar" id="studio-top-bar" aria-label="Controles del estudio">
+        <!-- Render Mode: Modelo 3D vs Maqueta 3D (Monocromática) -->
+        <div class="axiom-capsule" id="capsule-render" role="group">
+          <button type="button" class="axiom-btn active" id="btn-render-model" data-render="model" title="Modelo 3D con colores de uso de suelo">
+            <span class="axiom-dot active"></span>
+            <span>Modelo 3D</span>
+          </button>
+          <button type="button" class="axiom-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta física monocromática de yeso">
+            <span class="axiom-dot"></span>
+            <span>Maqueta 3D</span>
+          </button>
         </div>
 
-        <!-- Axiom Floating Studio Top Bar (Inside Frame) -->
-        <header class="studio-top-bar" id="studio-top-bar" aria-label="Controles del estudio">
-          <!-- 1. Render Mode Capsule (Modelo vs Maqueta Arquitectónica) -->
-          <div class="axiom-capsule" id="capsule-render" role="group" aria-label="Modo de renderizado">
-            <button type="button" class="axiom-btn active" id="btn-render-model" data-render="model" title="Modelo 3D Cartográfico con uso de suelo y alturas">
-              <span class="axiom-dot active"></span>
-              <span>Modelo 3D</span>
-            </button>
-            <button type="button" class="axiom-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta física monocromática de yeso arquitectónico">
-              <span class="axiom-dot"></span>
-              <span>Maqueta 3D</span>
-            </button>
-          </div>
+        <!-- Camera Projections -->
+        <div class="axiom-capsule" id="capsule-camera" role="group">
+          <button type="button" class="axiom-btn active" id="cam-persp" title="Perspectiva libre">
+            <span>Perspectiva</span>
+          </button>
+          <button type="button" class="axiom-btn" id="cam-iso" title="Isométrica 45°">
+            <span>Isométrica</span>
+          </button>
+          <button type="button" class="axiom-btn" id="cam-top" title="Planta">
+            <span>Planta</span>
+          </button>
+        </div>
+      </header>
 
-          <!-- 2. Camera Projections Capsule -->
-          <div class="axiom-capsule" id="capsule-camera" role="group" aria-label="Proyección de cámara">
-            <button type="button" class="axiom-btn active" id="cam-persp" title="Perspectiva 3D libre">
-              <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
-              <span>Perspectiva</span>
-            </button>
-            <button type="button" class="axiom-btn" id="cam-iso" title="Proyección Axonométrica / Isométrica 45°">
-              <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-              <span>Isométrica</span>
-            </button>
-            <button type="button" class="axiom-btn" id="cam-top" title="Vista cenital (Planta Top)">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
-              <span>Planta</span>
+      <!-- THE EXPORTER PANEL (Appears strictly in the Result Screen!) -->
+      <aside class="axiom-export-card" id="export-panel">
+        <div class="axiom-export-header">
+          <div class="axiom-export-title-row">
+            <h2 class="axiom-export-title">Descargar Activos</h2>
+            <button type="button" class="axiom-back-btn" id="btn-back-to-map" title="Volver al mapa para elegir otra área">
+              <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
+              <span>Mapa</span>
             </button>
           </div>
+          <p id="coords" class="export-coords">—</p>
+        </div>
 
-          <!-- 3. Overlays / Inspectors Capsule -->
-          <div class="axiom-capsule" id="capsule-tools" role="group" aria-label="Capas e inspectores">
-            <button type="button" class="axiom-btn" id="btn-toggle-gis" title="Ver capas e infraestructura GIS">
-              <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
-              <span>Capas GIS</span>
-            </button>
-            <button type="button" class="axiom-btn" id="btn-toggle-radii" title="Radios de caminabilidad (5 / 10 / 15 min)">
-              <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
-              <span>Radios</span>
-            </button>
-            <button type="button" class="axiom-btn" id="btn-toggle-bio" title="Flora, Fauna y Ecosistema regional">
-              <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
-              <span>Biodiversidad</span>
-            </button>
+        <!-- Extracted Metrics (Edificios, Vías, Relieve, Árboles) -->
+        <div class="axiom-export-summary">
+          <div class="axiom-sum-item">
+            <span class="axiom-sum-label">Edificios</span>
+            <b class="axiom-sum-val" id="st-buildings">0</b>
           </div>
-        </header>
-
-        <!-- Telemetry Cards Inside 3D Studio Stage -->
-        <div class="telemetry-bar">
-          <div class="telemetry-card">
-            <span class="telemetry-tag">REL</span>
-            <b class="telemetry-val" id="st-relief">0</b>
-            <span class="telemetry-unit">m</span>
+          <div class="axiom-sum-item">
+            <span class="axiom-sum-label">Vías</span>
+            <b class="axiom-sum-val"><span id="st-roads">0</span> km</b>
           </div>
-          <div class="telemetry-card">
-            <span class="telemetry-tag">BLD</span>
-            <b class="telemetry-val" id="st-buildings">0</b>
-            <span class="telemetry-unit">edif</span>
+          <div class="axiom-sum-item">
+            <span class="axiom-sum-label">Relieve</span>
+            <b class="axiom-sum-val"><span id="st-relief">0</span> m</b>
           </div>
-          <div class="telemetry-card">
-            <span class="telemetry-tag">RDS</span>
-            <b class="telemetry-val" id="st-roads">0</b>
-            <span class="telemetry-unit">km</span>
-          </div>
-          <div class="telemetry-card">
-            <span class="telemetry-tag">TRE</span>
-            <b class="telemetry-val" id="st-trees">0</b>
-            <span class="telemetry-unit">árboles</span>
+          <div class="axiom-sum-item">
+            <span class="axiom-sum-label">Árboles</span>
+            <b class="axiom-sum-val" id="st-trees">0</b>
           </div>
         </div>
-      </div>
 
-      <!-- 3. Vector Map 2D Editor -->
-      <div id="mapper" class="screen-layer">
-        <div class="editor-stage">
-          <div class="flat" id="map-flat"><img alt="" draggable="false"></div>
+        <!-- Download Buttons Grid -->
+        <div class="axiom-export-grid downloads">
+          <button type="button" class="axiom-dl-tile dl" data-format="dxf">
+            <b>AutoCAD</b>
+            <span>.dxf</span>
+          </button>
+          <button type="button" class="axiom-dl-tile dl" data-format="svg">
+            <b>Illustrator</b>
+            <span>.svg</span>
+          </button>
+          <button type="button" class="axiom-dl-tile dl" data-format="geojson">
+            <b>QGIS</b>
+            <span>.geojson</span>
+          </button>
+          <button type="button" class="axiom-dl-tile dl" data-format="3dm">
+            <b>Rhino</b>
+            <span>.3dm</span>
+          </button>
+          <button type="button" class="axiom-dl-tile dl" data-format="dae">
+            <b>SketchUp</b>
+            <span>.dae</span>
+          </button>
+          <button type="button" class="axiom-dl-tile dl" data-format="stl">
+            <b>3D Print</b>
+            <span id="stl-note">.stl</span>
+          </button>
         </div>
-        <aside class="editor-glass-panel illu-panel">
-          <div class="editor-panel-header">
-            <h3>Vector Map (2D)</h3>
-            <p class="muted">Zoom con rueda · Arrastrar para desplazar</p>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Estilos de Lámina</span>
-            <div class="illu-grid">
-              <button type="button" data-mappreset="classic" aria-pressed="true">Clásico</button>
-              <button type="button" data-mappreset="figure">Lleno/Vacío</button>
-              <button type="button" data-mappreset="relief">Relieve</button>
-              <button type="button" data-mappreset="night">Nocturno</button>
-              <button type="button" data-mappreset="blueprint">Blueprint</button>
-            </div>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Capas</span>
-            <label class="toggle"><span>Edificios</span><input type="checkbox" data-mapopt="layers.buildings"><i></i></label>
-            <label class="toggle"><span>Vías</span><input type="checkbox" data-mapopt="layers.roads"><i></i></label>
-            <label class="toggle"><span>Ferrocarriles</span><input type="checkbox" data-mapopt="layers.rail"><i></i></label>
-            <label class="toggle"><span>Agua</span><input type="checkbox" data-mapopt="layers.water"><i></i></label>
-            <label class="toggle"><span>Áreas verdes</span><input type="checkbox" data-mapopt="layers.green"><i></i></label>
-            <label class="toggle"><span>Árboles</span><input type="checkbox" data-mapopt="layers.trees"><i></i></label>
-            <label class="toggle"><span>Curvas de nivel</span><input type="checkbox" data-mapopt="layers.contours"><i></i></label>
-            <label class="toggle"><span>Predio</span><input type="checkbox" data-mapopt="layers.site"><i></i></label>
-            <label class="toggle"><span>Color por tipo</span><input type="checkbox" data-mapopt="layers.byType"><i></i></label>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Luz y Sombra</span>
-            <label class="toggle"><span>Sombras</span><input type="checkbox" data-mapopt="shadows.on"><i></i></label>
-            <label class="field"><span>Dirección solar</span><input type="range" min="0" max="355" step="5" data-mapopt="shadows.azimuth"></label>
-            <label class="field"><span>Altura solar</span><input type="range" min="5" max="80" step="1" data-mapopt="shadows.altitude"></label>
-            <label class="field"><span>Intensidad</span><input type="range" min="0.05" max="0.8" step="0.01" data-mapopt="shadows.strength"></label>
-            <label class="toggle"><span>Sombreado relieve</span><input type="checkbox" data-mapopt="relief.hillshade"><i></i></label>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Elementos</span>
-            <label class="toggle"><span>Barra de escala</span><input type="checkbox" data-mapopt="overlays.scalebar"><i></i></label>
-            <label class="toggle"><span>Norte</span><input type="checkbox" data-mapopt="overlays.north"><i></i></label>
-            <label class="toggle"><span>Retícula</span><input type="checkbox" data-mapopt="overlays.grid"><i></i></label>
-            <label class="field"><span>Grosor contorno</span><input type="range" min="0" max="0.4" step="0.02" data-mapopt="outlineWidth"></label>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Paleta de Colores</span>
-            <div class="swatches" id="map-swatches"></div>
-            <button type="button" class="btn-apple-secondary" id="map-reset-colors">Restablecer colores</button>
-          </div>
-          <div class="illu-group illu-export">
-            <button type="button" class="btn-apple-primary" data-mapexport="svg">Descargar Vector .svg</button>
-            <button type="button" class="btn-apple-secondary" data-mapexport="png">Descargar Imagen .png</button>
-          </div>
-        </aside>
-      </div>
+        <p id="quota" style="display:none;"></p>
+      </aside>
+    </div>
 
-      <!-- 4. Vector Illustration Screen -->
-      <div id="illustrator" class="screen-layer">
-        <div class="editor-stage">
-          <canvas id="illu-canvas"></canvas>
-        </div>
-        <aside class="editor-glass-panel illu-panel">
-          <div class="editor-panel-header">
-            <h3>Ilustración Axonométrica</h3>
-            <p class="muted">Arrastra para orbitar · Rueda para zoom</p>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Ángulo Isométrico</span>
-            <div class="illu-grid">
-              <button type="button" data-illview="iso-nw">NO iso</button>
-              <button type="button" data-illview="iso-ne">NE iso</button>
-              <button type="button" data-illview="iso-sw" aria-pressed="true">SO iso</button>
-              <button type="button" data-illview="iso-se">SE iso</button>
-              <button type="button" data-illview="top">Planta</button>
-              <button type="button" data-illview="eye">Peatonal</button>
-            </div>
-            <label class="toggle"><span>Perspectiva</span><input type="checkbox" id="illu-persp"><i></i></label>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Estilo Gráfico</span>
-            <div class="illu-col">
-              <button type="button" data-illstyle="flat" aria-pressed="true">Sin contorno</button>
-              <button type="button" data-illstyle="line">Línea delgada</button>
-              <button type="button" data-illstyle="mono">Blanco y negro</button>
-            </div>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Capas</span>
-            <label class="toggle"><span>Edificios</span><input type="checkbox" data-illlayer="buildings" checked><i></i></label>
-            <label class="toggle"><span>Árboles</span><input type="checkbox" data-illlayer="trees" checked><i></i></label>
-            <label class="toggle"><span>Vías</span><input type="checkbox" data-illlayer="roads" checked><i></i></label>
-            <label class="toggle"><span>Agua y vegetación</span><input type="checkbox" data-illlayer="nature" checked><i></i></label>
-            <label class="toggle"><span>Curvas de nivel</span><input type="checkbox" data-illlayer="contours" checked><i></i></label>
-            <label class="toggle"><span>Color por tipología</span><input type="checkbox" id="illu-bytype"><i></i></label>
-            <label class="toggle"><span>Leyenda</span><input type="checkbox" id="illu-legend" checked><i></i></label>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Paleta de Colores</span>
-            <div class="swatches" id="illu-swatches"></div>
-            <div class="swatches" id="illu-class-swatches"></div>
-            <button type="button" class="btn-apple-secondary" id="illu-reset-colors">Restablecer colores</button>
-          </div>
-          <div class="illu-group">
-            <span class="illu-title">Etiquetas</span>
-            <div class="tool-row">
-              <button type="button" class="btn-apple-secondary" id="illu-label">Añadir texto</button>
-              <input type="color" id="illu-color" value="#111114" aria-label="Color">
-            </div>
-            <ul class="illu-labels" id="illu-label-list" style="margin-top:6px; list-style:none;"></ul>
-          </div>
-          <div class="illu-group illu-export">
-            <button type="button" class="btn-apple-primary" data-illexport="svg">Descargar Vector .svg</button>
-            <button type="button" class="btn-apple-secondary" data-illexport="png">Descargar Imagen .png</button>
-          </div>
-        </aside>
-      </div>
-
-      <!-- Hidden triggers for auxiliary views -->
-      <button id="open-map" style="display:none;"></button>
-      <button id="open-editor" style="display:none;"></button>
-    </section>
+    <!-- VIEW 3: VECTOR 2D & ILLUSTRATOR (Auxiliary Fallbacks) -->
+    <div id="mapper" class="screen-layer" style="display:none;"><div class="flat" id="map-flat"><img alt="" draggable="false"></div></div>
+    <div id="illustrator" class="screen-layer" style="display:none;"><canvas id="illu-canvas"></canvas></div>
+    <button id="open-map" style="display:none;"></button>
+    <button id="open-editor" style="display:none;"></button>
   </main>
 
-  <!-- ========================================================
-       3. FOCUSED SECTION ANALYSIS MODAL
-       ======================================================== -->
-  <div class="section-modal-backdrop" id="section-modal" hidden>
-    <div class="section-modal-window">
-      <div class="section-modal-header">
-        <div class="section-modal-title">
-          <span class="mono-tag">■ TELEMETRÍA DEL CORTE TOPOGRÁFICO</span>
-          <h3>Perfil de Elevación y Cotas</h3>
-          <p id="sec-meta-drawer" class="mono-coords">—</p>
-        </div>
-        <button type="button" class="modal-close-btn" id="section-modal-close" aria-label="Cerrar">&times;</button>
-      </div>
-      <div class="section-telemetry-ribbon">
-        <div class="sec-stat-item">
-          <span class="sec-stat-label">DISTANCIA TOTAL</span>
-          <b class="sec-stat-val" id="sec-stat-len">—</b>
-        </div>
-        <div class="sec-stat-item">
-          <span class="sec-stat-label">COTA MÁXIMA</span>
-          <b class="sec-stat-val" id="sec-stat-max">—</b>
-        </div>
-        <div class="sec-stat-item">
-          <span class="sec-stat-label">COTA MÍNIMA</span>
-          <b class="sec-stat-val" id="sec-stat-min">—</b>
-        </div>
-        <div class="sec-stat-item">
-          <span class="sec-stat-label">DESNIVEL ACUMULADO</span>
-          <b class="sec-stat-val" id="sec-stat-drop">—</b>
-        </div>
-      </div>
-      <div class="section-modal-body">
-        <div class="flat" id="view-section-drawer"><img alt="" draggable="false"></div>
-      </div>
-      <div class="section-modal-footer">
-        <div class="section-modal-actions">
-          <button class="glass-pill-btn dl" data-section="dxf">AutoCAD .dxf</button>
-          <button class="glass-pill-btn dl" data-section="svg">Vector .svg</button>
-          <button class="glass-pill-btn dl" data-section="png">Imagen .png</button>
-        </div>
-        <span class="modal-tip">Presiona ESC o clic fuera para volver al mapa</span>
-      </div>
-    </div>
-  </div>
-
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=5.0"></script>
+  <script type="module" src="/js/app.js?v=5.5"></script>
   <script>
     (function() {
-      // Inspector internal tab navigation
-      const tabs = document.querySelectorAll('.axiom-insp-tab');
-      tabs.forEach(tab => {
-        tab.addEventListener('click', (e) => {
-          tabs.forEach(t => t.classList.remove('active'));
-          e.currentTarget.classList.add('active');
-          const tabKey = e.currentTarget.getAttribute('data-tab');
-          ['params', 'gis', 'radii', 'bio', 'export'].forEach(k => {
-            const pane = document.getElementById('pane-' + k);
-            if (pane) pane.style.display = (k === tabKey) ? 'block' : 'none';
-          });
-          if (tabKey === 'bio' && window.updateBiodiversityCard) window.updateBiodiversityCard();
-          if (tabKey === 'radii' && window.updateWalkingDistanceDisplay) window.updateWalkingDistanceDisplay();
-        });
-      });
-
-      // Synchronize slider display
-      const sizeInput = document.getElementById('size');
-      const sliderVal = document.getElementById('axiom-slider-val');
-      if (sizeInput && sliderVal) {
-        sizeInput.addEventListener('input', () => {
-          const km = (Number(sizeInput.value) / 1000).toFixed(sizeInput.value % 100 ? 2 : 1);
-          sliderVal.textContent = `${km} km`;
-        });
-      }
-
       // Synchronize shape buttons
       document.querySelectorAll('.shape-seg button').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -885,14 +307,12 @@
           }, 60);
         }
         if (viewName === 'result') {
-          import('./js/preview.js?v=5.0').then(p => p.triggerResize?.()).catch(() => {});
+          import('./js/preview.js?v=5.5').then(p => p.triggerResize?.()).catch(() => {});
         }
       }
       window.switchWorkspaceView = switchView;
 
       document.getElementById('view-btn-map')?.addEventListener('click', () => {
-        const modeBtn = document.querySelector('[data-mode="model"]');
-        if (modeBtn) modeBtn.click();
         switchView('app');
       });
 
@@ -902,43 +322,8 @@
         switchView('result');
       });
 
-      document.getElementById('view-btn-section')?.addEventListener('click', () => {
-        const modeSec = document.querySelector('[data-mode="section"]');
-        if (modeSec) modeSec.click();
+      document.getElementById('btn-back-to-map')?.addEventListener('click', () => {
         switchView('app');
-        // Activate params tab where section tools are located
-        document.querySelector('.axiom-insp-tab[data-tab="params"]')?.click();
-      });
-
-      // Connect 3D Studio top bar tools to switch tabs in left inspector
-      document.getElementById('btn-toggle-gis')?.addEventListener('click', () => {
-        document.querySelector('.axiom-insp-tab[data-tab="gis"]')?.click();
-      });
-      document.getElementById('btn-toggle-radii')?.addEventListener('click', () => {
-        document.querySelector('.axiom-insp-tab[data-tab="radii"]')?.click();
-      });
-      document.getElementById('btn-toggle-bio')?.addEventListener('click', () => {
-        document.querySelector('.axiom-insp-tab[data-tab="bio"]')?.click();
-      });
-
-      // Section modal toggles
-      const sectionModal = document.getElementById('section-modal');
-      const btnOpenSecModal = document.getElementById('btn-open-section-modal');
-      const secModalClose = document.getElementById('section-modal-close');
-
-      btnOpenSecModal?.addEventListener('click', () => {
-        if (sectionModal) sectionModal.hidden = false;
-      });
-      secModalClose?.addEventListener('click', () => {
-        if (sectionModal) sectionModal.hidden = true;
-      });
-      sectionModal?.addEventListener('click', (e) => {
-        if (e.target === sectionModal) sectionModal.hidden = true;
-      });
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && sectionModal && !sectionModal.hidden) {
-          sectionModal.hidden = true;
-        }
       });
     })();
   </script>
