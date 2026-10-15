@@ -23,17 +23,6 @@ const store = {
 const start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
 start.zoom = Math.max(12, start.zoom);
 const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true }).setView([start.lat, start.lon], start.zoom);
-map.whenReady(() => {
-  map.invalidateSize();
-  drawFrame();
-});
-setTimeout(() => { map.invalidateSize(); drawFrame(); }, 150);
-setTimeout(() => { map.invalidateSize(); drawFrame(); }, 500);
-setTimeout(() => { map.invalidateSize(); drawFrame(); }, 1200);
-window.addEventListener('resize', () => {
-  map.invalidateSize();
-  drawFrame();
-});
 map.zoomControl.setPosition('bottomright');
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 const tiles = (name, native) => L.tileLayer(`${ESRI}/${name}/MapServer/tile/{z}/{y}/{x}`, { maxZoom: 19, maxNativeZoom: native, attribution: 'Esri, Maxar, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
@@ -119,6 +108,9 @@ function fitFrame() {
 }
 sizeInput.addEventListener('input', fitFrame);
 fitFrame();
+setTimeout(() => { map.invalidateSize(); fitFrame(); }, 200);
+setTimeout(() => { map.invalidateSize(); fitFrame(); }, 800);
+window.addEventListener('resize', () => { map.invalidateSize(); fitFrame(); });
 
 /* ---------------- Поиск (Nominatim) ---------------- */
 
