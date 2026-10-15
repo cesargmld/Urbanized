@@ -1,6 +1,7 @@
 import { buildModel, redetectTrees } from './data.js?v=e9ed68a96e';
 import { FORMATS, stlScale } from './exporters.js?v=e9ed68a96e';
-import { setCameraView } from './preview.js';
+import { setCameraView, toggleChunkMode, isChunkModeActive } from './preview.js';
+import { classifyEcosystem } from './biodiversity.js';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=e9ed68a96e';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=e9ed68a96e';
 import { createIllustrator } from './illustrate.js?v=e9ed68a96e';
@@ -595,19 +596,30 @@ async function showSection(sec) {
   if (secState.url) URL.revokeObjectURL(secState.url);
   secState.url = URL.createObjectURL(SECTION_FORMATS.svg.make(sec));
 
-  // Architectural drawer on map
-  const drawer = $('#section-drawer');
-  if (drawer) {
-    drawer.hidden = false;
-    const metaDrawer = $('#sec-meta-drawer');
-    if (metaDrawer) {
-      metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Min: ${Math.round(sec.minZ)} m · Max: ${Math.round(sec.maxZ)} m · ${sec.buildings.length} edificios`;
-    }
-    const imgDrawer = $('#view-section-drawer img');
-    if (imgDrawer) {
-      imgDrawer.src = secState.url;
-      imgDrawer.onload = () => fitFlat($('#view-section-drawer'));
-    }
+  // Populate focused section modal and non-intrusive trigger pill
+  const readyPill = $('#section-ready-pill');
+  if (readyPill) readyPill.hidden = false;
+
+  const modal = $('#section-modal');
+  if (modal) modal.hidden = false;
+
+  const metaDrawer = $('#sec-meta-drawer');
+  if (metaDrawer) {
+    metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Cota ${Math.round(sec.minZ)} m a ${Math.round(sec.maxZ)} m · ${sec.buildings.length} estructuras`;
+  }
+
+  const statLen = $('#sec-stat-len');
+  if (statLen) statLen.textContent = `${(sec.length / 1000).toFixed(2)} km`;
+  const statMax = $('#sec-stat-max');
+  if (statMax) statMax.textContent = `${Math.round(sec.maxZ)} m`;
+  const statMin = $('#sec-stat-min');
+  if (statMin) statMin.textContent = `${Math.round(sec.minZ)} m`;
+  const statDrop = $('#sec-stat-drop');
+  if (statDrop) statDrop.textContent = `${Math.round(sec.maxZ - sec.minZ)} m`;
+
+  const imgDrawer = $('#view-section-drawer img');
+  if (imgDrawer) {
+    imgDrawer.src = secState.url;
   }
 
   // Legacy container sync
@@ -623,6 +635,67 @@ async function showSection(sec) {
   }
   renderSecQuota();
 }
+
+// ---------------- Biodiversity, Flora & Fauna Engine ----------------
+function updateBiodiversity() {
+  const center = map.getCenter();
+  const elev = (typeof model !== 'undefined' && model?.grid) ? model.grid.maxH : 0;
+  const placeName = $('#q')?.value || '';
+  const eco = classifyEcosystem(center.lat, center.lng, elev, placeName);
+
+  const biomeTitle = $('#bio-biome-name');
+  if (biomeTitle) biomeTitle.textContent = eco.name;
+
+  const coordsEl = $('#bio-coords');
+  if (coordsEl) coordsEl.textContent = `■ ${Math.abs(center.lat).toFixed(4)}° ${center.lat >= 0 ? 'N' : 'S'}, ${Math.abs(center.lng).toFixed(4)}° ${center.lng >= 0 ? 'E' : 'W'}`;
+
+  const summary = $('#bio-summary');
+  if (summary) summary.textContent = `${eco.soil}. ${eco.climate}`;
+
+  const floraList = $('#bio-flora-list');
+  if (floraList) {
+    floraList.innerHTML = eco.flora.map(f => `
+      <div class="bio-pill-item">
+        <div class="bio-pill-header">
+          <b class="bio-sp-name">${f.name}</b>
+          <i class="bio-sp-latin">${f.latin}</i>
+        </div>
+        <div class="bio-pill-meta">
+          <span class="bio-badge">${f.type}</span>
+          <span class="bio-note">${f.note}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const faunaList = $('#bio-fauna-list');
+  if (faunaList) {
+    faunaList.innerHTML = eco.fauna.map(f => `
+      <div class="bio-pill-item">
+        <div class="bio-pill-header">
+          <b class="bio-sp-name">${f.name}</b>
+          <i class="bio-sp-latin">${f.latin}</i>
+        </div>
+        <div class="bio-pill-meta">
+          <span class="bio-badge">${f.class}</span>
+          <span class="bio-status-tag">${f.status}</span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const climateEl = $('#bio-climate');
+  if (climateEl) climateEl.textContent = eco.climate.split('(')[0].trim();
+
+  const canopyEl = $('#bio-canopy');
+  if (canopyEl) canopyEl.textContent = eco.canopy;
+}
+
+window.updateBiodiversityCard = updateBiodiversity;
+map.on('moveend', () => {
+  const bioCard = $('#bio-card');
+  if (bioCard && !bioCard.hidden) updateBiodiversity();
+});
 
 // Camera toolbar buttons
 $('#cam-persp')?.addEventListener('click', (e) => {

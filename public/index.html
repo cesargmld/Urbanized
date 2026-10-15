@@ -12,9 +12,9 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230a0a0c'/%3E%3Ccircle cx='16' cy='16' r='10' fill='none' stroke='%23ffffff' stroke-width='1.8'/%3E%3Cline x1='16' y1='4' x2='16' y2='28' stroke='%23ffffff' stroke-width='1' stroke-dasharray='2 2' opacity='0.45'/%3E%3Cline x1='4' y1='16' x2='28' y2='16' stroke='%23ffffff' stroke-width='1' stroke-dasharray='2 2' opacity='0.45'/%3E%3Ccircle cx='16' cy='16' r='1.6' fill='%23ffffff'/%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=3.6">
+  <link rel="stylesheet" href="/css/style.css?v=3.7">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -43,23 +43,11 @@
         <button type="button" id="guidance-cancel" class="guidance-close">&times;</button>
       </div>
 
-      <!-- Architectural Bottom Elevation Drawer -->
-      <div class="section-drawer" id="section-drawer" hidden>
-        <div class="section-drawer-header">
-          <div class="section-drawer-title">
-            <h3>Perfil de Corte Topográfico</h3>
-            <p id="sec-meta-drawer">—</p>
-          </div>
-          <div class="section-drawer-actions">
-            <button class="glass-pill-btn dl" data-section="dxf">AutoCAD .dxf</button>
-            <button class="glass-pill-btn dl" data-section="svg">Vector .svg</button>
-            <button class="glass-pill-btn dl" data-section="png">Imagen .png</button>
-            <button type="button" class="drawer-close" id="section-drawer-close">&times;</button>
-          </div>
-        </div>
-        <div class="section-drawer-body">
-          <div class="flat" id="view-section-drawer"><img alt="" draggable="false"></div>
-        </div>
+      <!-- Section Ready Floating Trigger Pill (Non-intrusive) -->
+      <div class="section-ready-pill" id="section-ready-pill" hidden>
+        <span class="sec-ready-dot"></span>
+        <span class="sec-ready-title">■ Perfil de corte calculado</span>
+        <button type="button" class="btn-open-section-modal" id="btn-open-section-modal">Ver Análisis & Cotas</button>
       </div>
     </div>
 
@@ -72,7 +60,7 @@
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
       </div>
 
-      <!-- Floating Camera Toolbar (Apple Pill) -->
+      <!-- Floating Camera Toolbar (Moodboard / Apple Pill) -->
       <div class="camera-toolbar">
         <button type="button" class="cam-pill-btn active" id="cam-persp" title="Perspectiva 3D libre">
           <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
@@ -82,15 +70,20 @@
           <svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21"></polyline><line x1="3" y1="21" x2="21" y2="3"></line></svg>
           <span>Isométrica 45°</span>
         </button>
+        <button type="button" class="cam-pill-btn" id="cam-chunk" title="Modo Chunk 3D (Relieve Topográfico Puro · Moodboard)">
+          <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+          <span>Chunk 3D</span>
+        </button>
         <button type="button" class="cam-pill-btn" id="cam-top" title="Vista superior cenital (Planta)">
           <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
           <span>Planta (Top)</span>
         </button>
       </div>
 
-      <!-- View Switcher Tabs (3D Model / Drawing / Satellite) -->
+      <!-- View Switcher Tabs (3D Model / Chunk / Drawing / Satellite) -->
       <div class="seg stage-tabs" role="tablist">
         <button type="button" role="tab" data-view="model" aria-selected="true">Modelo 3D</button>
+        <button type="button" role="tab" data-view="chunk" id="tab-chunk">Chunk 3D (Relieve)</button>
         <button type="button" role="tab" data-view="plan" aria-selected="false">Plano</button>
         <button type="button" role="tab" data-view="sat" aria-selected="false">Satélite</button>
       </div>
@@ -327,6 +320,9 @@
     <button type="button" class="dock-btn" id="dock-btn-section" data-view="section" title="Corte Topográfico">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
     </button>
+    <button type="button" class="dock-btn" id="dock-btn-bio" title="Flora, Fauna y Ecosistema">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
+    </button>
     <button type="button" class="dock-btn disabled" id="dock-btn-illu" data-view="illustrator" title="Ilustración Axonométrica">
       <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
     </button>
@@ -499,8 +495,95 @@
     </div>
   </aside>
 
+  <!-- FLOATING BIODIVERSITY & ECOSYSTEM CARD (FLORA & FAUNA) -->
+  <aside class="floating-bio-card" id="bio-card" hidden>
+    <div class="bio-card-header">
+      <div class="bio-title-wrap">
+        <span class="mono-tag">■ BIOMA & BIODIVERSIDAD</span>
+        <h3 id="bio-biome-name">Ecosistema Local</h3>
+        <p id="bio-coords" class="mono-coords">—</p>
+      </div>
+      <button type="button" class="bio-close-btn" id="bio-card-close" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="bio-card-body">
+      <div class="bio-biome-summary" id="bio-summary">
+        Detectando bioma de la región...
+      </div>
+
+      <div class="bio-section">
+        <div class="bio-section-title">
+          <svg viewBox="0 0 24 24"><path d="M12 2L9 9l-7 1 5 5-1 7 6-3 6 3-1-7 5-5-7-1-3-7z"/></svg>
+          <span>Flora Autóctona Predominante</span>
+        </div>
+        <div class="bio-species-list" id="bio-flora-list"></div>
+      </div>
+
+      <div class="bio-section">
+        <div class="bio-section-title">
+          <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+          <span>Fauna Silvestre Característica</span>
+        </div>
+        <div class="bio-species-list" id="bio-fauna-list"></div>
+      </div>
+
+      <div class="bio-stats-grid">
+        <div class="bio-stat">
+          <span class="bio-stat-label">CLIMA</span>
+          <b class="bio-stat-val" id="bio-climate">—</b>
+        </div>
+        <div class="bio-stat">
+          <span class="bio-stat-label">DOSEL VEGETAL</span>
+          <b class="bio-stat-val" id="bio-canopy">—</b>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- FOCUSED SECTION ANALYSIS MODAL / FULL SCREEN DATA -->
+  <div class="section-modal-backdrop" id="section-modal" hidden>
+    <div class="section-modal-window">
+      <div class="section-modal-header">
+        <div class="section-modal-title">
+          <span class="mono-tag">■ TELEMETRÍA DEL CORTE TOPOGRÁFICO</span>
+          <h3>Perfil de Elevación y Cotas</h3>
+          <p id="sec-meta-drawer" class="mono-coords">—</p>
+        </div>
+        <button type="button" class="modal-close-btn" id="section-modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div class="section-telemetry-ribbon">
+        <div class="sec-stat-item">
+          <span class="sec-stat-label">DISTANCIA TOTAL</span>
+          <b class="sec-stat-val" id="sec-stat-len">—</b>
+        </div>
+        <div class="sec-stat-item">
+          <span class="sec-stat-label">COTA MÁXIMA</span>
+          <b class="sec-stat-val" id="sec-stat-max">—</b>
+        </div>
+        <div class="sec-stat-item">
+          <span class="sec-stat-label">COTA MÍNIMA</span>
+          <b class="sec-stat-val" id="sec-stat-min">—</b>
+        </div>
+        <div class="sec-stat-item">
+          <span class="sec-stat-label">DESNIVEL ACUMULADO</span>
+          <b class="sec-stat-val" id="sec-stat-drop">—</b>
+        </div>
+      </div>
+      <div class="section-modal-body">
+        <div class="flat" id="view-section-drawer"><img alt="" draggable="false"></div>
+      </div>
+      <div class="section-modal-footer">
+        <div class="section-modal-actions">
+          <button class="glass-pill-btn dl" data-section="dxf">AutoCAD .dxf</button>
+          <button class="glass-pill-btn dl" data-section="svg">Vector .svg</button>
+          <button class="glass-pill-btn dl" data-section="png">Imagen .png</button>
+        </div>
+        <span class="modal-tip">Presiona ESC o clic fuera para volver al mapa</span>
+      </div>
+    </div>
+  </div>
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=3.5"></script>
+  <script type="module" src="/js/app.js?v=3.7"></script>
   <script>
     (function() {
       const sidebar = document.getElementById('sidebar');
@@ -518,6 +601,52 @@
           if (sidebar) sidebar.classList.add('hidden');
         });
       }
+
+      // Biodiversity card toggle
+      const bioCard = document.getElementById('bio-card');
+      const dockBtnBio = document.getElementById('dock-btn-bio');
+      const bioCardClose = document.getElementById('bio-card-close');
+
+      dockBtnBio?.addEventListener('click', () => {
+        if (!bioCard) return;
+        bioCard.hidden = !bioCard.hidden;
+        dockBtnBio.classList.toggle('active', !bioCard.hidden);
+        if (!bioCard.hidden && window.updateBiodiversityCard) {
+          window.updateBiodiversityCard();
+        }
+      });
+
+      bioCardClose?.addEventListener('click', () => {
+        if (bioCard) bioCard.hidden = true;
+        dockBtnBio?.classList.remove('active');
+      });
+
+      // Section modal toggle
+      const sectionModal = document.getElementById('section-modal');
+      const btnOpenSecModal = document.getElementById('btn-open-section-modal');
+      const secModalClose = document.getElementById('section-modal-close');
+
+      btnOpenSecModal?.addEventListener('click', () => {
+        if (sectionModal) sectionModal.hidden = false;
+      });
+
+      secModalClose?.addEventListener('click', () => {
+        if (sectionModal) sectionModal.hidden = true;
+      });
+
+      sectionModal?.addEventListener('click', (e) => {
+        if (e.target === sectionModal) sectionModal.hidden = true;
+      });
+
+      window.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          if (sectionModal && !sectionModal.hidden) sectionModal.hidden = true;
+          if (bioCard && !bioCard.hidden) {
+            bioCard.hidden = true;
+            dockBtnBio?.classList.remove('active');
+          }
+        }
+      });
 
       // Export card toggle
       document.getElementById('export-toggle')?.addEventListener('click', () => {
@@ -590,9 +719,44 @@
         switchView('illustrator');
       });
 
-      document.getElementById('section-drawer-close')?.addEventListener('click', () => {
-        const d = document.getElementById('section-drawer');
-        if (d) d.hidden = true;
+      // Chunk 3D camera button (Moodboard Image 4)
+      document.getElementById('cam-chunk')?.addEventListener('click', () => {
+        document.querySelectorAll('.cam-pill-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('cam-chunk')?.classList.add('active');
+        import('./js/preview.js').then(p => {
+          p.toggleChunkMode?.(true);
+        }).catch(() => {});
+      });
+
+      document.getElementById('tab-chunk')?.addEventListener('click', () => {
+        document.querySelectorAll('.stage-tabs button').forEach(b => b.setAttribute('aria-selected', 'false'));
+        document.getElementById('tab-chunk')?.setAttribute('aria-selected', 'true');
+        document.querySelectorAll('.cam-pill-btn').forEach(b => b.classList.remove('active'));
+        document.getElementById('cam-chunk')?.classList.add('active');
+        import('./js/preview.js').then(p => {
+          p.toggleChunkMode?.(true);
+        }).catch(() => {});
+      });
+
+      document.getElementById('cam-persp')?.addEventListener('click', () => {
+        import('./js/preview.js').then(p => {
+          if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
+          p.setCameraView?.('persp');
+        }).catch(() => {});
+      });
+
+      document.getElementById('cam-iso')?.addEventListener('click', () => {
+        import('./js/preview.js').then(p => {
+          if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
+          p.setCameraView?.('iso');
+        }).catch(() => {});
+      });
+
+      document.getElementById('cam-top')?.addEventListener('click', () => {
+        import('./js/preview.js').then(p => {
+          if (p.isChunkModeActive?.()) p.toggleChunkMode(false);
+          p.setCameraView?.('top');
+        }).catch(() => {});
       });
 
       document.getElementById('guidance-cancel')?.addEventListener('click', () => {
