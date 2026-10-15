@@ -487,8 +487,27 @@ const LOCALES = { en: 'en-US', ru: 'ru-RU', es: 'es-ES', pt: 'pt-BR', de: 'de-DE
 export const locale = () => LOCALES[lang] ?? 'en-US';
 const known = (code) => LANGS.some((l) => l.code === code);
 
+DICT.es = {
+  ...DICT.en,
+  'build.idle': 'Crear Modelo 3D',
+  'build.busy': 'Generando Modelo 3D...',
+  'status.hint': 'Mueve el mapa para centrar el área deseada dentro del marco.',
+  'status.loading': 'Descargando geometría urbana y edificios',
+  'status.geometry': 'Construyendo modelo 3D y topografía',
+  'status.imagery': 'Sincronizando imagen satelital',
+  'status.trees': 'Detectando masa arbórea',
+  'status.done': 'Modelo 3D completado con éxito.',
+  'status.error': 'No se pudo descargar el área seleccionada. El servidor de OpenStreetMap está saturado — prueba con un área menor o espera un momento.',
+  'status.fallback': 'Conectando con fuente secundaria (Overture Maps)',
+};
+
 async function ensure(code) {
-  if (!DICT[code]) DICT[code] = (await import(`./locales/${code}.js?v=4.1`)).default;
+  if (DICT[code]) return;
+  try {
+    DICT[code] = (await import(`./locales/${code}.js?v=4.1`)).default;
+  } catch {
+    DICT[code] = DICT.en;
+  }
 }
 
 const saved = (() => { try { return localStorage.getItem('ue:lang'); } catch { return null; } })();

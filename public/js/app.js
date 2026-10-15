@@ -253,28 +253,111 @@ sens.addEventListener('change', async () => {
 });
 syncTreeControls();
 
+let noticeTimeout = null;
+function showMapNotice(message, isError = true) {
+  const notice = $('#axiom-map-notice');
+  const msgEl = $('#axiom-notice-msg');
+  if (!notice || !msgEl) return;
+  msgEl.textContent = message;
+  const dot = notice.querySelector('.axiom-notice-dot');
+  if (dot) {
+    dot.style.background = isError ? '#f87171' : '#38bdf8';
+    dot.style.boxShadow = isError ? '0 0 10px rgba(248, 113, 113, 0.8)' : '0 0 10px rgba(56, 189, 248, 0.8)';
+  }
+  notice.hidden = false;
+  clearTimeout(noticeTimeout);
+  noticeTimeout = setTimeout(() => {
+    notice.hidden = true;
+  }, 10000);
+}
+
+function hideMapNotice() {
+  const notice = $('#axiom-map-notice');
+  if (notice) notice.hidden = true;
+  clearTimeout(noticeTimeout);
+}
+
+document.getElementById('axiom-notice-close')?.addEventListener('click', hideMapNotice);
+
+function updateLoadingModal(stepKey) {
+  const modal = $('#axiom-loading-modal');
+  if (!modal) return;
+  modal.hidden = false;
+
+  let title = 'Extrayendo datos cartográficos...';
+  let sub = 'Conectando con servidores OpenStreetMap';
+  let filledCount = 2;
+
+  if (stepKey === 'status.loading') {
+    title = 'Descargando geometría urbana';
+    sub = 'Consultando edificios, vías y usos de suelo de OpenStreetMap...';
+    filledCount = 4;
+  } else if (stepKey === 'status.fallback') {
+    title = 'Conectando con fuente secundaria';
+    sub = 'Descargando capas optimizadas de Overture Maps...';
+    filledCount = 6;
+  } else if (stepKey === 'status.geometry') {
+    title = 'Construyendo modelo 3D y relieve';
+    sub = 'Generando mallas tridimensionales, alturas y topografía...';
+    filledCount = 8;
+  } else if (stepKey === 'status.imagery') {
+    title = 'Sincronizando ortofoto satelital';
+    sub = 'Descargando teselas satelitales de alta resolución...';
+    filledCount = 10;
+  } else if (stepKey === 'status.trees') {
+    title = 'Detectando masa arbórea';
+    sub = 'Calculando vegetación y arbolado urbano...';
+    filledCount = 11;
+  } else if (stepKey === 'status.done' || (typeof stepKey === 'string' && stepKey.includes('done'))) {
+    title = 'Finalizando modelo 3D';
+    sub = 'Optimizando escena y preparando exportadores CAD/GIS...';
+    filledCount = 12;
+  }
+
+  const titleEl = $('#loading-title');
+  const subEl = $('#loading-sub');
+  if (titleEl) titleEl.textContent = title;
+  if (subEl) subEl.textContent = sub;
+
+  const cells = modal.querySelectorAll('.axiom-cell');
+  cells.forEach((cell, i) => {
+    cell.classList.remove('filled', 'active-pulse');
+    if (i < filledCount) {
+      cell.classList.add('filled');
+    } else if (i === filledCount && filledCount < 12) {
+      cell.classList.add('active-pulse');
+    }
+  });
+}
+
+function hideLoadingModal() {
+  const modal = $('#axiom-loading-modal');
+  if (modal) modal.hidden = true;
+}
+
 let statusState = ['status.hint', {}];
 function setStatus(key, opts = {}) {
   statusState = [key, opts];
   const { busy = false, error = false, vars } = opts;
-  status.className = 'status' + (error ? ' error' : '');
-  const msg = key.split('|').map((k) => t(k, vars)).join('. ');
-  status.textContent = msg;
-  if (busy) status.insertAdjacentHTML('beforeend', '<span class="progress"></span>');
+  if (status) {
+    status.className = 'status' + (error ? ' error' : '');
+    const msg = key.split('|').map((k) => t(k, vars)).join('. ');
+    status.textContent = msg;
+  }
 
-  // Topbar header loader sync
-  const headerLoader = $('#header-loader');
-  const headerLoaderText = $('#header-loader-text');
-  const spinner = headerLoader?.querySelector('.mini-spinner');
-  if (headerLoader) {
-    headerLoader.hidden = !busy && !error;
-    if (spinner) spinner.style.display = busy ? 'inline-block' : 'none';
-    if (headerLoaderText) headerLoaderText.textContent = msg || 'Procesando datos cartográficos...';
-    if (error) {
-      setTimeout(() => {
-        if (!building) headerLoader.hidden = true;
-      }, 7000);
-    }
+  if (busy) {
+    updateLoadingModal(key);
+  } else if (error) {
+    hideLoadingModal();
+    const errorMsg = key.includes('busy') || key.includes('error')
+      ? 'No se pudo descargar el área seleccionada. El servidor de OpenStreetMap está saturado — prueba con un área menor o espera un momento.'
+      : key.split('|').map((k) => t(k, vars)).join('. ');
+    showMapNotice(errorMsg, true);
+  } else if (key === 'status.done' || (typeof key === 'string' && key.includes('done'))) {
+    updateLoadingModal('status.done');
+    setTimeout(() => {
+      hideLoadingModal();
+    }, 400);
   }
 }
 
@@ -345,6 +428,7 @@ function renderMeta(m) {
 }
 
 async function showResult(m) {
+  hideLoadingModal();
   setMode('model');
   renderMeta(m);
   const { showModel } = await import('./preview.js?v=4.4');

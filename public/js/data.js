@@ -1206,7 +1206,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   // Servidores Overpass pueden estar saturados: fallback automático a OSM Direct API y Overture S3
   let osm, dataSource = 'osm';
   try {
-    const wait = 10000;
+    const wait = 45000;
     osm = await Promise.race([osmPromise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), wait))]);
   } catch (err) {
     if (signal?.aborted) throw err;

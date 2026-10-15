@@ -82,6 +82,7 @@ button {
   flex-shrink: 0;
   z-index: 1000;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  position: relative;
 }
 .axiom-topbar-left {
   display: flex;
@@ -113,29 +114,36 @@ button {
   color: #94a3b8;
 }
 
-/* Topbar Center: Instant Search / Dynamic Island */
+/* Topbar Center: Instant Search Centered (Dynamic Island) */
 .axiom-topbar-center {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
   align-items: center;
-  gap: 8px;
+  justify-content: center;
+  z-index: 10;
 }
 .axiom-search-box {
   position: relative;
   display: flex;
   align-items: center;
-  width: 340px;
+  width: 380px;
   height: 34px;
-  padding: 0 12px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  padding: 0 14px;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 9999px;
-  transition: width 0.22s ease, border-color 0.2s ease, background 0.2s ease;
+  transition: width 0.22s ease, border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
 }
 .axiom-search-box:focus-within {
-  width: 420px;
-  background: rgba(255, 255, 255, 0.07);
-  border-color: rgba(255, 255, 255, 0.24);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  width: 450px;
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.26);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.15);
 }
 .axiom-search-icon {
   width: 14px;
@@ -2042,25 +2050,24 @@ input[type="range"]::-webkit-slider-thumb {
    LEAFLET CUSTOM AXIOM OVERLAYS & ATTRIBUTIONS (NO WHITE BOX)
    ======================================================== */
 .leaflet-control-attribution {
-  background: rgba(14, 16, 21, 0.72) !important;
-  backdrop-filter: blur(12px) !important;
-  -webkit-backdrop-filter: blur(12px) !important;
+  position: fixed !important;
+  bottom: 12px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(14, 16, 21, 0.65) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-radius: 9999px !important;
-  padding: 4px 16px !important;
+  padding: 3px 14px !important;
   color: rgba(255, 255, 255, 0.45) !important;
   font-family: var(--font-sans) !important;
   font-size: 10px !important;
   letter-spacing: 0.02em !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
   margin: 0 !important;
   pointer-events: auto !important;
-}
-.leaflet-bottom.leaflet-right {
-  left: 50% !important;
-  right: auto !important;
-  transform: translateX(-50%) !important;
-  bottom: 14px !important;
+  z-index: 450 !important;
 }
 .leaflet-control-attribution a {
   color: rgba(255, 255, 255, 0.65) !important;
@@ -2071,30 +2078,44 @@ input[type="range"]::-webkit-slider-thumb {
   text-decoration: underline !important;
 }
 
-/* Minimalist Dark Zoom Control (Axiom Image 4) */
+/* Mechanical Zoom Control — Liquid Glass on Bottom-Right */
+.leaflet-bottom.leaflet-right {
+  bottom: 24px !important;
+  right: 24px !important;
+  left: auto !important;
+  transform: none !important;
+  z-index: 500 !important;
+}
 .leaflet-control-zoom {
-  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 9999px !important;
-  background: rgba(17, 18, 22, 0.94) !important;
-  backdrop-filter: blur(16px) !important;
-  -webkit-backdrop-filter: blur(16px) !important;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+  background: rgba(14, 16, 23, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(190%) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
   overflow: hidden !important;
-  margin-right: 18px !important;
-  margin-bottom: 24px !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 .leaflet-control-zoom a {
   background: transparent !important;
   color: #ffffff !important;
-  border-color: rgba(255, 255, 255, 0.08) !important;
-  width: 32px !important;
-  height: 32px !important;
-  line-height: 32px !important;
-  font-size: 15px !important;
-  transition: all 0.15s ease !important;
+  border: none !important;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 16px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.16s ease !important;
+}
+.leaflet-control-zoom-in {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
 }
 .leaflet-control-zoom a:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
   color: #ffffff !important;
 }
 
@@ -2433,23 +2454,96 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ========================================================
-   AXIOM CLEAN MAP SETUP CARD (Initial View)
+   AXIOM CLEAN MAP SETUP CARD (Liquid Glass Finish)
    ======================================================== */
 .axiom-setup-card {
   position: absolute;
   bottom: 24px;
   left: 24px;
   width: 290px;
-  background: rgba(14, 16, 22, 0.92);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  padding: 16px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  background: rgba(14, 16, 23, 0.72) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 20px !important;
+  padding: 18px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
   z-index: 500;
   display: flex;
   flex-direction: column;
+}
+
+/* ========================================================
+   DISMISSABLE MAP NOTICE POPUP (Liquid Glass)
+   ======================================================== */
+.axiom-map-notice {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 540px;
+  padding: 10px 14px 10px 16px;
+  background: rgba(18, 20, 27, 0.78);
+  backdrop-filter: blur(24px) saturate(190%);
+  -webkit-backdrop-filter: blur(24px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  z-index: 600;
+  animation: axiomNoticeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.axiom-map-notice[hidden] {
+  display: none !important;
+}
+@keyframes axiomNoticeIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+.axiom-notice-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #f87171;
+  box-shadow: 0 0 10px rgba(248, 113, 113, 0.8);
+  flex-shrink: 0;
+}
+.axiom-notice-content {
+  flex: 1;
+}
+.axiom-notice-text {
+  font-size: 12px;
+  font-weight: 500;
+  color: #f4f4f5;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+.axiom-notice-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #94a3b8;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+.axiom-notice-close:hover {
+  background: rgba(255, 255, 255, 0.2);
+  color: #ffffff;
 }
 .axiom-setup-form {
   display: flex;
@@ -2567,13 +2661,13 @@ input[type="range"]::-webkit-slider-thumb {
   bottom: 24px;
   left: 24px;
   width: 350px;
-  background: rgba(14, 16, 22, 0.94);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 18px;
-  padding: 18px;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.6);
+  background: rgba(14, 16, 23, 0.74) !important;
+  backdrop-filter: blur(28px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 20px !important;
+  padding: 20px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
   z-index: 500;
   display: flex;
   flex-direction: column;
@@ -2783,3 +2877,163 @@ input[type="range"]::-webkit-slider-thumb {
     overflow-x: auto;
   }
 }
+
+/* ========================================================
+   INTEGRATED ARCHITECTURAL LIQUID GLASS LOADING MODAL
+   ======================================================== */
+.axiom-loading-modal {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: auto;
+  animation: axiomModalFadeIn 0.25s ease;
+}
+.axiom-loading-modal[hidden] {
+  display: none !important;
+}
+@keyframes axiomModalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.axiom-loading-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(6, 7, 10, 0.72);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+.axiom-loading-card {
+  position: relative;
+  width: 400px;
+  max-width: 90vw;
+  padding: 38px 36px 32px;
+  background: rgba(14, 16, 23, 0.82) !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 24px !important;
+  box-shadow: 0 32px 80px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: axiomLoadingCardIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes axiomLoadingCardIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.axiom-loading-logo-wrap {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 24px;
+}
+.axiom-loading-halo {
+  position: absolute;
+  width: 64px;
+  height: 64px;
+  top: -15px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+  animation: haloPulse 2.4s infinite ease-in-out;
+  pointer-events: none;
+}
+@keyframes haloPulse {
+  0%, 100% { transform: scale(0.85); opacity: 0.35; }
+  50% { transform: scale(1.25); opacity: 0.9; }
+}
+.axiom-loading-logo {
+  animation: reticleSpin 20s linear infinite;
+  display: block;
+}
+@keyframes reticleSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+.axiom-loading-brand {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #ffffff;
+}
+
+/* Barra de cuadros / celdas */
+.axiom-loading-bar {
+  width: 100%;
+  margin-bottom: 14px;
+}
+.axiom-bar-cells {
+  display: flex;
+  gap: 6px;
+  justify-content: center;
+  width: 100%;
+}
+.axiom-cell {
+  flex: 1;
+  height: 8px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.axiom-cell.filled {
+  background: #ffffff;
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
+}
+.axiom-cell.active-pulse {
+  background: rgba(255, 255, 255, 0.7);
+  border-color: #ffffff;
+  animation: cellPulse 1.2s infinite ease-in-out;
+}
+@keyframes cellPulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; box-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
+}
+
+/* Tag LOADING */
+.axiom-loading-tag {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  color: #a1a1aa;
+  margin-bottom: 14px;
+}
+
+/* Textos de acciones que está tomando */
+.axiom-loading-status {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  width: 100%;
+}
+.axiom-loading-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: #ffffff;
+  letter-spacing: -0.015em;
+}
+.axiom-loading-sub {
+  font-size: 12px;
+  color: #94a3b8;
+  letter-spacing: -0.01em;
+  min-height: 18px;
+  line-height: 1.4;
+}
+

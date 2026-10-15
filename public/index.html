@@ -39,16 +39,12 @@
       </div>
     </div>
 
-    <!-- Center Search Bar (Dynamic Island style) -->
+    <!-- Center Search Bar (Symmetrically Centered) -->
     <div class="axiom-topbar-center">
       <div class="axiom-search-box search">
         <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input id="q" type="search" placeholder="Buscar ciudades, coordenadas, direcciones..." aria-label="Buscar lugar" autocomplete="off">
         <ul id="results" class="results" hidden></ul>
-      </div>
-      <div class="header-loader" id="header-loader" hidden>
-        <div class="mini-spinner"></div>
-        <span id="header-loader-text">Descargando...</span>
       </div>
     </div>
 
@@ -93,6 +89,17 @@
         </div>
       </div>
 
+      <!-- Dismissable Liquid Glass Notification / Error Popup over Map -->
+      <div class="axiom-map-notice" id="axiom-map-notice" hidden>
+        <div class="axiom-notice-dot"></div>
+        <div class="axiom-notice-content">
+          <p class="axiom-notice-text" id="axiom-notice-msg"></p>
+        </div>
+        <button type="button" class="axiom-notice-close" id="axiom-notice-close" aria-label="Cerrar notificación">
+          <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
       <!-- Clean Floating Setup Card on the Map -->
       <aside class="axiom-setup-card" id="axiom-setup-card">
         <form id="panel" autocomplete="off" class="axiom-setup-form">
@@ -120,10 +127,10 @@
             <span>Crear Modelo 3D</span>
             <svg viewBox="0 0 24 24" width="16" height="16"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </button>
-          <p class="status" id="status" aria-live="polite"></p>
 
           <!-- Hidden inputs required by app.js data query engine -->
           <div style="display:none;" aria-hidden="true">
+            <p class="status" id="status" aria-live="polite"></p>
             <div class="seg mode-seg" role="group">
               <button type="button" data-mode="model" aria-pressed="true">Modelo 3D</button>
               <button type="button" data-mode="section" aria-pressed="false">Corte</button>
@@ -271,6 +278,53 @@
     <button id="open-map" style="display:none;"></button>
     <button id="open-editor" style="display:none;"></button>
   </main>
+
+  <!-- ========================================================
+       INTEGRATED LIQUID GLASS LOADING MODAL
+       ======================================================== -->
+  <div class="axiom-loading-modal" id="axiom-loading-modal" hidden>
+    <div class="axiom-loading-overlay"></div>
+    <div class="axiom-loading-card">
+      <!-- 1. Logo arriba -->
+      <div class="axiom-loading-logo-wrap">
+        <div class="axiom-loading-halo"></div>
+        <svg class="axiom-loading-logo" width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
+          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.45" stroke-dasharray="2 2" />
+          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.45" stroke-dasharray="2 2" />
+          <circle cx="12" cy="12" r="1.8" fill="#ffffff" />
+        </svg>
+        <span class="axiom-loading-brand">URBANIZED</span>
+      </div>
+
+      <!-- 2. Barra de cuadros / celdas que se llenan -->
+      <div class="axiom-loading-bar" aria-label="Progreso de generación">
+        <div class="axiom-bar-cells" id="axiom-bar-cells">
+          <div class="axiom-cell filled"></div>
+          <div class="axiom-cell active-pulse"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+          <div class="axiom-cell"></div>
+        </div>
+      </div>
+
+      <!-- 3. LOADING tag -->
+      <div class="axiom-loading-tag">LOADING</div>
+
+      <!-- 4. Textos de acciones que está tomando -->
+      <div class="axiom-loading-status">
+        <div class="axiom-loading-title" id="loading-title">Extrayendo datos cartográficos...</div>
+        <div class="axiom-loading-sub" id="loading-sub">Conectando con servidores OpenStreetMap</div>
+      </div>
+    </div>
+  </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script type="module" src="/js/app.js?v=5.5"></script>
