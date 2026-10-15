@@ -225,8 +225,22 @@ function setStatus(key, opts = {}) {
   statusState = [key, opts];
   const { busy = false, error = false, vars } = opts;
   status.className = 'status' + (error ? ' error' : '');
-  status.textContent = key.split('|').map((k) => t(k, vars)).join('. ');
+  const msg = key.split('|').map((k) => t(k, vars)).join('. ');
+  status.textContent = msg;
   if (busy) status.insertAdjacentHTML('beforeend', '<span class="progress"></span>');
+
+  // Dynamic Island status sync
+  const loaderEl = $('#island-loader');
+  const trackEl = $('#island-track');
+  const loaderText = $('#island-loader-text');
+  if (busy) {
+    if (loaderEl) loaderEl.hidden = false;
+    if (trackEl) trackEl.hidden = true;
+    if (loaderText) loaderText.textContent = msg || 'Generando modelo...';
+  } else {
+    if (loaderEl) loaderEl.hidden = true;
+    if (trackEl) trackEl.hidden = false;
+  }
 }
 
 panel.addEventListener('submit', async (e) => {
@@ -286,6 +300,17 @@ async function showResult(m) {
   const counted = isCounted(m.id);
   renderQuota(remaining, counted);
   lockDownloads(remaining <= 0 && !counted);
+
+  // Dynamic Island activation
+  const pStudio = $('#pill-studio');
+  const pMap = $('#pill-vectormap');
+  if (pStudio) {
+    pStudio.classList.remove('disabled');
+    pStudio.querySelector('span').textContent = '2. 3D Studio ✓';
+  }
+  if (pMap) pMap.classList.remove('disabled');
+  document.querySelectorAll('.island-pill').forEach(p => p.classList.remove('active'));
+  pStudio?.classList.add('active');
 }
 
 function lockDownloads(locked) {
@@ -345,7 +370,7 @@ function fitFlat(box) {
       return;
     }
     const k = Math.min(box.clientWidth / img.naturalWidth, box.clientHeight / img.naturalHeight) * 0.94;
-    flatState.set(box, { k, x: (box.clientWidth - img.naturalWidth * k) / 2, y: (box.clientHeight - img.naturalHeight * k) / 2 });
+    flatState.set(box, { k, minK: k, x: (box.clientWidth - img.naturalWidth * k) / 2, y: (box.clientHeight - img.naturalHeight * k) / 2 });
     applyFlat(box);
   };
   img.complete && img.naturalWidth ? go() : (img.onload = go);
@@ -364,7 +389,8 @@ for (const box of document.querySelectorAll('.flat')) {
     const st = flatState.get(box);
     if (!st) return;
     const r = box.getBoundingClientRect(), mx = e.clientX - r.left, my = e.clientY - r.top;
-    const k = Math.min(st.k * 40, Math.max(st.k / 40, st.k * Math.exp(-e.deltaY * 0.0015)));
+    const minK = st.minK || (st.k * 0.9);
+    const k = Math.min(st.k * 30, Math.max(minK, st.k * Math.exp(-e.deltaY * 0.0015)));
     st.x = mx - ((mx - st.x) * k) / st.k;
     st.y = my - ((my - st.y) * k) / st.k;
     st.k = k;
@@ -449,9 +475,11 @@ function secRedraw() {
   secState.line?.remove();
   secState.line = null;
   const visible = mode === 'section';
-  if (visible && secState.points.length > 1) secState.line = L.polyline(secState.points, { color: '#000', weight: 2, dashArray: '6 4', className: 'sec-line' }).addTo(map);
+  if (visible && secState.points.length > 1) {
+    secState.line = L.polyline(secState.points, { color: '#38bdf8', weight: 3, dashArray: '6 6', className: 'sec-line' }).addTo(map);
+  }
   secState.dots = (visible ? secState.points : []).map((p, i) =>
-    L.circleMarker(p, { radius: 4, color: '#000', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(map).bindTooltip(String(i + 1), { permanent: false })); 
+    L.circleMarker(p, { radius: 6, color: '#0284c7', weight: 2, fillColor: '#ffffff', fillOpacity: 1 }).addTo(map).bindTooltip(String(i + 1), { permanent: true, direction: 'top' })); 
   const len = secState.points.length > 1 ? sectionLength(secState.points) : 0;
   sectionLengthCache = len;
   $('#sec-len').textContent = `${(len / 1000).toFixed(2)} ${t('km')}`;
@@ -459,6 +487,8 @@ function secRedraw() {
   $('#sec-build').disabled = secState.points.length < 2 || tooLong || secBusy;
   $('#sec-undo').disabled = !secState.points.length;
   $('#sec-clear').disabled = !secState.points.length;
+  const notice = $('#section-notice');
+  if (notice) notice.hidden = !visible || secState.points.length >= 2;
   if (tooLong) setSecStatus('section.tooLong', { error: true });
   else if (secState.drawing) setSecStatus('section.hint');
   else if (!secState.points.length) setSecStatus('');
@@ -598,11 +628,24 @@ function setMode(next) {
   $('#mapper').hidden = next !== 'model' || !model || !mapOpened;
   $('#section-result').hidden = next !== 'section' || !secState.model;
   frame.hidden = next !== 'model';
+
+  // Automatically enable drawing when switching to section mode
+  if (next === 'section') {
+    secState.drawing = true;
+    $('#sec-draw').setAttribute('aria-pressed', 'true');
+    $('#sec-draw').textContent = t('section.drawing');
+    const notice = $('#section-notice');
+    if (notice && secState.points.length < 2) notice.hidden = false;
+  } else {
+    secState.drawing = false;
+    $('#sec-draw').setAttribute('aria-pressed', 'false');
+    $('#sec-draw').textContent = t('section.draw');
+    const notice = $('#section-notice');
+    if (notice) notice.hidden = true;
+  }
+
   siteRedraw();
   secRedraw();
-  // рисование включается только в своём режиме
-  if (next === 'model' && secState.drawing) { secState.drawing = false; $('#sec-draw').textContent = t('section.draw'); }
-  if (next === 'section' && site.drawing) { site.drawing = false; $('#site-draw').textContent = t('site.draw'); }
   map.getContainer().parentElement.classList.toggle('drawing', (next === 'section' && secState.drawing) || (next === 'model' && site.drawing));
   setTimeout(() => map.invalidateSize(), 50);
 }
