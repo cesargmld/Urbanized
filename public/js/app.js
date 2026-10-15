@@ -492,10 +492,23 @@ function secRedraw() {
   secState.line = null;
   const visible = mode === 'section';
   if (visible && secState.points.length > 1) {
-    secState.line = L.polyline(secState.points, { color: '#10e86b', weight: 3, dashArray: '6 6', className: 'sec-line' }).addTo(map);
+    secState.line = L.polyline(secState.points, {
+      color: 'rgba(255, 255, 255, 0.92)',
+      weight: 1.5,
+      dashArray: '4 4',
+      className: 'sec-line'
+    }).addTo(map);
   }
-  secState.dots = (visible ? secState.points : []).map((p, i) =>
-    L.circleMarker(p, { radius: 7, color: '#ffffff', weight: 2, fillColor: '#10e86b', fillOpacity: 1 }).addTo(map).bindTooltip(i === 0 ? 'Punto A' : (i === 1 ? 'Punto B' : `Pto ${i + 1}`), { permanent: true, direction: 'top' })); 
+  secState.dots = (visible ? secState.points : []).map((p, i) => {
+    const label = i === 0 ? 'A' : (i === 1 ? 'B' : `${i + 1}`);
+    const icon = L.divIcon({
+      className: 'sec-marker-wrapper',
+      html: `<div class="sec-terminal-pin">${label}</div>`,
+      iconSize: [20, 20],
+      iconAnchor: [10, 10]
+    });
+    return L.marker(p, { icon, interactive: false }).addTo(map);
+  }); 
   const len = secState.points.length > 1 ? sectionLength(secState.points) : 0;
   sectionLengthCache = len;
   $('#sec-len').textContent = `${(len / 1000).toFixed(2)} ${t('km')}`;
@@ -712,9 +725,9 @@ function siteRedraw() {
   site.dots = [];
   site.shape = null;
   const shown = mode === 'model' ? site.points : [];
-  if (shown.length > 2) site.shape = L.polygon(shown, { color: '#c0392b', weight: 2, fillOpacity: 0.08 }).addTo(map);
-  else if (shown.length === 2) site.shape = L.polyline(shown, { color: '#c0392b', weight: 2, dashArray: '5 4' }).addTo(map);
-  site.dots = shown.map((p) => L.circleMarker(p, { radius: 4, color: '#c0392b', weight: 2, fillColor: '#fff', fillOpacity: 1 }).addTo(map));
+  if (shown.length > 2) site.shape = L.polygon(shown, { color: 'rgba(255, 255, 255, 0.85)', weight: 1.5, fillOpacity: 0.06 }).addTo(map);
+  else if (shown.length === 2) site.shape = L.polyline(shown, { color: 'rgba(255, 255, 255, 0.85)', weight: 1.5, dashArray: '4 4' }).addTo(map);
+  site.dots = shown.map((p) => L.circleMarker(p, { radius: 3.5, color: '#ffffff', weight: 1.5, fillColor: '#0a0a0c', fillOpacity: 1 }).addTo(map));
   $('#site-clear').disabled = !site.points.length;
   $('#site-info').textContent = site.points.length > 2 ? `${site.points.length} ${t('site.points')}` : '—';
   applySite();
