@@ -82,6 +82,12 @@ function drawFrame() {
   frame.classList.toggle('circle', shape === 'circle');
   $('#frame-label').textContent = `${sizeKm()} × ${sizeKm()} ${t('km')}`;
   $('#size-out').textContent = `${sizeKm()} ${t('km')} · ${areaKm2()} ${t('km2')}`;
+  const coordsEl = $('#axiom-area-coords');
+  if (coordsEl) {
+    coordsEl.textContent = `${Math.abs(c.lat).toFixed(4)}° ${c.lat >= 0 ? 'N' : 'S'}, ${Math.abs(c.lng).toFixed(4)}° ${c.lng >= 0 ? 'E' : 'W'}`;
+  }
+  const generalCoords = $('#coords');
+  if (generalCoords) generalCoords.textContent = `${c.lat.toFixed(5)}, ${c.lng.toFixed(5)}`;
   // цена площади: бесплатно до 5 км², дальше — кредиты при скачивании
   const costEl = $('#size-cost');
   const extra = billing.state.billing ? sizeCredits(areaOf(size, shape)) : 0;
@@ -145,7 +151,7 @@ q.addEventListener('input', () => {
     results.innerHTML = '';
     const li = document.createElement('li');
     li.textContent = t('search.goto', { lat: coords[1], lon: coords[2] });
-    li.onclick = () => goTo(Number(coords[1]), Number(coords[2]));
+    li.onclick = () => goTo(Number(coords[1]), Number(coords[2]), `Coord ${coords[1]}, ${coords[2]}`);
     results.append(li);
     results.hidden = false;
     return;
@@ -167,7 +173,7 @@ q.addEventListener('input', () => {
       for (const r of list) {
         const li = document.createElement('li');
         li.textContent = r.display_name;
-        li.onclick = () => goTo(Number(r.lat), Number(r.lon));
+        li.onclick = () => goTo(Number(r.lat), Number(r.lon), r.display_name);
         results.append(li);
       }
       results.hidden = !list.length;
@@ -179,8 +185,14 @@ q.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') results.hidden = true;
 });
 document.addEventListener('click', (e) => { if (!e.target.closest('.search')) results.hidden = true; });
-function goTo(lat, lon) {
+function goTo(lat, lon, title) {
   results.hidden = true;
+  if (title) {
+    const shortTitle = title.split(',')[0].trim();
+    const areaTitle = $('#axiom-area-title');
+    if (areaTitle) areaTitle.textContent = shortTitle;
+    q.value = shortTitle;
+  }
   map.setView([lat, lon], Math.max(map.getZoom(), 15));
 }
 
@@ -355,8 +367,9 @@ async function showResult(m) {
   renderQuota(remaining, counted);
   lockDownloads(remaining <= 0 && !counted);
 
-  // Enable Dock buttons & switch screen cleanly
+  // Enable Studio buttons & switch screen cleanly
   $('#dock-btn-studio')?.classList.remove('disabled');
+  $('#view-btn-studio')?.classList.remove('disabled');
   $('#dock-btn-map')?.classList.remove('disabled');
   $('#dock-btn-illu')?.classList.remove('disabled');
 
@@ -934,8 +947,8 @@ function setWalkMinutes(min) {
 $('#map-btn-walk')?.addEventListener('click', () => {
   const next = !walkState.active;
   setWalkActive(next);
-  if (next && window.toggleLeftPanel) {
-    window.toggleLeftPanel('radii');
+  if (next) {
+    document.querySelector('.axiom-insp-tab[data-tab="radii"]')?.click();
   }
 });
 $('#map-walk-switch')?.addEventListener('change', (e) => {
