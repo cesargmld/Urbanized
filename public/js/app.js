@@ -1,12 +1,12 @@
-import { buildModel, redetectTrees } from './data.js?v=e9ed68a96e';
-import { FORMATS, stlScale } from './exporters.js?v=e9ed68a96e';
+import { buildModel, redetectTrees } from './data.js?v=4.0';
+import { FORMATS, stlScale } from './exporters.js?v=4.0';
 import { setCameraView, toggleChunkMode, isChunkModeActive } from './preview.js';
 import { classifyEcosystem } from './biodiversity.js';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=e9ed68a96e';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=e9ed68a96e';
-import { createIllustrator } from './illustrate.js?v=e9ed68a96e';
-import * as billing from './billing.js?v=e9ed68a96e';
-import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=e9ed68a96e';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.0';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.0';
+import { createIllustrator } from './illustrate.js?v=4.0';
+import * as billing from './billing.js?v=4.0';
+import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=4.0';
 // цена кредитов в долларах — по малому пакету ($0,50 за кредит); в больших пакетах дешевле
 const creditsUsd = (n) => {
   const v = n * USD_PER_CREDIT;
@@ -226,7 +226,7 @@ sens.addEventListener('change', async () => {
   if (!model?.detection?.enabled || building) return;
   redetectTrees(model, sens.value / 100);
   renderMeta(model);
-  const { showModel } = await import('./preview.js?v=e9ed68a96e');
+  const { showModel } = await import('./preview.js?v=4.0');
   showModel($('#viewer'), model, { keepCamera: true });
   await refreshPlan(model);
 });
@@ -1006,7 +1006,7 @@ const getPath = (o, path) => path.split('.').reduce((a, k) => a?.[k], o);
 const setPath = (o, path, v) => { const ks = path.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; };
 
 async function loadMapMod() {
-  mapMod ??= await import('./mapplan.js?v=e9ed68a96e');
+  mapMod ??= await import('./mapplan.js?v=4.0');
   mapOpts ??= mapMod.presetOptions('classic');
   return mapMod;
 }

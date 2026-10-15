@@ -1,6 +1,6 @@
 // Векторная карта (план сверху): слои, тени зданий, отмывка рельефа и карта высот,
 // сетка, масштабная линейка, север. Один SVG — и для превью, и для Illustrator.
-import { CLASS_COLORS } from './exporters.js?v=e9ed68a96e';
+import { CLASS_COLORS } from './exporters.js?v=4.0';
 
 export const MAP_PRESETS = {
   classic: {

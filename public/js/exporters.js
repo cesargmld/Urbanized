@@ -1,7 +1,7 @@
 // Экспорт модели: AutoCAD (DXF R12), SketchUp 8+ (COLLADA), Rhino 5+ (3DM), Illustrator (SVG), ArchiCAD (IFC).
 // Все координаты — метры, начало в центре участка, Z — вверх, ноль — самая низкая точка рельефа.
-import { LAYERS, triangulate, UNIT_TREE, treeBody, mergeBodies, BUILDING_CLASSES } from './data.js?v=e9ed68a96e';
-import { imageryBlob } from './satellite.js?v=e9ed68a96e';
+import { LAYERS, triangulate, UNIT_TREE, treeBody, mergeBodies, BUILDING_CLASSES } from './data.js?v=4.0';
+import { imageryBlob } from './satellite.js?v=4.0';
 
 const TOOL = 'Urbanized';
 const f = (v) => (Math.round(v * 1000) / 1000).toString();

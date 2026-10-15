@@ -2,7 +2,7 @@
 // Здания, дороги, вода, зелень — OpenStreetMap (Overpass API).
 // Рельеф — Terrain Tiles (Mapzen / AWS Open Data, формат terrarium).
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
-import { fetchImagery, detectTrees, MAX_TREES } from './satellite.js?v=e9ed68a96e';
+import { fetchImagery, detectTrees, MAX_TREES } from './satellite.js?v=4.0';
 
 // Публичные серверы Overpass. z — отдельная машина overpass-api.de:
 // когда общий адрес перегружен, она часто отвечает (lz4 теперь только для белого списка).
@@ -192,10 +192,22 @@ out geom;
   way["natural"="wood"](${bb});
   relation["natural"="wood"](${bb});
 );
-out geom;`;
+  const query = `direct:${bo}`;
   const cached = await osmCacheGet(query);
   if (cached) return cached;
 
+  // 1. Primary: Direct official OpenStreetMap API (instant response, 99.99% uptime, no mirror bottlenecks)
+  try {
+    const json = await fetchDirectOSM(frame, signal);
+    if (json && json.elements && json.elements.length > 0) {
+      osmCachePut(query, json);
+      return json;
+    }
+  } catch (directErr) {
+    console.warn('Direct OSM API busy or limit reached, falling back to Overpass mirrors...', directErr);
+  }
+
+  // 2. Fallback: Overpass mirrors
   const urls = mirrorOrder();
   const ctrls = urls.map(() => new AbortController());
   const abortAll = () => ctrls.forEach((c) => c.abort());
@@ -223,19 +235,12 @@ out geom;`;
     return json;
   };
   try {
-    const json = dedupe(await race(urls, attempt, { first: 2, gap: 2500, signal }));
+    const json = dedupe(await race(urls, attempt, { first: 2, gap: 2000, signal }));
     osmCachePut(query, json);
     return json;
   } catch (overpassErr) {
-    console.warn('Overpass mirrors busy or down. Fetching directly from official OpenStreetMap API...', overpassErr);
-    try {
-      const json = await fetchDirectOSM(frame, signal);
-      osmCachePut(query, json);
-      return json;
-    } catch (directErr) {
-      console.warn('Direct OSM API also failed:', directErr);
-      throw new Error('Overpass and OSM unavailable');
-    }
+    console.warn('Overpass mirrors also failed:', overpassErr);
+    throw new Error('Overpass and OSM unavailable');
   } finally {
     abortAll();
     signal?.removeEventListener('abort', abortAll);
@@ -1188,7 +1193,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   osmPromise.catch(() => {}); // ошибка обрабатывается ниже
   // здания Overture (Китай, машинные контуры) — параллельно с OSM, ошибка не мешает сборке
   const extraPromise = layers.buildings && layers.extraBuildings !== false
-    ? import('./overture.js?v=e9ed68a96e').then((m) => m.fetchOvertureBuildings(frame, { signal })).catch(() => null)
+    ? import('./overture.js?v=4.0').then((m) => m.fetchOvertureBuildings(frame, { signal })).catch(() => null)
     : Promise.resolve(null);
   let elev = null;
   if (layers.terrain) {
@@ -1234,7 +1239,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   const footprints = [], parts = [], minarets = [], bridgeParts = [];
   // дороги реальной ширины: оси собираются с запасом за рамку, чтобы у края не было скруглённых торцов
   const wideRoads = Boolean(layers.roads && layers.roadWidth);
-  const R = wideRoads ? await import('./roads.js?v=e9ed68a96e').catch(() => null) : null;
+  const R = wideRoads ? await import('./roads.js?v=4.0').catch(() => null) : null;
   if (wideRoads && !R) warnings.push('status.noRoadWidth');
   const padFrame = makeFrame(lat, lon, size + 80, shape);
   const roadSegs = [];
@@ -1391,7 +1396,7 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   // --- Море: полигоны из береговой линии; гладь — по низкой отметке берега ---
   if (coastWays.length) {
     let sea = [];
-    try { sea = (await import('./roads.js?v=e9ed68a96e')).seaPolygons(coastWays, frame); } catch { sea = []; }
+    try { sea = (await import('./roads.js?v=4.0')).seaPolygons(coastWays, frame); } catch { sea = []; }
     for (const rings of sea) {
       const zs = rings[0].map(([x, y]) => ground(x, y)).sort((a, b) => a - b);
       const z = zs[Math.floor(zs.length * 0.1)] + 0.3;

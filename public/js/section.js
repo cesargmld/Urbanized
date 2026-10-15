@@ -1,6 +1,6 @@
 // Разрез по линии на карте: профиль рельефа, здания и вода вдоль линии.
 // Длина — до 20 км. Выгрузка: AutoCAD (DXF), Illustrator (SVG), PNG.
-import { elevationAt, buildingHeight } from './data.js?v=e9ed68a96e';
+import { elevationAt, buildingHeight } from './data.js?v=4.0';
 
 export const MAX_SECTION_KM = 20;
 const num = (v) => { const n = parseFloat(String(v ?? '').replace(',', '.')); return Number.isFinite(n) ? n : null; };
