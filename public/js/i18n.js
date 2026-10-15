@@ -489,6 +489,7 @@ const known = (code) => LANGS.some((l) => l.code === code);
 
 DICT.es = {
   ...DICT.en,
+  title: 'Urbanized — 3D City & Cartography Studio',
   'build.idle': 'Crear Modelo 3D',
   'build.busy': 'Generando Modelo 3D...',
   'status.hint': 'Mueve el mapa para centrar el área deseada dentro del marco.',
@@ -499,22 +500,32 @@ DICT.es = {
   'status.done': 'Modelo 3D completado con éxito.',
   'status.error': 'No se pudo descargar el área seleccionada. El servidor de OpenStreetMap está saturado — prueba con un área menor o espera un momento.',
   'status.fallback': 'Conectando con fuente secundaria (Overture Maps)',
+  'result.meta': '{lat}, {lon} · {size} × {size} m',
+  'result.metaCircle': '{lat}, {lon} · círculo ⌀ {size} m',
+  'result.contours': ' · curvas cada {n} m',
+  'result.overture': ' · +{n} edificios Overture',
+  'terrain.glo30': 'relieve: Copernicus GLO-30',
+  'terrain.srtm': 'relieve: SRTM',
+  'terrain.dtm': 'relieve: LiDAR DTM ~{res} m',
+  'viewer.hint': 'Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar',
+  'viewer.hintFlat': 'Rueda para zoom · Arrastra para desplazar · Doble clic para centrar',
+  'dl.busy': 'preparando...',
 };
 
 async function ensure(code) {
   if (DICT[code]) return;
   try {
-    DICT[code] = (await import(`./locales/${code}.js?v=4.1`)).default;
+    DICT[code] = (await import(`./locales/${code}.js?v=5.6`)).default;
   } catch {
-    DICT[code] = DICT.en;
+    DICT[code] = DICT.es;
   }
 }
 
 const saved = (() => { try { return localStorage.getItem('ue:lang'); } catch { return null; } })();
-export let lang = known(saved) ? saved : 'en';
+export let lang = known(saved) ? saved : 'es';
 
 export function t(key, vars = {}) {
-  let s = DICT[lang]?.[key] ?? DICT.en[key] ?? key;
+  let s = DICT[lang]?.[key] ?? DICT.es?.[key] ?? DICT.en[key] ?? key;
   for (const [k, v] of Object.entries(vars)) s = s.replaceAll(`{${k}}`, v);
   return s;
 }
@@ -523,8 +534,8 @@ const listeners = new Set();
 export const onLangChange = (fn) => listeners.add(fn);
 
 export async function applyLang(next = lang) {
-  if (!known(next)) next = 'en';
-  try { await ensure(next); } catch { next = 'en'; } // файл языка не загрузился — английский
+  if (!known(next)) next = 'es';
+  try { await ensure(next); } catch { next = 'es'; }
   lang = next;
   try { localStorage.setItem('ue:lang', lang); } catch { /* приватный режим */ }
   document.documentElement.lang = lang;
@@ -533,6 +544,6 @@ export async function applyLang(next = lang) {
   document.querySelectorAll('[data-i18n-html]').forEach((el) => { el.innerHTML = t(el.dataset.i18nHtml); });
   document.querySelectorAll('[data-i18n-ph]').forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
   document.querySelectorAll('[data-i18n-aria]').forEach((el) => { el.setAttribute('aria-label', t(el.dataset.i18nAria)); });
-  document.querySelectorAll('.lang-select').forEach((sel) => { sel.value = lang; });
+  document.querySelectorAll('.lang-select, .lang-pill').forEach((sel) => { sel.value = lang; });
   listeners.forEach((fn) => fn(lang));
 }

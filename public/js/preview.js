@@ -169,7 +169,7 @@ function createDashedHairline(p1, p2, s) {
 }
 
 export function showModel(container, model, { keepCamera = false, chunkMode = false } = {}) {
-  ctx ??= init(container);
+  ctx ??= init(container || document.getElementById('viewer'));
   ctx.lastModel = model;
   chunkModeActive = chunkMode;
   const { group, camera, controls, scene } = ctx;
@@ -203,30 +203,30 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   const isMaqueta = chunkModeActive;
 
   // Lighting & Background setup
+  ctx.sun = ctx.sun || scene.children.find((c) => c.isDirectionalLight);
   if (isMaqueta) {
-    scene.background = new THREE.Color(0x090a0c);
-    ctx.sun = ctx.sun || scene.children.find((c) => c.isDirectionalLight);
+    scene.background = new THREE.Color(0x090a0d);
     if (ctx.sun) {
       ctx.sun.position.set(-1.1, -1.0, 1.8);
-      ctx.sun.intensity = 2.2;
+      ctx.sun.intensity = 2.3;
     }
   } else {
-    scene.background = new THREE.Color(0x0c0c0e);
+    scene.background = new THREE.Color(0x090a0d);
     if (ctx.sun) {
       ctx.sun.position.set(-0.6, -0.9, 1.4);
-      ctx.sun.intensity = 1.6;
+      ctx.sun.intensity = 1.75;
     }
   }
 
-  // 1. Terrain & Skirt
+  // 1. Terrain & Physical Pedestal Skirt
   if (model.terrain) {
     const geo = meshGeometry([model.terrain]);
     let mat;
     if (isMaqueta) {
-      // Monochrome architectural plaster
+      // Monochrome architectural plaster scale model
       mat = new THREE.MeshStandardMaterial({
-        color: 0xf0f0f4,
-        roughness: 0.90,
+        color: 0xe4e4e8,
+        roughness: 0.92,
         metalness: 0.02,
         polygonOffset: true,
         polygonOffsetFactor: 2,
@@ -234,7 +234,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       });
     } else {
       mat = new THREE.MeshLambertMaterial({
-        color: 0xe4e0d6,
+        color: 0xdad6cc,
         polygonOffset: true,
         polygonOffsetFactor: 2,
         polygonOffsetUnits: 2
@@ -256,26 +256,26 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     }
     layerGroups.terrain.add(new THREE.Mesh(geo, mat));
 
-    // Skirt pedestal base in Maqueta mode (Physical architectural block)
-    if (isMaqueta && model.grid) {
+    // Physical architectural pedestal base (visible in both modes, styled to match)
+    if (model.grid) {
       const minH = model.grid?.minH ?? 0;
-      const baseZ = minH - s * 0.07;
+      const baseZ = minH - s * 0.055;
       const skirtGeo = buildTerrainSkirtGeometry(model.grid, s, baseZ);
       const skirtMat = new THREE.MeshStandardMaterial({
-        color: 0x141418,
+        color: isMaqueta ? 0x1c1d22 : 0x14151a,
         roughness: 0.94,
         metalness: 0.02
       });
       layerGroups.skirt.add(new THREE.Mesh(skirtGeo, skirtMat));
       const skirtEdges = new THREE.LineSegments(
         new THREE.EdgesGeometry(skirtGeo, 30),
-        new THREE.LineBasicMaterial({ color: 0x2e2e34, transparent: true, opacity: 0.5 })
+        new THREE.LineBasicMaterial({ color: isMaqueta ? 0x3f3f46 : 0x27272a, transparent: true, opacity: 0.55 })
       );
       layerGroups.skirt.add(skirtEdges);
     }
   }
 
-  // 2. Buildings (Separated by QGIS POI subcategories!)
+  // 2. Buildings (Separated by QGIS POI subcategories with distinct GIS colors in Urbano mode & pure plaster in Maqueta mode)
   const categorized = {
     education: [],
     commercial: [],
@@ -285,24 +285,37 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   };
 
   for (const b of model.buildings || []) {
-    const sub = b.subtype || 'other_buildings';
+    let sub = b.subtype || 'other_buildings';
+    if (sub === 'other' || sub === 'other_buildings') {
+      sub = b.cls === 'commercial' ? 'commercial'
+          : b.cls === 'public' ? 'education'
+          : (b.cls === 'residential' || !b.cls || b.cls === 'other') ? 'residential'
+          : 'other_buildings';
+    }
     if (categorized[sub]) categorized[sub].push(b);
     else categorized.other_buildings.push(b);
   }
 
-  const bldgMat = isMaqueta
-    ? new THREE.MeshStandardMaterial({ color: 0xfcfcfd, roughness: 0.85, metalness: 0.03, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
-    : new THREE.MeshLambertMaterial({ color: 0xffffff, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+  const gisColors = {
+    residential: 0xf4f4f6,
+    commercial: 0xf97316,
+    education: 0x60a5fa,
+    health: 0x2dd4bf,
+    other_buildings: 0xd4d4d8
+  };
 
-  const edgeColor = isMaqueta ? 0x24242a : 0x000000;
-  const edgeOp = isMaqueta ? 0.42 : 0.55;
+  const edgeColor = isMaqueta ? 0x27272a : 0x18181b;
+  const edgeOp = isMaqueta ? 0.38 : 0.5;
 
   for (const [catKey, bList] of Object.entries(categorized)) {
     if (!bList.length) continue;
     const geo = meshGeometry(bList);
     const edges = edgeGeometry(bList);
     const targetGroup = layerGroups[catKey] || layerGroups.other_buildings;
-    targetGroup.add(new THREE.Mesh(geo, bldgMat));
+    const mat = isMaqueta
+      ? new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
+      : new THREE.MeshLambertMaterial({ color: gisColors[catKey] || 0xf4f4f6, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    targetGroup.add(new THREE.Mesh(geo, mat));
     targetGroup.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: edgeOp })));
   }
 
@@ -314,9 +327,9 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   };
 
   if (isMaqueta) {
-    addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0x484954, 0.85);
-    addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR', 'PATHS']), 0x32333b, 0.65);
-    addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x2a2b32, 0.8);
+    addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0x52525b, 0.85);
+    addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR', 'PATHS']), 0x71717a, 0.6);
+    addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x3f3f46, 0.8);
   } else {
     if (model.roadMeshes?.length) {
       const overlay = (color, opacity, factor) => new THREE.MeshLambertMaterial({ color, transparent: opacity < 1, opacity, polygonOffset: true, polygonOffsetFactor: factor, polygonOffsetUnits: factor, depthWrite: opacity >= 1 });
@@ -325,20 +338,20 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
         layerGroups.roads_minor.add(new THREE.Mesh(meshGeometry([rm]), overlay(isRoad ? 0x8e8e93 : 0xcdb894, isRoad ? 0.9 : 0.75, isRoad ? -5 : -4)));
       }
     } else {
-      addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0xe8912d, 0.95);
-      addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR']), 0x6e6e73, 0.7);
-      addLinesTo(layerGroups.roads_minor, road(['PATHS']), 0xb08a5e, 0.6);
+      addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0xf97316, 0.95);
+      addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR']), 0x71717a, 0.75);
+      addLinesTo(layerGroups.roads_minor, road(['PATHS']), 0xa1a1aa, 0.55);
     }
-    addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x55555a, 0.9);
+    addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x52525b, 0.9);
   }
 
-  // 4. Water
+  // 4. Water (Hydrology)
   if (model.water?.length) {
-    const waterColor = isMaqueta ? 0xcbd5e1 : 0x6fa8d6;
-    const waterOp = isMaqueta ? 0.85 : 1.0;
+    const waterColor = isMaqueta ? 0xd4d4d8 : 0x38bdf8;
+    const waterOp = isMaqueta ? 0.9 : 0.92;
     const waterMat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: waterColor, roughness: 0.25, metalness: 0.1, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })
-      : new THREE.MeshLambertMaterial({ color: waterColor, transparent: false, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+      ? new THREE.MeshStandardMaterial({ color: waterColor, roughness: 0.35, metalness: 0.05, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })
+      : new THREE.MeshLambertMaterial({ color: waterColor, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
     layerGroups.water.add(new THREE.Mesh(meshGeometry(model.water), waterMat));
   }
 
@@ -353,14 +366,14 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   });
   if (greens.length) {
     const greenMat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: 0xe5e7eb, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })
-      : new THREE.MeshLambertMaterial({ color: 0x8fbf6a, transparent: true, opacity: 0.55, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+      ? new THREE.MeshStandardMaterial({ color: 0xdadadd, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })
+      : new THREE.MeshLambertMaterial({ color: 0x4ade80, transparent: true, opacity: 0.45, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
     layerGroups.green.add(new THREE.Mesh(meshGeometry(greens), greenMat));
   }
 
   // 6. Contours (Topography)
   if (model.contours?.length) {
-    const cColor = isMaqueta ? 0x606270 : 0xb88a5a;
+    const cColor = isMaqueta ? 0x71717a : 0xd97706;
     addLinesTo(layerGroups.contours, model.contours.map((c) => ({ pts: c.pts, closed: c.closed })), cColor, 0.65);
   }
 
@@ -368,8 +381,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   if (model.trees?.length) {
     const unit = meshGeometry([UNIT_TREE]);
     const treeMat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: 0xffffff, roughness: 0.95, metalness: 0.01 })
-      : new THREE.MeshLambertMaterial({ color: 0x5fa545 });
+      ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
+      : new THREE.MeshLambertMaterial({ color: 0x22c55e });
     const trees = new THREE.InstancedMesh(unit, treeMat, model.trees.length);
     const mtx = new THREE.Matrix4();
     model.trees.forEach((t, i) => trees.setMatrixAt(i, mtx.makeScale(t.r, t.r, t.h).setPosition(t.x, t.y, t.z)));
@@ -384,14 +397,15 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
 
   // Camera placement
   if (!keepCamera) {
+    camera.fov = 35;
     controls.target.set(0, 0, zMid);
     if (isMaqueta) {
-      camera.position.set(s * 0.88, -s * 0.88, s * 0.82 + zMid);
+      camera.position.set(s * 0.82, -s * 0.82, s * 0.76 + zMid);
     } else {
       camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
     }
-    camera.near = s / 1000;
-    camera.far = s * 25;
+    camera.near = Math.max(1, s / 1000);
+    camera.far = s * 40;
     camera.updateProjectionMatrix();
     controls.update();
     triggerResize();
@@ -409,7 +423,13 @@ export function getLayerStats(model) {
   if (!m) return { education: 0, commercial: 0, health: 0, residential: 0, other_buildings: 0, roadsMajorKm: '0', roadsMinorKm: '0', totalBuildings: 0, trees: 0, relief: 0 };
   const counts = { education: 0, commercial: 0, health: 0, residential: 0, other_buildings: 0 };
   for (const b of m.buildings || []) {
-    const sub = b.subtype || 'other_buildings';
+    let sub = b.subtype || 'other_buildings';
+    if (sub === 'other' || sub === 'other_buildings') {
+      sub = b.cls === 'commercial' ? 'commercial'
+          : b.cls === 'public' ? 'education'
+          : (b.cls === 'residential' || !b.cls || b.cls === 'other') ? 'residential'
+          : 'other_buildings';
+    }
     if (counts[sub] !== undefined) counts[sub]++;
     else counts.other_buildings++;
   }
@@ -452,12 +472,18 @@ export function setCameraView(type) {
   controls.target.set(0, 0, zMid);
 
   if (type === 'iso' || type === 'chunk') {
-    camera.position.set(s * 0.92, -s * 0.92, s * 0.88 + zMid);
+    // True 45-degree architectural axonometric / isometric projection via narrow telephoto FOV
+    camera.fov = 10;
+    camera.position.set(s * 3.5, -s * 3.5, s * 3.1 + zMid);
   } else if (type === 'top') {
-    camera.position.set(0, -0.001, s * 1.6 + zMid);
+    camera.fov = 20;
+    camera.position.set(0, -0.001, s * 2.8 + zMid);
   } else {
+    camera.fov = 35;
     camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
   }
+  camera.near = Math.max(1, s / 500);
+  camera.far = s * 50;
   camera.updateProjectionMatrix();
   controls.update();
 }

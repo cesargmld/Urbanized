@@ -1,12 +1,12 @@
-import { buildModel, redetectTrees } from './data.js?v=4.5';
-import { FORMATS, stlScale } from './exporters.js?v=4.5';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings } from './preview.js?v=4.5';
-import { classifyEcosystem } from './biodiversity.js';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.5';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.1';
-import { createIllustrator } from './illustrate.js?v=4.1';
-import * as billing from './billing.js?v=4.1';
-import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=4.1';
+import { buildModel, redetectTrees } from './data.js?v=5.6';
+import { FORMATS, stlScale } from './exporters.js?v=5.6';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings } from './preview.js?v=5.6';
+import { classifyEcosystem } from './biodiversity.js?v=5.6';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=5.6';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=5.6';
+import { createIllustrator } from './illustrate.js?v=5.6';
+import * as billing from './billing.js?v=5.6';
+import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=5.6';
 // цена кредитов в долларах — по малому пакету ($0,50 за кредит); в больших пакетах дешевле
 const creditsUsd = (n) => {
   const v = n * USD_PER_CREDIT;
@@ -279,46 +279,12 @@ function hideMapNotice() {
 
 document.getElementById('axiom-notice-close')?.addEventListener('click', hideMapNotice);
 
-function updateLoadingModal(stepKey) {
+let loadingInterval = null;
+let currentFilledCells = 1;
+
+function renderLoadingCells(filledCount) {
   const modal = $('#axiom-loading-modal');
   if (!modal) return;
-  modal.hidden = false;
-
-  let title = 'Extrayendo datos cartográficos...';
-  let sub = 'Conectando con servidores OpenStreetMap';
-  let filledCount = 2;
-
-  if (stepKey === 'status.loading') {
-    title = 'Descargando geometría urbana';
-    sub = 'Consultando edificios, vías y usos de suelo de OpenStreetMap...';
-    filledCount = 4;
-  } else if (stepKey === 'status.fallback') {
-    title = 'Conectando con fuente secundaria';
-    sub = 'Descargando capas optimizadas de Overture Maps...';
-    filledCount = 6;
-  } else if (stepKey === 'status.geometry') {
-    title = 'Construyendo modelo 3D y relieve';
-    sub = 'Generando mallas tridimensionales, alturas y topografía...';
-    filledCount = 8;
-  } else if (stepKey === 'status.imagery') {
-    title = 'Sincronizando ortofoto satelital';
-    sub = 'Descargando teselas satelitales de alta resolución...';
-    filledCount = 10;
-  } else if (stepKey === 'status.trees') {
-    title = 'Detectando masa arbórea';
-    sub = 'Calculando vegetación y arbolado urbano...';
-    filledCount = 11;
-  } else if (stepKey === 'status.done' || (typeof stepKey === 'string' && stepKey.includes('done'))) {
-    title = 'Finalizando modelo 3D';
-    sub = 'Optimizando escena y preparando exportadores CAD/GIS...';
-    filledCount = 12;
-  }
-
-  const titleEl = $('#loading-title');
-  const subEl = $('#loading-sub');
-  if (titleEl) titleEl.textContent = title;
-  if (subEl) subEl.textContent = sub;
-
   const cells = modal.querySelectorAll('.axiom-cell');
   cells.forEach((cell, i) => {
     cell.classList.remove('filled', 'active-pulse');
@@ -330,7 +296,66 @@ function updateLoadingModal(stepKey) {
   });
 }
 
+function updateLoadingModal(stepKey) {
+  const modal = $('#axiom-loading-modal');
+  if (!modal) return;
+  modal.hidden = false;
+
+  let title = 'Extrayendo datos cartográficos...';
+  let sub = 'Conectando con servidores OpenStreetMap';
+  let targetCells = Math.max(currentFilledCells, 2);
+
+  if (stepKey === 'status.loading') {
+    title = 'Descargando geometría urbana';
+    sub = 'Consultando edificios, vías y usos de suelo de OpenStreetMap...';
+    targetCells = Math.max(currentFilledCells, 3);
+  } else if (stepKey === 'status.fallback') {
+    title = 'Conectando con fuente secundaria';
+    sub = 'Descargando capas optimizadas de Overture Maps...';
+    targetCells = Math.max(currentFilledCells, 5);
+  } else if (stepKey === 'status.geometry') {
+    title = 'Construyendo modelo 3D y relieve';
+    sub = 'Generando mallas tridimensionales, alturas y topografía...';
+    targetCells = Math.max(currentFilledCells, 7);
+  } else if (stepKey === 'status.imagery') {
+    title = 'Sincronizando ortofoto satelital';
+    sub = 'Descargando teselas satelitales de alta resolución...';
+    targetCells = Math.max(currentFilledCells, 9);
+  } else if (stepKey === 'status.trees') {
+    title = 'Detectando masa arbórea';
+    sub = 'Calculando vegetación y arbolado urbano...';
+    targetCells = Math.max(currentFilledCells, 11);
+  } else if (stepKey === 'status.done' || (typeof stepKey === 'string' && stepKey.includes('done'))) {
+    title = 'Finalizando modelo 3D';
+    sub = 'Optimizando escena y preparando exportadores CAD/GIS...';
+    targetCells = 12;
+  }
+
+  currentFilledCells = targetCells;
+
+  const titleEl = $('#loading-title');
+  const subEl = $('#loading-sub');
+  if (titleEl) titleEl.textContent = title;
+  if (subEl) subEl.textContent = sub;
+
+  renderLoadingCells(currentFilledCells);
+
+  if (!loadingInterval && currentFilledCells < 11) {
+    loadingInterval = setInterval(() => {
+      if (currentFilledCells < 10) {
+        currentFilledCells += 1;
+        renderLoadingCells(currentFilledCells);
+      }
+    }, 1100);
+  }
+}
+
 function hideLoadingModal() {
+  if (loadingInterval) {
+    clearInterval(loadingInterval);
+    loadingInterval = null;
+  }
+  currentFilledCells = 1;
   const modal = $('#axiom-loading-modal');
   if (modal) modal.hidden = true;
 }
@@ -357,21 +382,27 @@ function setStatus(key, opts = {}) {
     updateLoadingModal('status.done');
     setTimeout(() => {
       hideLoadingModal();
-    }, 400);
+    }, 350);
   }
 }
 
 panel.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (building) return;
+  hideMapNotice();
+  currentFilledCells = 1;
   const c = map.getCenter().wrap();
   const layerKeys = ['buildings', 'extraBuildings', 'roads', 'roadWidth', 'bridges', 'terrain', 'contours', 'nature', 'trees', 'detect', 'satellite'];
   const layers = Object.fromEntries(layerKeys.map((k) => [k, panel.elements[k] ? panel.elements[k].checked : true]));
   building = new AbortController();
   buildBtn.disabled = true;
-  buildBtn.textContent = t('build.busy');
+  const btnSpan = buildBtn.querySelector('span');
+  if (btnSpan) btnSpan.textContent = t('build.busy');
+  else buildBtn.textContent = t('build.busy');
+
+  let m = null;
   try {
-    const m = await buildModel({ lat: c.lat, lon: c.lng, size: Number(sizeInput.value), shape, layers, sensitivity: sens.value / 100 }, (s) => setStatus(s, { busy: true }), building.signal);
+    m = await buildModel({ lat: c.lat, lon: c.lng, size: Number(sizeInput.value), shape, layers, sensitivity: sens.value / 100 }, (s) => setStatus(s, { busy: true }), building.signal);
 
     // Apply granular POI filters on the finished model
     if (panel.elements.poi_schools && !panel.elements.poi_schools.checked) {
@@ -396,14 +427,26 @@ panel.addEventListener('submit', async (e) => {
     model = m;
     setStatus(m.warnings.join('|') || 'status.done');
     billing.track('build');
-    await showResult(m);
   } catch (err) {
-    console.error(err);
+    console.error('Data fetch/build error:', err);
     setStatus('status.error', { error: true });
+    building = null;
+    buildBtn.disabled = false;
+    if (btnSpan) btnSpan.textContent = t('build.idle');
+    else buildBtn.textContent = t('build.idle');
+    return;
+  }
+
+  try {
+    await showResult(m);
+  } catch (uiErr) {
+    console.error('UI render warning in showResult:', uiErr);
+    if (window.switchWorkspaceView) window.switchWorkspaceView('result');
   } finally {
     building = null;
     buildBtn.disabled = false;
-    buildBtn.textContent = t('build.idle');
+    if (btnSpan) btnSpan.textContent = t('build.idle');
+    else buildBtn.textContent = t('build.idle');
   }
 });
 
@@ -431,8 +474,23 @@ async function showResult(m) {
   hideLoadingModal();
   setMode('model');
   renderMeta(m);
-  const { showModel } = await import('./preview.js?v=4.4');
+  updateBiodiversity();
+
+  // Switch to result screen first so #viewer has non-zero dimensions when Three.js initializes
+  $('#dock-btn-studio')?.classList.remove('disabled');
+  $('#view-btn-studio')?.classList.remove('disabled');
+  $('#dock-btn-map')?.classList.remove('disabled');
+  $('#dock-btn-illu')?.classList.remove('disabled');
+
+  if (window.switchWorkspaceView) {
+    window.switchWorkspaceView('result');
+  }
+
+  const { showModel, triggerResize } = await import('./preview.js?v=5.6');
   showModel($('#viewer'), m);
+  setTimeout(() => triggerResize?.(), 60);
+  setTimeout(() => triggerResize?.(), 220);
+
   await preparePreviews(m);
   applySite();
   if (illuOpened) openIllustrator();
@@ -441,12 +499,6 @@ async function showResult(m) {
   const counted = isCounted(m.id);
   renderQuota(remaining, counted);
   lockDownloads(remaining <= 0 && !counted);
-
-  // Enable Studio buttons & switch screen cleanly
-  $('#dock-btn-studio')?.classList.remove('disabled');
-  $('#view-btn-studio')?.classList.remove('disabled');
-  $('#dock-btn-map')?.classList.remove('disabled');
-  $('#dock-btn-illu')?.classList.remove('disabled');
 
   // Live GIS Stats Badge & Counts (Axiom Inspector)
   try {
@@ -466,14 +518,6 @@ async function showResult(m) {
   } catch (err) {
     console.warn('GIS stats error:', err);
   }
-
-  if (window.switchWorkspaceView) {
-    window.switchWorkspaceView('result');
-    setTimeout(async () => {
-      const p = await import('./preview.js?v=4.4');
-      p.triggerResize?.();
-    }, 80);
-  }
 }
 
 function lockDownloads(locked) {
@@ -488,12 +532,14 @@ const flatUrls = {};
 async function refreshPlan(m) {
   if (flatUrls.plan) URL.revokeObjectURL(flatUrls.plan);
   flatUrls.plan = URL.createObjectURL(FORMATS.svg.make(m));
-  $('#view-plan img').src = flatUrls.plan;
+  const planImg = $('#view-plan img');
+  if (planImg) planImg.src = flatUrls.plan;
 }
 async function preparePreviews(m) {
   illu = null;
   illuModel = null;
-  $('#illu-label-list').innerHTML = '';
+  const labelList = $('#illu-label-list');
+  if (labelList) labelList.innerHTML = '';
   for (const k of Object.keys(flatUrls)) if (flatUrls[k]) URL.revokeObjectURL(flatUrls[k]);
   flatUrls.plan = URL.createObjectURL(FORMATS.svg.make(m));
   flatUrls.sat = m.imagery ? URL.createObjectURL(await FORMATS.jpg.make(m)) : null;
@@ -501,7 +547,7 @@ async function preparePreviews(m) {
   if (satTab) satTab.hidden = !m.imagery;
   for (const view of ['plan', 'sat']) {
     const img = $(`#view-${view} img`);
-    if (flatUrls[view]) img.src = flatUrls[view];
+    if (img && flatUrls[view]) img.src = flatUrls[view];
   }
   selectView('model');
 }
@@ -510,10 +556,10 @@ let currentView = 'model';
 function selectView(view) {
   currentView = view;
   document.querySelectorAll('.stage-tabs button, .tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.view === view)));
-  $('#viewer').hidden = view !== 'model';
-  $('#view-plan').hidden = view !== 'plan';
-  $('#view-sat').hidden = view !== 'sat';
-  $('#viewer-hint').textContent = t(view === 'model' ? 'viewer.hint' : 'viewer.hintFlat');
+  const viewerEl = $('#viewer'); if (viewerEl) viewerEl.hidden = view !== 'model';
+  const planEl = $('#view-plan'); if (planEl) planEl.hidden = view !== 'plan';
+  const satEl = $('#view-sat'); if (satEl) satEl.hidden = view !== 'sat';
+  const hintEl = $('#viewer-hint'); if (hintEl) hintEl.textContent = t(view === 'model' ? 'viewer.hint' : 'viewer.hintFlat');
   if (view !== 'model') fitFlat($(`#view-${view}`));
 }
 document.querySelectorAll('.stage-tabs button, .tabs button').forEach((b) => b.addEventListener('click', () => selectView(b.dataset.view)));
@@ -659,11 +705,15 @@ function secRedraw() {
   }); 
   const len = secState.points.length > 1 ? sectionLength(secState.points) : 0;
   sectionLengthCache = len;
-  $('#sec-len').textContent = `${(len / 1000).toFixed(2)} ${t('km')}`;
+  const secLenEl = $('#sec-len');
+  if (secLenEl) secLenEl.textContent = `${(len / 1000).toFixed(2)} ${t('km')}`;
   const tooLong = len > MAX_SECTION_KM * 1000;
-  $('#sec-build').disabled = secState.points.length < 2 || tooLong || secBusy;
-  $('#sec-undo').disabled = !secState.points.length;
-  $('#sec-clear').disabled = !secState.points.length;
+  const secBuildEl = $('#sec-build');
+  if (secBuildEl) secBuildEl.disabled = secState.points.length < 2 || tooLong || secBusy;
+  const secUndoEl = $('#sec-undo');
+  if (secUndoEl) secUndoEl.disabled = !secState.points.length;
+  const secClearEl = $('#sec-clear');
+  if (secClearEl) secClearEl.disabled = !secState.points.length;
   
   // Section guidance message
   const guidance = $('#section-guidance');
@@ -685,6 +735,7 @@ let secStatusState = ['', {}];
 function setSecStatus(key, opts = {}) {
   secStatusState = [key, opts];
   const el = $('#sec-status');
+  if (!el) return;
   el.className = 'status' + (opts.error ? ' error' : '');
   el.textContent = key ? t(key, opts.vars) : '';
   if (opts.busy) el.insertAdjacentHTML('beforeend', '<span class="progress"></span>');
@@ -899,21 +950,29 @@ $('#btn-render-maqueta')?.addEventListener('click', () => {
   toggleMaquetaMode(true);
 });
 
-// Studio Toolbar: Camera Perspective, Isometrics & Planta
+// Studio Toolbar: Camera Perspective, Isometrics, Planta 3D & Planta 2D Vectorial
 $('#cam-persp')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
+  selectView('model');
   setCameraView('persp');
 });
 $('#cam-iso')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
+  selectView('model');
   setCameraView('iso');
 });
 $('#cam-top')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
+  selectView('model');
   setCameraView('top');
+});
+$('#cam-plan2d')?.addEventListener('click', (e) => {
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  selectView('plan');
 });
 
 // Studio Top Bar Tools -> Toggle Left Dock Panels
@@ -994,9 +1053,9 @@ function updateWalkingDistanceDisplay() {
   // Update metrics chips inside radii-card
   const stats = getLayerStats(model);
   const totalBld = stats.totalBuildings || 120;
-  $('#walk-pois-5').textContent = `~${Math.round(totalBld * 0.18)} POIs inmediatos`;
-  $('#walk-pois-10').textContent = `~${Math.round(totalBld * 0.55)} equipamientos`;
-  $('#walk-pois-15').textContent = `~${totalBld} entidades (100%)`;
+  const wp5 = $('#walk-pois-5'); if (wp5) wp5.textContent = `~${Math.round(totalBld * 0.18)} POIs inmediatos`;
+  const wp10 = $('#walk-pois-10'); if (wp10) wp10.textContent = `~${Math.round(totalBld * 0.55)} equipamientos`;
+  const wp15 = $('#walk-pois-15'); if (wp15) wp15.textContent = `~${totalBld} entidades (100%)`;
   if ($('#radii-coords')) $('#radii-coords').textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)} · 4.8 km/h`;
 }
 window.updateWalkingDistanceDisplay = updateWalkingDistanceDisplay;
@@ -1085,12 +1144,22 @@ map.on('move', () => {
   }
 });
 
-// GIS Layer Visibility Checkboxes
-document.querySelectorAll('[data-gislayer]').forEach((chk) => {
-  chk.addEventListener('change', (e) => {
-    const layerKey = e.target.getAttribute('data-gislayer');
-    setLayerVisibility(layerKey, e.target.checked);
-  });
+// GIS Layer Visibility Checkboxes & Axiom Dot-List Buttons
+document.querySelectorAll('[data-gislayer]').forEach((el) => {
+  if (el.tagName === 'INPUT') {
+    el.addEventListener('change', (e) => {
+      const layerKey = e.target.getAttribute('data-gislayer');
+      setLayerVisibility(layerKey, e.target.checked);
+    });
+  } else {
+    el.addEventListener('click', () => {
+      const layerKey = el.getAttribute('data-gislayer');
+      const nextActive = !el.classList.contains('active');
+      el.classList.toggle('active', nextActive);
+      el.setAttribute('aria-pressed', String(nextActive));
+      setLayerVisibility(layerKey, nextActive);
+    });
+  }
 });
 
 // Direct QGIS GeoJSON Export
@@ -1110,6 +1179,7 @@ async function renderSecQuota() {
   const counted = isCounted(`sec:${secState.model?.id}`);
   const remaining = await quotaStatus();
   const el = $('#sec-quota');
+  if (!el) return;
   const vars = { n: remaining, limit: LIMIT };
   if (billing.state.billing) {
     // с кредитами: сверх дневного лимита разрез стоит 1 кредит — показываем цену, а не «лимит»
@@ -1155,9 +1225,11 @@ document.querySelectorAll('.dl[data-section]').forEach((btn) =>
 function setMode(next) {
   mode = next;
   document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === next)));
-  $('#model-tools').hidden = next !== 'model';
-  $('#section-tools').hidden = next !== 'section';
-  frame.hidden = next !== 'model';
+  const modelTools = $('#model-tools');
+  if (modelTools) modelTools.hidden = next !== 'model';
+  const sectionTools = $('#section-tools');
+  if (sectionTools) sectionTools.hidden = next !== 'section';
+  if (frame) frame.hidden = next !== 'model';
 
   // Automatically enable drawing when switching to section mode
   if (next === 'section') {
@@ -1174,7 +1246,7 @@ function setMode(next) {
 
   siteRedraw();
   secRedraw();
-  map.getContainer().parentElement.classList.toggle('drawing', (next === 'section' && secState.drawing) || (next === 'model' && site.drawing));
+  map.getContainer().parentElement?.classList.toggle('drawing', (next === 'section' && secState.drawing) || (next === 'model' && site.drawing));
   setTimeout(() => map.invalidateSize(), 50);
 }
 document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
@@ -1192,8 +1264,8 @@ function siteRedraw() {
   if (shown.length > 2) site.shape = L.polygon(shown, { color: 'rgba(255, 255, 255, 0.85)', weight: 1.5, fillOpacity: 0.06 }).addTo(map);
   else if (shown.length === 2) site.shape = L.polyline(shown, { color: 'rgba(255, 255, 255, 0.85)', weight: 1.5, dashArray: '4 4' }).addTo(map);
   site.dots = shown.map((p) => L.circleMarker(p, { radius: 3.5, color: '#ffffff', weight: 1.5, fillColor: '#0a0a0c', fillOpacity: 1 }).addTo(map));
-  $('#site-clear').disabled = !site.points.length;
-  $('#site-info').textContent = site.points.length > 2 ? `${site.points.length} ${t('site.points')}` : '—';
+  const siteClear = $('#site-clear'); if (siteClear) siteClear.disabled = !site.points.length;
+  const siteInfo = $('#site-info'); if (siteInfo) siteInfo.textContent = site.points.length > 2 ? `${site.points.length} ${t('site.points')}` : '—';
   applySite();
 }
 
@@ -1208,7 +1280,8 @@ function applySite() {
     : null;
   model.site = ring;
   illu?.setSite(ring);
-  if (!$('#result').hidden) refreshPlan(model);
+  const resEl = $('#result');
+  if (resEl && !resEl.hidden) refreshPlan(model);
 }
 
 $('#site-draw')?.addEventListener('click', () => {
@@ -1216,7 +1289,7 @@ $('#site-draw')?.addEventListener('click', () => {
   if (site.drawing) { secState.drawing = false; if ($('#sec-draw')) $('#sec-draw').textContent = t('section.draw'); }
   $('#site-draw')?.setAttribute('aria-pressed', String(site.drawing));
   const sd = $('#site-draw'); if (sd) sd.textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
-  map.getContainer().parentElement.classList.toggle('drawing', site.drawing || secState.drawing);
+  map.getContainer().parentElement?.classList.toggle('drawing', site.drawing || secState.drawing);
 });
 $('#site-clear')?.addEventListener('click', () => { site.points = []; siteRedraw(); });
 
@@ -1238,6 +1311,7 @@ $('#open-editor')?.addEventListener('click', () => {
 function openIllustrator() {
   if (!model) return;
   const canvas = $('#illu-canvas');
+  if (!canvas) return;
   if (!illu || illuModel !== model) {
     illu = createIllustrator(canvas, model);
     illuModel = model;
@@ -1255,6 +1329,7 @@ function renderSwatches() {
   if (!illu) return;
   const { base, classes } = illu.colors();
   const make = (box, keys, labelKey, current, onPick) => {
+    if (!box) return;
     box.innerHTML = '';
     for (const key of keys) {
       if (!current[key]) continue;
@@ -1271,13 +1346,14 @@ function renderSwatches() {
     }
   };
   make($('#illu-swatches'), SWATCHES, 'color', base, (k, v) => illu.setColor(k, v));
-  const byType = $('#illu-bytype').checked;
+  const byType = $('#illu-bytype')?.checked;
   if (byType) make($('#illu-class-swatches'), CLASSES, 'class', classes, (k, v) => illu.setClassColor(k, v));
-  else $('#illu-class-swatches').innerHTML = '';
+  else if ($('#illu-class-swatches')) $('#illu-class-swatches').innerHTML = '';
 }
 
 function renderLabelList() {
   const ul = $('#illu-label-list');
+  if (!ul || !illu) return;
   ul.innerHTML = '';
   for (const l of illu.labels()) {
     const li = document.createElement('li');
@@ -1295,81 +1371,86 @@ function renderLabelList() {
 
 {
   const canvas = $('#illu-canvas');
-  let drag = null;
-  canvas.addEventListener('pointerdown', (e) => {
-    if (!illu) return;
-    if (placing) {
-      const r = canvas.getBoundingClientRect();
-      const l = illu.addLabel(e.clientX - r.left, e.clientY - r.top, t('illu.labelDefault'));
-      placing = false;
-      canvas.classList.remove('picking');
-      $('#illu-label').setAttribute('aria-pressed', 'false');
-      $('#illu-label').textContent = t('illu.addLabel');
-      if (l) { renderLabelList(); $('#illu-label-list input:last-of-type')?.focus(); }
-      return;
-    }
-    canvas.setPointerCapture(e.pointerId);
-    illu.setQuick(true);
-    drag = { x: e.clientX, y: e.clientY, pan: e.shiftKey || e.button === 2 };
-  });
-  canvas.addEventListener('pointermove', (e) => {
-    if (!drag || !illu) return;
-    const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-    drag.x = e.clientX;
-    drag.y = e.clientY;
-    if (drag.pan) illu.pan(dx, dy);
-    else illu.orbit(dx, dy);
-    document.querySelectorAll('[data-illview]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.illview === illu.state.view)));
-  });
-  const stop = () => { drag = null; illu?.setQuick(false); };
-  canvas.addEventListener('pointerup', stop);
-  canvas.addEventListener('pointercancel', stop);
-  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
-  canvas.addEventListener('wheel', (e) => {
-    if (!illu) return;
-    e.preventDefault();
-    illu.zoomBy(Math.exp(-e.deltaY * 0.0012));
-  }, { passive: false });
-  canvas.addEventListener('dblclick', () => illu?.reset());
+  if (canvas) {
+    let drag = null;
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!illu) return;
+      if (placing) {
+        const r = canvas.getBoundingClientRect();
+        const l = illu.addLabel(e.clientX - r.left, e.clientY - r.top, t('illu.labelDefault'));
+        placing = false;
+        canvas.classList.remove('picking');
+        $('#illu-label')?.setAttribute('aria-pressed', 'false');
+        if ($('#illu-label')) $('#illu-label').textContent = t('illu.addLabel');
+        if (l) { renderLabelList(); $('#illu-label-list input:last-of-type')?.focus(); }
+        return;
+      }
+      canvas.setPointerCapture(e.pointerId);
+      illu.setQuick(true);
+      drag = { x: e.clientX, y: e.clientY, pan: e.shiftKey || e.button === 2 };
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!drag || !illu) return;
+      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+      drag.x = e.clientX;
+      drag.y = e.clientY;
+      if (drag.pan) illu.pan(dx, dy);
+      else illu.orbit(dx, dy);
+      document.querySelectorAll('[data-illview]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.illview === illu.state.view)));
+    });
+    const stop = () => { drag = null; illu?.setQuick(false); };
+    canvas.addEventListener('pointerup', stop);
+    canvas.addEventListener('pointercancel', stop);
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    canvas.addEventListener('wheel', (e) => {
+      if (!illu) return;
+      e.preventDefault();
+      illu.zoomBy(Math.exp(-e.deltaY * 0.0012));
+    }, { passive: false });
+    canvas.addEventListener('dblclick', () => illu?.reset());
 
-  document.querySelectorAll('[data-illview]').forEach((b) => b.addEventListener('click', () => {
-    illu?.setView(b.dataset.illview);
-    document.querySelectorAll('[data-illview]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-  }));
-  document.querySelectorAll('[data-illstyle]').forEach((b) => b.addEventListener('click', () => {
-    illu?.setStyle(b.dataset.illstyle);
-    document.querySelectorAll('[data-illstyle]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
-    if (illu) document.querySelectorAll('[data-illlayer]').forEach((c) => { c.checked = illu.state.layers[c.dataset.illlayer]; });
-    renderSwatches();
-  }));
-  document.querySelectorAll('[data-illlayer]').forEach((c) => c.addEventListener('change', () => illu?.setLayer(c.dataset.illlayer, c.checked)));
-  $('#illu-persp')?.addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
-  $('#illu-bytype')?.addEventListener('change', (e) => { illu?.setByType(e.target.checked); renderSwatches(); });
-  $('#illu-legend')?.addEventListener('change', (e) => illu?.setLegend(e.target.checked));
-  $('#illu-reset-colors')?.addEventListener('click', () => { illu?.resetColors(); renderSwatches(); });
-  $('#illu-color')?.addEventListener('input', (e) => illu?.setLabelColor(e.target.value));
-  $('#illu-label')?.addEventListener('click', () => {
-    placing = !placing;
-    canvas.classList.toggle('picking', placing);
-    $('#illu-label')?.setAttribute('aria-pressed', String(placing));
-    const il = $('#illu-label'); if (il) il.textContent = t(placing ? 'illu.placing' : 'illu.addLabel');
-  });
-  document.querySelectorAll('[data-illexport]').forEach((b) => b.addEventListener('click', async () => {
-    if (!illu || !model) return;
-    const kind = b.dataset.illexport;
-    b.disabled = true;
-    try {
-      const blob = kind === 'svg' ? illu.toSVG({ width: 2400 }) : await illu.toPNG({ width: 3200 });
-      const q = await consume(model.id);
-      if (!q.ok) { renderQuota(0, false); lockDownloads(true); return; }
-      save(blob, `urbanized_illustration_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}.${kind}`);
-      billing.track(`illu:${kind}`);
-    } finally {
-      b.disabled = false;
-      renderQuota(await quotaStatus(), true);
-    }
-  }));
-  new ResizeObserver(() => { if (illu && !$('#view-illu').hidden) illu.render(); }).observe(canvas);
+    document.querySelectorAll('[data-illview]').forEach((b) => b.addEventListener('click', () => {
+      illu?.setView(b.dataset.illview);
+      document.querySelectorAll('[data-illview]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    }));
+    document.querySelectorAll('[data-illstyle]').forEach((b) => b.addEventListener('click', () => {
+      illu?.setStyle(b.dataset.illstyle);
+      document.querySelectorAll('[data-illstyle]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      if (illu) document.querySelectorAll('[data-illlayer]').forEach((c) => { c.checked = illu.state.layers[c.dataset.illlayer]; });
+      renderSwatches();
+    }));
+    document.querySelectorAll('[data-illlayer]').forEach((c) => c.addEventListener('change', () => illu?.setLayer(c.dataset.illlayer, c.checked)));
+    $('#illu-persp')?.addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
+    $('#illu-bytype')?.addEventListener('change', (e) => { illu?.setByType(e.target.checked); renderSwatches(); });
+    $('#illu-legend')?.addEventListener('change', (e) => illu?.setLegend(e.target.checked));
+    $('#illu-reset-colors')?.addEventListener('click', () => { illu?.resetColors(); renderSwatches(); });
+    $('#illu-color')?.addEventListener('input', (e) => illu?.setLabelColor(e.target.value));
+    $('#illu-label')?.addEventListener('click', () => {
+      placing = !placing;
+      canvas.classList.toggle('picking', placing);
+      $('#illu-label')?.setAttribute('aria-pressed', String(placing));
+      const il = $('#illu-label'); if (il) il.textContent = t(placing ? 'illu.placing' : 'illu.addLabel');
+    });
+    document.querySelectorAll('[data-illexport]').forEach((b) => b.addEventListener('click', async () => {
+      if (!illu || !model) return;
+      const kind = b.dataset.illexport;
+      b.disabled = true;
+      try {
+        const blob = kind === 'svg' ? illu.toSVG({ width: 2400 }) : await illu.toPNG({ width: 3200 });
+        const q = await consume(model.id);
+        if (!q.ok) { renderQuota(0, false); lockDownloads(true); return; }
+        save(blob, `urbanized_illustration_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}.${kind}`);
+        billing.track(`illu:${kind}`);
+      } finally {
+        b.disabled = false;
+        renderQuota(await quotaStatus(), true);
+      }
+    }));
+    new ResizeObserver(() => {
+      const viewIllu = $('#view-illu');
+      if (illu && viewIllu && !viewIllu.hidden) illu.render();
+    }).observe(canvas);
+  }
 }
 
 /* ---------------- Векторная карта ---------------- */
@@ -1380,7 +1461,7 @@ const getPath = (o, path) => path.split('.').reduce((a, k) => a?.[k], o);
 const setPath = (o, path, v) => { const ks = path.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; };
 
 async function loadMapMod() {
-  mapMod ??= await import('./mapplan.js?v=4.1');
+  mapMod ??= await import('./mapplan.js?v=5.6');
   mapOpts ??= mapMod.presetOptions('classic');
   return mapMod;
 }
@@ -1400,7 +1481,7 @@ $('#open-map')?.addEventListener('click', async () => {
 
 // перерисовка не чаще одного раза за кадр: ползунки шлют событие на каждый пиксель
 function renderMap(refit = false) {
-  if (!model || !mapMod) return;
+  if (!model || !mapMod || !mapBox) return;
   if (mapQueued && !refit) return;
   mapQueued = true;
   requestAnimationFrame(() => {
@@ -1409,6 +1490,7 @@ function renderMap(refit = false) {
     if (mapUrl) URL.revokeObjectURL(mapUrl);
     mapUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
     const img = mapBox.querySelector('img');
+    if (!img) return;
     img.onload = () => {
       // размер листа изменился (масштаб, поля сетки) — вписываем заново, иначе сохраняем вид
       const sz = `${img.naturalWidth}x${img.naturalHeight}`;
@@ -1429,14 +1511,17 @@ function syncMapControls() {
   document.querySelectorAll('[data-mappreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mappreset === mapOpts.preset)));
   // ползунки силы доступны, только когда эффект включён
   const dep = { 'shadows.azimuth': 'shadows.on', 'shadows.altitude': 'shadows.on', 'shadows.strength': 'shadows.on', 'relief.hillshadeStrength': 'relief.hillshade', 'relief.depthStrength': 'relief.depth' };
-  for (const [k, on] of Object.entries(dep)) document.querySelector(`[data-mapopt="${k}"]`).disabled = !getPath(mapOpts, on);
+  for (const [k, on] of Object.entries(dep)) {
+    const depEl = document.querySelector(`[data-mapopt="${k}"]`);
+    if (depEl) depEl.disabled = !getPath(mapOpts, on);
+  }
   renderMapScale();
   renderMapSwatches();
 }
 
 function renderMapScale() {
   const sel = $('#map-scale');
-  if (!mapMod || !model) return;
+  if (!sel || !mapMod || !model) return;
   const auto = mapMod.autoScale(model.size);
   sel.innerHTML = '';
   for (const k of mapMod.MAP_SCALES) {
@@ -1450,6 +1535,7 @@ function renderMapScale() {
 
 function renderMapSwatches() {
   const box = $('#map-swatches');
+  if (!box || !mapMod) return;
   box.innerHTML = '';
   for (const key of mapMod.MAP_COLOR_KEYS) {
     const label = document.createElement('label');
@@ -1510,23 +1596,32 @@ document.querySelectorAll('[data-mapexport]').forEach((b) => b.addEventListener(
 /* ---------------- Язык ---------------- */
 
 // выпадающий список языков
-for (const sel of document.querySelectorAll('.lang-select')) {
+for (const sel of document.querySelectorAll('.lang-select, .lang-pill')) {
   sel.innerHTML = LANGS.map((l) => `<option value="${l.code}">${l.name}</option>`).join('');
   sel.value = lang;
   sel.addEventListener('change', () => applyLang(sel.value));
 }
 onLangChange(() => {
   drawFrame();
-  if (!building) buildBtn.textContent = t('build.idle');
-  else buildBtn.textContent = t('build.busy');
+  const btnSpan = buildBtn?.querySelector('span');
+  if (btnSpan) {
+    btnSpan.textContent = building ? t('build.busy') : t('build.idle');
+  } else if (buildBtn) {
+    buildBtn.textContent = building ? t('build.busy') : t('build.idle');
+  }
   setStatus(...statusState);
   if (model) renderMeta(model);
   showChannel();
   if (mapMod && mapOpts) { renderMapSwatches(); renderMapScale(); }
-  if (illu) { $('#illu-label').textContent = t(placing ? 'illu.placing' : 'illu.addLabel'); illu.setLang(lang); renderSwatches(); }
-  $('#viewer-hint').textContent = t(currentView === 'model' ? 'viewer.hint' : 'viewer.hintFlat');
-  $('#sec-draw').textContent = t(secState.drawing ? 'section.drawing' : 'section.draw');
-  $('#site-draw').textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
+  if (illu) {
+    const il = $('#illu-label');
+    if (il) il.textContent = t(placing ? 'illu.placing' : 'illu.addLabel');
+    illu.setLang(lang);
+    renderSwatches();
+  }
+  const vh = $('#viewer-hint'); if (vh) vh.textContent = t(currentView === 'model' ? 'viewer.hint' : 'viewer.hintFlat');
+  const sd = $('#sec-draw'); if (sd) sd.textContent = t(secState.drawing ? 'section.drawing' : 'section.draw');
+  const sitd = $('#site-draw'); if (sitd) sitd.textContent = t(site.drawing ? 'site.drawing' : 'site.draw');
   siteRedraw();
   setSecStatus(...secStatusState);
   secRedraw();
@@ -1566,7 +1661,7 @@ billing.onOpenArea((id) => {
   sizeInput.value = String(p.size);
   map.setView([p.lat, p.lon], map.getZoom(), { animate: false });
   fitFrame();
-  $('#app').scrollIntoView({ behavior: 'smooth' });
+  $('#app')?.scrollIntoView({ behavior: 'smooth' });
   if (!building) panel.requestSubmit();
 });
 billing.refresh().then(() => billing.handleLoginLink());
