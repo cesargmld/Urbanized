@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=4.3">
+  <link rel="stylesheet" href="/css/style.css?v=4.4">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -53,54 +53,53 @@
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
       </div>
 
-      <!-- Unified Studio Floating Island Bar (Axiom Architecture Grade) -->
-      <div class="unified-studio-toolbar" id="studio-toolbar">
-        <!-- Render Mode Switcher -->
-        <div class="studio-seg-group">
-          <button type="button" class="studio-pill-btn active" id="btn-render-model" data-render="model" title="Modelo 3D Cartográfico">
+      <!-- Axiom Floating Studio Top Bar (3 Separated Independent Capsules) -->
+      <header class="studio-top-bar" id="studio-top-bar" aria-label="Controles del estudio">
+        <!-- 1. Render Mode Capsule -->
+        <div class="axiom-capsule" id="capsule-render" role="group" aria-label="Modo de renderizado">
+          <button type="button" class="axiom-btn active" id="btn-render-model" data-render="model" title="Modelo 3D Cartográfico con uso de suelo">
+            <span class="axiom-dot active"></span>
             <span>Modelo 3D</span>
           </button>
-          <button type="button" class="studio-pill-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta Monocromática Física (Yeso & Pedestal)">
-            <span class="btn-indicator-dot"></span>
+          <button type="button" class="axiom-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta física monocromática de yeso arquitectónico">
+            <span class="axiom-dot"></span>
             <span>Maqueta 3D</span>
           </button>
-          <button type="button" class="studio-pill-btn" id="btn-render-sat" data-render="sat" title="Ortomosaico satelital">
+          <button type="button" class="axiom-btn" id="btn-render-sat" data-render="sat" title="Ortomosaico satelital">
+            <span class="axiom-dot"></span>
             <span>Satélite</span>
           </button>
         </div>
 
-        <div class="studio-sep"></div>
-
-        <!-- Camera Views -->
-        <div class="studio-seg-group">
-          <button type="button" class="studio-pill-btn active" id="cam-persp" title="Perspectiva 3D libre">
+        <!-- 2. Camera Projections Capsule -->
+        <div class="axiom-capsule" id="capsule-camera" role="group" aria-label="Proyección de cámara">
+          <button type="button" class="axiom-btn active" id="cam-persp" title="Perspectiva 3D libre">
             <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path></svg>
             <span>Perspectiva</span>
           </button>
-          <button type="button" class="studio-pill-btn" id="cam-iso" title="Proyección Isométrica / Axonométrica 45°">
-            <svg viewBox="0 0 24 24"><polyline points="21 8 21 21 3 21"></polyline><line x1="3" y1="21" x2="21" y2="3"></line></svg>
+          <button type="button" class="axiom-btn" id="cam-iso" title="Proyección Axonométrica / Isométrica 45°">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
             <span>Isométrica 45°</span>
           </button>
-          <button type="button" class="studio-pill-btn" id="cam-top" title="Vista cenital (Planta Top)">
+          <button type="button" class="axiom-btn" id="cam-top" title="Vista cenital (Planta Top 2D)">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <span>Planta</span>
           </button>
         </div>
 
-        <div class="studio-sep"></div>
-
-        <!-- GIS & Bio Overlays -->
-        <div class="studio-seg-group">
-          <button type="button" class="studio-pill-btn active" id="btn-toggle-gis" title="Alternar panel de capas e infraestructura GIS">
+        <!-- 3. Overlays / Layer Inspectors Capsule -->
+        <div class="axiom-capsule" id="capsule-tools" role="group" aria-label="Capas e inspectores">
+          <button type="button" class="axiom-btn active" id="btn-toggle-gis" title="Alternar panel de capas e infraestructura GIS">
             <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
             <span>Capas GIS</span>
+            <span class="axiom-badge" id="gis-header-badge">0</span>
           </button>
-          <button type="button" class="studio-pill-btn" id="btn-toggle-bio" title="Flora y Fauna del bioma">
+          <button type="button" class="axiom-btn" id="btn-toggle-bio" title="Flora, Fauna y Ecosistema regional">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
             <span>Biodiversidad</span>
           </button>
         </div>
-      </div>
+      </header>
 
       <!-- FLOATING QGIS INSPECTOR & FILTERS (AXIOM GIS STYLE) -->
       <aside class="gis-filters-card" id="gis-filters-card">
@@ -701,7 +700,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=4.3"></script>
+  <script type="module" src="/js/app.js?v=4.4"></script>
   <script>
     (function() {
       const sidebar = document.getElementById('sidebar');
@@ -797,7 +796,7 @@
           setTimeout(() => window.appMap.invalidateSize(), 50);
         }
         if (viewName === 'result') {
-          import('./js/preview.js?v=4.3').then(p => p.triggerResize?.()).catch(() => {});
+          import('./js/preview.js?v=4.4').then(p => p.triggerResize?.()).catch(() => {});
         }
       }
 

@@ -742,73 +742,104 @@ input[type="range"]::-webkit-slider-thumb {
 /* ========================================================
    FLOATING HUD & TELEMETRY CARDS (REFERENCE IMAGE STYLE)
    ======================================================== */
-/* Unified Studio Toolbar (Axiom Style: Render Mode + Camera Views + GIS/Bio Layers) */
-.unified-studio-toolbar {
+/* Axiom Separated Floating Studio Top Bar (Distinct Independent Capsules) */
+.studio-top-bar {
   position: absolute;
   top: 72px;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(13, 15, 20, 0.90);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--r-full);
-  padding: 4px 6px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 12px !important;
   z-index: 850;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+  max-width: calc(100vw - 32px);
+  white-space: nowrap !important;
 }
-.studio-pill-group {
-  display: flex;
-  align-items: center;
+
+.axiom-capsule {
+  pointer-events: auto;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  flex-wrap: nowrap !important;
+  align-items: center !important;
+  background: rgba(17, 18, 22, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 9999px;
+  padding: 4px;
   gap: 3px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  white-space: nowrap !important;
 }
-.studio-pill-btn {
+
+.axiom-btn {
   background: transparent;
   border: 1px solid transparent;
-  color: var(--text-dim);
-  font-family: var(--font-sans);
+  color: #8b909a;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Inter", sans-serif;
   font-size: 11.5px;
   font-weight: 500;
-  padding: 5px 11px;
-  border-radius: var(--r-full);
+  padding: 6px 13px;
+  border-radius: 9999px;
   cursor: pointer;
-  display: flex;
-  align-items: center;
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
   gap: 6px;
   transition: all 0.16s ease;
-  white-space: nowrap;
+  white-space: nowrap !important;
+  user-select: none;
+  line-height: 1;
 }
-.studio-pill-btn svg {
+
+.axiom-btn svg {
   width: 13px;
   height: 13px;
   stroke: currentColor;
   stroke-width: 1.8;
   fill: none;
+  flex-shrink: 0;
 }
-.studio-pill-btn:hover {
+
+.axiom-btn:hover {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.06);
+  background: rgba(255, 255, 255, 0.05);
 }
-.studio-pill-btn.active {
-  background: #20222a;
+
+.axiom-btn.active {
+  background: #22242c;
   border-color: rgba(255, 255, 255, 0.15);
   color: #ffffff;
   font-weight: 600;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
 }
-.studio-sep {
-  width: 1px;
-  height: 16px;
-  background: rgba(255, 255, 255, 0.12);
-  margin: 0 3px;
-}
-.btn-indicator-dot {
-  width: 6px;
-  height: 6px;
+
+.axiom-dot {
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  display: inline-block;
+  background: rgba(255, 255, 255, 0.25);
+  transition: all 0.16s ease;
+  flex-shrink: 0;
+}
+
+.axiom-btn.active .axiom-dot {
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.7);
+}
+
+.axiom-badge {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9.5px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 1px 6px;
+  border-radius: 9999px;
 }
 
 /* GIS Filters & Layers Inspector (Axiom Real Estate & Spatial Analytics Style) */
@@ -1778,7 +1809,7 @@ input[type="range"]::-webkit-slider-thumb {
   .floating-export-card { top: auto; bottom: 16px; right: 16px; left: 16px; width: auto; }
   .floating-bio-card { left: 16px; right: 16px; width: auto; top: 72px; }
   .gis-filters-card { left: 16px; right: 16px; width: auto; top: 72px; }
-  .unified-studio-toolbar { max-width: calc(100vw - 32px); overflow-x: auto; }
+  .studio-top-bar { max-width: calc(100vw - 32px); overflow-x: auto; justify-content: flex-start; padding: 0 4px 6px 4px; }
   .section-modal-window { width: 100%; max-height: 95vh; }
   .section-telemetry-ribbon { grid-template-columns: repeat(2, 1fr); }
 }

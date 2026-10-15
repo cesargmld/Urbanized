@@ -1,8 +1,8 @@
-import { buildModel, redetectTrees } from './data.js?v=4.3';
-import { FORMATS, stlScale } from './exporters.js?v=4.3';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats } from './preview.js?v=4.3';
+import { buildModel, redetectTrees } from './data.js?v=4.4';
+import { FORMATS, stlScale } from './exporters.js?v=4.4';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats } from './preview.js?v=4.4';
 import { classifyEcosystem } from './biodiversity.js';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.3';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.4';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.1';
 import { createIllustrator } from './illustrate.js?v=4.1';
 import * as billing from './billing.js?v=4.1';
@@ -326,7 +326,7 @@ function renderMeta(m) {
 async function showResult(m) {
   setMode('model');
   renderMeta(m);
-  const { showModel } = await import('./preview.js?v=4.3');
+  const { showModel } = await import('./preview.js?v=4.4');
   showModel($('#viewer'), m);
   await preparePreviews(m);
   applySite();
@@ -347,6 +347,8 @@ async function showResult(m) {
     const stats = getLayerStats(m);
     const totalEl = $('#gis-total-badge');
     if (totalEl) totalEl.textContent = stats.totalBuildings + stats.trees;
+    const headerBadge = $('#gis-header-badge');
+    if (headerBadge) headerBadge.textContent = stats.totalBuildings + stats.trees;
     const eduEl = $('#count-education'); if (eduEl) eduEl.textContent = stats.education;
     const comEl = $('#count-commercial'); if (comEl) comEl.textContent = stats.commercial;
     const heaEl = $('#count-health'); if (heaEl) heaEl.textContent = stats.health;
@@ -362,7 +364,7 @@ async function showResult(m) {
   if (window.switchWorkspaceView) {
     window.switchWorkspaceView('result');
     setTimeout(async () => {
-      const p = await import('./preview.js?v=4.3');
+      const p = await import('./preview.js?v=4.4');
       p.triggerResize?.();
     }, 80);
   }
