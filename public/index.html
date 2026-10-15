@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=4.4">
+  <link rel="stylesheet" href="/css/style.css?v=4.5">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -30,10 +30,38 @@
       <div id="map"></div>
       <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
       
-      <!-- Base Map Switcher Floating Pill -->
-      <div class="seg maptype maptype-float" role="group">
-        <button type="button" data-base="sat" aria-pressed="true" data-i18n="map.satellite">Satélite</button>
-        <button type="button" data-base="map" aria-pressed="false" data-i18n="map.map">Mapa</button>
+      <!-- Axiom Map Floating Top Capsule (Image 4 & 5 Style) -->
+      <div class="map-axiom-bar" id="map-axiom-bar">
+        <div class="axiom-capsule map-capsule">
+          <button type="button" class="axiom-btn active" id="map-btn-sat" data-base="sat" title="Vista Satelital">
+            <span class="axiom-dot active"></span>
+            <span>Satélite</span>
+          </button>
+          <button type="button" class="axiom-btn" id="map-btn-vector" data-base="map" title="Cartografía Arquitectónica Oscura">
+            <span class="axiom-dot"></span>
+            <span>Mapa Oscuro</span>
+          </button>
+          <span class="axiom-divider"></span>
+          <button type="button" class="axiom-btn" id="map-btn-walk" title="Círculos de caminabilidad (5 / 10 / 15 min)">
+            <svg viewBox="0 0 24 24" width="13" height="13"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+            <span>Radios</span>
+          </button>
+        </div>
+
+        <!-- Floating Walking Distance Pill (Image 5) -->
+        <div class="walk-distance-pill" id="walk-distance-pill" hidden>
+          <label class="walk-switch-row" title="Alternar radios de caminabilidad">
+            <input type="checkbox" id="map-walk-switch" checked>
+            <i class="walk-switch-slider"></i>
+            <span class="walk-switch-label">Walking distance</span>
+          </label>
+          <div class="walk-range-group">
+            <button type="button" class="walk-btn" data-walk="5">5 min</button>
+            <button type="button" class="walk-btn" data-walk="10">10 min</button>
+            <button type="button" class="walk-btn active" data-walk="15">15 min</button>
+            <button type="button" class="walk-btn" data-walk="all">Todos</button>
+          </div>
+        </div>
       </div>
 
       <!-- Section Ready Floating Trigger Pill (Non-intrusive) -->
@@ -55,19 +83,15 @@
 
       <!-- Axiom Floating Studio Top Bar (3 Separated Independent Capsules) -->
       <header class="studio-top-bar" id="studio-top-bar" aria-label="Controles del estudio">
-        <!-- 1. Render Mode Capsule -->
+        <!-- 1. Render Mode Capsule (Modelo vs Maqueta Arquitectónica) -->
         <div class="axiom-capsule" id="capsule-render" role="group" aria-label="Modo de renderizado">
-          <button type="button" class="axiom-btn active" id="btn-render-model" data-render="model" title="Modelo 3D Cartográfico con uso de suelo">
+          <button type="button" class="axiom-btn active" id="btn-render-model" data-render="model" title="Modelo 3D Cartográfico con uso de suelo y alturas">
             <span class="axiom-dot active"></span>
             <span>Modelo 3D</span>
           </button>
           <button type="button" class="axiom-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta física monocromática de yeso arquitectónico">
             <span class="axiom-dot"></span>
             <span>Maqueta 3D</span>
-          </button>
-          <button type="button" class="axiom-btn" id="btn-render-sat" data-render="sat" title="Ortomosaico satelital">
-            <span class="axiom-dot"></span>
-            <span>Satélite</span>
           </button>
         </div>
 
@@ -79,9 +103,9 @@
           </button>
           <button type="button" class="axiom-btn" id="cam-iso" title="Proyección Axonométrica / Isométrica 45°">
             <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
-            <span>Isométrica 45°</span>
+            <span>Isométrica</span>
           </button>
-          <button type="button" class="axiom-btn" id="cam-top" title="Vista cenital (Planta Top 2D)">
+          <button type="button" class="axiom-btn" id="cam-top" title="Vista cenital (Planta Top)">
             <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
             <span>Planta</span>
           </button>
@@ -89,10 +113,14 @@
 
         <!-- 3. Overlays / Layer Inspectors Capsule -->
         <div class="axiom-capsule" id="capsule-tools" role="group" aria-label="Capas e inspectores">
-          <button type="button" class="axiom-btn active" id="btn-toggle-gis" title="Alternar panel de capas e infraestructura GIS">
+          <button type="button" class="axiom-btn" id="btn-toggle-gis" title="Alternar panel de capas e infraestructura GIS">
             <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
             <span>Capas GIS</span>
             <span class="axiom-badge" id="gis-header-badge">0</span>
+          </button>
+          <button type="button" class="axiom-btn" id="btn-toggle-radii" title="Radios de caminabilidad (5 / 10 / 15 min)">
+            <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+            <span>Radios</span>
           </button>
           <button type="button" class="axiom-btn" id="btn-toggle-bio" title="Flora, Fauna y Ecosistema regional">
             <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
@@ -400,7 +428,7 @@
     </div>
   </header>
 
-  <!-- 3. TOP-RIGHT CONTROLS PILL (Subtle Live GIS dot, lang, panel toggle) -->
+  <!-- 3. TOP-RIGHT CONTROLS PILL (Subtle Live GIS dot, lang) -->
   <aside class="top-controls-pill">
     <span class="live-status" title="Live GIS Data Connected">
       <span class="live-dot"></span>
@@ -410,35 +438,50 @@
       <option value="es">ES</option>
       <option value="en">EN</option>
     </select>
-    <button type="button" class="icon-pill-btn" id="panel-toggle" title="Alternar panel de parámetros">
-      <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-    </button>
   </aside>
 
-  <!-- FLOATING LEFT DOCK (VERTICAL RAIL) -->
-  <nav class="floating-dock" aria-label="Vistas">
+  <!-- FLOATING LEFT DOCK (AXIOM COMMAND RAIL) -->
+  <nav class="floating-dock" id="floating-dock" aria-label="Navegación e Inspectores">
+    <!-- Core Views -->
     <button type="button" class="dock-btn active" id="dock-btn-area" data-view="app" title="Área y Mapa">
       <svg viewBox="0 0 24 24"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon><line x1="8" y1="2" x2="8" y2="18"></line><line x1="16" y1="6" x2="16" y2="22"></line></svg>
     </button>
     <button type="button" class="dock-btn disabled" id="dock-btn-studio" data-view="result" title="3D Studio">
       <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
     </button>
-    <button type="button" class="dock-btn disabled" id="dock-btn-map" data-view="mapper" title="Vector Map (2D)">
-      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
+
+    <div class="dock-sep"></div>
+
+    <!-- Data Panels & Filters (Unfold directly on the LEFT) -->
+    <button type="button" class="dock-btn" id="dock-btn-config" title="Parámetros del Modelo (Configuración)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
     </button>
+    <button type="button" class="dock-btn" id="dock-btn-gis" title="Capas & Filtros GIS (Infraestructura)">
+      <svg viewBox="0 0 24 24"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+    </button>
+    <button type="button" class="dock-btn" id="dock-btn-radii" title="Radios de Caminabilidad (5 / 10 / 15 min)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.6"/><circle cx="12" cy="12" r="5" fill="none" stroke="currentColor" stroke-width="1.4"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+    </button>
+    <button type="button" class="dock-btn" id="dock-btn-bio" title="Flora, Fauna y Ecosistema Regional">
+      <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
+    </button>
+    <button type="button" class="dock-btn" id="dock-btn-export" title="Exportar Activos CAD / GIS">
+      <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+    </button>
+
+    <div class="dock-sep"></div>
+
+    <!-- Auxiliary Tools -->
     <button type="button" class="dock-btn" id="dock-btn-section" data-view="section" title="Corte Topográfico">
       <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
     </button>
-    <button type="button" class="dock-btn" id="dock-btn-bio" title="Flora, Fauna y Ecosistema">
-      <svg viewBox="0 0 24 24"><path d="M12 2C6.5 2 2 6.5 2 12c0 3.5 2 6.5 5 8 .5-2 1.5-4 3.5-5.5C8 12.5 8 9.5 10 7c1.5 2.5 1.5 5 0 7.5 2 1.5 3 3.5 3.5 5.5 3-1.5 5-4.5 5-8 0-5.5-4.5-10-10-10z"></path></svg>
-    </button>
-    <button type="button" class="dock-btn disabled" id="dock-btn-illu" data-view="illustrator" title="Ilustración Axonométrica">
-      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"></polygon></svg>
+    <button type="button" class="dock-btn disabled" id="dock-btn-map" data-view="mapper" title="Vector Map (2D)">
+      <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
     </button>
   </nav>
 
   <!-- FLOATING PARAMETERS CARD ("OPERATIONS CARD" FROM REFERENCE) -->
-  <aside class="floating-panel" id="sidebar">
+  <aside class="floating-panel hidden" id="sidebar">
     <div class="panel-header">
       <div class="panel-title-wrap">
         <h2>Configuración</h2>
@@ -656,6 +699,87 @@
     </div>
   </aside>
 
+  <!-- FLOATING WALKING DISTANCE & ISOCHRONES CARD (AXIOM QGIS STYLE) -->
+  <aside class="floating-radii-card" id="radii-card" hidden>
+    <div class="radii-card-header">
+      <div class="radii-title-wrap">
+        <span class="mono-tag">■ ANÁLISIS DE ISÓCRONAS & PROXIMIDAD</span>
+        <h3>Radios de Caminabilidad</h3>
+        <p class="mono-coords" id="radii-coords">Estándar Ciudad 15 Minutos · 4.8 km/h</p>
+      </div>
+      <button type="button" class="radii-close-btn" id="radii-card-close" aria-label="Cerrar">&times;</button>
+    </div>
+    <div class="radii-card-body">
+      <!-- Active Switch & Interval Selector -->
+      <div class="radii-control-box">
+        <label class="walk-switch-row" title="Alternar visualización de radios">
+          <input type="checkbox" id="walk-switch-active" checked>
+          <i class="walk-switch-slider"></i>
+          <span class="walk-switch-label">Mostrar Radios en Mapa</span>
+        </label>
+        <div class="walk-time-tabs" role="tablist">
+          <button type="button" class="walk-time-tab" data-walktime="5">5 min</button>
+          <button type="button" class="walk-time-tab" data-walktime="10">10 min</button>
+          <button type="button" class="walk-time-tab active" data-walktime="15">15 min</button>
+          <button type="button" class="walk-time-tab" data-walktime="all">Todos</button>
+        </div>
+      </div>
+
+      <!-- Proximity Rings Stack -->
+      <div class="radii-metrics-stack">
+        <!-- 5 Min Ring -->
+        <div class="radii-metric-card active" data-ring="5">
+          <div class="radii-metric-header">
+            <span class="radii-ring-dot" style="background:#f95738;"></span>
+            <b>Radio 5 min (400 m)</b>
+            <span class="radii-coverage-tag">Acceso Inmediato</span>
+          </div>
+          <p class="radii-metric-desc">Caminabilidad directa. Micro-movilidad, paradas de tránsito y servicios diarios esenciales.</p>
+          <div class="radii-stat-chips">
+            <span class="radii-chip" id="walk-pois-5">~8 POIs inmediatos</span>
+            <span class="radii-chip">Área ~0.50 km²</span>
+          </div>
+        </div>
+
+        <!-- 10 Min Ring -->
+        <div class="radii-metric-card active" data-ring="10">
+          <div class="radii-metric-header">
+            <span class="radii-ring-dot" style="background:rgba(249, 87, 56, 0.75);"></span>
+            <b>Radio 10 min (800 m)</b>
+            <span class="radii-coverage-tag">Cuenca Barrial</span>
+          </div>
+          <p class="radii-metric-desc">Entorno de barrio. Educación básica, comercio vecinal, áreas verdes y clínicas.</p>
+          <div class="radii-stat-chips">
+            <span class="radii-chip" id="walk-pois-10">~24 equipamientos</span>
+            <span class="radii-chip">Área ~2.01 km²</span>
+          </div>
+        </div>
+
+        <!-- 15 Min Ring -->
+        <div class="radii-metric-card active" data-ring="15">
+          <div class="radii-metric-header">
+            <span class="radii-ring-dot" style="background:rgba(249, 87, 56, 0.45);"></span>
+            <b>Radio 15 min (1,200 m)</b>
+            <span class="radii-coverage-tag">Umbral 15-Min</span>
+          </div>
+          <p class="radii-metric-desc">Límite estándar de la Ciudad de 15 Minutos. Red de transporte estructurante y centros urbanos.</p>
+          <div class="radii-stat-chips">
+            <span class="radii-chip" id="walk-pois-15">~60+ entidades</span>
+            <span class="radii-chip">Área ~4.52 km²</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Direct QGIS Export -->
+      <div class="radii-export-wrap">
+        <button type="button" class="btn-radii-export" id="btn-export-isochrones" title="Descargar polígonos circulares de isócronas en formato GeoJSON para QGIS">
+          <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+          <span>Exportar Isócronas GeoJSON (QGIS)</span>
+        </button>
+      </div>
+    </div>
+  </aside>
+
   <!-- FOCUSED SECTION ANALYSIS MODAL / FULL SCREEN DATA -->
   <div class="section-modal-backdrop" id="section-modal" hidden>
     <div class="section-modal-window">
@@ -700,43 +824,102 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=4.4"></script>
+  <script type="module" src="/js/app.js?v=4.5"></script>
   <script>
     (function() {
-      const sidebar = document.getElementById('sidebar');
-      const panelToggle = document.getElementById('panel-toggle');
-      const sidebarClose = document.getElementById('sidebar-close');
       const crumbView = document.getElementById('crumb-view');
 
-      if (panelToggle) {
-        panelToggle.addEventListener('click', () => {
-          if (sidebar) sidebar.classList.toggle('hidden');
-        });
-      }
-      if (sidebarClose) {
-        sidebarClose.addEventListener('click', () => {
-          if (sidebar) sidebar.classList.add('hidden');
-        });
-      }
-
-      // Biodiversity card toggle
-      const bioCard = document.getElementById('bio-card');
-      const dockBtnBio = document.getElementById('dock-btn-bio');
-      const bioCardClose = document.getElementById('bio-card-close');
-
-      dockBtnBio?.addEventListener('click', () => {
-        if (!bioCard) return;
-        bioCard.hidden = !bioCard.hidden;
-        dockBtnBio.classList.toggle('active', !bioCard.hidden);
-        if (!bioCard.hidden && window.updateBiodiversityCard) {
-          window.updateBiodiversityCard();
+      // Unified Left Panel Dock Manager (Axiom Architecture)
+      const panels = {
+        config: {
+          el: document.getElementById('sidebar'),
+          btn: document.getElementById('dock-btn-config'),
+          isOpen: () => !document.getElementById('sidebar')?.classList.contains('hidden'),
+          set: (v) => document.getElementById('sidebar')?.classList.toggle('hidden', !v)
+        },
+        gis: {
+          el: document.getElementById('gis-filters-card'),
+          btn: document.getElementById('dock-btn-gis'),
+          isOpen: () => {
+            const el = document.getElementById('gis-filters-card');
+            return el && !el.hidden && !el.classList.contains('hidden');
+          },
+          set: (v) => {
+            const el = document.getElementById('gis-filters-card');
+            if (el) { el.hidden = !v; el.classList.toggle('hidden', !v); }
+          }
+        },
+        radii: {
+          el: document.getElementById('radii-card'),
+          btn: document.getElementById('dock-btn-radii'),
+          isOpen: () => {
+            const el = document.getElementById('radii-card');
+            return el && !el.hidden && !el.classList.contains('hidden');
+          },
+          set: (v) => {
+            const el = document.getElementById('radii-card');
+            if (el) { el.hidden = !v; el.classList.toggle('hidden', !v); }
+          }
+        },
+        bio: {
+          el: document.getElementById('bio-card'),
+          btn: document.getElementById('dock-btn-bio'),
+          isOpen: () => {
+            const el = document.getElementById('bio-card');
+            return el && !el.hidden && !el.classList.contains('hidden');
+          },
+          set: (v) => {
+            const el = document.getElementById('bio-card');
+            if (el) { el.hidden = !v; el.classList.toggle('hidden', !v); }
+          }
+        },
+        export: {
+          el: document.getElementById('export-card'),
+          btn: document.getElementById('dock-btn-export'),
+          isOpen: () => {
+            const el = document.getElementById('export-card');
+            return el && !el.hidden && !el.classList.contains('hidden');
+          },
+          set: (v) => {
+            const el = document.getElementById('export-card');
+            if (el) { el.hidden = !v; el.classList.toggle('hidden', !v); }
+          }
         }
-      });
+      };
 
-      bioCardClose?.addEventListener('click', () => {
-        if (bioCard) bioCard.hidden = true;
-        dockBtnBio?.classList.remove('active');
-      });
+      function toggleLeftPanel(name) {
+        const target = panels[name];
+        if (!target) return;
+        const willOpen = !target.isOpen();
+
+        // Close all other panels
+        Object.entries(panels).forEach(([k, p]) => {
+          p.set(false);
+          p.btn?.classList.remove('active-panel');
+        });
+
+        if (willOpen) {
+          target.set(true);
+          target.btn?.classList.add('active-panel');
+          if (name === 'bio' && window.updateBiodiversityCard) window.updateBiodiversityCard();
+          if (name === 'radii' && window.updateWalkingDistanceDisplay) window.updateWalkingDistanceDisplay();
+        }
+      }
+      window.toggleLeftPanel = toggleLeftPanel;
+
+      // Bind left dock panel triggers
+      document.getElementById('dock-btn-config')?.addEventListener('click', () => toggleLeftPanel('config'));
+      document.getElementById('dock-btn-gis')?.addEventListener('click', () => toggleLeftPanel('gis'));
+      document.getElementById('dock-btn-radii')?.addEventListener('click', () => toggleLeftPanel('radii'));
+      document.getElementById('dock-btn-bio')?.addEventListener('click', () => toggleLeftPanel('bio'));
+      document.getElementById('dock-btn-export')?.addEventListener('click', () => toggleLeftPanel('export'));
+
+      // Close buttons on panels
+      document.getElementById('sidebar-close')?.addEventListener('click', () => toggleLeftPanel('config'));
+      document.getElementById('gis-collapse-btn')?.addEventListener('click', () => toggleLeftPanel('gis'));
+      document.getElementById('radii-card-close')?.addEventListener('click', () => toggleLeftPanel('radii'));
+      document.getElementById('bio-card-close')?.addEventListener('click', () => toggleLeftPanel('bio'));
+      document.getElementById('export-toggle')?.addEventListener('click', () => toggleLeftPanel('export'));
 
       // Section modal toggle
       const sectionModal = document.getElementById('section-modal');
@@ -758,22 +941,14 @@
       window.addEventListener('keydown', (e) => {
         if (e.key === 'Escape') {
           if (sectionModal && !sectionModal.hidden) sectionModal.hidden = true;
-          if (bioCard && !bioCard.hidden) {
-            bioCard.hidden = true;
-            dockBtnBio?.classList.remove('active');
-          }
+          Object.values(panels).forEach(p => { p.set(false); p.btn?.classList.remove('active-panel'); });
         }
-      });
-
-      // Export card toggle
-      document.getElementById('export-toggle')?.addEventListener('click', () => {
-        document.getElementById('export-card')?.classList.toggle('collapsed');
       });
 
       // View switcher
       function switchView(viewName) {
         document.querySelectorAll('.screen-layer').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.dock-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('#dock-btn-area, #dock-btn-studio, #dock-btn-map, #dock-btn-section, #dock-btn-illu').forEach(b => b.classList.remove('active'));
 
         const targetScreen = document.getElementById(viewName);
         if (targetScreen) targetScreen.classList.add('active');
@@ -796,7 +971,7 @@
           setTimeout(() => window.appMap.invalidateSize(), 50);
         }
         if (viewName === 'result') {
-          import('./js/preview.js?v=4.4').then(p => p.triggerResize?.()).catch(() => {});
+          import('./js/preview.js?v=4.5').then(p => p.triggerResize?.()).catch(() => {});
         }
       }
 

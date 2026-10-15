@@ -452,6 +452,29 @@ button {
   background: #ffffff;
   box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
 }
+.dock-btn.active-panel {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+}
+.dock-btn.active-panel::before {
+  content: '';
+  position: absolute;
+  right: 5px;
+  top: 5px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 5px rgba(255, 255, 255, 0.9);
+}
+.dock-sep {
+  width: 24px;
+  height: 1px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 3px 0;
+}
 .dock-btn.disabled {
   opacity: 0.22;
   cursor: not-allowed;
@@ -846,19 +869,24 @@ input[type="range"]::-webkit-slider-thumb {
 .gis-filters-card {
   position: absolute;
   left: 74px;
-  top: 72px;
-  width: 280px;
-  max-height: calc(100vh - 140px);
-  border-radius: var(--r-lg);
-  background: rgba(13, 15, 20, 0.94);
+  top: 66px;
+  width: 330px;
+  max-height: calc(100vh - 100px);
+  border-radius: var(--r-xl);
+  background: rgba(14, 16, 21, 0.94);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   overflow: hidden;
   z-index: 900;
-  animation: slideLeft 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  animation: slideLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.gis-filters-card.hidden,
+.gis-filters-card[hidden] {
+  display: none !important;
 }
 .gis-card-header {
   padding: 12px 14px;
@@ -1051,17 +1079,23 @@ input[type="range"]::-webkit-slider-thumb {
 /* Floating Downloads Drawer Card */
 .floating-export-card {
   position: absolute;
-  top: 76px;
-  right: 16px;
-  width: 310px;
-  background: var(--glass-bg);
+  left: 74px;
+  top: 66px;
+  width: 330px;
+  background: rgba(14, 16, 21, 0.94);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  border-radius: var(--r-lg);
-  box-shadow: var(--glass-shadow), var(--glass-specular);
+  border-radius: var(--r-xl);
+  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0, 0, 0, 0.55);
   overflow: hidden;
-  z-index: 850;
-  transition: all 0.25s ease;
+  z-index: 900;
+  transition: all 0.22s ease;
+  animation: slideLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-export-card.hidden,
+.floating-export-card[hidden] {
+  display: none !important;
 }
 .floating-export-card.collapsed .export-card-body {
   display: none;
@@ -1593,22 +1627,24 @@ input[type="range"]::-webkit-slider-thumb {
 /* Floating Biodiversity Card (Flora, Fauna & Ecosystem · Organized Axiom Style) */
 .floating-bio-card {
   position: absolute;
-  right: 16px;
-  top: 72px;
-  width: 360px;
+  left: 74px;
+  top: 66px;
+  width: 330px;
   max-width: calc(100vw - 32px);
-  max-height: calc(100vh - 140px);
-  border-radius: var(--r-lg);
-  background: rgba(13, 15, 20, 0.94);
+  max-height: calc(100vh - 100px);
+  border-radius: var(--r-xl);
+  background: rgba(14, 16, 21, 0.94);
   backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--glass-border);
-  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0, 0, 0, 0.5);
+  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0, 0, 0, 0.55);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  z-index: 950;
-  animation: slideLeft 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 900;
+  animation: slideLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
 }
+.floating-bio-card.hidden,
 .floating-bio-card[hidden] {
   display: none !important;
 }
@@ -1797,6 +1833,400 @@ input[type="range"]::-webkit-slider-thumb {
   to { opacity: 1; }
 }
 
+/* ========================================================
+   LEAFLET CUSTOM AXIOM OVERLAYS & ATTRIBUTIONS (NO WHITE BOX)
+   ======================================================== */
+.leaflet-control-attribution {
+  background: rgba(14, 16, 21, 0.72) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 9999px !important;
+  padding: 4px 16px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-family: var(--font-sans) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.02em !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.45) !important;
+  margin: 0 !important;
+  pointer-events: auto !important;
+}
+.leaflet-bottom.leaflet-right {
+  left: 50% !important;
+  right: auto !important;
+  transform: translateX(-50%) !important;
+  bottom: 14px !important;
+}
+.leaflet-control-attribution a {
+  color: rgba(255, 255, 255, 0.65) !important;
+  text-decoration: none !important;
+}
+.leaflet-control-attribution a:hover {
+  color: #ffffff !important;
+  text-decoration: underline !important;
+}
+
+/* Minimalist Dark Zoom Control (Axiom Image 4) */
+.leaflet-control-zoom {
+  border: 1px solid rgba(255, 255, 255, 0.09) !important;
+  border-radius: 9999px !important;
+  background: rgba(17, 18, 22, 0.94) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+  overflow: hidden !important;
+  margin-right: 18px !important;
+  margin-bottom: 24px !important;
+}
+.leaflet-control-zoom a {
+  background: transparent !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+  width: 32px !important;
+  height: 32px !important;
+  line-height: 32px !important;
+  font-size: 15px !important;
+  transition: all 0.15s ease !important;
+}
+.leaflet-control-zoom a:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* ========================================================
+   AXIOM MAP BAR & WALKING DISTANCE (IMAGES 4 & 5)
+   ======================================================== */
+.map-axiom-bar {
+  position: absolute;
+  top: 76px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  z-index: 500;
+  pointer-events: none;
+}
+.map-axiom-bar .axiom-capsule {
+  pointer-events: auto;
+}
+.axiom-divider {
+  width: 1px;
+  height: 14px;
+  background: rgba(255, 255, 255, 0.12);
+  margin: 0 4px;
+  display: inline-block;
+}
+
+/* Walking Distance Pill (Image 5 Style) */
+.walk-distance-pill {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 10px;
+  padding: 4px 10px 4px 12px;
+  background: rgba(17, 18, 22, 0.94);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 9999px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  pointer-events: auto;
+  white-space: nowrap;
+  animation: fadeInDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.walk-distance-pill[hidden] {
+  display: none !important;
+}
+.walk-switch-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+.walk-switch-row input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+.walk-switch-slider {
+  position: relative;
+  width: 28px;
+  height: 16px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: inline-block;
+  flex-shrink: 0;
+}
+.walk-switch-slider::after {
+  content: "";
+  position: absolute;
+  top: 1.5px;
+  left: 2px;
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.walk-switch-row input:checked + .walk-switch-slider {
+  background: #f95738;
+  border-color: #f95738;
+}
+.walk-switch-row input:checked + .walk-switch-slider::after {
+  transform: translateX(12px);
+}
+.walk-switch-label {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.85);
+  letter-spacing: -0.1px;
+}
+.walk-range-group {
+  display: inline-flex;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 9999px;
+  padding: 2px;
+  gap: 2px;
+}
+.walk-btn {
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 9999px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.walk-btn:hover {
+  color: #ffffff;
+}
+.walk-btn.active {
+  background: rgba(255, 255, 255, 0.14);
+  color: #ffffff;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Map Center Walking Tag Pin (Image 5 Style) */
+.walk-pin-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  pointer-events: none;
+}
+.walk-pin-tag {
+  background: #f95738;
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(249, 87, 56, 0.45);
+  white-space: nowrap;
+  letter-spacing: -0.1px;
+}
+.walk-pin-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #111216;
+  margin-top: 4px;
+  box-shadow: 0 0 8px rgba(249, 87, 56, 0.8);
+}
+
+/* ========================================================
+   FLOATING WALKING DISTANCE ANALYZER CARD (LEFT DOCKED)
+   ======================================================== */
+.floating-radii-card {
+  position: absolute;
+  left: 74px;
+  top: 66px;
+  width: 330px;
+  max-height: calc(100vh - 100px);
+  border-radius: var(--r-xl);
+  background: rgba(14, 16, 21, 0.94);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow), 0 16px 40px rgba(0, 0, 0, 0.55);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 900;
+  animation: slideLeft 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.floating-radii-card[hidden], .floating-radii-card.hidden {
+  display: none !important;
+}
+.radii-card-header {
+  padding: 12px 14px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.02);
+}
+.radii-title-wrap h3 {
+  font-family: var(--font-sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 3px 0 1px 0;
+}
+.radii-close-btn {
+  color: var(--text-dim);
+  font-size: 18px;
+  padding: 0 4px;
+  line-height: 1;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+.radii-close-btn:hover {
+  color: #ffffff;
+}
+.radii-card-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+.radii-control-box {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.walk-time-tabs {
+  display: flex;
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  padding: 2px;
+  gap: 2px;
+}
+.walk-time-tab {
+  flex: 1;
+  height: 26px;
+  border-radius: 6px;
+  border: none;
+  background: transparent;
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.walk-time-tab.active {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+}
+.radii-metrics-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.radii-metric-card {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 12px;
+  padding: 10px 12px;
+  transition: border-color 0.16s ease, background 0.16s ease;
+}
+.radii-metric-card:hover {
+  background: rgba(255, 255, 255, 0.04);
+  border-color: rgba(255, 255, 255, 0.1);
+}
+.radii-metric-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+.radii-ring-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.radii-coverage-tag {
+  margin-left: auto;
+  font-size: 9.5px;
+  color: var(--text-dim);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 1px 6px;
+  border-radius: 9999px;
+}
+.radii-metric-desc {
+  font-size: 10.5px;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0 0 6px 0;
+}
+.radii-stat-chips {
+  display: flex;
+  gap: 6px;
+}
+.radii-chip {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 6px;
+  padding: 2px 7px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.btn-radii-export {
+  width: 100%;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(249, 87, 56, 0.12);
+  border: 1px solid rgba(249, 87, 56, 0.28);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.18s ease;
+}
+.btn-radii-export svg {
+  width: 15px;
+  height: 15px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+}
+.btn-radii-export:hover {
+  background: rgba(249, 87, 56, 0.24);
+  border-color: rgba(249, 87, 56, 0.45);
+}
+
+@keyframes fadeInDown {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 /* Responsive */
 @media (max-width: 900px) {
   .search-pill { width: 180px; }
@@ -1806,10 +2236,12 @@ input[type="range"]::-webkit-slider-thumb {
   .floating-panel { left: 16px; top: 66px; width: calc(100vw - 32px); max-height: 70vh; }
   .floating-dock { display: none; }
   .telemetry-bar { display: none; }
-  .floating-export-card { top: auto; bottom: 16px; right: 16px; left: 16px; width: auto; }
+  .floating-export-card { left: 16px; right: 16px; width: auto; top: 72px; }
   .floating-bio-card { left: 16px; right: 16px; width: auto; top: 72px; }
+  .floating-radii-card { left: 16px; right: 16px; width: auto; top: 72px; }
   .gis-filters-card { left: 16px; right: 16px; width: auto; top: 72px; }
   .studio-top-bar { max-width: calc(100vw - 32px); overflow-x: auto; justify-content: flex-start; padding: 0 4px 6px 4px; }
+  .map-axiom-bar { max-width: calc(100vw - 32px); }
   .section-modal-window { width: 100%; max-height: 95vh; }
   .section-telemetry-ribbon { grid-template-columns: repeat(2, 1fr); }
 }

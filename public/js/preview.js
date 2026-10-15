@@ -462,4 +462,41 @@ export function setCameraView(type) {
   controls.update();
 }
 
+export function setWalkRings(enabled, minutes = 15) {
+  if (!ctx || !ctx.group) return;
+  if (!ctx.walkRingsGroup) {
+    ctx.walkRingsGroup = new THREE.Group();
+    ctx.group.add(ctx.walkRingsGroup);
+  }
+  ctx.walkRingsGroup.traverse((o) => { o.geometry?.dispose(); o.material?.dispose(); });
+  ctx.walkRingsGroup.clear();
+  if (!enabled) return;
+
+  const z = (ctx.zMid || 0) + 1.2;
+  const modelRadius = (ctx.modelSize || 1000) / 2;
+  const rings = [
+    { r: modelRadius * 0.40, min: 5, color: 0xf95738, op: 0.85 },
+    { r: modelRadius * 0.75, min: 10, color: 0xf95738, op: 0.55 },
+    { r: modelRadius * 0.98, min: 15, color: 0xf95738, op: 0.35 }
+  ];
+
+  for (const { r, min, color, op } of rings) {
+    if (minutes !== 'all' && min > Number(minutes)) continue;
+    const curve = new THREE.EllipseCurve(0, 0, r, r, 0, 2 * Math.PI, false, 0);
+    const points = curve.getPoints(128).map((p) => new THREE.Vector3(p.x, p.y, z));
+    const geo = new THREE.BufferGeometry().setFromPoints(points);
+    const mat = new THREE.LineDashedMaterial({
+      color,
+      dashSize: Math.max(6, r * 0.04),
+      gapSize: Math.max(4, r * 0.025),
+      transparent: true,
+      opacity: op
+    });
+    const line = new THREE.Line(geo, mat);
+    line.computeLineDistances();
+    ctx.walkRingsGroup.add(line);
+  }
+}
+
+
 

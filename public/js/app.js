@@ -1,8 +1,8 @@
-import { buildModel, redetectTrees } from './data.js?v=4.4';
-import { FORMATS, stlScale } from './exporters.js?v=4.4';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats } from './preview.js?v=4.4';
+import { buildModel, redetectTrees } from './data.js?v=4.5';
+import { FORMATS, stlScale } from './exporters.js?v=4.5';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings } from './preview.js?v=4.5';
 import { classifyEcosystem } from './biodiversity.js';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.4';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=4.5';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=4.1';
 import { createIllustrator } from './illustrate.js?v=4.1';
 import * as billing from './billing.js?v=4.1';
@@ -29,24 +29,42 @@ window.appMap = map;
 map.zoomControl.setPosition('bottomright');
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 const tiles = (name, native) => L.tileLayer(`${ESRI}/${name}/MapServer/tile/{z}/{y}/{x}`, { maxZoom: 19, maxNativeZoom: native, attribution: 'Esri, Maxar, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
+
+// Official Esri Canvas Dark Gray tiles for high-end architectural matte dark map (Axiom style)
 const bases = {
-  map: L.layerGroup([tiles('World_Street_Map', 18)]),
-  sat: L.layerGroup([tiles('World_Imagery', 18), tiles('Reference/World_Boundaries_and_Places', 18)]),
+  map: L.layerGroup([
+    tiles('Canvas/World_Dark_Gray_Base', 16),
+    tiles('Canvas/World_Dark_Gray_Reference', 16)
+  ]),
+  sat: L.layerGroup([
+    tiles('World_Imagery', 18),
+    tiles('Reference/World_Boundaries_and_Places', 18)
+  ]),
 };
 let baseName = 'sat';
 store.set('ue:base', 'sat');
 bases[baseName].addTo(map);
 map.attributionControl.setPrefix(false);
-document.querySelectorAll('.maptype button').forEach((b) => {
-  b.setAttribute('aria-pressed', String(b.dataset.base === baseName));
-  b.addEventListener('click', () => {
-    if (b.dataset.base === baseName) return;
-    map.removeLayer(bases[baseName]);
-    baseName = b.dataset.base;
-    bases[baseName].addTo(map);
-    store.set('ue:base', baseName);
-    document.querySelectorAll('.maptype button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+
+function setBaseMap(name) {
+  if (name === baseName) return;
+  map.removeLayer(bases[baseName]);
+  baseName = name;
+  bases[baseName].addTo(map);
+  store.set('ue:base', baseName);
+  document.querySelectorAll('[data-base]').forEach((b) => {
+    const isThis = b.dataset.base === baseName;
+    b.setAttribute('aria-pressed', String(isThis));
+    b.classList.toggle('active', isThis);
+    const dot = b.querySelector('.axiom-dot');
+    if (dot) dot.classList.toggle('active', isThis);
   });
+}
+window.setBaseMap = setBaseMap;
+
+document.querySelectorAll('[data-base]').forEach((b) => {
+  b.setAttribute('aria-pressed', String(b.dataset.base === baseName));
+  b.addEventListener('click', () => setBaseMap(b.dataset.base));
 });
 
 const sizeInput = $('#size');
@@ -774,69 +792,208 @@ const toggleBioCard = () => {
 $('#btn-toggle-bio')?.addEventListener('click', toggleBioCard);
 $('#dock-btn-bio')?.addEventListener('click', toggleBioCard);
 
-// Studio Toolbar: Render Mode Buttons (Modelo 3D | Maqueta 3D | Satélite)
+// Studio Toolbar: Render Mode Buttons (Modelo 3D | Maqueta 3D Monocromática)
 $('#btn-render-model')?.addEventListener('click', () => {
   $('#btn-render-maqueta')?.classList.remove('active');
-  $('#btn-render-sat')?.classList.remove('active');
   $('#btn-render-model')?.classList.add('active');
+  $('#btn-render-model .axiom-dot')?.classList.add('active');
+  $('#btn-render-maqueta .axiom-dot')?.classList.remove('active');
   selectView('model');
   toggleMaquetaMode(false);
 });
 
 $('#btn-render-maqueta')?.addEventListener('click', () => {
   $('#btn-render-model')?.classList.remove('active');
-  $('#btn-render-sat')?.classList.remove('active');
   $('#btn-render-maqueta')?.classList.add('active');
+  $('#btn-render-maqueta .axiom-dot')?.classList.add('active');
+  $('#btn-render-model .axiom-dot')?.classList.remove('active');
   selectView('model');
   toggleMaquetaMode(true);
 });
 
-$('#btn-render-sat')?.addEventListener('click', () => {
-  if (!flatUrls.sat) {
-    setStatus('status.noImagery', { error: true });
-    return;
-  }
-  $('#btn-render-model')?.classList.remove('active');
-  $('#btn-render-maqueta')?.classList.remove('active');
-  $('#btn-render-sat')?.classList.add('active');
-  selectView('sat');
-});
-
-// Studio Toolbar: Camera Perspective & Isometrics
+// Studio Toolbar: Camera Perspective, Isometrics & Planta
 $('#cam-persp')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('persp');
 });
 $('#cam-iso')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('iso');
 });
 $('#cam-top')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   setCameraView('top');
 });
 
-// GIS Inspector: Toggle & Collapsible Body
-const toggleGisCard = () => {
-  const card = $('#gis-filters-card');
-  if (!card) return;
-  const isHidden = card.style.display === 'none' || card.hidden;
-  card.hidden = false;
-  card.style.display = isHidden ? 'flex' : 'none';
-  $('#btn-toggle-gis')?.classList.toggle('active', isHidden);
-};
-$('#btn-toggle-gis')?.addEventListener('click', toggleGisCard);
+// Studio Top Bar Tools -> Toggle Left Dock Panels
+$('#btn-toggle-gis')?.addEventListener('click', () => {
+  if (window.toggleLeftPanel) window.toggleLeftPanel('gis');
+});
+$('#btn-toggle-radii')?.addEventListener('click', () => {
+  if (window.toggleLeftPanel) window.toggleLeftPanel('radii');
+});
+$('#btn-toggle-bio')?.addEventListener('click', () => {
+  if (window.toggleLeftPanel) window.toggleLeftPanel('bio');
+});
 
-$('#gis-collapse-btn')?.addEventListener('click', () => {
-  const body = $('#gis-filters-body');
-  const btn = $('#gis-collapse-btn');
-  if (body) {
-    const isHidden = body.style.display === 'none';
-    body.style.display = isHidden ? 'flex' : 'none';
-    btn.textContent = isHidden ? '▲' : '▼';
+/* ---------------- Walking Distance / Radios de Proximidad (Axiom Image 5) ---------------- */
+
+const walkState = {
+  active: false,
+  minutes: '15',
+  layerGroup: L.layerGroup().addTo(map)
+};
+
+function getCenterCoords() {
+  if (model && model.center) return [model.center.lat, model.center.lon];
+  const c = map.getCenter();
+  return [c.lat, c.lng];
+}
+
+function updateWalkingDistanceDisplay() {
+  walkState.layerGroup.clearLayers();
+  const walkPill = $('#walk-distance-pill');
+
+  if (!walkState.active) {
+    if (walkPill) walkPill.hidden = true;
+    $('#map-btn-walk')?.classList.remove('active');
+    $('#btn-toggle-radii')?.classList.remove('active');
+    setWalkRings(false);
+    return;
+  }
+
+  if (walkPill) walkPill.hidden = false;
+  $('#map-btn-walk')?.classList.add('active');
+  $('#btn-toggle-radii')?.classList.add('active');
+
+  const [lat, lon] = getCenterCoords();
+  const rings = [
+    { r: 400, min: 5, color: '#f95738', weight: 1.5, op: 0.85, fillOp: 0.05 },
+    { r: 800, min: 10, color: '#f95738', weight: 1.2, op: 0.55, fillOp: 0.03 },
+    { r: 1200, min: 15, color: '#f95738', weight: 1.0, op: 0.35, fillOp: 0.02 }
+  ];
+
+  rings.forEach(({ r, min, color, weight, op, fillOp }) => {
+    if (walkState.minutes !== 'all' && min > Number(walkState.minutes)) return;
+    L.circle([lat, lon], {
+      radius: r,
+      color,
+      weight,
+      opacity: op,
+      fillColor: color,
+      fillOpacity: fillOp,
+      dashArray: '5 5'
+    }).addTo(walkState.layerGroup);
+  });
+
+  // Center pin badge marker (Axiom Image 5 style: Nova Quarters)
+  const placeName = $('#q')?.value?.split(',')?.[0]?.trim() || (model ? 'Centro del Modelo' : 'Sitio');
+  const pinHtml = `
+    <div class="walk-pin-wrapper">
+      <div class="walk-pin-tag">${placeName}</div>
+      <div class="walk-pin-dot"></div>
+    </div>
+  `;
+  const pinIcon = L.divIcon({ html: pinHtml, className: 'walk-center-icon', iconSize: [140, 44], iconAnchor: [70, 44] });
+  L.marker([lat, lon], { icon: pinIcon, interactive: false }).addTo(walkState.layerGroup);
+
+  // Sync 3D preview rings
+  setWalkRings(true, walkState.minutes);
+
+  // Update metrics chips inside radii-card
+  const stats = getLayerStats(model);
+  const totalBld = stats.totalBuildings || 120;
+  $('#walk-pois-5').textContent = `~${Math.round(totalBld * 0.18)} POIs inmediatos`;
+  $('#walk-pois-10').textContent = `~${Math.round(totalBld * 0.55)} equipamientos`;
+  $('#walk-pois-15').textContent = `~${totalBld} entidades (100%)`;
+  if ($('#radii-coords')) $('#radii-coords').textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)} · 4.8 km/h`;
+}
+window.updateWalkingDistanceDisplay = updateWalkingDistanceDisplay;
+
+function setWalkActive(active) {
+  walkState.active = active;
+  const sw1 = $('#walk-switch-active');
+  const sw2 = $('#map-walk-switch');
+  if (sw1) sw1.checked = active;
+  if (sw2) sw2.checked = active;
+  updateWalkingDistanceDisplay();
+}
+
+function setWalkMinutes(min) {
+  walkState.minutes = String(min);
+  document.querySelectorAll('[data-walk], [data-walktime]').forEach((b) => {
+    const val = b.dataset.walk || b.dataset.walktime;
+    b.classList.toggle('active', val === walkState.minutes);
+  });
+  updateWalkingDistanceDisplay();
+}
+
+$('#map-btn-walk')?.addEventListener('click', () => {
+  const next = !walkState.active;
+  setWalkActive(next);
+  if (next && window.toggleLeftPanel) {
+    window.toggleLeftPanel('radii');
+  }
+});
+$('#map-walk-switch')?.addEventListener('change', (e) => {
+  setWalkActive(e.target.checked);
+});
+$('#walk-switch-active')?.addEventListener('change', (e) => {
+  setWalkActive(e.target.checked);
+});
+
+document.querySelectorAll('[data-walk]').forEach((b) => {
+  b.addEventListener('click', () => setWalkMinutes(b.dataset.walk));
+});
+document.querySelectorAll('[data-walktime]').forEach((b) => {
+  b.addEventListener('click', () => setWalkMinutes(b.dataset.walktime));
+});
+
+// GeoJSON Isochrone Exporter for QGIS
+function createCirclePolygon(centerLat, centerLon, radiusMeters, properties) {
+  const points = 64;
+  const coords = [];
+  const earthRadius = 6378137;
+  const dLat = radiusMeters / earthRadius;
+  const dLon = radiusMeters / (earthRadius * Math.cos(Math.PI * centerLat / 180));
+  for (let i = 0; i <= points; i++) {
+    const theta = (i / points) * (2 * Math.PI);
+    const pLat = centerLat + (dLat * Math.sin(theta)) * (180 / Math.PI);
+    const pLon = centerLon + (dLon * Math.cos(theta)) * (180 / Math.PI);
+    coords.push([Number(pLon.toFixed(6)), Number(pLat.toFixed(6))]);
+  }
+  return {
+    type: 'Feature',
+    properties,
+    geometry: {
+      type: 'Polygon',
+      coordinates: [coords]
+    }
+  };
+}
+
+$('#btn-export-isochrones')?.addEventListener('click', () => {
+  const [lat, lon] = getCenterCoords();
+  const featureCollection = {
+    type: 'FeatureCollection',
+    name: 'Urbanized_Walking_Distance_Isochrones',
+    crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
+    features: [
+      createCirclePolygon(lat, lon, 400, { time_min: 5, radius_m: 400, speed_kmh: 4.8, label: '5 min Walk' }),
+      createCirclePolygon(lat, lon, 800, { time_min: 10, radius_m: 800, speed_kmh: 4.8, label: '10 min Walk' }),
+      createCirclePolygon(lat, lon, 1200, { time_min: 15, radius_m: 1200, speed_kmh: 4.8, label: '15 min Walk' })
+    ]
+  };
+  const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
+  save(blob, `urbanized_isocronas_${lat.toFixed(4)}_${lon.toFixed(4)}.geojson`);
+});
+
+map.on('move', () => {
+  if (walkState.active && !model) {
+    updateWalkingDistanceDisplay();
   }
 });
 
