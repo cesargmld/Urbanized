@@ -23,8 +23,17 @@ const store = {
 const start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
 start.zoom = Math.max(12, start.zoom);
 const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true }).setView([start.lat, start.lon], start.zoom);
-setTimeout(() => map.invalidateSize(), 200);
-window.addEventListener('resize', () => map.invalidateSize());
+map.whenReady(() => {
+  map.invalidateSize();
+  drawFrame();
+});
+setTimeout(() => { map.invalidateSize(); drawFrame(); }, 150);
+setTimeout(() => { map.invalidateSize(); drawFrame(); }, 500);
+setTimeout(() => { map.invalidateSize(); drawFrame(); }, 1200);
+window.addEventListener('resize', () => {
+  map.invalidateSize();
+  drawFrame();
+});
 map.zoomControl.setPosition('bottomright');
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 const tiles = (name, native) => L.tileLayer(`${ESRI}/${name}/MapServer/tile/{z}/{y}/{x}`, { maxZoom: 19, maxNativeZoom: native, attribution: 'Esri, Maxar, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
@@ -96,7 +105,7 @@ document.querySelectorAll('.shape button').forEach((b) => {
     drawFrame();
   });
 });
-map.on('move zoom resize', drawFrame);
+map.on('move zoom resize viewreset zoomend moveend', drawFrame);
 map.on('moveend', () => { const c = map.getCenter(); store.set('ue:view', { lat: c.lat, lon: c.lng, zoom: map.getZoom() }); });
 // если рамка не помещается — отдаляем карту
 function fitFrame() {
