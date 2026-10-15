@@ -149,6 +149,8 @@ export function showModel(container, model, { keepCamera = false } = {}) {
 
   if (keepCamera) return;
   const zMid = model.grid.maxH / 2;
+  ctx.modelSize = s;
+  ctx.zMid = zMid;
   controls.target.set(0, 0, zMid);
   camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
   camera.near = s / 1000;
@@ -156,3 +158,25 @@ export function showModel(container, model, { keepCamera = false } = {}) {
   camera.updateProjectionMatrix();
   controls.update();
 }
+
+export function setCameraView(type) {
+  if (!ctx) return;
+  const { camera, controls } = ctx;
+  const s = ctx.modelSize || 1000;
+  const zMid = ctx.zMid || 0;
+  controls.target.set(0, 0, zMid);
+
+  if (type === 'iso') {
+    // 45 degree isometric / axonometric angle
+    camera.position.set(s * 0.9, -s * 0.9, s * 0.9 + zMid);
+  } else if (type === 'top') {
+    // Top-down / orthographic-like plan
+    camera.position.set(0, -0.001, s * 1.6 + zMid);
+  } else {
+    // Free perspective
+    camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
+  }
+  camera.updateProjectionMatrix();
+  controls.update();
+}
+

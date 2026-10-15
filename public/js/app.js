@@ -1,5 +1,6 @@
 import { buildModel, redetectTrees } from './data.js?v=e9ed68a96e';
 import { FORMATS, stlScale } from './exporters.js?v=e9ed68a96e';
+import { setCameraView } from './preview.js';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=e9ed68a96e';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=e9ed68a96e';
 import { createIllustrator } from './illustrate.js?v=e9ed68a96e';
@@ -23,6 +24,7 @@ const store = {
 const start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
 start.zoom = Math.max(12, start.zoom);
 const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true }).setView([start.lat, start.lon], start.zoom);
+window.appMap = map;
 map.zoomControl.setPosition('bottomright');
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 const tiles = (name, native) => L.tileLayer(`${ESRI}/${name}/MapServer/tile/{z}/{y}/{x}`, { maxZoom: 19, maxNativeZoom: native, attribution: 'Esri, Maxar, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
@@ -229,17 +231,12 @@ function setStatus(key, opts = {}) {
   status.textContent = msg;
   if (busy) status.insertAdjacentHTML('beforeend', '<span class="progress"></span>');
 
-  // Dynamic Island status sync
-  const loaderEl = $('#island-loader');
-  const trackEl = $('#island-track');
-  const loaderText = $('#island-loader-text');
-  if (busy) {
-    if (loaderEl) loaderEl.hidden = false;
-    if (trackEl) trackEl.hidden = true;
-    if (loaderText) loaderText.textContent = msg || 'Generando modelo...';
-  } else {
-    if (loaderEl) loaderEl.hidden = true;
-    if (trackEl) trackEl.hidden = false;
+  // Topbar header loader sync
+  const headerLoader = $('#header-loader');
+  const headerLoaderText = $('#header-loader-text');
+  if (headerLoader) {
+    headerLoader.hidden = !busy;
+    if (headerLoaderText) headerLoaderText.textContent = msg || 'Procesando datos cartográficos...';
   }
 }
 
@@ -247,12 +244,32 @@ panel.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (building) return;
   const c = map.getCenter().wrap();
-  const layers = Object.fromEntries(['buildings', 'extraBuildings', 'roads', 'roadWidth', 'bridges', 'terrain', 'contours', 'nature', 'trees', 'detect', 'satellite'].map((k) => [k, panel.elements[k].checked]));
+  const layerKeys = ['buildings', 'extraBuildings', 'roads', 'roadWidth', 'bridges', 'terrain', 'contours', 'nature', 'trees', 'detect', 'satellite'];
+  const layers = Object.fromEntries(layerKeys.map((k) => [k, panel.elements[k] ? panel.elements[k].checked : true]));
   building = new AbortController();
   buildBtn.disabled = true;
   buildBtn.textContent = t('build.busy');
   try {
     const m = await buildModel({ lat: c.lat, lon: c.lng, size: Number(sizeInput.value), shape, layers, sensitivity: sens.value / 100 }, (s) => setStatus(s, { busy: true }), building.signal);
+
+    // Apply granular POI filters on the finished model
+    if (panel.elements.poi_schools && !panel.elements.poi_schools.checked) {
+      m.buildings = m.buildings.filter(b => b.cls !== 'public');
+    }
+    if (panel.elements.poi_commercial && !panel.elements.poi_commercial.checked) {
+      m.buildings = m.buildings.filter(b => b.cls !== 'commercial');
+    }
+    if (panel.elements.poi_residential && !panel.elements.poi_residential.checked) {
+      m.buildings = m.buildings.filter(b => b.cls !== 'residential');
+    }
+    if (panel.elements.roads_major && !panel.elements.roads_major.checked) {
+      m.lines.ROADS_MAJOR = [];
+    }
+    if (panel.elements.roads_minor && !panel.elements.roads_minor.checked) {
+      m.lines.ROADS_MINOR = [];
+      m.lines.PATHS = [];
+    }
+
     model = m;
     setStatus(m.warnings.join('|') || 'status.done');
     billing.track('build');
@@ -285,12 +302,9 @@ function renderMeta(m) {
 }
 
 async function showResult(m) {
-  const section = $('#result');
   setMode('model');
-  section.hidden = false;
   renderMeta(m);
-  section.scrollIntoView({ behavior: 'smooth' });
-  const { showModel } = await import('./preview.js?v=e9ed68a96e');
+  const { showModel } = await import('./preview.js');
   showModel($('#viewer'), m);
   await preparePreviews(m);
   applySite();
@@ -301,16 +315,14 @@ async function showResult(m) {
   renderQuota(remaining, counted);
   lockDownloads(remaining <= 0 && !counted);
 
-  // Dynamic Island activation
-  const pStudio = $('#pill-studio');
-  const pMap = $('#pill-vectormap');
-  if (pStudio) {
-    pStudio.classList.remove('disabled');
-    pStudio.querySelector('span').textContent = '2. 3D Studio ✓';
+  // Enable Dock buttons & switch screen cleanly
+  $('#dock-btn-studio')?.classList.remove('disabled');
+  $('#dock-btn-map')?.classList.remove('disabled');
+  $('#dock-btn-illu')?.classList.remove('disabled');
+
+  if (window.switchWorkspaceView) {
+    window.switchWorkspaceView('result');
   }
-  if (pMap) pMap.classList.remove('disabled');
-  document.querySelectorAll('.island-pill').forEach(p => p.classList.remove('active'));
-  pStudio?.classList.add('active');
 }
 
 function lockDownloads(locked) {
@@ -476,10 +488,10 @@ function secRedraw() {
   secState.line = null;
   const visible = mode === 'section';
   if (visible && secState.points.length > 1) {
-    secState.line = L.polyline(secState.points, { color: '#38bdf8', weight: 3, dashArray: '6 6', className: 'sec-line' }).addTo(map);
+    secState.line = L.polyline(secState.points, { color: '#10e86b', weight: 3, dashArray: '6 6', className: 'sec-line' }).addTo(map);
   }
   secState.dots = (visible ? secState.points : []).map((p, i) =>
-    L.circleMarker(p, { radius: 6, color: '#0284c7', weight: 2, fillColor: '#ffffff', fillOpacity: 1 }).addTo(map).bindTooltip(String(i + 1), { permanent: true, direction: 'top' })); 
+    L.circleMarker(p, { radius: 7, color: '#ffffff', weight: 2, fillColor: '#10e86b', fillOpacity: 1 }).addTo(map).bindTooltip(i === 0 ? 'Punto A' : (i === 1 ? 'Punto B' : `Pto ${i + 1}`), { permanent: true, direction: 'top' })); 
   const len = secState.points.length > 1 ? sectionLength(secState.points) : 0;
   sectionLengthCache = len;
   $('#sec-len').textContent = `${(len / 1000).toFixed(2)} ${t('km')}`;
@@ -487,8 +499,18 @@ function secRedraw() {
   $('#sec-build').disabled = secState.points.length < 2 || tooLong || secBusy;
   $('#sec-undo').disabled = !secState.points.length;
   $('#sec-clear').disabled = !secState.points.length;
-  const notice = $('#section-notice');
-  if (notice) notice.hidden = !visible || secState.points.length >= 2;
+  
+  // Section guidance message
+  const guidance = $('#section-guidance');
+  const guidanceMsg = $('#guidance-msg');
+  if (guidance) {
+    guidance.hidden = !visible || secState.points.length >= 2;
+    if (guidanceMsg) {
+      if (secState.points.length === 0) guidanceMsg.textContent = 'Haz clic en el mapa para marcar el Punto A del corte';
+      else if (secState.points.length === 1) guidanceMsg.textContent = 'Haz clic para marcar el Punto B y trazar el perfil';
+    }
+  }
+
   if (tooLong) setSecStatus('section.tooLong', { error: true });
   else if (secState.drawing) setSecStatus('section.hint');
   else if (!secState.points.length) setSecStatus('');
@@ -553,24 +575,55 @@ $('#sec-exag').addEventListener('change', secRefresh);
 $('#sec-dir').addEventListener('change', secRefresh);
 
 async function showSection(sec) {
-  const box = $('#section-result');
-  setMode('section');
-  box.hidden = false;
-  $('#sec-meta').textContent = t('section.meta', {
-    km: (sec.length / 1000).toFixed(2),
-    min: Math.round(sec.minZ),
-    max: Math.round(sec.maxZ),
-    n: sec.buildings.length,
-    x: sec.exaggeration,
-  });
   if (secState.url) URL.revokeObjectURL(secState.url);
   secState.url = URL.createObjectURL(SECTION_FORMATS.svg.make(sec));
-  const img = $('#view-section img');
-  img.src = secState.url;
-  img.onload = () => fitFlat($('#view-section'));
-  box.scrollIntoView({ behavior: 'smooth' });
+
+  // Architectural drawer on map
+  const drawer = $('#section-drawer');
+  if (drawer) {
+    drawer.hidden = false;
+    const metaDrawer = $('#sec-meta-drawer');
+    if (metaDrawer) {
+      metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Min: ${Math.round(sec.minZ)} m · Max: ${Math.round(sec.maxZ)} m · ${sec.buildings.length} edificios`;
+    }
+    const imgDrawer = $('#view-section-drawer img');
+    if (imgDrawer) {
+      imgDrawer.src = secState.url;
+      imgDrawer.onload = () => fitFlat($('#view-section-drawer'));
+    }
+  }
+
+  // Legacy container sync
+  const box = $('#section-result');
+  if (box) {
+    box.hidden = false;
+    $('#sec-meta').textContent = `${(sec.length / 1000).toFixed(2)} km · ${Math.round(sec.minZ)} - ${Math.round(sec.maxZ)} m`;
+    const img = $('#view-section img');
+    if (img) {
+      img.src = secState.url;
+      img.onload = () => fitFlat($('#view-section'));
+    }
+  }
   renderSecQuota();
 }
+
+// Camera toolbar buttons
+$('#cam-persp')?.addEventListener('click', (e) => {
+  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  setCameraView('persp');
+});
+$('#cam-iso')?.addEventListener('click', (e) => {
+  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  setCameraView('iso');
+});
+$('#cam-top')?.addEventListener('click', (e) => {
+  document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  setCameraView('top');
+});
+
 
 async function renderSecQuota() {
   const counted = isCounted(`sec:${secState.model?.id}`);

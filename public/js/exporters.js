@@ -692,13 +692,148 @@ END-ISO-10303-21;
   return new Blob([text], { type: 'application/x-step' });
 }
 
+/* ---------------- GeoJSON (QGIS, Blender-GIS, ArcGIS, Mapbox) ---------------- */
+
+export function toGeoJSON(model) {
+  const { lat, lon } = model.center;
+  const phi = (lat * Math.PI) / 180;
+  const mLat = 111132.92 - 559.82 * Math.cos(2 * phi) + 1.175 * Math.cos(4 * phi);
+  const mLon = 111412.84 * Math.cos(phi) - 93.5 * Math.cos(3 * phi);
+  const toCoord = (x, y, z) => {
+    const c = [
+      Number((lon + x / mLon).toFixed(7)),
+      Number((lat + y / mLat).toFixed(7))
+    ];
+    if (z !== undefined && !Number.isNaN(z)) c.push(Number(z.toFixed(2)));
+    return c;
+  };
+
+  const features = [];
+
+  // 1. Buildings (Polygon) with heights, levels, and classifications
+  for (const b of model.buildings || []) {
+    const coords = (b.rings || []).map((ring) => {
+      const pts = ring.map(([x, y]) => toCoord(x, y));
+      if (pts.length && (pts[0][0] !== pts[pts.length - 1][0] || pts[0][1] !== pts[pts.length - 1][1])) {
+        pts.push(pts[0]);
+      }
+      return pts;
+    }).filter((r) => r.length >= 4);
+
+    if (coords.length) {
+      features.push({
+        type: 'Feature',
+        properties: {
+          layer: 'buildings',
+          building_class: b.cls || 'other',
+          height_m: b.height || 0,
+          levels: b.levels || 1,
+          name: b.name || ''
+        },
+        geometry: {
+          type: 'Polygon',
+          coordinates: coords
+        }
+      });
+    }
+  }
+
+  // 2. Roads and Railways (LineStrings)
+  for (const [layerKey, lines] of Object.entries(model.lines || {})) {
+    for (const pts of lines) {
+      if (pts.length >= 2) {
+        features.push({
+          type: 'Feature',
+          properties: {
+            layer: layerKey.toLowerCase(),
+            type: layerKey
+          },
+          geometry: {
+            type: 'LineString',
+            coordinates: pts.map(([x, y, z]) => toCoord(x, y, z))
+          }
+        });
+      }
+    }
+  }
+
+  // 3. Water and Green Areas (Polygons)
+  for (const [layerKey, rings] of Object.entries(model.areas || {})) {
+    for (const ring of rings) {
+      if (ring.length >= 3) {
+        const pts = ring.map(([x, y]) => toCoord(x, y));
+        if (pts[0][0] !== pts[pts.length - 1][0] || pts[0][1] !== pts[pts.length - 1][1]) {
+          pts.push(pts[0]);
+        }
+        features.push({
+          type: 'Feature',
+          properties: {
+            layer: layerKey.toLowerCase(),
+            type: layerKey
+          },
+          geometry: {
+            type: 'Polygon',
+            coordinates: [pts]
+          }
+        });
+      }
+    }
+  }
+
+  // 4. Contours (LineStrings)
+  for (const c of model.contours || []) {
+    if (c.pts && c.pts.length >= 2) {
+      features.push({
+        type: 'Feature',
+        properties: {
+          layer: 'contours',
+          elevation_m: c.pts[0][2] || 0
+        },
+        geometry: {
+          type: 'LineString',
+          coordinates: c.pts.map(([x, y, z]) => toCoord(x, y, z))
+        }
+      });
+    }
+  }
+
+  // 5. Trees (Points)
+  for (const t of model.trees || []) {
+    features.push({
+      type: 'Feature',
+      properties: {
+        layer: 'trees',
+        radius_m: t.r,
+        height_m: t.h
+      },
+      geometry: {
+        type: 'Point',
+        coordinates: toCoord(t.x, t.y, t.z)
+      }
+    });
+  }
+
+  const fc = {
+    type: 'FeatureCollection',
+    name: `Urbanized_${model.center.lat.toFixed(4)}_${model.center.lon.toFixed(4)}`,
+    crs: {
+      type: 'name',
+      properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' }
+    },
+    features
+  };
+  return new Blob([JSON.stringify(fc, null, 2)], { type: 'application/geo+json' });
+}
+
 export const FORMATS = {
   dxf: { label: 'AutoCAD', ext: 'dxf', make: toDXF },
   dae: { label: 'SketchUp', ext: 'dae', make: toDAE },
   '3dm': { label: 'Rhino', ext: '3dm', make: to3DM },
   svg: { label: 'Illustrator', ext: 'svg', make: toSVG },
+  geojson: { label: 'GeoJSON', ext: 'geojson', make: toGeoJSON },
   fbx: { label: 'FBX', ext: 'fbx', make: toFBX },
   ifc: { label: 'ArchiCAD', ext: 'ifc', make: toIFC },
   stl: { label: '3D print', ext: 'stl', make: toSTL },
   jpg: { label: 'Satellite', ext: 'jpg', make: (model) => imageryBlob(model.imagery) },
 };
+
