@@ -62,12 +62,98 @@ export function makeFrame(lat, lon, size, shape = 'square') {
 
 /* ---------- OpenStreetMap ---------- */
 
+async function fetchDirectOSM(frame, signal) {
+  // Official OpenStreetMap API (api.openstreetmap.org/api/0.6/map?bbox=minLon,minLat,maxLon,maxLat)
+  // Has native CORS support and 99.99% availability, bypassing Overpass mirror downtime
+  const margin = Math.min(0.003, (frame.north - frame.south) * 0.15);
+  const minLon = (frame.west - margin).toFixed(6);
+  const minLat = (frame.south - margin).toFixed(6);
+  const maxLon = (frame.east + margin).toFixed(6);
+  const maxLat = (frame.north + margin).toFixed(6);
+  const url = `https://api.openstreetmap.org/api/0.6/map?bbox=${minLon},${minLat},${maxLon},${maxLat}`;
+
+  const res = await fetch(url, { signal: AbortSignal.any ? AbortSignal.any([signal, AbortSignal.timeout(22000)]) : signal });
+  if (!res.ok) throw new Error(`OSM Direct API ${res.status}`);
+  const text = await res.text();
+  const doc = new DOMParser().parseFromString(text, 'application/xml');
+  if (doc.querySelector('parsererror')) throw new Error('OSM XML parse error');
+
+  const nodes = new Map();
+  const wayMap = new Map();
+  const elements = [];
+
+  // 1. Nodes
+  const nodeEls = doc.getElementsByTagName('node');
+  for (let i = 0; i < nodeEls.length; i++) {
+    const n = nodeEls[i];
+    const id = Number(n.getAttribute('id'));
+    const lat = Number(n.getAttribute('lat'));
+    const lon = Number(n.getAttribute('lon'));
+    nodes.set(id, { lat, lon });
+
+    const tagEls = n.getElementsByTagName('tag');
+    if (tagEls.length > 0) {
+      const tags = {};
+      for (let t = 0; t < tagEls.length; t++) {
+        tags[tagEls[t].getAttribute('k')] = tagEls[t].getAttribute('v');
+      }
+      elements.push({ type: 'node', id, lat, lon, tags });
+    }
+  }
+
+  // 2. Ways
+  const wayEls = doc.getElementsByTagName('way');
+  for (let i = 0; i < wayEls.length; i++) {
+    const w = wayEls[i];
+    const id = Number(w.getAttribute('id'));
+    const ndEls = w.getElementsByTagName('nd');
+    const geometry = [];
+    for (let k = 0; k < ndEls.length; k++) {
+      const ref = Number(ndEls[k].getAttribute('ref'));
+      const pt = nodes.get(ref);
+      if (pt) geometry.push(pt);
+    }
+    wayMap.set(id, geometry);
+
+    const tagEls = w.getElementsByTagName('tag');
+    const tags = {};
+    for (let t = 0; t < tagEls.length; t++) {
+      tags[tagEls[t].getAttribute('k')] = tagEls[t].getAttribute('v');
+    }
+    elements.push({ type: 'way', id, tags, geometry });
+  }
+
+  // 3. Relations (multipolygons)
+  const relEls = doc.getElementsByTagName('relation');
+  for (let i = 0; i < relEls.length; i++) {
+    const r = relEls[i];
+    const id = Number(r.getAttribute('id'));
+    const tagEls = r.getElementsByTagName('tag');
+    const tags = {};
+    for (let t = 0; t < tagEls.length; t++) {
+      tags[tagEls[t].getAttribute('k')] = tagEls[t].getAttribute('v');
+    }
+    const memberEls = r.getElementsByTagName('member');
+    const members = [];
+    for (let m = 0; m < memberEls.length; m++) {
+      const type = memberEls[m].getAttribute('type');
+      const ref = Number(memberEls[m].getAttribute('ref'));
+      const role = memberEls[m].getAttribute('role') || '';
+      members.push({
+        type,
+        ref,
+        role,
+        geometry: type === 'way' ? (wayMap.get(ref) || []) : []
+      });
+    }
+    elements.push({ type: 'relation', id, tags, members });
+  }
+
+  return { elements, source: 'osm_direct' };
+}
+
 async function fetchOSM(frame, signal) {
   const b = `${frame.south},${frame.west},${frame.north},${frame.east}`;
-  // Overpass отдаёт только объекты, у которых внутри рамки есть узлы. Большой водоём или лес,
-  // накрывающий участок целиком, так не находится — поэтому площадные объекты берём с запасом.
-  // объект, пересекающий рамку, Overpass отдаёт только если его узел попал внутрь,
-  // поэтому берём с запасом и обрезаем сами
   const o = Math.min(400, frame.size * 0.6);
   const dLatO = (frame.north - frame.south) * (o / frame.size), dLonO = (frame.east - frame.west) * (o / frame.size);
   const bo = `${frame.south - dLatO},${frame.west - dLonO},${frame.north + dLatO},${frame.east + dLonO}`;
@@ -109,8 +195,7 @@ out geom;
 out geom;`;
   const cached = await osmCacheGet(query);
   if (cached) return cached;
-  // Гонка серверов: сразу два самых надёжных, следующий — через 4 с или сразу после чужой ошибки.
-  // Побеждает первый полный ответ, остальные запросы отменяются.
+
   const urls = mirrorOrder();
   const ctrls = urls.map(() => new AbortController());
   const abortAll = () => ctrls.forEach((c) => c.abort());
@@ -138,11 +223,19 @@ out geom;`;
     return json;
   };
   try {
-    const json = dedupe(await race(urls, attempt, { first: 2, gap: 4000, signal }));
+    const json = dedupe(await race(urls, attempt, { first: 2, gap: 2500, signal }));
     osmCachePut(query, json);
     return json;
-  } catch {
-    throw new Error('Overpass unavailable');
+  } catch (overpassErr) {
+    console.warn('Overpass mirrors busy or down. Fetching directly from official OpenStreetMap API...', overpassErr);
+    try {
+      const json = await fetchDirectOSM(frame, signal);
+      osmCachePut(query, json);
+      return json;
+    } catch (directErr) {
+      console.warn('Direct OSM API also failed:', directErr);
+      throw new Error('Overpass and OSM unavailable');
+    }
   } finally {
     abortAll();
     signal?.removeEventListener('abort', abortAll);
@@ -1103,16 +1196,22 @@ export async function buildModel({ lat, lon, size, shape = 'square', layers, sen
   }
   const needImagery = layers.satellite || (layers.trees && layers.detect);
   const imageryPromise = needImagery ? fetchImagery(frame).catch(() => null) : Promise.resolve(null);
-  // Серверы Overpass бывают недоступны: при ошибке или долгом ожидании модель строится из Overture Maps
+  // Servidores Overpass pueden estar saturados: fallback automático a OSM Direct API y Overture S3
   let osm, dataSource = 'osm';
   try {
-    const wait = 8000; // 8s timeout: si Overpass no responde rápido, pasa de inmediato a Overture Maps S3
+    const wait = 10000;
     osm = await Promise.race([osmPromise, new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), wait))]);
   } catch (err) {
     if (signal?.aborted) throw err;
     onStep('status.fallback');
-    osm = await (await import('./overture.js?v=e9ed68a96e')).fetchOvertureOSM(frame, { signal });
-    dataSource = 'overture';
+    try {
+      osm = await fetchDirectOSM(frame, signal);
+      dataSource = 'osm';
+    } catch (directErr) {
+      console.warn('Direct OSM failed, using Overture PMTiles fallback:', directErr);
+      osm = await (await import('./overture.js?v=3.8')).fetchOvertureOSM(frame, { signal });
+      dataSource = 'overture';
+    }
   }
   onStep('status.geometry');
 

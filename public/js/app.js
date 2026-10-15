@@ -244,9 +244,16 @@ function setStatus(key, opts = {}) {
   // Topbar header loader sync
   const headerLoader = $('#header-loader');
   const headerLoaderText = $('#header-loader-text');
+  const spinner = headerLoader?.querySelector('.mini-spinner');
   if (headerLoader) {
-    headerLoader.hidden = !busy;
+    headerLoader.hidden = !busy && !error;
+    if (spinner) spinner.style.display = busy ? 'inline-block' : 'none';
     if (headerLoaderText) headerLoaderText.textContent = msg || 'Procesando datos cartográficos...';
+    if (error) {
+      setTimeout(() => {
+        if (!building) headerLoader.hidden = true;
+      }, 7000);
+    }
   }
 }
 

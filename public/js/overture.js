@@ -21,7 +21,16 @@ async function latestRelease() {
   } catch { /* приватный режим */ }
   try {
     const res = await fetch(CATALOG, { signal: AbortSignal.timeout(8000) });
-    const release = (await res.json()).latest;
+    const json = await res.json();
+    let release = json.latest;
+    if (!release && json.links) {
+      const childLinks = json.links.filter((l) => l.rel === 'child').map((l) => l.href);
+      const lastChild = childLinks.at(-1);
+      if (lastChild) {
+        const m = lastChild.match(/(\d{4}-\d{2}-\d{2}\.\d+)/);
+        if (m) release = m[1];
+      }
+    }
     if (!release) throw new Error('no release');
     try { localStorage.setItem('ue:overture', JSON.stringify({ release, at: Date.now() })); } catch { /* приватный режим */ }
     return release;
