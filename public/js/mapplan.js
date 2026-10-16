@@ -226,10 +226,34 @@ export function mapSVG(model, o) {
   const fs = size * 0.016;
   const m = size * 0.07; // поля листа
   const extras = [];
+
+  // Isócronas peatonales en lámina 2D
+  if (o.overlays.isochrones) {
+    const rings = [
+      { r: 400, color: '#0284c7', label: '5 min · 400 m' },
+      { r: 800, color: '#4f46e5', label: '10 min · 800 m' },
+      { r: 1200, color: '#7c3aed', label: '15 min · 1.2 km' },
+    ];
+    for (const { r, color, label } of rings) {
+      if (r > size * 0.9) continue;
+      groups.push(`<g id="ISOCHRONE_${r}"><circle cx="${f(h)}" cy="${f(h)}" r="${f(r)}" fill="none" stroke="${color}" stroke-width="${pen(0.35)}" stroke-dasharray="${pen(2)} ${pen(1.2)}"/>`
+        + `<text x="${f(h + r - fs * 0.4)}" y="${f(h - fs * 0.3)}" fill="${color}" font-family="Roboto, sans-serif" font-size="${f(fs * 0.65)}" font-weight="600" text-anchor="end">${label}</text></g>`);
+    }
+  }
   if (o.overlays.grid) {
     const st = niceStep(size / 6);
     let d = '';
-    for (let v = st; v < size - 1e-6; v += st) d += `M${f(v)},0V${size}M0,${f(v)}H${size}`;
+    const style = o.overlays.gridStyle || 'cross';
+    if (style === 'cross') {
+      const cr = fs * 0.3;
+      for (let x = st; x < size - 1e-6; x += st) {
+        for (let y = st; y < size - 1e-6; y += st) {
+          d += `M${f(x - cr)},${f(y)}H${f(x + cr)}M${f(x)},${f(y - cr)}V${f(y + cr)}`;
+        }
+      }
+    } else {
+      for (let v = st; v < size - 1e-6; v += st) d += `M${f(v)},0V${size}M0,${f(v)}H${size}`;
+    }
     groups.push(`<g id="GRID" fill="none" stroke="${c.grid}" stroke-width="${pen(0.12)}">${d ? `<path d="${d}"/>` : ''}</g>`);
     let labels = '';
     for (let v = 0; v <= size + 1e-6; v += st) {
@@ -252,8 +276,20 @@ export function mapSVG(model, o) {
   }
   if (o.overlays.north) {
     const nx = size - fs, ny = barY - fs * 0.2, s2 = fs * 0.75;
-    extras.push(`<g id="NORTH" fill="${c.text}"><path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.6)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}L${f(nx - s2 * 0.6)},${f(ny + s2 * 1.8)}Z"/>`
-      + `<text x="${f(nx)}" y="${f(ny + s2 * 1.8 + fs * 1.1)}" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.85)}" font-weight="700">N</text></g>`);
+    const nStyle = o.overlays.northStyle || 'swiss';
+    let northShape = '';
+    if (nStyle === 'swiss') {
+      northShape = `<path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.6)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}Z" fill="${c.text}"/>`
+        + `<path d="M${f(nx)},${f(ny)}L${f(nx - s2 * 0.6)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}Z" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/>`;
+    } else if (nStyle === 'minimal') {
+      northShape = `<line x1="${f(nx)}" y1="${f(ny + s2 * 2)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.15)}"/>`
+        + `<polyline points="${f(nx - s2 * 0.4)},${f(ny + s2 * 0.6)} ${f(nx)},${f(ny)} ${f(nx + s2 * 0.4)},${f(ny + s2 * 0.6)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.15)}"/>`;
+    } else {
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + s2)}" r="${f(s2)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/>`
+        + `<path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.5)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}L${f(nx - s2 * 0.5)},${f(ny + s2 * 1.8)}Z" fill="${c.text}"/>`;
+    }
+    extras.push(`<g id="NORTH">${northShape}`
+      + `<text x="${f(nx)}" y="${f(ny + s2 * 1.8 + fs * 1.1)}" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.85)}" font-weight="700" fill="${c.text}">N</text></g>`);
   }
 
   const frameShape = model.shape === 'circle'

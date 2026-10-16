@@ -280,20 +280,14 @@ function hideMapNotice() {
 document.getElementById('axiom-notice-close')?.addEventListener('click', hideMapNotice);
 
 let loadingInterval = null;
-let currentFilledCells = 1;
+let currentLoadingPct = 15;
 
-function renderLoadingCells(filledCount) {
-  const modal = $('#axiom-loading-modal');
-  if (!modal) return;
-  const cells = modal.querySelectorAll('.axiom-cell');
-  cells.forEach((cell, i) => {
-    cell.classList.remove('filled', 'active-pulse');
-    if (i < filledCount) {
-      cell.classList.add('filled');
-    } else if (i === filledCount && filledCount < 12) {
-      cell.classList.add('active-pulse');
-    }
-  });
+function renderLoadingProgress(pct) {
+  currentLoadingPct = Math.min(100, Math.max(0, pct));
+  const fill = $('#axiom-laser-fill');
+  const pctEl = $('#loading-pct');
+  if (fill) fill.style.width = `${currentLoadingPct}%`;
+  if (pctEl) pctEl.textContent = `${Math.round(currentLoadingPct)}%`;
 }
 
 function updateLoadingModal(stepKey) {
@@ -303,50 +297,56 @@ function updateLoadingModal(stepKey) {
 
   let title = 'Extrayendo datos cartográficos...';
   let sub = 'Conectando con servidores OpenStreetMap';
-  let targetCells = Math.max(currentFilledCells, 2);
+  let telemetry = '<span>OSM</span> · <span>OVERTURE</span> · <span>COPERNICUS GLO-30</span>';
+  let targetPct = Math.max(currentLoadingPct, 20);
 
   if (stepKey === 'status.loading') {
     title = 'Descargando geometría urbana';
     sub = 'Consultando edificios, vías y usos de suelo de OpenStreetMap...';
-    targetCells = Math.max(currentFilledCells, 3);
+    telemetry = '<span>OVERPASS OSM</span> · <span>VÍAS Y CALZADAS</span> · <span>POLÍGONOS</span>';
+    targetPct = Math.max(currentLoadingPct, 38);
   } else if (stepKey === 'status.fallback') {
     title = 'Conectando con fuente secundaria';
     sub = 'Descargando capas optimizadas de Overture Maps...';
-    targetCells = Math.max(currentFilledCells, 5);
+    telemetry = '<span>OVERTURE MAPS</span> · <span>EDIFICACIÓN GLO-30</span>';
+    targetPct = Math.max(currentLoadingPct, 54);
   } else if (stepKey === 'status.geometry') {
     title = 'Construyendo modelo 3D y relieve';
     sub = 'Generando mallas tridimensionales, alturas y topografía...';
-    targetCells = Math.max(currentFilledCells, 7);
+    telemetry = '<span>COPERNICUS DEM</span> · <span>EARCUT TRIANGULATION</span> · <span>RELIEVE</span>';
+    targetPct = Math.max(currentLoadingPct, 72);
   } else if (stepKey === 'status.imagery') {
     title = 'Sincronizando ortofoto satelital';
     sub = 'Descargando teselas satelitales de alta resolución...';
-    targetCells = Math.max(currentFilledCells, 9);
+    telemetry = '<span>SATELLITE ORTHOMOSAIC</span> · <span>ALTA RESOLUCIÓN</span>';
+    targetPct = Math.max(currentLoadingPct, 86);
   } else if (stepKey === 'status.trees') {
     title = 'Detectando masa arbórea';
     sub = 'Calculando vegetación y arbolado urbano...';
-    targetCells = Math.max(currentFilledCells, 11);
+    telemetry = '<span>ARBOLADO SATELITAL</span> · <span>BIODIVERSIDAD</span>';
+    targetPct = Math.max(currentLoadingPct, 94);
   } else if (stepKey === 'status.done' || (typeof stepKey === 'string' && stepKey.includes('done'))) {
     title = 'Finalizando modelo 3D';
     sub = 'Optimizando escena y preparando exportadores CAD/GIS...';
-    targetCells = 12;
+    telemetry = '<span>COMPLETO</span> · <span>AUTOCAD · RHINO · SKETCHUP · GIS</span>';
+    targetPct = 100;
   }
-
-  currentFilledCells = targetCells;
 
   const titleEl = $('#loading-title');
   const subEl = $('#loading-sub');
+  const telEl = $('#loading-telemetry');
   if (titleEl) titleEl.textContent = title;
   if (subEl) subEl.textContent = sub;
+  if (telEl) telEl.innerHTML = telemetry;
 
-  renderLoadingCells(currentFilledCells);
+  renderLoadingProgress(targetPct);
 
-  if (!loadingInterval && currentFilledCells < 11) {
+  if (!loadingInterval && targetPct < 96) {
     loadingInterval = setInterval(() => {
-      if (currentFilledCells < 10) {
-        currentFilledCells += 1;
-        renderLoadingCells(currentFilledCells);
+      if (currentLoadingPct < 94) {
+        renderLoadingProgress(currentLoadingPct + 1);
       }
-    }, 1100);
+    }, 450);
   }
 }
 
@@ -355,7 +355,7 @@ function hideLoadingModal() {
     clearInterval(loadingInterval);
     loadingInterval = null;
   }
-  currentFilledCells = 1;
+  currentLoadingPct = 15;
   const modal = $('#axiom-loading-modal');
   if (modal) modal.hidden = true;
 }
@@ -390,7 +390,6 @@ panel.addEventListener('submit', async (e) => {
   e.preventDefault();
   if (building) return;
   hideMapNotice();
-  currentFilledCells = 1;
   const c = map.getCenter().wrap();
   const layerKeys = ['buildings', 'extraBuildings', 'roads', 'roadWidth', 'bridges', 'terrain', 'contours', 'nature', 'trees', 'detect', 'satellite'];
   const layers = Object.fromEntries(layerKeys.map((k) => [k, panel.elements[k] ? panel.elements[k].checked : true]));
@@ -524,6 +523,9 @@ async function showResult(m) {
     const rMin = $('#count-roads-minor'); if (rMin) rMin.textContent = stats.roadsMinorKm + ' km';
     const relEl = $('#count-relief'); if (relEl) relEl.textContent = stats.relief + ' m';
     const trEl = $('#count-trees'); if (trEl) trEl.textContent = stats.trees;
+    const heroSum = $('#hero-model-summary');
+    const loc = locale();
+    if (heroSum) heroSum.textContent = `${m.stats.buildings.toLocaleString(loc)} edif. · ${Math.round(m.stats.relief)}m desnivel · ${m.stats.roadsKm.toFixed(1)} km`;
   } catch (err) {
     console.warn('GIS stats error:', err);
   }
@@ -1480,8 +1482,13 @@ function openIllustrator() {
     renderLabelList();
     renderSwatches();
   }
+  const soilBadge = $('#illu-soil-badge');
+  if (soilBadge && model.ecosystem?.soil) {
+    soilBadge.textContent = model.ecosystem.soil;
+  }
   requestAnimationFrame(() => illu.render());
 }
+window.openIllustratorStudio = openIllustrator;
 
 // палитры редактора: основные цвета и, при раскраске по типам, цвета классов
 const SWATCHES = ['bg', 'terrain', 'building', 'water', 'green', 'tree', 'road', 'roadMajor', 'bridge'];
@@ -1534,11 +1541,17 @@ function renderLabelList() {
   const canvas = $('#illu-canvas');
   if (canvas) {
     let drag = null;
+    let draggingLabel = null;
+    let dragLabelStart = null;
+
     canvas.addEventListener('pointerdown', (e) => {
       if (!illu) return;
+      const r = canvas.getBoundingClientRect();
+      const mx = e.clientX - r.left;
+      const my = e.clientY - r.top;
+
       if (placing) {
-        const r = canvas.getBoundingClientRect();
-        const l = illu.addLabel(e.clientX - r.left, e.clientY - r.top, t('illu.labelDefault'));
+        const l = illu.addLabel(mx, my, t('illu.labelDefault'));
         placing = false;
         canvas.classList.remove('picking');
         $('#illu-label')?.setAttribute('aria-pressed', 'false');
@@ -1546,20 +1559,62 @@ function renderLabelList() {
         if (l) { renderLabelList(); $('#illu-label-list input:last-of-type')?.focus(); }
         return;
       }
+
+      // Comprobar si se hace clic sobre una etiqueta para moverla libremente
+      const hit = illu.hitLabel ? illu.hitLabel(mx, my) : null;
+      if (hit && e.button === 0) {
+        canvas.setPointerCapture(e.pointerId);
+        draggingLabel = hit.label;
+        dragLabelStart = { x: e.clientX, y: e.clientY };
+        canvas.style.cursor = 'grabbing';
+        return;
+      }
+
       canvas.setPointerCapture(e.pointerId);
       illu.setQuick(true);
       drag = { x: e.clientX, y: e.clientY, pan: e.shiftKey || e.button === 2 };
     });
+
     canvas.addEventListener('pointermove', (e) => {
-      if (!drag || !illu) return;
-      const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
-      drag.x = e.clientX;
-      drag.y = e.clientY;
-      if (drag.pan) illu.pan(dx, dy);
-      else illu.orbit(dx, dy);
-      document.querySelectorAll('[data-illview]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.illview === illu.state.view)));
+      if (!illu) return;
+      const r = canvas.getBoundingClientRect();
+      const mx = e.clientX - r.left;
+      const my = e.clientY - r.top;
+
+      if (draggingLabel && dragLabelStart) {
+        const dx = e.clientX - dragLabelStart.x;
+        const dy = e.clientY - dragLabelStart.y;
+        dragLabelStart = { x: e.clientX, y: e.clientY };
+        illu.dragLabel(draggingLabel, dx, dy);
+        return;
+      }
+
+      if (drag) {
+        const dx = e.clientX - drag.x, dy = e.clientY - drag.y;
+        drag.x = e.clientX;
+        drag.y = e.clientY;
+        if (drag.pan) illu.pan(dx, dy);
+        else illu.orbit(dx, dy);
+        document.querySelectorAll('[data-illview]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.illview === illu.state.view)));
+        return;
+      }
+
+      // Cursor inteligente según si sobrevuela etiqueta o modelo
+      if (!placing && illu.hitLabel) {
+        const hit = illu.hitLabel(mx, my);
+        canvas.style.cursor = hit ? 'grab' : 'crosshair';
+      }
     });
-    const stop = () => { drag = null; illu?.setQuick(false); };
+
+    const stop = () => {
+      if (draggingLabel) {
+        draggingLabel = null;
+        dragLabelStart = null;
+        canvas.style.cursor = 'crosshair';
+      }
+      drag = null;
+      illu?.setQuick(false);
+    };
     canvas.addEventListener('pointerup', stop);
     canvas.addEventListener('pointercancel', stop);
     canvas.addEventListener('contextmenu', (e) => e.preventDefault());
@@ -1574,15 +1629,75 @@ function renderLabelList() {
       illu?.setView(b.dataset.illview);
       document.querySelectorAll('[data-illview]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
     }));
+
     document.querySelectorAll('[data-illstyle]').forEach((b) => b.addEventListener('click', () => {
       illu?.setStyle(b.dataset.illstyle);
       document.querySelectorAll('[data-illstyle]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
       if (illu) document.querySelectorAll('[data-illlayer]').forEach((c) => { c.checked = illu.state.layers[c.dataset.illlayer]; });
       renderSwatches();
     }));
+
+    // Multimapas temáticos: Tipología GIS, Isócronas, Flora, Fauna
+    $('#illu-bytype')?.addEventListener('change', (e) => {
+      illu?.setByType(e.target.checked);
+      renderSwatches();
+    });
+    $('#illu-isochrones')?.addEventListener('change', (e) => {
+      illu?.setThematic('isochrones', e.target.checked);
+    });
+    $('#illu-flora')?.addEventListener('change', (e) => {
+      illu?.setThematic('flora', e.target.checked);
+    });
+    $('#illu-fauna')?.addEventListener('change', (e) => {
+      illu?.setThematic('fauna', e.target.checked);
+    });
+
+    // Material de base maqueta & zócalo
+    document.querySelectorAll('[data-illbase]').forEach((b) => b.addEventListener('click', () => {
+      illu?.setBaseMaterial(b.dataset.illbase);
+      document.querySelectorAll('[data-illbase]').forEach((x) => {
+        x.setAttribute('aria-pressed', String(x === b));
+        x.classList.toggle('active', x === b);
+      });
+    }));
+    $('#illu-base-depth')?.addEventListener('input', (e) => {
+      const v = Number(e.target.value);
+      illu?.setBaseDepth(v);
+      const out = $('#illu-base-depth-out');
+      if (out && model) out.textContent = `${Math.round(v * model.size)} m`;
+    });
+
+    // Sol y Sombras dinámicas
+    $('#illu-sun-az')?.addEventListener('input', (e) => {
+      const az = Number(e.target.value);
+      const alt = Number($('#illu-sun-alt')?.value || 42);
+      illu?.setSun(az, alt);
+      const out = $('#illu-sun-az-out');
+      if (out) out.textContent = `${az}°`;
+    });
+    $('#illu-sun-alt')?.addEventListener('input', (e) => {
+      const alt = Number(e.target.value);
+      const az = Number($('#illu-sun-az')?.value || 315);
+      illu?.setSun(az, alt);
+      const out = $('#illu-sun-alt-out');
+      if (out) out.textContent = `${alt}°`;
+    });
+
+    // Elementos arquitectónicos de lámina (Norte, Escala, Retícula, Grosor)
+    $('#illu-north')?.addEventListener('change', (e) => illu?.setOverlay('north', e.target.checked));
+    $('#illu-north-style')?.addEventListener('change', (e) => illu?.setOverlay('northStyle', e.target.value));
+    $('#illu-scalebar')?.addEventListener('change', (e) => illu?.setOverlay('scalebar', e.target.checked));
+    $('#illu-grid')?.addEventListener('change', (e) => illu?.setOverlay('grid', e.target.checked));
+    $('#illu-grid-style')?.addEventListener('change', (e) => illu?.setOverlay('gridStyle', e.target.value));
+    $('#illu-line-width')?.addEventListener('input', (e) => {
+      const w = Number(e.target.value);
+      illu?.setLineWidth(w);
+      const out = $('#illu-line-width-out');
+      if (out) out.textContent = `${w.toFixed(2)} pt`;
+    });
+
     document.querySelectorAll('[data-illlayer]').forEach((c) => c.addEventListener('change', () => illu?.setLayer(c.dataset.illlayer, c.checked)));
     $('#illu-persp')?.addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
-    $('#illu-bytype')?.addEventListener('change', (e) => { illu?.setByType(e.target.checked); renderSwatches(); });
     $('#illu-legend')?.addEventListener('change', (e) => illu?.setLegend(e.target.checked));
     $('#illu-reset-colors')?.addEventListener('click', () => { illu?.resetColors(); renderSwatches(); });
     $('#illu-color')?.addEventListener('input', (e) => illu?.setLabelColor(e.target.value));
@@ -1670,6 +1785,10 @@ function syncMapControls() {
     else el.value = v;
   });
   document.querySelectorAll('[data-mappreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mappreset === mapOpts.preset)));
+  const nStyle = $('#map-north-style');
+  if (nStyle && mapOpts.overlays?.northStyle) nStyle.value = mapOpts.overlays.northStyle;
+  const gStyle = $('#map-grid-style');
+  if (gStyle && mapOpts.overlays?.gridStyle) gStyle.value = mapOpts.overlays.gridStyle;
   // ползунки силы доступны, только когда эффект включён
   const dep = { 'shadows.azimuth': 'shadows.on', 'shadows.altitude': 'shadows.on', 'shadows.strength': 'shadows.on', 'relief.hillshadeStrength': 'relief.hillshade', 'relief.depthStrength': 'relief.depth' };
   for (const [k, on] of Object.entries(dep)) {
@@ -1679,6 +1798,11 @@ function syncMapControls() {
   renderMapScale();
   renderMapSwatches();
 }
+window.openVectorMapStudio = async () => {
+  await loadMapMod();
+  syncMapControls();
+  renderMap(true);
+};
 
 function renderMapScale() {
   const sel = $('#map-scale');
@@ -1728,6 +1852,20 @@ document.querySelectorAll('[data-mapopt]').forEach((el) => el.addEventListener(e
   if (el.type === 'checkbox') syncMapControls();
   renderMap();
 }));
+$('#map-north-style')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.northStyle = e.target.value;
+    renderMap();
+  }
+});
+$('#map-grid-style')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.gridStyle = e.target.value;
+    renderMap();
+  }
+});
 $('#map-scale')?.addEventListener('change', (e) => { if (mapOpts) { mapOpts.scale = Number(e.target.value); renderMap(true); } });
 $('#map-reset-colors')?.addEventListener('click', () => {
   if (!mapMod) return;

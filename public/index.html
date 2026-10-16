@@ -48,20 +48,20 @@
       </div>
     </div>
 
-    <!-- Right Controls: View Switchers (Mapa | Modelo 3D | Vector Map | Ilustración) & Language -->
+    <!-- Right Controls: View Switchers (Mapa | Modelo 3D | Vector Map | Axonometría) & Language -->
     <div class="axiom-topbar-right">
       <nav class="axiom-view-nav" role="tablist">
-        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="Mapa e Isócronas">
+        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="Mapa e Isócronas" data-tooltip="Mapa e Isócronas">
           <span>Mapa</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="Estudio 3D y Maqueta">
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="Estudio 3D y Maqueta" data-tooltip="Estudio 3D">
           <span>Modelo 3D</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="Editor de Lámina Vectorial 2D (Vector Map)">
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="Editor de Lámina Vectorial 2D (Vector Map)" data-tooltip="Vector Map 2D">
           <span>Vector Map</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="Editor de Ilustración Axonométrica (Map Editor)">
-          <span>Ilustración</span>
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="Axonometría Arquitectónica y Maqueta" data-tooltip="Axonometría">
+          <span>Axonometría</span>
         </button>
       </nav>
 
@@ -387,6 +387,16 @@
         </div>
       </header>
 
+      <!-- Studio Floating Non-Blocking Hero Status Pill (Appears when 3D model is loaded, leaving model 100% visible) -->
+      <div class="axiom-studio-hero-pill" id="studio-hero-pill">
+        <span class="studio-hero-dot"></span>
+        <span class="studio-hero-text" id="hero-model-summary">Modelo 3D Generado · 100% Interactivo</span>
+        <button type="button" class="studio-hero-btn" id="btn-hero-export">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Descargar Activos</span>
+        </button>
+      </div>
+
       <!-- ========================================================
            VERTICALLY CENTERED LEFT-SIDE LIQUID GLASS ICON DOCK + DRAWER
            ("ubica centrado el toggle de iconos" + "esconder o desplegar desde la izq")
@@ -394,38 +404,43 @@
       <div class="axiom-left-system" id="studio-left-system">
         <!-- Vertically Centered Icon Rail on the Left Edge -->
         <nav class="axiom-left-dock" aria-label="Herramientas del modelo">
-          <button type="button" class="axiom-dock-icon active" data-drawer="export" title="Descargar Activos (AutoCAD, Rhino, SketchUp, ArchiCAD, FBX, QGIS, STL)">
+          <button type="button" class="axiom-dock-icon" data-drawer="export" data-tooltip="Descargar Activos CAD/BIM">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
-          <button type="button" class="axiom-dock-icon" data-drawer="gis" title="Capas Urbanas GIS (Negocios, Escuelas, Vialidades, Topografía)">
+          <button type="button" class="axiom-dock-icon" data-drawer="gis" data-tooltip="Capas Urbanas GIS">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           </button>
-          <button type="button" class="axiom-dock-icon" data-drawer="bio" title="Biodiversidad y Zonas de Flora y Fauna">
+          <button type="button" class="axiom-dock-icon" data-drawer="bio" data-tooltip="Biodiversidad y Flora">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
           </button>
-          <button type="button" class="axiom-dock-icon" data-drawer="radii" title="Isócronas y Radios de Tiempo Peatonal (5, 10, 15 min)">
+          <button type="button" class="axiom-dock-icon" data-drawer="radii" data-tooltip="Isócronas Peatonales">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
           </button>
           <span class="axiom-dock-divider"></span>
-          <button type="button" class="axiom-dock-icon" id="dock-btn-map" data-switchview="mapper" title="Abrir Editor de Lámina Vectorial 2D (Vector Map)">
+          <button type="button" class="axiom-dock-icon" id="dock-btn-map" data-switchview="mapper" data-tooltip="Vector Map 2D">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
           </button>
-          <button type="button" class="axiom-dock-icon" id="dock-btn-illu" data-switchview="illustrator" title="Abrir Editor de Ilustración Axonométrica (Map Editor)">
+          <button type="button" class="axiom-dock-icon" id="dock-btn-illu" data-switchview="illustrator" data-tooltip="Axonometría">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polygon points="15.5 8.5 13.5 13.5 8.5 15.5 10.5 10.5 15.5 8.5"/></svg>
           </button>
         </nav>
 
-        <!-- Collapsible Left Drawer Container -->
-        <div class="axiom-left-drawer" id="studio-left-drawer">
-          <!-- PANEL 1: DESCARGAR ACTIVOS (All 9 CAD/GIS/BIM formats + Vector Map & Illustrator Launchers) -->
+        <!-- Collapsible Left Drawer Container (Starts hidden so the 3D model is 100% visible and interactive) -->
+        <div class="axiom-left-drawer" id="studio-left-drawer" hidden>
+          <!-- PANEL 1: DESCARGAR ACTIVOS (All 9 CAD/GIS/BIM formats) -->
           <aside class="axiom-drawer-card" id="drawer-export">
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
                 <h2 class="axiom-export-title">Descargar Activos</h2>
-                <button type="button" class="axiom-back-btn" id="btn-back-to-map" title="Volver al mapa para ajustar área o parámetros">
-                  <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                  <span>Mapa</span>
-                </button>
+                <div class="axiom-header-actions">
+                  <button type="button" class="axiom-back-btn" id="btn-back-to-map" title="Volver al mapa">
+                    <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span>Mapa</span>
+                  </button>
+                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
               </div>
               <p id="coords" class="export-coords">—</p>
             </div>
@@ -489,16 +504,6 @@
                 <span>.jpg de alta resolución</span>
               </button>
             </div>
-
-            <!-- Direct Studio Launchers for Vector Map 2D & Axonometric Illustration Editor -->
-            <div class="axiom-studio-launchers">
-              <button type="button" class="axiom-secondary-btn" data-switchview="mapper">
-                <span>Editar Vector Map 2D</span>
-              </button>
-              <button type="button" class="axiom-secondary-btn" data-switchview="illustrator">
-                <span>Editor de Ilustración</span>
-              </button>
-            </div>
             <p id="quota" style="display:none;"></p>
           </aside>
 
@@ -507,7 +512,12 @@
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
                 <h2 class="axiom-export-title">Capas Urbanas GIS</h2>
-                <span class="axiom-count-pill" id="gis-total-badge">0</span>
+                <div class="axiom-header-actions">
+                  <span class="axiom-count-pill" id="gis-total-badge">0</span>
+                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
               </div>
               <p class="export-coords">Haz clic para encender o apagar capas en 3D</p>
             </div>
@@ -573,10 +583,15 @@
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
                 <h2 class="axiom-export-title" id="bio-biome-name">Ecosistema Local</h2>
-                <label class="axiom-mini-toggle" title="Demarcar polígonos y zonas de flora en el mapa y modelo 3D">
-                  <input type="checkbox" id="flora-zones-switch">
-                  <span>Zonas en mapa/3D</span>
-                </label>
+                <div class="axiom-header-actions">
+                  <label class="axiom-mini-toggle" title="Demarcar polígonos y zonas de flora en el mapa y modelo 3D">
+                    <input type="checkbox" id="flora-zones-switch">
+                    <span>Zonas 3D</span>
+                  </label>
+                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
               </div>
               <p class="export-coords" id="bio-coords">—</p>
             </div>
@@ -620,10 +635,15 @@
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
                 <h2 class="axiom-export-title">Isócronas Peatonales</h2>
-                <label class="axiom-mini-toggle">
-                  <input type="checkbox" id="walk-switch-active">
-                  <span>Mostrar en 3D y Mapa</span>
-                </label>
+                <div class="axiom-header-actions">
+                  <label class="axiom-mini-toggle">
+                    <input type="checkbox" id="walk-switch-active">
+                    <span>Activar</span>
+                  </label>
+                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
               </div>
               <p class="export-coords" id="radii-coords">Isócronas a 4.8 km/h</p>
             </div>
@@ -747,10 +767,24 @@
           <!-- Elementos de Lámina -->
           <div class="axiom-editor-group">
             <span class="axiom-sub-header">Elementos Cartográficos</span>
-            <label class="axiom-check-row"><span>Barra de escala</span><input type="checkbox" data-mapopt="overlays.scalebar" checked></label>
-            <label class="axiom-check-row"><span>Rosa de los vientos (Norte)</span><input type="checkbox" data-mapopt="overlays.north" checked></label>
-            <label class="axiom-check-row"><span>Retícula UTM / Coordenadas</span><input type="checkbox" data-mapopt="overlays.grid"></label>
-            <div class="axiom-control-row">
+            <label class="axiom-check-row"><span>Barra de escala gráfica</span><input type="checkbox" data-mapopt="overlays.scalebar" checked></label>
+            <div class="axiom-row-between">
+              <label class="axiom-check-row" style="margin:0;"><span>Norte</span><input type="checkbox" data-mapopt="overlays.north" checked></label>
+              <select id="map-north-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="swiss">Flecha Suiza</option>
+                <option value="minimal">Minimalista</option>
+                <option value="circle">Técnico</option>
+              </select>
+            </div>
+            <label class="axiom-check-row" style="margin-top:4px;"><span>Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" data-mapopt="overlays.isochrones"></label>
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <label class="axiom-check-row" style="margin:0;"><span>Retícula de coordenadas</span><input type="checkbox" data-mapopt="overlays.grid"></label>
+              <select id="map-grid-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="cross">Cruces (+)</option>
+                <option value="line">Líneas</option>
+              </select>
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
               <span class="axiom-label">Grosor de línea</span>
               <input type="range" min="0" max="0.4" step="0.02" data-mapopt="outlineWidth" class="axiom-range">
             </div>
@@ -781,12 +815,12 @@
         <canvas id="illu-canvas"></canvas>
       </div>
 
-      <!-- Left-Docked Axiom Liquid Glass Panel for Axonometric Illustrator -->
+      <!-- Left-Docked Axiom Liquid Glass Panel for Axonometría / Maqueta -->
       <aside class="axiom-editor-sidebar">
         <div class="axiom-export-header">
           <div class="axiom-export-title-row">
-            <h2 class="axiom-export-title">Ilustración Axonométrica</h2>
-            <button type="button" class="axiom-back-btn" data-switchview="result">
+            <h2 class="axiom-export-title">Axonometría</h2>
+            <button type="button" class="axiom-back-btn" data-switchview="result" data-tooltip="Volver a 3D">
               <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
               <span>3D Studio</span>
             </button>
@@ -795,7 +829,7 @@
         </div>
 
         <div class="axiom-editor-scroll">
-          <!-- Ángulo Isométrico -->
+          <!-- Ángulo Axonométrico -->
           <div class="axiom-editor-group">
             <span class="axiom-sub-header">Vista Axonométrica</span>
             <div class="axiom-preset-grid">
@@ -806,20 +840,95 @@
               <button type="button" class="axiom-subtle-btn" data-illview="top">Planta</button>
               <button type="button" class="axiom-subtle-btn" data-illview="eye">Peatonal</button>
             </div>
-            <label class="axiom-check-row" style="margin-top:4px;"><span>Proyección con perspectiva</span><input type="checkbox" id="illu-persp"></label>
+            <label class="axiom-check-row" style="margin-top:6px;"><span>Proyección con perspectiva</span><input type="checkbox" id="illu-persp"></label>
           </div>
 
-          <!-- Estilo Gráfico -->
+          <!-- Estilo Gráfico & Maqueta -->
           <div class="axiom-editor-group">
             <span class="axiom-sub-header">Acabado Gráfico</span>
             <div class="axiom-preset-grid">
               <button type="button" class="axiom-subtle-btn" data-illstyle="flat" aria-pressed="true">Sin contorno</button>
               <button type="button" class="axiom-subtle-btn" data-illstyle="line">Línea fina</button>
-              <button type="button" class="axiom-subtle-btn" data-illstyle="mono">Monocromo B/N</button>
+              <button type="button" class="axiom-subtle-btn" data-illstyle="mono">Maqueta B/N</button>
             </div>
           </div>
 
-          <!-- Capas -->
+          <!-- Multimapas Temáticos -->
+          <div class="axiom-editor-group">
+            <span class="axiom-sub-header">Multimapa Temático (Misma Vista)</span>
+            <label class="axiom-check-row"><span>Colorear tipologías GIS en maqueta</span><input type="checkbox" id="illu-bytype"></label>
+            <label class="axiom-check-row"><span>Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" id="illu-isochrones"></label>
+            <label class="axiom-check-row"><span>Capa Flora & Zonas Ecológicas</span><input type="checkbox" id="illu-flora"></label>
+            <label class="axiom-check-row"><span>Capa Fauna & Corredores</span><input type="checkbox" id="illu-fauna"></label>
+          </div>
+
+          <!-- Base de Maqueta & Tipo de Suelo -->
+          <div class="axiom-editor-group">
+            <span class="axiom-sub-header">Base de Maqueta & Suelo</span>
+            <div class="axiom-preset-grid" style="grid-template-columns: repeat(2, 1fr);">
+              <button type="button" class="axiom-subtle-btn active" data-illbase="plaster" aria-pressed="true">Yeso Blanco</button>
+              <button type="button" class="axiom-subtle-btn" data-illbase="balsa">Madera Balsa</button>
+              <button type="button" class="axiom-subtle-btn" data-illbase="soil">Estrato Suelo</button>
+              <button type="button" class="axiom-subtle-btn" data-illbase="graphite">Grafito</button>
+            </div>
+            <div class="axiom-soil-badge" id="illu-soil-badge" style="margin-top:6px;">Suelo Aluvial & Sedimentos Lacustres</div>
+            <div class="axiom-control-row" style="margin-top:4px;">
+              <div class="axiom-row-between">
+                <span class="axiom-label">Altura de zócalo / base</span>
+                <span class="axiom-val" id="illu-base-depth-out">20 m</span>
+              </div>
+              <input type="range" min="0.012" max="0.05" step="0.004" value="0.02" id="illu-base-depth" class="axiom-range">
+            </div>
+          </div>
+
+          <!-- Sol & Sombra -->
+          <div class="axiom-editor-group">
+            <span class="axiom-sub-header">Posición Solar & Sombra</span>
+            <div class="axiom-control-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label">Azimut solar</span>
+                <span class="axiom-val" id="illu-sun-az-out">315°</span>
+              </div>
+              <input type="range" min="0" max="360" step="5" value="315" id="illu-sun-az" class="axiom-range">
+            </div>
+            <div class="axiom-control-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label">Altura solar</span>
+                <span class="axiom-val" id="illu-sun-alt-out">42°</span>
+              </div>
+              <input type="range" min="10" max="85" step="2" value="42" id="illu-sun-alt" class="axiom-range">
+            </div>
+          </div>
+
+          <!-- Elementos Arquitectónicos: Norte, Escala, Retícula, Grosor -->
+          <div class="axiom-editor-group">
+            <span class="axiom-sub-header">Elementos de Lámina</span>
+            <div class="axiom-row-between">
+              <label class="axiom-check-row" style="margin:0;"><span>Norte</span><input type="checkbox" id="illu-north" checked></label>
+              <select id="illu-north-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="swiss">Flecha Suiza</option>
+                <option value="minimal">Minimalista</option>
+                <option value="circle">Técnico</option>
+              </select>
+            </div>
+            <label class="axiom-check-row" style="margin-top:4px;"><span>Escala gráfica métrica</span><input type="checkbox" id="illu-scalebar" checked></label>
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <label class="axiom-check-row" style="margin:0;"><span>Retícula de replanteo</span><input type="checkbox" id="illu-grid"></label>
+              <select id="illu-grid-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="cross">Cruces (+)</option>
+                <option value="dots">Puntos</option>
+              </select>
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <div class="axiom-row-between">
+                <span class="axiom-label">Grosor de línea</span>
+                <span class="axiom-val" id="illu-line-width-out">0.4 pt</span>
+              </div>
+              <input type="range" min="0.15" max="1.6" step="0.05" value="0.4" id="illu-line-width" class="axiom-range">
+            </div>
+          </div>
+
+          <!-- Capas Visibles -->
           <div class="axiom-editor-group">
             <span class="axiom-sub-header">Capas Visibles</span>
             <label class="axiom-check-row"><span>Edificios</span><input type="checkbox" data-illlayer="buildings" checked></label>
@@ -827,11 +936,10 @@
             <label class="axiom-check-row"><span>Vialidades</span><input type="checkbox" data-illlayer="roads" checked></label>
             <label class="axiom-check-row"><span>Agua y áreas verdes</span><input type="checkbox" data-illlayer="nature" checked></label>
             <label class="axiom-check-row"><span>Curvas de nivel</span><input type="checkbox" data-illlayer="contours" checked></label>
-            <label class="axiom-check-row"><span>Colorear por tipología GIS</span><input type="checkbox" id="illu-bytype"></label>
-            <label class="axiom-check-row"><span>Mostrar leyenda</span><input type="checkbox" id="illu-legend" checked></label>
+            <label class="axiom-check-row"><span>Mostrar leyenda de usos</span><input type="checkbox" id="illu-legend" checked></label>
           </div>
 
-          <!-- Paleta de Colores -->
+          <!-- Paleta de Colores Personalizable -->
           <div class="axiom-editor-group">
             <div class="axiom-row-between">
               <span class="axiom-sub-header" style="margin:0;">Paleta de Colores</span>
@@ -841,11 +949,12 @@
             <div class="swatches" id="illu-class-swatches"></div>
           </div>
 
-          <!-- Etiquetas y Cotas en el Modelo -->
+          <!-- Etiquetas y Cotas Libres Arrastrables -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Etiquetas y Notas</span>
+            <span class="axiom-sub-header">Etiquetas y Cotas Libres</span>
+            <p class="export-coords" style="margin-bottom:6px;">Haz clic en 'Añadir etiqueta' y luego en el modelo. Arrástrala libremente con el ratón.</p>
             <div class="axiom-btn-pair">
-              <button type="button" class="axiom-subtle-btn" id="illu-label" style="flex:1;">Añadir etiqueta en modelo</button>
+              <button type="button" class="axiom-subtle-btn" id="illu-label" style="flex:1;">Añadir etiqueta</button>
               <input type="color" id="illu-color" value="#ffffff" aria-label="Color de etiqueta" style="width:32px; height:30px; border:none; background:none; cursor:pointer;">
             </div>
             <ul class="illu-labels" id="illu-label-list" style="margin-top:6px; list-style:none; display:flex; flex-direction:column; gap:4px;"></ul>
@@ -854,7 +963,7 @@
 
         <div class="axiom-editor-footer">
           <button type="button" class="axiom-cta-btn" data-illexport="svg">Descargar Vector .svg</button>
-          <button type="button" class="axiom-secondary-btn" data-illexport="png">Descargar Imagen .png</button>
+          <button type="button" class="axiom-secondary-btn" data-illexport="png">Descargar Imagen .png (4K)</button>
         </div>
       </aside>
     </div>
@@ -910,47 +1019,46 @@
   </div>
 
   <!-- ========================================================
-       INTEGRATED LIQUID GLASS LOADING MODAL
+       INTEGRATED ARCHITECTURAL LIQUID GLASS LOADER
        ======================================================== -->
   <div class="axiom-loading-modal" id="axiom-loading-modal" hidden>
     <div class="axiom-loading-overlay"></div>
     <div class="axiom-loading-card">
-      <div class="axiom-loading-logo-wrap">
-        <div class="axiom-loading-halo"></div>
-        <svg class="axiom-loading-logo" width="34" height="34" viewBox="0 0 24 24" fill="none">
+      <div class="axiom-loader-radar-wrap">
+        <div class="axiom-radar-sweep"></div>
+        <div class="axiom-radar-ring ring-1"></div>
+        <div class="axiom-radar-ring ring-2"></div>
+        <svg class="axiom-loading-logo" width="30" height="30" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
-          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.45" stroke-dasharray="2 2" />
-          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.45" stroke-dasharray="2 2" />
+          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="2 2" />
+          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="2 2" />
           <circle cx="12" cy="12" r="1.8" fill="#ffffff" />
         </svg>
-        <span class="axiom-loading-brand">URBANIZED</span>
       </div>
 
-      <div class="axiom-loading-bar" aria-label="Progreso de generación">
-        <div class="axiom-bar-cells" id="axiom-bar-cells">
-          <div class="axiom-cell filled"></div>
-          <div class="axiom-cell active-pulse"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-          <div class="axiom-cell"></div>
-        </div>
+      <div class="axiom-loading-meta-top">
+        <span class="axiom-loading-tag">COMPILACIÓN DIGITAL 3D</span>
+        <span class="axiom-loading-pct" id="loading-pct">15%</span>
       </div>
 
-      <div class="axiom-loading-tag">LOADING</div>
+      <!-- High-End Continuous Laser Progress Bar -->
+      <div class="axiom-laser-track" aria-label="Progreso">
+        <div class="axiom-laser-fill" id="axiom-laser-fill" style="width: 15%;"></div>
+      </div>
 
       <div class="axiom-loading-status">
         <div class="axiom-loading-title" id="loading-title">Extrayendo datos cartográficos...</div>
         <div class="axiom-loading-sub" id="loading-sub">Conectando con servidores OpenStreetMap</div>
       </div>
+
+      <div class="axiom-loading-telemetry" id="loading-telemetry">
+        <span>OSM</span> · <span>OVERTURE</span> · <span>COPERNICUS DEM</span>
+      </div>
     </div>
   </div>
+
+  <!-- Sleek Liquid Glass Floating Tooltip System -->
+  <div id="axiom-tooltip" class="axiom-tooltip" hidden></div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
   <script type="module" src="/js/app.js?v=5.7"></script>
@@ -1050,18 +1158,80 @@
         });
       });
 
-      // View switcher across all 4 screens: Mapa (#app), Modelo 3D (#result), Vector Map (#mapper), Ilustración (#illustrator)
+      // Close drawer buttons
+      document.querySelectorAll('[data-close-drawer]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (drawerContainer) drawerContainer.hidden = true;
+          dockButtons.forEach(b => b.classList.remove('active'));
+        });
+      });
+
+      // Hero Pill button to open exporter
+      document.getElementById('btn-hero-export')?.addEventListener('click', () => {
+        openOrToggleLeftDrawer('export', true);
+      });
+
+      // Clicking on the 3D viewer canvas dismisses open drawer to give full view
+      document.getElementById('viewer')?.addEventListener('click', (e) => {
+        if (drawerContainer && !drawerContainer.hidden && !e.target.closest('.axiom-left-system')) {
+          drawerContainer.hidden = true;
+          dockButtons.forEach(b => b.classList.remove('active'));
+        }
+      });
+
+      // Global Liquid Glass Tooltips
+      const tooltipEl = document.getElementById('axiom-tooltip');
+      if (tooltipEl) {
+        document.addEventListener('mouseover', (e) => {
+          const target = e.target.closest('[data-tooltip]');
+          if (target) {
+            const tip = target.getAttribute('data-tooltip');
+            if (tip) {
+              tooltipEl.textContent = tip;
+              tooltipEl.hidden = false;
+              const r = target.getBoundingClientRect();
+              const tipW = tooltipEl.offsetWidth || 80;
+              const tipH = tooltipEl.offsetHeight || 24;
+
+              // Position appropriately (default: right if left dock, bottom if topbar)
+              if (r.left < 80) {
+                tooltipEl.style.left = `${r.right + 10}px`;
+                tooltipEl.style.top = `${r.top + (r.height - tipH) / 2}px`;
+              } else if (r.top < 60) {
+                tooltipEl.style.left = `${r.left + (r.width - tipW) / 2}px`;
+                tooltipEl.style.top = `${r.bottom + 8}px`;
+              } else {
+                tooltipEl.style.left = `${r.left + (r.width - tipW) / 2}px`;
+                tooltipEl.style.top = `${r.top - tipH - 8}px`;
+              }
+            }
+          }
+        });
+        document.addEventListener('mouseout', (e) => {
+          const target = e.target.closest('[data-tooltip]');
+          if (target) {
+            tooltipEl.hidden = true;
+          }
+        });
+      }
+
+      // View switcher across all 4 screens: Mapa (#app), Modelo 3D (#result), Vector Map (#mapper), Axonometría (#illustrator)
       function switchView(viewName) {
         document.querySelectorAll('.screen-layer').forEach(s => {
-          s.classList.remove('active');
+          const isActive = (s.id === viewName);
+          s.classList.toggle('active', isActive);
           if (s.id === 'mapper' || s.id === 'illustrator') {
-            s.style.display = (s.id === viewName) ? 'flex' : '';
+            s.style.display = isActive ? 'flex' : 'none';
+          } else {
+            s.style.display = isActive ? 'block' : 'none';
           }
         });
         document.querySelectorAll('.axiom-view-btn').forEach(b => b.classList.remove('active'));
 
         const targetScreen = document.getElementById(viewName);
-        if (targetScreen) targetScreen.classList.add('active');
+        if (targetScreen) {
+          targetScreen.classList.add('active');
+        }
 
         const activeNavBtn = document.querySelector(`.axiom-view-btn[data-view="${viewName}"]`) ||
                              (viewName === 'app' ? document.getElementById('view-btn-map') : null);
