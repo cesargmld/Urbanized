@@ -1,6 +1,8 @@
 import { buildModel, redetectTrees } from './data.js?v=5.7';
 import { FORMATS, stlScale } from './exporters.js?v=5.7';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight } from './preview.js?v=5.7';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, studioState } from './preview.js?v=5.7';
+import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
+import { MAP_GRID_STEPS } from './mapplan.js?v=5.7';
 import { classifyEcosystem } from './biodiversity.js?v=5.7';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=5.7';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=5.7';
@@ -530,6 +532,10 @@ async function showResult(m) {
     console.warn('GIS stats error:', err);
   }
 }
+window.loadModelDirectly = async (customModel) => {
+  model = customModel;
+  await showResult(model);
+};
 
 function lockDownloads(locked) {
   document.querySelectorAll('.dl').forEach((b) => {
@@ -1337,6 +1343,225 @@ $('#btn-export-qgis-direct')?.addEventListener('click', async () => {
   }
 });
 
+// ---------------- 3D Studio: Real Aerial Satellite & Contour Tools (Imagen 1) ----------------
+function syncSatelliteDrawer() {
+  const st = studioState.satellite;
+  const ct = studioState.contours;
+  const bd = studioState.buildings;
+  const satSw = $('#sat-active-toggle'); if (satSw) satSw.checked = st.enabled;
+  const satS = $('#sat-saturation'); if (satS) satS.value = st.saturation;
+  const satC = $('#sat-contrast'); if (satC) satC.value = st.contrast;
+  const satB = $('#sat-brightness'); if (satB) satB.value = st.brightness;
+  const satI = $('#sat-invert'); if (satI) satI.value = st.invert;
+  const valS = $('#sat-val-saturation'); if (valS) valS.textContent = st.saturation === 0 ? '0% (B/N)' : `${st.saturation}%`;
+  const valC = $('#sat-val-contrast'); if (valC) valC.textContent = `${st.contrast}%`;
+  const valB = $('#sat-val-brightness'); if (valB) valB.textContent = `${st.brightness}%`;
+  const valI = $('#sat-val-invert'); if (valI) valI.textContent = `${st.invert}%`;
+  document.querySelectorAll('[data-satbldg]').forEach((b) => b.classList.toggle('active', b.dataset.satbldg === bd.finish));
+  const cVis = $('#sat-contour-visible'); if (cVis) cVis.checked = ct.visible;
+  const cLab = $('#sat-contour-labels'); if (cLab) cLab.checked = ct.labels;
+  const cCol = $('#sat-contour-color'); if (cCol) cCol.value = ct.color;
+}
+window.syncSatelliteDrawer = syncSatelliteDrawer;
+
+$('#sat-active-toggle')?.addEventListener('change', (e) => {
+  updateSatelliteTexture({ enabled: e.target.checked });
+});
+$('#sat-saturation')?.addEventListener('input', (e) => {
+  const v = Number(e.target.value);
+  const out = $('#sat-val-saturation'); if (out) out.textContent = v === 0 ? '0% (B/N)' : `${v}%`;
+  updateSatelliteTexture({ saturation: v });
+});
+$('#sat-contrast')?.addEventListener('input', (e) => {
+  const v = Number(e.target.value);
+  const out = $('#sat-val-contrast'); if (out) out.textContent = `${v}%`;
+  updateSatelliteTexture({ contrast: v });
+});
+$('#sat-brightness')?.addEventListener('input', (e) => {
+  const v = Number(e.target.value);
+  const out = $('#sat-val-brightness'); if (out) out.textContent = `${v}%`;
+  updateSatelliteTexture({ brightness: v });
+});
+$('#sat-invert')?.addEventListener('input', (e) => {
+  const v = Number(e.target.value);
+  const out = $('#sat-val-invert'); if (out) out.textContent = `${v}%`;
+  updateSatelliteTexture({ invert: v });
+});
+document.querySelectorAll('[data-satbldg]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-satbldg]').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    setBuildingFinish(btn.dataset.satbldg);
+  });
+});
+$('#sat-contour-visible')?.addEventListener('change', (e) => {
+  setContourOptions({ visible: e.target.checked });
+});
+$('#sat-contour-labels')?.addEventListener('change', (e) => {
+  setContourOptions({ labels: e.target.checked });
+});
+$('#sat-contour-color')?.addEventListener('change', (e) => {
+  setContourOptions({ color: e.target.value });
+});
+$('#sat-btn-reset')?.addEventListener('click', () => {
+  updateSatelliteTexture({ enabled: true, saturation: 100, contrast: 100, brightness: 100, invert: 0 });
+  setBuildingFinish('gis');
+  setContourOptions({ visible: true, labels: true, color: '#ffffff' });
+  syncSatelliteDrawer();
+});
+$('#sat-btn-bn-arch')?.addEventListener('click', () => {
+  updateSatelliteTexture({ enabled: true, saturation: 0, contrast: 150, brightness: 75, invert: 0 });
+  setBuildingFinish('white');
+  setContourOptions({ visible: true, labels: true, color: '#ffffff' });
+  syncSatelliteDrawer();
+});
+
+// ---------------- Custom Pins & Markers Engine (Imagen 3) ----------------
+const pinMapLayer = L.layerGroup().addTo(map);
+
+function updatePinsOnMap() {
+  pinMapLayer.clearLayers();
+  const pins = pinStore.getPins();
+  const badge = $('#pins-count-badge');
+  if (badge) badge.textContent = String(pins.length);
+
+  for (const p of pins) {
+    if (!p.visible) continue;
+    const icon = L.divIcon({
+      html: `
+        <div class="map-custom-pin" style="--pin-color:${p.color}; --pin-border-color:${p.color};">
+          <div class="pin-label-pill">${p.label}</div>
+          <div class="pin-stem"></div>
+          <div class="pin-dot-anchor"></div>
+        </div>
+      `,
+      className: 'map-custom-pin-wrap',
+      iconSize: [120, 48],
+      iconAnchor: [60, 48]
+    });
+    L.marker([p.lat, p.lon], { icon, interactive: true }).addTo(pinMapLayer);
+  }
+}
+
+function renderPinsDrawerList() {
+  const listEl = $('#studio-pins-list');
+  const emptyNotice = $('#pins-empty-notice');
+  const badge = $('#pins-count-badge');
+  const paletteEl = $('#pin-color-palette');
+  if (!listEl) return;
+
+  // Render color swatches
+  if (paletteEl && !paletteEl.children.length) {
+    for (const c of PIN_COLORS) {
+      const sw = document.createElement('button');
+      sw.type = 'button';
+      sw.className = `pin-color-swatch ${c.hex === pinStore.activeColor ? 'active' : ''}`;
+      sw.style.setProperty('--swatch-color', c.hex);
+      sw.title = c.name;
+      sw.addEventListener('click', () => {
+        pinStore.activeColor = c.hex;
+        paletteEl.querySelectorAll('.pin-color-swatch').forEach((s) => s.classList.remove('active'));
+        sw.classList.add('active');
+      });
+      paletteEl.appendChild(sw);
+    }
+  }
+
+  const pins = pinStore.getPins();
+  if (badge) badge.textContent = String(pins.length);
+
+  if (!pins.length) {
+    if (emptyNotice) emptyNotice.hidden = false;
+    listEl.innerHTML = '';
+    if (emptyNotice) listEl.appendChild(emptyNotice);
+    return;
+  }
+
+  listEl.innerHTML = '';
+  for (const pin of pins) {
+    const row = document.createElement('div');
+    row.className = 'studio-pin-row';
+    row.innerHTML = `
+      <span class="studio-pin-dot" style="background:${pin.color}; color:${pin.color};"></span>
+      <input type="text" class="studio-pin-name-input" value="${pin.label}">
+      <span class="studio-pin-type-tag">${pin.type}</span>
+      <button type="button" class="studio-pin-del" title="Eliminar marcador">&times;</button>
+    `;
+
+    const inp = row.querySelector('.studio-pin-name-input');
+    inp.addEventListener('change', (e) => {
+      pinStore.updatePin(pin.id, { label: e.target.value });
+    });
+
+    const del = row.querySelector('.studio-pin-del');
+    del.addEventListener('click', () => {
+      pinStore.removePin(pin.id);
+    });
+
+    listEl.appendChild(row);
+  }
+}
+window.renderPinsDrawerList = renderPinsDrawerList;
+
+pinStore.subscribe(() => {
+  updatePinsOnMap();
+  renderPinsDrawerList();
+});
+
+$('#btn-pin-place-toggle')?.addEventListener('click', () => {
+  const next = !pinStore.isPlacing();
+  pinStore.setPlacingMode(next);
+  const btn = $('#btn-pin-place-toggle');
+  if (btn) {
+    btn.classList.toggle('active', next);
+    const span = btn.querySelector('span');
+    if (span) span.textContent = next ? 'Haz clic en el modelo para colocar Pin...' : 'Hacer clic en el modelo para colocar Pin';
+  }
+});
+
+$('#pin-type-select')?.addEventListener('change', (e) => {
+  pinStore.activeType = e.target.value;
+});
+
+$('#btn-pins-clear-all')?.addEventListener('click', () => {
+  if (confirm('¿Eliminar todos los pines colocados?')) pinStore.clearPins();
+});
+
+$('#btn-export-pins-geojson')?.addEventListener('click', () => {
+  pinStore.exportGeoJSONFile();
+});
+
+// Map island pins toggle
+$('#map-btn-pins')?.addEventListener('click', () => {
+  const next = !pinStore.isPlacing();
+  pinStore.setPlacingMode(next);
+  $('#map-btn-pins')?.classList.toggle('active', next);
+  if (next) {
+    if (window.toggleLeftPanel) window.toggleLeftPanel('pins', true);
+  }
+});
+
+// Leaflet map click to drop pin when in placing mode
+map.on('click', (e) => {
+  if (pinStore.isPlacing()) {
+    const lat = e.latlng.lat;
+    const lon = e.latlng.lng;
+    let x = 0, y = 0, z = 0;
+    if (model && model.center) {
+      x = (lon - model.center.lon) * (111319.49 * Math.cos((model.center.lat * Math.PI) / 180));
+      y = (lat - model.center.lat) * 111319.49;
+    }
+    pinStore.addPin({ x, y, z, lat, lon });
+    pinStore.setPlacingMode(false);
+    $('#map-btn-pins')?.classList.remove('active');
+    const btn = $('#btn-pin-place-toggle');
+    if (btn) {
+      btn.classList.remove('active');
+      const span = btn.querySelector('span');
+      if (span) span.textContent = 'Hacer clic en el modelo para colocar Pin';
+    }
+  }
+});
 
 async function renderSecQuota() {
   const counted = isCounted(`sec:${secState.model?.id}`);
@@ -1696,6 +1921,41 @@ function renderLabelList() {
       if (out) out.textContent = `${w.toFixed(2)} pt`;
     });
 
+    // Exploded Layers Diagram (Imagen 4)
+    $('#illu-exploded-switch')?.addEventListener('change', (e) => {
+      const active = e.target.checked;
+      const opts = $('#illu-exploded-options');
+      if (opts) opts.hidden = !active;
+      illu?.setExploded(active);
+    });
+    $('#illu-explode-offset')?.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      const out = $('#illu-explode-offset-out'); if (out) out.textContent = `${val} m`;
+      illu?.setExplodeOffset(val);
+    });
+    document.querySelectorAll('[data-illutier]').forEach((cb) => {
+      cb.addEventListener('change', () => {
+        illu?.setExplodedTier(cb.dataset.illutier, cb.checked);
+      });
+    });
+    document.querySelectorAll('[data-illutiercolor]').forEach((inp) => {
+      inp.addEventListener('input', () => {
+        illu?.setTierColor(inp.dataset.illutiercolor, inp.value);
+      });
+    });
+    $('#illu-exploded-guides')?.addEventListener('change', (e) => {
+      illu?.setOverlay('explodedGuides', e.target.checked);
+    });
+    $('#illu-contour-labels')?.addEventListener('change', (e) => {
+      illu?.setContourLabels(e.target.checked);
+    });
+    $('#illu-corner-labels')?.addEventListener('change', (e) => {
+      illu?.setOverlay('explodedCornerLabels', e.target.checked);
+    });
+    $('#illu-pins-toggle')?.addEventListener('change', (e) => {
+      illu?.setOverlay('pins', e.target.checked);
+    });
+
     document.querySelectorAll('[data-illlayer]').forEach((c) => c.addEventListener('change', () => illu?.setLayer(c.dataset.illlayer, c.checked)));
     $('#illu-persp')?.addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
     $('#illu-legend')?.addEventListener('change', (e) => illu?.setLegend(e.target.checked));
@@ -1789,6 +2049,15 @@ function syncMapControls() {
   if (nStyle && mapOpts.overlays?.northStyle) nStyle.value = mapOpts.overlays.northStyle;
   const gStyle = $('#map-grid-style');
   if (gStyle && mapOpts.overlays?.gridStyle) gStyle.value = mapOpts.overlays.gridStyle;
+  const gStep = $('#map-grid-step');
+  if (gStep) gStep.value = String(mapOpts.gridStep || 'auto');
+  const grainEl = $('#map-grain');
+  if (grainEl) {
+    grainEl.value = String(mapOpts.grain || 0);
+    const out = $('#map-grain-out'); if (out) out.textContent = `${mapOpts.grain || 0}%`;
+  }
+  const pinsEl = $('#map-pins-toggle');
+  if (pinsEl) pinsEl.checked = Boolean(mapOpts.overlays?.pins ?? true);
   // ползунки силы доступны, только когда эффект включён
   const dep = { 'shadows.azimuth': 'shadows.on', 'shadows.altitude': 'shadows.on', 'shadows.strength': 'shadows.on', 'relief.hillshadeStrength': 'relief.hillshade', 'relief.depthStrength': 'relief.depth' };
   for (const [k, on] of Object.entries(dep)) {
@@ -1863,6 +2132,26 @@ $('#map-grid-style')?.addEventListener('change', (e) => {
   if (mapOpts) {
     if (!mapOpts.overlays) mapOpts.overlays = {};
     mapOpts.overlays.gridStyle = e.target.value;
+    renderMap();
+  }
+});
+$('#map-grid-step')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    mapOpts.gridStep = e.target.value === 'auto' ? 'auto' : Number(e.target.value);
+    renderMap();
+  }
+});
+$('#map-grain')?.addEventListener('input', (e) => {
+  if (mapOpts) {
+    mapOpts.grain = Number(e.target.value);
+    const out = $('#map-grain-out'); if (out) out.textContent = `${mapOpts.grain}%`;
+    renderMap();
+  }
+});
+$('#map-pins-toggle')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.pins = e.target.checked;
     renderMap();
   }
 });

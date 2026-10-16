@@ -1,6 +1,9 @@
 // Векторная карта (план сверху): слои, тени зданий, отмывка рельефа и карта высот,
 // сетка, масштабная линейка, север. Один SVG — и для превью, и для Illustrator.
 import { CLASS_COLORS } from './exporters.js?v=4.1';
+import { pinStore } from './pins.js?v=1.0';
+
+export const MAP_GRID_STEPS = ['auto', 5, 20, 50, 100, 250, 500, 1000];
 
 export const MAP_PRESETS = {
   classic: {
@@ -241,20 +244,36 @@ export function mapSVG(model, o) {
     }
   }
   if (o.overlays.grid) {
-    const st = niceStep(size / 6);
+    let st;
+    if (o.overlays.gridStep && o.overlays.gridStep !== 'auto') {
+      st = Number(o.overlays.gridStep) || 100;
+    } else {
+      st = niceStep(size / 6);
+    }
+    const maxDivs = 140;
+    if (size / st > maxDivs) st = niceStep(size / maxDivs);
+
     let d = '';
     const style = o.overlays.gridStyle || 'cross';
     if (style === 'cross') {
-      const cr = fs * 0.3;
+      const cr = fs * 0.28;
       for (let x = st; x < size - 1e-6; x += st) {
         for (let y = st; y < size - 1e-6; y += st) {
           d += `M${f(x - cr)},${f(y)}H${f(x + cr)}M${f(x)},${f(y - cr)}V${f(y + cr)}`;
         }
       }
+    } else if (style === 'dots') {
+      const cr = fs * 0.12;
+      for (let x = st; x < size - 1e-6; x += st) {
+        for (let y = st; y < size - 1e-6; y += st) {
+          d += `M${f(x - cr)},${f(y)}A${f(cr)},${f(cr)} 0 1 0 ${f(x + cr)},${f(y)}A${f(cr)},${f(cr)} 0 1 0 ${f(x - cr)},${f(y)}`;
+        }
+      }
     } else {
       for (let v = st; v < size - 1e-6; v += st) d += `M${f(v)},0V${size}M0,${f(v)}H${size}`;
     }
-    groups.push(`<g id="GRID" fill="none" stroke="${c.grid}" stroke-width="${pen(0.12)}">${d ? `<path d="${d}"/>` : ''}</g>`);
+    groups.push(`<g id="GRID" fill="${style === 'dots' ? c.grid : 'none'}" stroke="${c.grid}" stroke-width="${pen(0.12)}">${d ? `<path d="${d}"/>` : ''}</g>`);
+
     let labels = '';
     for (let v = 0; v <= size + 1e-6; v += st) {
       labels += `<text x="${f(v)}" y="${f(size + fs * 1.4)}" text-anchor="middle">${Math.round(v)}</text>`;
@@ -262,6 +281,27 @@ export function mapSVG(model, o) {
     }
     extras.push(`<g id="GRID_LABELS" fill="${c.text}" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.8)}">${labels}</g>`);
   }
+
+  // Pines y Marcadores Personalizados (Imagen 3)
+  const pins = pinStore.getPins().filter((p) => p.visible);
+  if (pins.length > 0) {
+    let pinShapes = '';
+    for (const p of pins) {
+      const px = p.x + h;
+      const py = h - p.y;
+      const r = fs * 0.65;
+      pinShapes += `
+      <g id="PIN_${p.id}">
+        <circle cx="${f(px)}" cy="${f(py)}" r="${f(r * 1.6)}" fill="${p.color}" opacity="0.25"/>
+        <circle cx="${f(px)}" cy="${f(py)}" r="${f(r)}" fill="${p.color}" stroke="#ffffff" stroke-width="${pen(0.35)}"/>
+        <line x1="${f(px)}" y1="${f(py - r)}" x2="${f(px + r * 1.2)}" y2="${f(py - r * 2.2)}" stroke="${p.color}" stroke-width="${pen(0.25)}"/>
+        <rect x="${f(px + r * 1.2)}" y="${f(py - r * 3.4)}" width="${f(fs * 4.2)}" height="${f(fs * 1.3)}" rx="${f(fs * 0.3)}" fill="${p.color}"/>
+        <text x="${f(px + r * 1.6)}" y="${f(py - r * 2.5)}" fill="#ffffff" font-family="Inter, sans-serif" font-size="${f(fs * 0.65)}" font-weight="600">${esc(p.label.length > 14 ? p.label.slice(0, 13) + '…' : p.label)}</text>
+      </g>`;
+    }
+    groups.push(`<g id="CUSTOM_PINS">${pinShapes}</g>`);
+  }
+
   const barY = size + m * (o.overlays.grid ? 0.95 : 0.55);
   if (o.overlays.scalebar) {
     const len = niceStep(size / 5);
@@ -297,16 +337,30 @@ export function mapSVG(model, o) {
     : `<rect x="0" y="0" width="${size}" height="${size}"/>`;
   const vx = -m, vy = -m * 0.6, vw = size + 2 * m, vh = size + m * 0.6 + m * (o.overlays.grid ? 1.7 : 1.35);
   const mmW = (vw * 1000) / scale, mmH = (vh * 1000) / scale;
+
+  // Filtro de ruido / textura arquitectónica (Imagen 2)
+  const grainDef = (o.grain && o.grain > 0) ? `
+  <filter id="arch-noise" x="0%" y="0%" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" result="noise"/>
+    <feColorMatrix type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 ${f(Math.min(0.2, (o.grain / 100) * 0.2))} 0"/>
+  </filter>` : '';
+  const grainOverlay = (o.grain && o.grain > 0) ? `
+  <rect x="${f(vx)}" y="${f(vy)}" width="${f(vw)}" height="${f(vh)}" fill="#000000" filter="url(#arch-noise)" style="mix-blend-mode: overlay; pointer-events: none;"/>` : '';
+
   return `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Urbanized · ${model.center.lat.toFixed(6)}, ${model.center.lon.toFixed(6)} · ${size} x ${size} m · 1:${scale} -->
 <svg xmlns="http://www.w3.org/2000/svg" width="${f(mmW)}mm" height="${f(mmH)}mm" viewBox="${f(vx)} ${f(vy)} ${f(vw)} ${f(vh)}">
-<defs><clipPath id="frame">${frameShape}</clipPath></defs>
+<defs>
+<clipPath id="frame">${frameShape}</clipPath>
+${grainDef}
+</defs>
 <rect id="PAPER" x="${f(vx)}" y="${f(vy)}" width="${f(vw)}" height="${f(vh)}" fill="${c.bg}"/>
 <g id="MAP" clip-path="url(#frame)">
 ${groups.join('\n')}
 </g>
 <g id="FRAME" fill="none" stroke="${c.text}" stroke-width="${pen(0.25)}">${frameShape}</g>
 ${extras.join('\n')}
+${grainOverlay}
 <!-- ${esc('© OpenStreetMap contributors')} -->
 </svg>`;
 }

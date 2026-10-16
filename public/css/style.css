@@ -3929,6 +3929,198 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
+/* ========================================================
+   CUSTOM PINS & MARKERS (Image 3 Architectural Palette)
+   ======================================================== */
+.pin-placing-cursor, .pin-placing-cursor canvas, .pin-placing-cursor #map {
+  cursor: crosshair !important;
+}
+
+.pin-color-palette {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+
+.pin-color-swatch {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease;
+  background-color: var(--swatch-color, #f97316);
+  position: relative;
+}
+
+.pin-color-swatch:hover {
+  transform: scale(1.15);
+}
+
+.pin-color-swatch.active {
+  border-color: #ffffff;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.45);
+  transform: scale(1.18);
+}
+
+.studio-pins-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.studio-pin-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 10px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 8px;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.studio-pin-row:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.14);
+}
+
+.studio-pin-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+
+.studio-pin-name-input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+  color: #ffffff;
+  font-size: 11px;
+  font-family: var(--font-sans);
+  padding: 2px 4px;
+  outline: none;
+  min-width: 0;
+}
+
+.studio-pin-name-input:focus {
+  border-bottom-color: var(--accent);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.studio-pin-type-tag {
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.studio-pin-del {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  border-radius: 4px;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.15s ease;
+}
+
+.studio-pin-del:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.15);
+}
+
+/* 2D Map Leaflet Custom Pins */
+.map-custom-pin-wrap {
+  background: none;
+  border: none;
+}
+
+.map-custom-pin {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transform: translate(-50%, -100%);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.map-custom-pin .pin-label-pill {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: #ffffff;
+  background: rgba(12, 14, 20, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--pin-border-color, rgba(255, 255, 255, 0.3));
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.6);
+  margin-bottom: 3px;
+  letter-spacing: 0.02em;
+}
+
+.map-custom-pin .pin-stem {
+  width: 1.5px;
+  height: 10px;
+  background: #ffffff;
+  opacity: 0.85;
+}
+
+.map-custom-pin .pin-dot-anchor {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--pin-color, #f97316);
+  border: 2px solid #ffffff;
+  box-shadow: 0 0 8px var(--pin-color, #f97316);
+}
+
+/* ========================================================
+   AXONOMETRÍA EXPLODED LAYERS (Image 4 Stack Controls)
+   ======================================================== */
+.exploded-tier-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.exploded-tier-item:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.tier-color-input {
+  width: 26px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  background: none;
+  cursor: pointer;
+}
+
 
 
 

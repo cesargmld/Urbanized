@@ -103,6 +103,10 @@
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
             <span>Zonas de Flora</span>
           </button>
+          <button type="button" class="axiom-island-btn" id="map-btn-pins" title="Añadir marcadores y pines personalizados sobre el mapa">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Pines</span>
+          </button>
         </div>
 
         <!-- Subtle Walking Distance Selector Pill (Appears when Isócronas is active) -->
@@ -416,6 +420,12 @@
           <button type="button" class="axiom-dock-icon" data-drawer="radii" data-tooltip="Isócronas Peatonales">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
           </button>
+          <button type="button" class="axiom-dock-icon" data-drawer="sat" data-tooltip="Textura Satelital & Relieve 3D">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/></svg>
+          </button>
+          <button type="button" class="axiom-dock-icon" data-drawer="pins" data-tooltip="Marcadores & Pines 3D">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </button>
           <span class="axiom-dock-divider"></span>
           <button type="button" class="axiom-dock-icon" id="dock-btn-map" data-switchview="mapper" data-tooltip="Vector Map 2D">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
@@ -676,6 +686,146 @@
               <span>Descargar isócronas (.geojson)</span>
             </button>
           </aside>
+
+          <!-- PANEL 5: TEXTURA SATELITAL & RELIEVE 3D (Interactive Aerial Topography & Image 1 Tools) -->
+          <aside class="axiom-drawer-card" id="drawer-sat" hidden>
+            <div class="axiom-export-header">
+              <div class="axiom-export-title-row">
+                <h2 class="axiom-export-title">Satélite & Relieve 3D</h2>
+                <div class="axiom-header-actions">
+                  <label class="axiom-mini-toggle" title="Activar foto satelital real mapeada en 3D">
+                    <input type="checkbox" id="sat-active-toggle" checked>
+                    <span>Satélite</span>
+                  </label>
+                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+              </div>
+              <p class="export-coords">Ajustes en vivo de foto satelital, curvas de nivel y volumetría</p>
+            </div>
+
+            <!-- Satélite Live Sliders -->
+            <div class="axiom-editor-group" style="padding:0;">
+              <span class="axiom-sub-header">Filtros de Textura Satelital</span>
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label">Saturación (B/N a Color)</span>
+                  <span class="axiom-val" id="sat-val-saturation">0% (B/N)</span>
+                </div>
+                <input type="range" min="0" max="150" step="5" value="0" id="sat-saturation" class="axiom-range">
+              </div>
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label">Contraste</span>
+                  <span class="axiom-val" id="sat-val-contrast">140%</span>
+                </div>
+                <input type="range" min="50" max="250" step="5" value="140" id="sat-contrast" class="axiom-range">
+              </div>
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label">Brillo</span>
+                  <span class="axiom-val" id="sat-val-brightness">75%</span>
+                </div>
+                <input type="range" min="30" max="150" step="5" value="75" id="sat-brightness" class="axiom-range">
+              </div>
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label">Inversión</span>
+                  <span class="axiom-val" id="sat-val-invert">0%</span>
+                </div>
+                <input type="range" min="0" max="100" step="5" value="0" id="sat-invert" class="axiom-range">
+              </div>
+            </div>
+
+            <!-- Acabado de Edificios 3D -->
+            <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+              <span class="axiom-sub-header">Acabado de Volumetría 3D</span>
+              <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr);">
+                <button type="button" class="axiom-subtle-btn active" data-satbldg="white" aria-pressed="true">Yeso Blanco</button>
+                <button type="button" class="axiom-subtle-btn" data-satbldg="gis">GIS Colores</button>
+                <button type="button" class="axiom-subtle-btn" data-satbldg="mono">Grafito B/N</button>
+              </div>
+            </div>
+
+            <!-- Curvas de Nivel & Cotas 3D -->
+            <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+              <span class="axiom-sub-header">Curvas de Nivel & Altitud</span>
+              <label class="axiom-check-row"><span>Curvas de nivel en relieve 3D</span><input type="checkbox" id="sat-contour-visible" checked></label>
+              <label class="axiom-check-row"><span>Etiquetas de cota numérica (m)</span><input type="checkbox" id="sat-contour-labels" checked></label>
+              <div class="axiom-row-between" style="margin-top:6px;">
+                <span class="axiom-label">Color de curvas</span>
+                <select id="sat-contour-color" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                  <option value="#ffffff" selected>Blanco Tiza</option>
+                  <option value="#f97316">Ámbar Topográfico</option>
+                  <option value="#06b6d4">Cian Técnico</option>
+                  <option value="#10b981">Esmeralda</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="axiom-row-between" style="margin-top:10px;">
+              <button type="button" class="axiom-back-btn" id="sat-btn-reset">Restablecer valores</button>
+              <button type="button" class="axiom-subtle-btn" id="sat-btn-bn-arch" style="font-size:11px;">Estilo Arquitectónico B/N</button>
+            </div>
+          </aside>
+
+          <!-- PANEL 6: MARCADORES & PINES (Custom Colored Pins Tool - Image 3) -->
+          <aside class="axiom-drawer-card" id="drawer-pins" hidden>
+            <div class="axiom-export-header">
+              <div class="axiom-export-title-row">
+                <h2 class="axiom-export-title">Marcadores & Pines</h2>
+                <div class="axiom-header-actions">
+                  <span class="axiom-count-pill" id="pins-count-badge">0</span>
+                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
+                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                  </button>
+                </div>
+              </div>
+              <p class="export-coords">Añade hitos en 3D, mapa y axonometría con color y tipo</p>
+            </div>
+
+            <!-- Herramienta de Creación de Pin -->
+            <div class="axiom-editor-group" style="padding:0;">
+              <div class="axiom-row-between">
+                <span class="axiom-sub-header" style="margin:0;">Tipo de Marcador</span>
+                <select id="pin-type-select" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                  <option value="hito" selected>Hito Urbano / POI</option>
+                  <option value="acceso">Acceso / Vialidad</option>
+                  <option value="mirador">Mirador Panorámico</option>
+                  <option value="proyecto">Área de Proyecto</option>
+                  <option value="cota">Cota Topográfica</option>
+                </select>
+              </div>
+
+              <!-- Paleta de 8 Colores Oficiales (Naranja de Imagen 3, etc.) -->
+              <div class="axiom-control-row" style="margin-top:6px;">
+                <span class="axiom-label">Color del Pin</span>
+                <div class="pin-color-palette" id="pin-color-palette"></div>
+              </div>
+
+              <button type="button" class="axiom-cta-btn" id="btn-pin-place-toggle" style="margin-top:8px;">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+                <span>Hacer clic en el modelo para colocar Pin</span>
+              </button>
+            </div>
+
+            <!-- Lista de Pines Creados -->
+            <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+              <div class="axiom-row-between">
+                <span class="axiom-sub-header" style="margin:0;">Pines en el Modelo</span>
+                <button type="button" class="axiom-back-btn" id="btn-pins-clear-all" style="color:var(--text-dim);">Borrar todos</button>
+              </div>
+              <div class="studio-pins-list" id="studio-pins-list" style="margin-top:6px; max-height:200px; overflow-y:auto;">
+                <p class="export-coords" id="pins-empty-notice" style="font-size:11px; padding:6px 0;">No hay pines colocados aún. Haz clic arriba para comenzar.</p>
+              </div>
+            </div>
+
+            <button type="button" class="axiom-secondary-btn" id="btn-export-pins-geojson" style="margin-top:8px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Exportar Pines a GIS (.geojson)</span>
+            </button>
+          </aside>
         </div>
       </div>
     </div>
@@ -777,13 +927,40 @@
               </select>
             </div>
             <label class="axiom-check-row" style="margin-top:4px;"><span>Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" data-mapopt="overlays.isochrones"></label>
-            <div class="axiom-row-between" style="margin-top:4px;">
-              <label class="axiom-check-row" style="margin:0;"><span>Retícula de coordenadas</span><input type="checkbox" data-mapopt="overlays.grid"></label>
+            <label class="axiom-check-row" style="margin-top:4px;"><span>Pines y marcadores personalizados</span><input type="checkbox" id="map-pins-toggle" checked></label>
+
+            <!-- Parametric Grid Configuration (Imagen 2: 5m, 20m, 50m, 100m, 250m, 500m, 1km) -->
+            <div class="axiom-row-between" style="margin-top:6px;">
+              <label class="axiom-check-row" style="margin:0;"><span>Retícula métrica</span><input type="checkbox" data-mapopt="overlays.grid"></label>
               <select id="map-grid-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
                 <option value="cross">Cruces (+)</option>
+                <option value="dots">Puntos (·)</option>
                 <option value="line">Líneas</option>
               </select>
             </div>
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <span class="axiom-label">Paso de retícula</span>
+              <select id="map-grid-step" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="auto">Automático</option>
+                <option value="5">Cada 5 m</option>
+                <option value="20" selected>Cada 20 m</option>
+                <option value="50">Cada 50 m</option>
+                <option value="100">Cada 100 m</option>
+                <option value="250">Cada 250 m</option>
+                <option value="500">Cada 500 m</option>
+                <option value="1000">Cada 1 km</option>
+              </select>
+            </div>
+
+            <!-- Paper Noise Grain Texture (Imagen 2) -->
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <div class="axiom-row-between">
+                <span class="axiom-label">Micro-grano de papel / Ruido</span>
+                <span class="axiom-val" id="map-grain-out">0%</span>
+              </div>
+              <input type="range" min="0" max="100" step="5" value="0" id="map-grain" class="axiom-range">
+            </div>
+
             <div class="axiom-control-row" style="margin-top:6px;">
               <span class="axiom-label">Grosor de línea</span>
               <input type="range" min="0" max="0.4" step="0.02" data-mapopt="outlineWidth" class="axiom-range">
@@ -860,6 +1037,71 @@
             <label class="axiom-check-row"><span>Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" id="illu-isochrones"></label>
             <label class="axiom-check-row"><span>Capa Flora & Zonas Ecológicas</span><input type="checkbox" id="illu-flora"></label>
             <label class="axiom-check-row"><span>Capa Fauna & Corredores</span><input type="checkbox" id="illu-fauna"></label>
+            <label class="axiom-check-row"><span>Pines y marcadores 3D</span><input type="checkbox" id="illu-pins-toggle" checked></label>
+          </div>
+
+          <!-- Superposición de Capas QGIS Despiezada (Axonometría en Cascada - Imagen 4) -->
+          <div class="axiom-editor-group">
+            <div class="axiom-row-between">
+              <span class="axiom-sub-header" style="margin:0;">Superposición de Capas (Cascada)</span>
+              <label class="axiom-mini-toggle">
+                <input type="checkbox" id="illu-exploded-switch">
+                <span>Activar</span>
+              </label>
+            </div>
+            <p class="export-coords" style="margin:4px 0 8px;">Descompone el modelo en 5 niveles flotantes independientes (Topografía, Hidrología, Vías, Edificios, Áreas Verdes).</p>
+
+            <div id="illu-exploded-options" hidden>
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label">Separación vertical (ΔZ)</span>
+                  <span class="axiom-val" id="illu-explode-offset-out">120 m</span>
+                </div>
+                <input type="range" min="40" max="350" step="10" value="120" id="illu-explode-offset" class="axiom-range">
+              </div>
+
+              <div class="exploded-tiers-stack" style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+                <div class="exploded-tier-item">
+                  <label class="axiom-check-row" style="margin:0;">
+                    <input type="checkbox" data-illutier="contours" checked>
+                    <span>01 / CONTOURS & TOPOGRAFÍA</span>
+                  </label>
+                  <input type="color" data-illutiercolor="contours" value="#d5cfbd" class="tier-color-input" title="Color de topografía">
+                </div>
+                <div class="exploded-tier-item">
+                  <label class="axiom-check-row" style="margin:0;">
+                    <input type="checkbox" data-illutier="water" checked>
+                    <span>02 / HYDROGRAPHY & AGUA</span>
+                  </label>
+                  <input type="color" data-illutiercolor="water" value="#06b6d4" class="tier-color-input" title="Color de hidrología">
+                </div>
+                <div class="exploded-tier-item">
+                  <label class="axiom-check-row" style="margin:0;">
+                    <input type="checkbox" data-illutier="roads" checked>
+                    <span>03 / NETWORK & VIALIDADES</span>
+                  </label>
+                  <input type="color" data-illutiercolor="roads" value="#ffffff" class="tier-color-input" title="Color de vías">
+                </div>
+                <div class="exploded-tier-item">
+                  <label class="axiom-check-row" style="margin:0;">
+                    <input type="checkbox" data-illutier="buildings" checked>
+                    <span>04 / URBAN AREAS (EDIFICIOS)</span>
+                  </label>
+                  <input type="color" data-illutiercolor="buildings" value="#ffffff" class="tier-color-input" title="Color de edificios">
+                </div>
+                <div class="exploded-tier-item">
+                  <label class="axiom-check-row" style="margin:0;">
+                    <input type="checkbox" data-illutier="green" checked>
+                    <span>05 / GREEN AREAS (PARQUES)</span>
+                  </label>
+                  <input type="color" data-illutiercolor="green" value="#84cc16" class="tier-color-input" title="Color de áreas verdes">
+                </div>
+              </div>
+
+              <label class="axiom-check-row" style="margin-top:8px;"><span>Guías verticales de proyección</span><input type="checkbox" id="illu-exploded-guides" checked></label>
+              <label class="axiom-check-row"><span>Etiquetas de cota topográfica</span><input type="checkbox" id="illu-contour-labels" checked></label>
+              <label class="axiom-check-row"><span>Títulos técnicos de esquina (01/CONTOURS)</span><input type="checkbox" id="illu-corner-labels" checked></label>
+            </div>
           </div>
 
           <!-- Base de Maqueta & Tipo de Suelo -->
@@ -1118,7 +1360,9 @@
         export: document.getElementById('drawer-export'),
         gis: document.getElementById('drawer-gis'),
         bio: document.getElementById('drawer-bio'),
-        radii: document.getElementById('drawer-radii')
+        radii: document.getElementById('drawer-radii'),
+        sat: document.getElementById('drawer-sat'),
+        pins: document.getElementById('drawer-pins')
       };
 
       function openOrToggleLeftDrawer(targetKey, forceOpen = false) {
@@ -1148,6 +1392,12 @@
             sw.checked = true;
             sw.dispatchEvent(new Event('change'));
           }
+        }
+        if (targetKey === 'sat') {
+          if (window.syncSatelliteDrawer) window.syncSatelliteDrawer();
+        }
+        if (targetKey === 'pins') {
+          if (window.renderPinsDrawerList) window.renderPinsDrawerList();
         }
       }
       window.toggleLeftPanel = openOrToggleLeftDrawer;

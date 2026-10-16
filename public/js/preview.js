@@ -3,8 +3,32 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
 import { triangulate, UNIT_TREE } from './data.js?v=4.1';
+import { pinStore } from './pins.js?v=1.0';
 
 let ctx;
+
+export const studioState = {
+  satellite: {
+    enabled: true,
+    saturation: 0,    // 0% (B/N as in Image 1) to 150%
+    contrast: 140,    // 50% to 250%
+    brightness: 75,   // 30% to 150%
+    invert: 0         // 0% to 100%
+  },
+  contours: {
+    visible: true,
+    color: '#ffffff', // crisp white like in Image 1
+    labels: true,     // altitude numbers along contour lines
+    opacity: 0.9
+  },
+  buildings: {
+    finish: 'white',  // 'white' (pure architectural chalk) | 'gis' (category colors) | 'mono' (graphite)
+    edgeOpacity: 0.45
+  },
+  pins: {
+    visible: true
+  }
+};
 
 function init(container) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false });
@@ -23,6 +47,36 @@ function init(container) {
   scene.add(sun);
   const group = new THREE.Group();
   scene.add(group);
+
+  // Click handler for interactive 3D pin dropping
+  renderer.domElement.addEventListener('pointerdown', (e) => {
+    if (!pinStore.isPlacing() || !ctx || !ctx.lastModel) return;
+    const rect = renderer.domElement.getBoundingClientRect();
+    const mouse = new THREE.Vector2(
+      ((e.clientX - rect.left) / rect.width) * 2 - 1,
+      -((e.clientY - rect.top) / rect.height) * 2 + 1
+    );
+    const raycaster = new THREE.Raycaster();
+    raycaster.setFromCamera(mouse, camera);
+    const targets = [];
+    if (ctx.terrainMesh) targets.push(ctx.terrainMesh);
+    if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
+    const hits = raycaster.intersectObjects(targets, false);
+    if (hits.length > 0) {
+      const hit = hits[0].point;
+      const model = ctx.lastModel;
+      const lat = model.center.lat + (hit.y / 111319.49);
+      const lon = model.center.lon + (hit.x / (111319.49 * Math.cos((model.center.lat * Math.PI) / 180)));
+      pinStore.addPin({
+        x: hit.x,
+        y: hit.y,
+        z: hit.z,
+        lat,
+        lon
+      });
+      pinStore.setPlacingMode(false);
+    }
+  });
 
   const resize = () => {
     const { clientWidth: w, clientHeight: h } = container;
@@ -127,6 +181,88 @@ function buildTerrainSkirtGeometry(grid, size, baseZ) {
   return geo;
 }
 
+function createAltitudeSprite(text, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 240;
+  canvas.height = 76;
+  const c = canvas.getContext('2d');
+  c.clearRect(0, 0, canvas.width, canvas.height);
+
+  // High contrast architectural altitude tag (Moodboard Image 1 style)
+  c.fillStyle = 'rgba(12, 13, 17, 0.88)';
+  c.beginPath();
+  const r = 10, w = 236, h = 72, x = 2, y = 2;
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+  c.fill();
+  c.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+  c.lineWidth = 2.5;
+  c.stroke();
+
+  c.fillStyle = '#ffffff';
+  c.font = 'bold 32px "JetBrains Mono", monospace';
+  c.textAlign = 'center';
+  c.textBaseline = 'middle';
+  c.fillText(text, 120, 38);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true });
+  const sprite = new THREE.Sprite(mat);
+  const scale = (size || 1000) * 0.055;
+  sprite.scale.set(scale, scale * (76 / 240), 1);
+  return sprite;
+}
+
+function createPinBadgeSprite(label, colorHex, size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 380;
+  canvas.height = 84;
+  const c = canvas.getContext('2d');
+  c.clearRect(0, 0, canvas.width, canvas.height);
+
+  // Modern architectural pin badge with category accent
+  c.fillStyle = 'rgba(10, 11, 15, 0.92)';
+  c.beginPath();
+  const r = 12, w = 376, h = 80, x = 2, y = 2;
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+  c.fill();
+  c.strokeStyle = colorHex || '#f97316';
+  c.lineWidth = 3;
+  c.stroke();
+
+  // Color beacon dot
+  c.beginPath();
+  c.arc(36, 42, 12, 0, Math.PI * 2);
+  c.fillStyle = colorHex || '#f97316';
+  c.fill();
+
+  // Text label
+  c.fillStyle = '#ffffff';
+  c.font = 'bold 26px "Inter", sans-serif';
+  c.textAlign = 'left';
+  c.textBaseline = 'middle';
+  const cleanLabel = (label || 'Marcador').length > 18 ? (label.slice(0, 17) + '…') : label;
+  c.fillText(cleanLabel, 62, 42);
+
+  const tex = new THREE.CanvasTexture(canvas);
+  tex.colorSpace = THREE.SRGBColorSpace;
+  const mat = new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true });
+  const sprite = new THREE.Sprite(mat);
+  const scale = (size || 1000) * 0.085;
+  sprite.scale.set(scale, scale * (84 / 380), 1);
+  return sprite;
+}
+
 function createTextSprite(tag, subtitle, size) {
   const canvas = document.createElement('canvas');
   canvas.width = 440;
@@ -195,9 +331,11 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     green: new THREE.Group(),
     trees: new THREE.Group(),
     contours: new THREE.Group(),
-    skirt: new THREE.Group()
+    skirt: new THREE.Group(),
+    pins: new THREE.Group()
   };
   ctx.layerGroups = layerGroups;
+  ctx.buildingMeshes = [];
   Object.values(layerGroups).forEach((g) => group.add(g));
 
   const isMaqueta = chunkModeActive;
@@ -233,8 +371,10 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
         polygonOffsetUnits: 2
       });
     } else {
-      mat = new THREE.MeshLambertMaterial({
+      mat = new THREE.MeshStandardMaterial({
         color: 0xdad6cc,
+        roughness: 0.90,
+        metalness: 0.02,
         polygonOffset: true,
         polygonOffsetFactor: 2,
         polygonOffsetUnits: 2
@@ -243,18 +383,15 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
         const pos = geo.attributes.position, uv = new Float32Array(pos.count * 2), h = s / 2;
         for (let i = 0; i < pos.count; i++) { uv[2 * i] = (pos.getX(i) + h) / s; uv[2 * i + 1] = (pos.getY(i) + h) / s; }
         geo.setAttribute('uv', new THREE.BufferAttribute(uv, 2));
-        const n = Math.min(2048, model.imagery.canvas.width);
-        const tex = document.createElement('canvas');
-        tex.width = tex.height = n;
-        const tctx = tex.getContext('2d');
-        tctx.drawImage(model.imagery.canvas, 0, 0, n, n);
-        mat.map = new THREE.CanvasTexture(tex);
-        mat.map.colorSpace = THREE.SRGBColorSpace;
-        mat.map.anisotropy = 8;
-        mat.color.set(0xffffff);
       }
     }
-    layerGroups.terrain.add(new THREE.Mesh(geo, mat));
+    ctx.terrainMesh = new THREE.Mesh(geo, mat);
+    layerGroups.terrain.add(ctx.terrainMesh);
+
+    // Apply live satellite filter if imagery is available
+    if (!isMaqueta && model.imagery) {
+      updateSatelliteTexture();
+    }
 
     // Physical architectural pedestal base (visible in both modes, styled to match)
     if (model.grid) {
@@ -275,7 +412,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     }
   }
 
-  // 2. Buildings (Separated by QGIS POI subcategories with distinct GIS colors in Urbano mode & pure plaster in Maqueta mode)
+  // 2. Buildings (Architectural White Chalk, GIS Typology, or Graphite)
   const categorized = {
     education: [],
     commercial: [],
@@ -305,17 +442,30 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   };
 
   const edgeColor = isMaqueta ? 0x27272a : 0x18181b;
-  const edgeOp = isMaqueta ? 0.38 : 0.5;
+  const edgeOp = isMaqueta ? 0.38 : (studioState.buildings.edgeOpacity || 0.45);
+  const finish = studioState.buildings.finish || 'white';
 
   for (const [catKey, bList] of Object.entries(categorized)) {
     if (!bList.length) continue;
     const geo = meshGeometry(bList);
     const edges = edgeGeometry(bList);
     const targetGroup = layerGroups[catKey] || layerGroups.other_buildings;
+
+    let bldgColor = 0xfcfcfd; // Architectural white chalk
+    if (finish === 'gis') {
+      bldgColor = gisColors[catKey] || 0xf4f4f6;
+    } else if (finish === 'mono') {
+      bldgColor = 0x27272a;
+    } else {
+      bldgColor = 0xfafafa;
+    }
+
     const mat = isMaqueta
       ? new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
-      : new THREE.MeshLambertMaterial({ color: gisColors[catKey] || 0xf4f4f6, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
-    targetGroup.add(new THREE.Mesh(geo, mat));
+      : new THREE.MeshStandardMaterial({ color: bldgColor, roughness: 0.88, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    const bMesh = new THREE.Mesh(geo, mat);
+    targetGroup.add(bMesh);
+    ctx.buildingMeshes.push(bMesh);
     targetGroup.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: edgeOp })));
   }
 
@@ -371,10 +521,39 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     layerGroups.green.add(new THREE.Mesh(meshGeometry(greens), greenMat));
   }
 
-  // 6. Contours (Topography)
+  // 6. Contours (Topography) & Elevation Labels (Moodboard Image 1)
   if (model.contours?.length) {
-    const cColor = isMaqueta ? 0x71717a : 0xd97706;
-    addLinesTo(layerGroups.contours, model.contours.map((c) => ({ pts: c.pts, closed: c.closed })), cColor, 0.65);
+    const cColor = studioState.contours.color ? parseInt(studioState.contours.color.replace('#', '0x'), 16) : (isMaqueta ? 0x71717a : 0xffffff);
+    // Add contour line segments with +0.5m elevation lift so they float cleanly over satellite texture
+    const pos = [];
+    for (const { pts, closed } of model.contours) {
+      const n = closed ? pts.length : pts.length - 1;
+      for (let i = 0; i < n; i++) {
+        const p = pts[i], q = pts[(i + 1) % pts.length];
+        pos.push(p[0], p[1], p[2] + 0.6, q[0], q[1], q[2] + 0.6);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const lineMat = new THREE.LineBasicMaterial({ color: cColor, transparent: true, opacity: studioState.contours.opacity || 0.9, depthTest: true });
+    layerGroups.contours.add(new THREE.LineSegments(g, lineMat));
+
+    // Numeric altitude labels
+    if (studioState.contours.labels) {
+      const minH = model.grid?.minH ?? 0;
+      const ci = model.contourInterval || 5;
+      const stepInterval = ci <= 5 ? 20 : (ci * 2);
+      const labeled = model.contours.filter((c) => Math.round(c.z) % stepInterval === 0 && c.pts.length > 8);
+      for (const c of labeled) {
+        const midIdx = Math.floor(c.pts.length * 0.45);
+        const pt = c.pts[midIdx];
+        if (!pt) continue;
+        const elevationMeters = Math.round(c.z + minH);
+        const sprite = createAltitudeSprite(`${elevationMeters} m`, s);
+        sprite.position.set(pt[0], pt[1], pt[2] + 2.0);
+        layerGroups.contours.add(sprite);
+      }
+    }
   }
 
   // 7. Trees
@@ -385,7 +564,14 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       : new THREE.MeshLambertMaterial({ color: 0x22c55e });
     const trees = new THREE.InstancedMesh(unit, treeMat, model.trees.length);
     const mtx = new THREE.Matrix4();
-    model.trees.forEach((t, i) => trees.setMatrixAt(i, mtx.makeScale(t.r, t.r, t.h).setPosition(t.x, t.y, t.z)));
+    model.trees.forEach((t, i) => {
+      const tx = t.x ?? t.pos?.[0] ?? 0;
+      const ty = t.y ?? t.pos?.[1] ?? 0;
+      const tz = t.z ?? t.pos?.[2] ?? 0;
+      const tr = t.r || 3.5;
+      const th = t.h || 7;
+      trees.setMatrixAt(i, mtx.makeScale(tr, tr, th).setPosition(tx, ty, tz));
+    });
     layerGroups.trees.add(trees);
   }
 
@@ -394,6 +580,9 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     layerGroups.roads_major.add(new THREE.Mesh(meshGeometry(model.bridges), new THREE.MeshLambertMaterial({ color: isMaqueta ? 0xf5f5f7 : 0xd9d6cf, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })));
     layerGroups.roads_major.add(new THREE.LineSegments(edgeGeometry(model.bridges), new THREE.LineBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4 })));
   }
+
+  // 9. Interactive 3D Architectural Pins
+  render3DPins();
 
   // Camera placement
   if (!keepCamera) {
@@ -647,6 +836,143 @@ export function setFloraZoneHighlight(enabled, speciesIndex = -1) {
   }
 }
 
+export function updateSatelliteTexture(customFilters) {
+  if (!ctx || !ctx.terrainMesh) return;
+  if (customFilters) Object.assign(studioState.satellite, customFilters);
+  const { enabled, saturation, contrast, brightness, invert } = studioState.satellite;
+  const mat = ctx.terrainMesh.material;
+  if (!mat) return;
 
+  if (!enabled || !ctx.lastModel?.imagery) {
+    if (mat.map) {
+      mat.map.dispose();
+      mat.map = null;
+    }
+    mat.color.set(chunkModeActive ? 0xe4e4e8 : 0xdad6cc);
+    mat.needsUpdate = true;
+    return;
+  }
 
+  const imgCanvas = ctx.lastModel.imagery.canvas;
+  const n = Math.min(2048, imgCanvas.width);
+  if (!ctx.satelliteCanvas) {
+    ctx.satelliteCanvas = document.createElement('canvas');
+    ctx.satelliteCanvas.width = ctx.satelliteCanvas.height = n;
+  }
+  const sctx = ctx.satelliteCanvas.getContext('2d');
+  sctx.clearRect(0, 0, n, n);
+  sctx.filter = `saturate(${saturation}%) contrast(${contrast}%) brightness(${brightness}%) invert(${invert}%)`;
+  sctx.drawImage(imgCanvas, 0, 0, n, n);
+  sctx.filter = 'none';
 
+  if (!mat.map) {
+    mat.map = new THREE.CanvasTexture(ctx.satelliteCanvas);
+    mat.map.colorSpace = THREE.SRGBColorSpace;
+    mat.map.anisotropy = 8;
+  } else {
+    mat.map.image = ctx.satelliteCanvas;
+    mat.map.needsUpdate = true;
+  }
+  mat.color.set(0xffffff);
+  mat.needsUpdate = true;
+}
+
+export function setContourOptions(opts) {
+  if (!ctx || !ctx.layerGroups?.contours || !ctx.lastModel) return;
+  if (opts) Object.assign(studioState.contours, opts);
+  const { visible, color, labels, opacity } = studioState.contours;
+  ctx.layerGroups.contours.visible = Boolean(visible);
+  if (!visible) return;
+
+  ctx.layerGroups.contours.traverse((o) => { o.geometry?.dispose(); o.material?.map?.dispose(); o.material?.dispose(); });
+  ctx.layerGroups.contours.clear();
+
+  const model = ctx.lastModel;
+  const s = ctx.modelSize || 1000;
+  if (model.contours?.length) {
+    const colHex = color ? parseInt(color.replace('#', '0x'), 16) : 0xffffff;
+    const pos = [];
+    for (const { pts, closed } of model.contours) {
+      const n = closed ? pts.length : pts.length - 1;
+      for (let i = 0; i < n; i++) {
+        const p = pts[i], q = pts[(i + 1) % pts.length];
+        pos.push(p[0], p[1], p[2] + 0.6, q[0], q[1], q[2] + 0.6);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    const lineMat = new THREE.LineBasicMaterial({ color: colHex, transparent: true, opacity: opacity || 0.9, depthTest: true });
+    ctx.layerGroups.contours.add(new THREE.LineSegments(g, lineMat));
+
+    if (labels) {
+      const minH = model.grid?.minH ?? 0;
+      const ci = model.contourInterval || 5;
+      const stepInterval = ci <= 5 ? 20 : (ci * 2);
+      const labeled = model.contours.filter((c) => Math.round(c.z) % stepInterval === 0 && c.pts.length > 8);
+      for (const c of labeled) {
+        const midIdx = Math.floor(c.pts.length * 0.45);
+        const pt = c.pts[midIdx];
+        if (!pt) continue;
+        const elevationMeters = Math.round(c.z + minH);
+        const sprite = createAltitudeSprite(`${elevationMeters} m`, s);
+        sprite.position.set(pt[0], pt[1], pt[2] + 2.0);
+        ctx.layerGroups.contours.add(sprite);
+      }
+    }
+  }
+}
+
+export function setBuildingFinish(finish) {
+  if (finish) studioState.buildings.finish = finish;
+  if (!ctx || !ctx.lastModel) return;
+  showModel(null, ctx.lastModel, { keepCamera: true, chunkMode: chunkModeActive });
+}
+
+export function render3DPins() {
+  if (!ctx || !ctx.layerGroups?.pins) return;
+  const pinGroup = ctx.layerGroups.pins;
+  pinGroup.traverse((o) => { o.geometry?.dispose(); o.material?.map?.dispose(); o.material?.dispose(); });
+  pinGroup.clear();
+
+  if (!studioState.pins.visible) return;
+  const pins = pinStore.getPins().filter((p) => p.visible);
+  const s = ctx.modelSize || 1000;
+  const pinStemHeight = s * 0.048;
+
+  for (const pin of pins) {
+    const colHex = parseInt(pin.color.replace('#', '0x'), 16);
+
+    // 1. Ground Anchor Ring
+    const groundGeo = new THREE.RingGeometry(s * 0.005, s * 0.011, 24);
+    const groundMat = new THREE.MeshBasicMaterial({ color: colHex, side: THREE.DoubleSide, transparent: true, opacity: 0.85, depthTest: false });
+    const groundMesh = new THREE.Mesh(groundGeo, groundMat);
+    groundMesh.position.set(pin.x, pin.y, pin.z + 0.4);
+    pinGroup.add(groundMesh);
+
+    // 2. Vertical Slender Stem / Leader Line
+    const stemGeo = new THREE.BufferGeometry().setFromPoints([
+      new THREE.Vector3(pin.x, pin.y, pin.z + 0.3),
+      new THREE.Vector3(pin.x, pin.y, pin.z + pinStemHeight)
+    ]);
+    const stemMat = new THREE.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.9, depthTest: false });
+    const stem = new THREE.Line(stemGeo, stemMat);
+    pinGroup.add(stem);
+
+    // 3. Glowing Spherical Beacon at Top
+    const beaconGeo = new THREE.SphereGeometry(s * 0.009, 16, 16);
+    const beaconMat = new THREE.MeshBasicMaterial({ color: colHex, depthTest: false });
+    const beacon = new THREE.Mesh(beaconGeo, beaconMat);
+    beacon.position.set(pin.x, pin.y, pin.z + pinStemHeight);
+    pinGroup.add(beacon);
+
+    // 4. Sleek High-Res Architectural Text Badge
+    const labelSprite = createPinBadgeSprite(pin.label, pin.color, s);
+    labelSprite.position.set(pin.x, pin.y, pin.z + pinStemHeight + s * 0.024);
+    pinGroup.add(labelSprite);
+  }
+}
+
+// Keep 3D pins updated whenever the pinStore changes
+pinStore.subscribe(() => {
+  render3DPins();
+});

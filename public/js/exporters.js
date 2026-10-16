@@ -39,8 +39,8 @@ for (const cls of BUILDING_CLASSES) STYLE[buildingLayer(cls)] = { aci: CLASS_ACI
 const rgb01 = (hex) => [1, 3, 5].map((i) => Math.round((parseInt(hex.slice(i, i + 2), 16) / 255) * 1000) / 1000);
 
 function linesOf(model) {
-  const out = Object.entries(model.lines).map(([layer, lines]) => ({ layer, items: lines.map((pts) => ({ pts, closed: false })) }));
-  for (const [layer, rings] of Object.entries(model.areas)) out.push({ layer, items: rings.map((pts) => ({ pts, closed: true })) });
+  const out = Object.entries(model.lines ?? {}).map(([layer, lines]) => ({ layer, items: (lines || []).map((pts) => ({ pts: Array.isArray(pts) ? pts : (pts?.pts || []), closed: false })) }));
+  for (const [layer, rings] of Object.entries(model.areas ?? {})) out.push({ layer, items: (rings || []).map((pts) => ({ pts, closed: true })) });
   for (const { layer, polys } of model.roadAreas ?? []) out.push({ layer, items: polys.flatMap((rings) => rings.map((pts) => ({ pts, closed: true }))) });
   if (model.contours.length) out.push({ layer: LAYERS.CONTOURS, items: model.contours.map((c) => ({ pts: c.pts, closed: c.closed })) });
   if (model.site?.length > 2) out.push({ layer: LAYERS.SITE, items: [{ pts: model.site, closed: true }] });
@@ -53,7 +53,7 @@ export function toDXF(model) {
   const o = [];
   const w = (code, value) => o.push(code, value);
   const layers = Object.keys(STYLE);
-  const h = model.frame.half;
+  const h = model.frame?.half ?? ((model.size || 1000) / 2);
 
   w(0, 'SECTION'); w(2, 'HEADER');
   w(9, '$ACADVER'); w(1, 'AC1009');
@@ -299,7 +299,7 @@ export async function to3DM(model) {
 /* ---------------- SVG (Adobe Illustrator: план, слои, масштаб 1:2000) ---------------- */
 
 export function toSVG(model) {
-  const h = model.frame.half;
+  const h = model.frame?.half ?? (model.size / 2);
   const scale = 2000;
   const mm = (model.size * 1000) / scale;
   const p2 = ([x, y]) => `${f(x + h)},${f(h - y)}`;

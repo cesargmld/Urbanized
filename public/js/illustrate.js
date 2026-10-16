@@ -1,4 +1,5 @@
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
+import { pinStore } from './pins.js?v=1.0';
 
 // Urbanized — Axonometría & Maqueta Arquitectónica
 // Proyección axonométrica/isométrica/perspectiva con sombreado solar dinámico,
@@ -127,6 +128,24 @@ export function createIllustrator(canvas, model) {
     colors: {},
     classColors: {},
     layers: { terrain: true, buildings: true, trees: true, roads: true, nature: true, contours: false },
+    exploded: false, // Superposición en Cascada / Axonometría Despiezada QGIS (Imagen 4)
+    explodeOffset: 120, // Desplazamiento vertical entre capas en metros (40m - 350m)
+    explodedTiers: {
+      contours: true,
+      hydrography: true,
+      network: true,
+      buildings: true,
+      green: true
+    },
+    tierColors: {
+      hydrography: '#06b6d4',
+      network: '#ffffff',
+      green: '#22c55e',
+      buildings: '#fafafa'
+    },
+    explodedCornerLabels: true,
+    explodedGuides: true,
+    contourLabels: true,
   };
 
   let list = null, listKey = '';
@@ -147,8 +166,14 @@ export function createIllustrator(canvas, model) {
 
   const zTop = (() => {
     let z = model.grid?.maxH ?? 10;
-    for (const b of model.buildings ?? []) for (const v of b.verts) z = Math.max(z, v[2]);
-    for (const t of model.trees ?? []) z = Math.max(z, t.z + t.h);
+    for (const b of model.buildings ?? []) {
+      if (b.verts) {
+        for (const v of b.verts) z = Math.max(z, v[2]);
+      } else if (b.height) {
+        z = Math.max(z, (b.baseZ || 0) + b.height);
+      }
+    }
+    for (const t of model.trees ?? []) z = Math.max(z, (t.z || 0) + (t.h || 0));
     return z;
   })();
 
@@ -169,6 +194,12 @@ export function createIllustrator(canvas, model) {
       state.baseMaterial,
       state.baseDepth,
       state.thematic,
+      state.exploded,
+      state.explodeOffset,
+      state.explodedTiers,
+      state.tierColors,
+      state.contourLabels,
+      pinStore.getPins().length,
       model.site?.length ?? 0
     ]);
     if (list && listKey === key) return list;
@@ -176,23 +207,40 @@ export function createIllustrator(canvas, model) {
     const items = [];
     const add = (kind, pts, opts) => items.push({ kind, pts, ...opts });
     const size = model.size || 1000;
+    const half = size / 2;
 
-    // 1. Relieve de terreno
-    if (state.layers.terrain && model.terrain) {
+    const isExp = Boolean(state.exploded);
+    const dZ = isExp ? (state.explodeOffset || 120) : 0;
+    const tierOffsets = {
+      contours: 0,
+      hydrography: isExp ? dZ * 1 : 0,
+      network: isExp ? dZ * 2 : 0,
+      buildings: isExp ? dZ * 3 : 0,
+      green: isExp ? dZ * 4 : 0
+    };
+    const showTier = (tier) => !isExp || Boolean(state.explodedTiers?.[tier]);
+
+    // 1. Relieve de terreno (Tier 0: Contours)
+    if (showTier('contours') && state.layers.terrain && model.terrain) {
       const t = model.terrain;
+      const off = tierOffsets.contours;
       for (const { v } of t.faces) {
-        const poly = v.map((i) => t.verts[i]);
+        const poly = v.map((i) => {
+          const p = t.verts[i];
+          return [p[0], p[1], p[2] + off];
+        });
         add('poly', poly, { color: 'terrain', noStroke: true, order: 0 });
       }
     }
 
-    // 2. Base de Maqueta / Zócalo / Estrato Geológico
-    if (state.layers.terrain && model.terrain?.boundary) {
+    // 2. Base de Maqueta / Zócalo / Estrato Geológico (Tier 0)
+    if (showTier('contours') && state.layers.terrain && model.terrain?.boundary) {
       const t = model.terrain;
       const baseDepthMult = Math.max(0.015, Math.min(0.06, state.baseDepth || 0.02));
       const base = -Math.max(8, size * baseDepthMult);
       const loop = t.boundary;
       const mat = BASE_MATERIALS[state.baseMaterial] || BASE_MATERIALS.plaster;
+      const off = tierOffsets.contours;
 
       if (state.baseMaterial === 'soil') {
         // Estrato geológico en 3 capas
@@ -200,35 +248,34 @@ export function createIllustrator(canvas, model) {
         const sub2 = base * 0.65;
         for (let i = 0; i < loop.length; i++) {
           const a = t.verts[loop[i]], b = t.verts[loop[(i + 1) % loop.length]];
-          const a1 = [a[0], a[1], sub1], b1 = [b[0], b[1], sub1];
-          const a2 = [a[0], a[1], sub2], b2 = [b[0], b[1], sub2];
-          const aBase = [a[0], a[1], base], bBase = [b[0], b[1], base];
+          const a1 = [a[0], a[1], sub1 + off], b1 = [b[0], b[1], sub1 + off];
+          const a2 = [a[0], a[1], sub2 + off], b2 = [b[0], b[1], sub2 + off];
+          const aBase = [a[0], a[1], base + off], bBase = [b[0], b[1], base + off];
+          const aTop = [a[0], a[1], a[2] + off], bTop = [b[0], b[1], b[2] + off];
 
           // Capa fértil / topsoil
-          add('poly', [a1, b1, b, a], { fillDirect: '#453326', side: true, order: 0 });
+          add('poly', [a1, b1, bTop, aTop], { fillDirect: '#453326', side: true, order: 0 });
           // Subsuelo arcilloso
           add('poly', [a2, b2, b1, a1], { fillDirect: '#634c38', side: true, order: 0 });
           // Roca madre / sustrato
           add('poly', [aBase, bBase, b2, a2], { fillDirect: '#827365', side: true, order: 0 });
         }
-        // Líneas de estrato horizontal
-        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], sub1]), [t.verts[loop[0]][0], t.verts[loop[0]][1], sub1]], { colorDirect: '#332419', weight: 0.8, edge: true });
-        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], sub2]), [t.verts[loop[0]][0], t.verts[loop[0]][1], sub2]], { colorDirect: '#423326', weight: 0.8, edge: true });
-        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], base]), [t.verts[loop[0]][0], t.verts[loop[0]][1], base]], { colorDirect: '#211812', weight: 1.2, edge: true });
-        add('line', [...loop.map((i) => t.verts[i]), t.verts[loop[0]]], { colorDirect: '#211812', weight: 1.2, edge: true });
+        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], sub1 + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], sub1 + off]], { colorDirect: '#332419', weight: 0.8, edge: true });
+        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], sub2 + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], sub2 + off]], { colorDirect: '#423326', weight: 0.8, edge: true });
+        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], base + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], base + off]], { colorDirect: '#211812', weight: 1.2, edge: true });
+        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], t.verts[i][2] + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], t.verts[loop[0]][2] + off]], { colorDirect: '#211812', weight: 1.2, edge: true });
       } else {
         // Yeso, Balsa o Grafito sólido
         for (let i = 0; i < loop.length; i++) {
           const a = t.verts[loop[i]], b = t.verts[loop[(i + 1) % loop.length]];
-          add('poly', [[a[0], a[1], base], [b[0], b[1], base], b, a], { fillDirect: mat.color, side: true, order: 0 });
+          add('poly', [[a[0], a[1], base + off], [b[0], b[1], base + off], [b[0], b[1], b[2] + off], [a[0], a[1], a[2] + off]], { fillDirect: mat.color, side: true, order: 0 });
         }
         if (state.baseMaterial === 'balsa') {
-          // Vetas sutiles de madera
           const sub1 = base * 0.45;
-          add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], sub1]), [t.verts[loop[0]][0], t.verts[loop[0]][1], sub1]], { colorDirect: '#a38d74', weight: 0.6, edge: true });
+          add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], sub1 + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], sub1 + off]], { colorDirect: '#a38d74', weight: 0.6, edge: true });
         }
-        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], base]), [t.verts[loop[0]][0], t.verts[loop[0]][1], base]], { colorDirect: mat.stroke, weight: 1.2, edge: true });
-        add('line', [...loop.map((i) => t.verts[i]), t.verts[loop[0]]], { colorDirect: mat.stroke, weight: 1.2, edge: true });
+        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], base + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], base + off]], { colorDirect: mat.stroke, weight: 1.2, edge: true });
+        add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], t.verts[i][2] + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], t.verts[loop[0]][2] + off]], { colorDirect: mat.stroke, weight: 1.2, edge: true });
       }
     }
 
@@ -247,92 +294,185 @@ export function createIllustrator(canvas, model) {
           const theta = (i / nSteps) * Math.PI * 2;
           const px = ring.r * Math.cos(theta);
           const py = ring.r * Math.sin(theta);
-          pts.push([px, py, 0.4]);
+          pts.push([px, py, 0.4 + tierOffsets.contours]);
         }
         add('line', pts, { colorDirect: ring.color, weight: 2.2, dash: [8, 5], isochrone: true, label: ring.label });
       }
     }
 
     // 4. Naturaleza, Agua y Zonas Verdes
-    if (state.layers.nature) {
+    // 4A. Agua (Tier 1: Hydrography en Cascada)
+    if (showTier('hydrography') && state.layers.nature) {
+      const off = tierOffsets.hydrography;
+      const waterColor = isExp ? (state.tierColors.hydrography || '#06b6d4') : 'water';
       for (const w of model.water ?? []) {
         for (const { v } of w.faces)
-          add('poly', v.map((i) => { const p = w.verts[i]; return [p[0], p[1], p[2] + 0.4]; }), { color: 'water', flat: true, noStroke: true, bias: 0.6, order: 1 });
+          add('poly', v.map((i) => { const p = w.verts[i]; return [p[0], p[1], p[2] + off + 0.4]; }), { color: waterColor, fillDirect: isExp ? waterColor : null, flat: true, noStroke: true, bias: 0.6, order: 1 });
       }
+    }
+
+    // 4B. Zonas Verdes y Parques (Tier 4: Green Areas en Cascada)
+    if (showTier('green') && state.layers.nature) {
+      const off = tierOffsets.green;
       for (const ring of model.areas?.GREEN ?? []) {
         if (ring.length < 3) continue;
         const flat = [];
         for (const [x, y] of ring) flat.push(x, y);
         const tri = earcut(flat, [], 2);
-        const greenColor = state.thematic.flora ? '#4ade80' : 'green';
+        const greenColor = isExp ? (state.tierColors.green || '#22c55e') : (state.thematic.flora ? '#4ade80' : 'green');
         for (let i = 0; i < tri.length; i += 3)
-          add('area', [ring[tri[i]], ring[tri[i + 1]], ring[tri[i + 2]]].map((p) => [p[0], p[1], p[2] + 0.15]), { color: greenColor, flat: true, noStroke: true, bias: 0.5, order: 1 });
-        if (state.thematic.flora) {
-          add('line', [...ring, ring[0]], { colorDirect: '#15803d', weight: 1.8, floraOutline: true });
+          add('area', [ring[tri[i]], ring[tri[i + 1]], ring[tri[i + 2]]].map((p) => [p[0], p[1], p[2] + off + 0.2]), { color: greenColor, fillDirect: isExp ? greenColor : null, flat: true, noStroke: true, bias: 0.5, order: 1 });
+        if (state.thematic.flora || isExp) {
+          add('line', ring.map(([x, y, z]) => [x, y, (z || 0) + off + 0.3]), { colorDirect: '#15803d', weight: 1.8, floraOutline: true });
         }
       }
     }
 
-    // 5. Red Vial
-    if (state.layers.roads) {
+    // 5. Red Vial (Tier 2: Network en Cascada)
+    if (showTier('network') && state.layers.roads) {
+      const off = tierOffsets.network;
+      const netColor = isExp ? (state.tierColors.network || '#ffffff') : null;
       const wide = Boolean(model.roadMeshes?.length);
       for (const rm of model.roadMeshes ?? []) {
-        const color = rm.layer === 'ROADS_AREA' ? 'roadMajor' : 'road';
+        const color = isExp ? netColor : (rm.layer === 'ROADS_AREA' ? 'roadMajor' : 'road');
         for (const { v, vis } of rm.faces)
-          add('area', v.map((i) => { const p = rm.verts[i]; return [p[0], p[1], p[2] + 0.1]; }), { color, flat: true, edges: vis, bias: 0.55, order: 1 });
+          add('area', v.map((i) => { const p = rm.verts[i]; return [p[0], p[1], p[2] + off + 0.1]; }), { color, fillDirect: isExp ? netColor : null, flat: true, edges: vis, bias: 0.55, order: 1 });
       }
       for (const [layer, lines] of Object.entries(model.lines ?? {})) {
-        if (layer === 'WATER' && !state.layers.nature) continue;
+        if (layer === 'WATER') continue;
         if (wide && (layer === 'ROADS_MAJOR' || layer === 'ROADS_MINOR' || layer === 'PATHS')) continue;
-        const color = layer === 'ROADS_MAJOR' ? 'roadMajor' : layer === 'WATER' ? 'water' : layer === 'BRIDGES' ? 'bridge' : 'road';
+        const color = isExp ? netColor : (layer === 'ROADS_MAJOR' ? 'roadMajor' : layer === 'BRIDGES' ? 'bridge' : 'road');
         const w = layer === 'ROADS_MAJOR' || layer === 'BRIDGES' ? 2.2 : layer === 'ROADS_MINOR' ? 1.4 : 0.9;
-        for (const pts of lines) add('line', pts, { color, weight: w });
+        for (const lineObj of lines) {
+          const pts = Array.isArray(lineObj) ? lineObj : (lineObj?.pts || []);
+          if (pts.length > 1) {
+            add('line', pts.map(([x, y, z]) => [x, y, (z || 0) + off]), { color, colorDirect: isExp ? netColor : null, weight: w });
+          }
+        }
       }
     }
 
-    // 6. Curvas de nivel topográficas
-    if (state.layers.contours || STYLES[state.style].contours) {
-      for (const c of model.contours ?? []) add('line', c.pts, { color: 'contour', weight: 0.6 });
+    // 6. Curvas de nivel topográficas (Tier 0: Contours) & Altitude Labels (Moodboard Image 1)
+    if (showTier('contours') && (state.layers.contours || STYLES[state.style].contours || isExp)) {
+      const off = tierOffsets.contours;
+      const ci = model.contourInterval || 5;
+      const stepInterval = ci <= 5 ? 20 : (ci * 2);
+      for (const c of model.contours ?? []) {
+        const pts = c.pts.map(([x, y, z]) => [x, y, z + off + 0.2]);
+        add('line', pts, { color: 'contour', weight: 0.7 });
+        if (state.contourLabels && Math.round(c.z) % stepInterval === 0 && c.pts.length > 8) {
+          const midIdx = Math.floor(c.pts.length * 0.45);
+          const pt = c.pts[midIdx];
+          const minH = model.grid?.minH ?? 0;
+          const elevationMeters = Math.round(c.z + minH);
+          add('contourLabel', [[pt[0], pt[1], pt[2] + off + 1.2]], { text: `${elevationMeters} m` });
+        }
+      }
     }
 
     // 7. Polígono de predio
     if (model.site?.length) {
-      add('line', [...model.site, model.site[0]], { color: 'site', weight: 2.4, site: true });
+      add('line', [...model.site, model.site[0]].map(([x, y, z]) => [x, y, (z || 0) + tierOffsets.contours + 0.5]), { color: 'site', weight: 2.4, site: true });
     }
 
-    // 8. Edificios 3D con tipologías
-    if (state.layers.buildings) {
+    // 8. Edificios 3D con tipologías (Tier 3: Urban Areas en Cascada)
+    if (showTier('buildings') && state.layers.buildings) {
+      const off = tierOffsets.buildings;
+      const bColor = isExp ? (state.tierColors.buildings || '#fafafa') : null;
       for (const b of model.buildings ?? []) {
         let cx = 0, cy = 0, cz = 0;
         for (const v of b.verts) { cx += v[0]; cy += v[1]; cz += v[2]; }
-        const g = [cx / b.verts.length, cy / b.verts.length, cz / b.verts.length];
+        const g = [cx / b.verts.length, cy / b.verts.length, cz / b.verts.length + off];
         for (const f of b.faces) {
-          const poly = f.v.map((i) => b.verts[i]);
-          add('poly', poly, { color: 'building', cls: b.cls, edges: f.vis, g });
+          const poly = f.v.map((i) => {
+            const p = b.verts[i];
+            return [p[0], p[1], p[2] + off];
+          });
+          add('poly', poly, { color: 'building', fillDirect: isExp ? bColor : null, cls: b.cls, edges: f.vis, g });
         }
       }
     }
 
-    // 9. Puentes y viaductos
-    if (state.layers.roads) {
+    // 9. Puentes y viaductos (Tier 2: Network)
+    if (showTier('network') && state.layers.roads) {
+      const off = tierOffsets.network;
       for (const br of model.bridges ?? []) {
         for (const f of br.faces) {
-          const poly = f.v.map((i) => br.verts[i]);
+          const poly = f.v.map((i) => {
+            const p = br.verts[i];
+            return [p[0], p[1], p[2] + off];
+          });
           for (const [q, vis] of subdivide(poly, f.vis, 3)) add('poly', q, { color: 'bridge', edges: vis, sub: true });
         }
       }
     }
 
-    // 10. Árboles
-    if (state.layers.trees) {
+    // 10. Árboles (Tier 4: Green Areas)
+    if (showTier('green') && state.layers.trees) {
+      const off = tierOffsets.green;
       for (const tr of model.trees ?? []) {
         let treeFill = 'tree';
         if (state.thematic.flora) {
-          // Coloraciones botánicas en modo flora
           const speciesTints = ['#22c55e', '#16a34a', '#84cc16', '#a855f7', '#059669'];
           treeFill = speciesTints[Math.floor(Math.abs(tr.x * 13 + tr.y * 7)) % speciesTints.length];
         }
-        add('tree', [[tr.x, tr.y, tr.z], [tr.x, tr.y, tr.z + tr.h]], { color: treeFill, fillDirect: state.thematic.flora ? treeFill : null, r: tr.r });
+        add('tree', [[tr.x, tr.y, tr.z + off], [tr.x, tr.y, tr.z + tr.h + off]], { color: treeFill, fillDirect: state.thematic.flora ? treeFill : null, r: tr.r });
+      }
+    }
+
+    // 11. Marcos de Capas en Cascada, Guías Verticales y Pines (Imagen 4 e Imagen 3)
+    const activeTiers = [
+      { key: 'contours', z: tierOffsets.contours, label: '01 / CONTOURS' },
+      { key: 'hydrography', z: tierOffsets.hydrography, label: '02 / HYDROGRAPHY' },
+      { key: 'network', z: tierOffsets.network, label: '03 / NETWORK' },
+      { key: 'buildings', z: tierOffsets.buildings, label: '04 / URBAN AREAS (BUILDINGS)' },
+      { key: 'green', z: tierOffsets.green, label: '05 / GREEN AREAS' }
+    ].filter((t) => showTier(t.key));
+
+    if (isExp && activeTiers.length > 0) {
+      // Wireframe bounding rectangle for each floating tier
+      for (const t of activeTiers) {
+        const framePts = [
+          [-half, -half, t.z],
+          [half, -half, t.z],
+          [half, half, t.z],
+          [-half, half, t.z],
+          [-half, -half, t.z]
+        ];
+        add('line', framePts, { colorDirect: 'rgba(255, 255, 255, 0.45)', weight: 1.4, isTierFrame: true, tierLabel: t.label, tierZ: t.z });
+      }
+
+      // Vertical dashed corner guide lines connecting all tiers
+      if (state.explodedGuides && activeTiers.length > 1) {
+        const zMin = activeTiers[0].z;
+        const zMax = activeTiers[activeTiers.length - 1].z + 25;
+        const corners = [[-half, -half], [half, -half], [half, half], [-half, half]];
+        for (const [cx, cy] of corners) {
+          add('line', [[cx, cy, zMin], [cx, cy, zMax]], {
+            colorDirect: 'rgba(255, 255, 255, 0.35)',
+            weight: 1.2,
+            dash: [7, 5]
+          });
+        }
+      }
+    }
+
+    // Custom Pins (Imagen 3 & Imagen 4)
+    const pins = pinStore.getPins().filter((p) => p.visible);
+    if (isExp && activeTiers.length > 0) {
+      const zMin = activeTiers[0].z;
+      const zMax = activeTiers[activeTiers.length - 1].z + 28;
+      for (const p of pins) {
+        // Vertical dashed projection line piercing through all 5 tiers
+        add('line', [[p.x, p.y, zMin], [p.x, p.y, zMax + 20]], { colorDirect: p.color, weight: 1.5, dash: [5, 4] });
+        for (const t of activeTiers) {
+          add('pinDot', [[p.x, p.y, t.z + 1.2]], { colorDirect: p.color });
+        }
+        add('pinBadge', [[p.x, p.y, zMax + 25]], { label: p.label, color: p.color, type: p.type });
+      }
+    } else if (!isExp) {
+      for (const p of pins) {
+        add('pinBadge', [[p.x, p.y, p.z || 0]], { label: p.label, color: p.color, type: p.type, normal: true });
       }
     }
 
@@ -355,7 +495,9 @@ export function createIllustrator(canvas, model) {
     const rl = Math.hypot(rx, ry, rz) || 1;
     const right = [rx / rl, ry / rl, rz / rl];
     const up = [right[1] * f[2] - right[2] * f[1], right[2] * f[0] - right[0] * f[2], right[0] * f[1] - right[1] * f[0]];
-    const h0 = -Math.max(8, span * (state.baseDepth || 0.02)), h1 = zTop;
+    const isExp = Boolean(state.exploded);
+    const dZ = isExp ? (state.explodeOffset || 120) : 0;
+    const h0 = -Math.max(8, span * (state.baseDepth || 0.02)), h1 = isExp ? (zTop + dZ * 4.6) : zTop;
     const corners = [];
     for (const z of [h0, h1])
       for (const sx of [-1, 1])
@@ -403,6 +545,21 @@ export function createIllustrator(canvas, model) {
     let treeIndex = 0;
 
     for (const it of buildList()) {
+      if (it.kind === 'contourLabel') {
+        const pt = cam.project(it.pts[0]);
+        if (pt[2] > 0) out.push({ kind: 'contourLabel', pt, text: it.text, depth: pt[2] - 0.2, order: 3 });
+        continue;
+      }
+      if (it.kind === 'pinDot') {
+        const pt = cam.project(it.pts[0]);
+        if (pt[2] > 0) out.push({ kind: 'pinDot', pt, color: it.colorDirect, depth: pt[2] - 0.3, order: 3 });
+        continue;
+      }
+      if (it.kind === 'pinBadge') {
+        const pt = cam.project(it.pts[0]);
+        if (pt[2] > 0) out.push({ kind: 'pinBadge', pt, label: it.label, color: it.color, type: it.type, normal: it.normal, depth: -1e8, order: 4 });
+        continue;
+      }
       if (it.kind === 'tree') {
         if (treeStep > 1 && treeIndex++ % treeStep) continue;
         const [b, top] = it.pts.map(cam.project);
@@ -617,6 +774,40 @@ export function createIllustrator(canvas, model) {
       ctx.textAlign = 'left';
       ctx.restore();
     }
+
+    // 4. Bounding Box Corner Titles for Exploded Tiers (Imagen 4)
+    if (state.exploded && state.explodedCornerLabels) {
+      ctx.save();
+      const half = (model.size || 1000) / 2;
+      const dZ = state.explodeOffset || 120;
+      const activeTiers = [
+        { key: 'contours', z: 0, label: '01 / CONTOURS' },
+        { key: 'hydrography', z: dZ * 1, label: '02 / HYDROGRAPHY' },
+        { key: 'network', z: dZ * 2, label: '03 / NETWORK' },
+        { key: 'buildings', z: dZ * 3, label: '04 / URBAN AREAS (BUILDINGS)' },
+        { key: 'green', z: dZ * 4, label: '05 / GREEN AREAS' }
+      ].filter((t) => state.explodedTiers[t.key]);
+
+      for (const t of activeTiers) {
+        const pt = cam.project([-half, -half, t.z]);
+        if (pt[2] > 0) {
+          ctx.font = 'bold 11px "JetBrains Mono", monospace';
+          const txt = t.label;
+          const bw = ctx.measureText(txt).width + 18;
+          ctx.fillStyle = 'rgba(10, 11, 16, 0.92)';
+          roundRect(ctx, pt[0] - bw - 12, pt[1] - 11, bw, 22, 5);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.50)';
+          ctx.lineWidth = 1.1;
+          ctx.stroke();
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText(txt, pt[0] - bw / 2 - 12, pt[1]);
+        }
+      }
+      ctx.restore();
+    }
   }
 
   /* --- Otridovka na Canvas --- */
@@ -645,6 +836,65 @@ export function createIllustrator(canvas, model) {
         if (it.dash) ctx.setLineDash(it.dash);
         ctx.stroke();
         if (it.dash) ctx.setLineDash([]);
+      } else if (it.kind === 'contourLabel') {
+        ctx.save();
+        ctx.font = 'bold 10px "JetBrains Mono", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        const tw = ctx.measureText(it.text).width + 12;
+        ctx.fillStyle = 'rgba(15, 17, 23, 0.88)';
+        roundRect(ctx, it.pt[0] - tw / 2, it.pt[1] - 8, tw, 16, 4);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+        ctx.lineWidth = 0.8;
+        ctx.stroke();
+        ctx.fillStyle = '#ffffff';
+        ctx.fillText(it.text, it.pt[0], it.pt[1]);
+        ctx.restore();
+      } else if (it.kind === 'pinDot') {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(it.pt[0], it.pt[1], 4, 0, Math.PI * 2);
+        ctx.fillStyle = it.color || '#f97316';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+      } else if (it.kind === 'pinBadge') {
+        ctx.save();
+        const px = it.pt[0], py = it.pt[1];
+        if (it.normal) {
+          ctx.beginPath();
+          ctx.moveTo(px, py);
+          ctx.lineTo(px, py - 26);
+          ctx.strokeStyle = it.color || '#f97316';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(px, py, 3, 0, Math.PI * 2);
+          ctx.fillStyle = it.color;
+          ctx.fill();
+        }
+        const by = it.normal ? py - 38 : py;
+        ctx.font = 'bold 11px Inter, sans-serif';
+        const txt = it.label || 'Marcador';
+        const bw = ctx.measureText(txt).width + 26;
+        ctx.fillStyle = 'rgba(12, 13, 17, 0.94)';
+        roundRect(ctx, px - bw / 2, by - 11, bw, 22, 6);
+        ctx.fill();
+        ctx.strokeStyle = it.color || '#f97316';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(px - bw / 2 + 10, by, 4, 0, Math.PI * 2);
+        ctx.fillStyle = it.color || '#f97316';
+        ctx.fill();
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(txt, px - bw / 2 + 18, by);
+        ctx.restore();
       } else {
         ctx.beginPath();
         ctx.moveTo(it.trunk[0][0], it.trunk[0][1]);
@@ -916,7 +1166,7 @@ ${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
     return [0, 1, 2].map((i) => cam.eye[i] + right[i] * vx + up[i] * vy + f[i] * depth);
   }
 
-  return {
+  const inst = {
     state,
     render,
     setView(name) {
@@ -980,8 +1230,20 @@ ${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
       render();
     },
     labels: () => state.labels,
+    setExploded(on) { state.exploded = Boolean(on); list = null; render(); },
+    setExplodeOffset(offset) { state.explodeOffset = Number(offset); list = null; render(); },
+    setExplodedTier(tier, on) { state.explodedTiers[tier] = Boolean(on); list = null; render(); },
+    setTierColor(tier, color) { state.tierColors[tier] = color; list = null; render(); },
+    setContourLabels(on) { state.contourLabels = Boolean(on); list = null; render(); },
     toSVG,
     toPNG,
     invalidate() { list = null; render(); },
   };
+
+  pinStore.subscribe(() => {
+    list = null;
+    render();
+  });
+
+  return inst;
 }
