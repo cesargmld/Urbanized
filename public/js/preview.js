@@ -498,31 +498,155 @@ export function setWalkRings(enabled, minutes = 15) {
   ctx.walkRingsGroup.clear();
   if (!enabled) return;
 
-  const z = (ctx.zMid || 0) + 1.2;
+  const model = ctx.lastModel;
+  const heightAt = (x, y) => (model?.grid?.heightAt ? model.grid.heightAt(x, y) : (ctx.zMid || 0));
   const modelRadius = (ctx.modelSize || 1000) / 2;
+
   const rings = [
-    { r: modelRadius * 0.40, min: 5, color: 0xf95738, op: 0.85 },
-    { r: modelRadius * 0.75, min: 10, color: 0xf95738, op: 0.55 },
-    { r: modelRadius * 0.98, min: 15, color: 0xf95738, op: 0.35 }
+    { r: Math.min(400, modelRadius * 0.42), min: 5, color: 0xe2e8f0, fillOp: 0.10, ringOp: 0.90 },
+    { r: Math.min(800, modelRadius * 0.72), min: 10, color: 0xcbd5e1, fillOp: 0.06, ringOp: 0.65 },
+    { r: Math.min(1200, modelRadius * 0.96), min: 15, color: 0x94a3b8, fillOp: 0.03, ringOp: 0.45 }
   ];
 
-  for (const { r, min, color, op } of rings) {
+  for (const { r, min, color, fillOp, ringOp } of rings) {
     if (minutes !== 'all' && min > Number(minutes)) continue;
-    const curve = new THREE.EllipseCurve(0, 0, r, r, 0, 2 * Math.PI, false, 0);
-    const points = curve.getPoints(128).map((p) => new THREE.Vector3(p.x, p.y, z));
-    const geo = new THREE.BufferGeometry().setFromPoints(points);
-    const mat = new THREE.LineDashedMaterial({
-      color,
-      dashSize: Math.max(6, r * 0.04),
-      gapSize: Math.max(4, r * 0.025),
-      transparent: true,
-      opacity: op
-    });
-    const line = new THREE.Line(geo, mat);
-    line.computeLineDistances();
+
+    // 1. Elevated 3D Ring Ribbon following terrain height
+    const segments = 128;
+    const pts = [];
+    for (let i = 0; i <= segments; i++) {
+      const theta = (i / segments) * Math.PI * 2;
+      const x = Math.cos(theta) * r;
+      const y = Math.sin(theta) * r;
+      const z = heightAt(x, y) + 3.5;
+      pts.push(new THREE.Vector3(x, y, z));
+    }
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const lineMat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: ringOp, depthTest: false });
+    const line = new THREE.Line(lineGeo, lineMat);
+    line.renderOrder = 999;
     ctx.walkRingsGroup.add(line);
+
+    // 2. Subtle Translucent Ring Band on Ground
+    const bandGeo = new THREE.RingGeometry(Math.max(0, r - 6), r + 6, 96);
+    const pos = bandGeo.attributes.position;
+    for (let i = 0; i < pos.count; i++) {
+      const vx = pos.getX(i);
+      const vy = pos.getY(i);
+      pos.setZ(i, heightAt(vx, vy) + 2.2);
+    }
+    bandGeo.computeVertexNormals();
+    const bandMat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: ringOp * 0.65,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const bandMesh = new THREE.Mesh(bandGeo, bandMat);
+    bandMesh.renderOrder = 998;
+    ctx.walkRingsGroup.add(bandMesh);
+
+    // 3. Subtle Isochrone Fill Disc
+    const discGeo = new THREE.CircleGeometry(r, 64);
+    const dPos = discGeo.attributes.position;
+    for (let i = 0; i < dPos.count; i++) {
+      const vx = dPos.getX(i);
+      const vy = dPos.getY(i);
+      dPos.setZ(i, heightAt(vx, vy) + 1.5);
+    }
+    const discMat = new THREE.MeshBasicMaterial({
+      color,
+      transparent: true,
+      opacity: fillOp,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const discMesh = new THREE.Mesh(discGeo, discMat);
+    discMesh.renderOrder = 997;
+    ctx.walkRingsGroup.add(discMesh);
   }
 }
+
+export function setFloraZoneHighlight(enabled, speciesIndex = -1) {
+  if (!ctx || !ctx.group) return;
+  if (!ctx.floraZoneGroup) {
+    ctx.floraZoneGroup = new THREE.Group();
+    ctx.group.add(ctx.floraZoneGroup);
+  }
+  ctx.floraZoneGroup.traverse((o) => { o.geometry?.dispose(); o.material?.dispose(); });
+  ctx.floraZoneGroup.clear();
+  if (!enabled) return;
+
+  const model = ctx.lastModel;
+  if (!model) return;
+  const heightAt = (x, y) => (model?.grid?.heightAt ? model.grid.heightAt(x, y) : (ctx.zMid || 0));
+
+  const palette = [0x4ade80, 0x2dd4bf, 0xa3e635, 0x34d399, 0x60a5fa];
+  const zoneColor = speciesIndex >= 0 ? palette[speciesIndex % palette.length] : 0x4ade80;
+
+  // Highlight Green Park Polygons as Ecological Flora Zones
+  const greens = (model.areas?.GREEN ?? []).filter((r) => r.length > 2);
+  greens.forEach((ring, idx) => {
+    if (speciesIndex >= 0 && (idx % 3) !== (speciesIndex % 3) && greens.length > 3) return;
+    const flat = [];
+    const lifted = [];
+    for (const [x, y] of ring) {
+      flat.push(x, y);
+      lifted.push([x, y, heightAt(x, y) + 2.0]);
+    }
+    const tri = earcut(flat, [], 2);
+    const faces = [];
+    for (let i = 0; i < tri.length; i += 3) faces.push({ v: [tri[i], tri[i + 1], tri[i + 2]] });
+    const meshGeo = meshGeometry([{ verts: lifted, faces }]);
+    const meshMat = new THREE.MeshBasicMaterial({
+      color: zoneColor,
+      transparent: true,
+      opacity: 0.32,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const m = new THREE.Mesh(meshGeo, meshMat);
+    m.renderOrder = 995;
+    ctx.floraZoneGroup.add(m);
+
+    // Outline around the flora zone
+    const pts = lifted.map(([x, y, z]) => new THREE.Vector3(x, y, z + 0.8));
+    if (pts.length > 0) pts.push(pts[0].clone());
+    const lineGeo = new THREE.BufferGeometry().setFromPoints(pts);
+    const lineMat = new THREE.LineBasicMaterial({ color: zoneColor, transparent: true, opacity: 0.85, depthTest: false });
+    const line = new THREE.Line(lineGeo, lineMat);
+    line.renderOrder = 996;
+    ctx.floraZoneGroup.add(line);
+  });
+
+  // Also highlight Tree Canopy Clusters in 3D
+  const trees = model.trees || [];
+  const step = Math.max(1, Math.floor(trees.length / 45));
+  for (let i = 0; i < trees.length; i += step) {
+    if (speciesIndex >= 0 && ((i / step) | 0) % 3 !== (speciesIndex % 3)) continue;
+    const t = trees[i];
+    const r = Math.max(14, (t.r || 4) * 3.2);
+    const circleGeo = new THREE.RingGeometry(r * 0.72, r, 32);
+    const pos = circleGeo.attributes.position;
+    for (let j = 0; j < pos.count; j++) {
+      const vx = t.x + pos.getX(j);
+      const vy = t.y + pos.getY(j);
+      pos.setXYZ(j, vx, vy, heightAt(vx, vy) + 2.2);
+    }
+    const mat = new THREE.MeshBasicMaterial({
+      color: zoneColor,
+      transparent: true,
+      opacity: 0.55,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const ringMesh = new THREE.Mesh(circleGeo, mat);
+    ringMesh.renderOrder = 996;
+    ctx.floraZoneGroup.add(ringMesh);
+  }
+}
+
 
 
 

@@ -1,12 +1,12 @@
-import { buildModel, redetectTrees } from './data.js?v=5.6';
-import { FORMATS, stlScale } from './exporters.js?v=5.6';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings } from './preview.js?v=5.6';
-import { classifyEcosystem } from './biodiversity.js?v=5.6';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=5.6';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=5.6';
-import { createIllustrator } from './illustrate.js?v=5.6';
-import * as billing from './billing.js?v=5.6';
-import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=5.6';
+import { buildModel, redetectTrees } from './data.js?v=5.7';
+import { FORMATS, stlScale } from './exporters.js?v=5.7';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight } from './preview.js?v=5.7';
+import { classifyEcosystem } from './biodiversity.js?v=5.7';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=5.7';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=5.7';
+import { createIllustrator } from './illustrate.js?v=5.7';
+import * as billing from './billing.js?v=5.7';
+import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=5.7';
 // цена кредитов в долларах — по малому пакету ($0,50 за кредит); в больших пакетах дешевле
 const creditsUsd = (n) => {
   const v = n * USD_PER_CREDIT;
@@ -479,6 +479,8 @@ async function showResult(m) {
   // Switch to result screen first so #viewer has non-zero dimensions when Three.js initializes
   $('#dock-btn-studio')?.classList.remove('disabled');
   $('#view-btn-studio')?.classList.remove('disabled');
+  $('#view-btn-mapper')?.classList.remove('disabled');
+  $('#view-btn-illu')?.classList.remove('disabled');
   $('#dock-btn-map')?.classList.remove('disabled');
   $('#dock-btn-illu')?.classList.remove('disabled');
 
@@ -486,7 +488,7 @@ async function showResult(m) {
     window.switchWorkspaceView('result');
   }
 
-  const { showModel, triggerResize } = await import('./preview.js?v=5.6');
+  const { showModel, triggerResize } = await import('./preview.js?v=5.7');
   showModel($('#viewer'), m);
   setTimeout(() => triggerResize?.(), 60);
   setTimeout(() => triggerResize?.(), 220);
@@ -499,6 +501,13 @@ async function showResult(m) {
   const counted = isCounted(m.id);
   renderQuota(remaining, counted);
   lockDownloads(remaining <= 0 && !counted);
+
+  if (walkState.active) {
+    setWalkRings(true, walkState.minutes);
+  }
+  if (floraState.zonesActive) {
+    setFloraZoneHighlight(true, floraState.selectedSpecies);
+  }
 
   // Live GIS Stats Badge & Counts (Axiom Inspector)
   try {
@@ -834,7 +843,112 @@ async function showSection(sec) {
   renderSecQuota();
 }
 
-// ---------------- Biodiversity, Flora & Fauna Engine (Organized Axiom Style) ----------------
+// ---------------- Biodiversity, Flora & Fauna Engine + Flora Zones on Map & 3D ----------------
+const floraState = {
+  zonesActive: false,
+  selectedSpecies: -1,
+  layerGroup: L.layerGroup().addTo(map)
+};
+
+function generateZonePolygonCoords(centerLat, centerLon, distM, angleDeg, radiusM, seed = 1) {
+  const earthRadius = 6378137;
+  const radAngle = (angleDeg * Math.PI) / 180;
+  const dLatCenter = (distM * Math.sin(radAngle)) / earthRadius;
+  const dLonCenter = (distM * Math.cos(radAngle)) / (earthRadius * Math.cos((Math.PI * centerLat) / 180));
+  const zoneLat = centerLat + (dLatCenter * 180) / Math.PI;
+  const zoneLon = centerLon + (dLonCenter * 180) / Math.PI;
+
+  const pts = [];
+  const vertices = 10;
+  for (let i = 0; i < vertices; i++) {
+    const theta = (i / vertices) * Math.PI * 2;
+    const wobble = 0.78 + 0.32 * Math.sin(theta * 3 + seed * 1.7);
+    const r = radiusM * wobble;
+    const pLat = zoneLat + ((r * Math.sin(theta)) / earthRadius) * (180 / Math.PI);
+    const pLon = zoneLon + ((r * Math.cos(theta)) / (earthRadius * Math.cos((Math.PI * zoneLat) / 180))) * (180 / Math.PI);
+    pts.push([pLat, pLon]);
+  }
+  return { center: [zoneLat, zoneLon], pts };
+}
+
+function updateFloraZonesOnMap() {
+  floraState.layerGroup.clearLayers();
+  const sw1 = $('#flora-zones-switch');
+  const sw2 = $('#map-flora-switch');
+  if (sw1) sw1.checked = floraState.zonesActive;
+  if (sw2) sw2.checked = floraState.zonesActive;
+  $('#map-btn-flora')?.classList.toggle('active', floraState.zonesActive);
+
+  if (!floraState.zonesActive) {
+    setFloraZoneHighlight(false);
+    return;
+  }
+
+  const center = map.getCenter();
+  const elev = (typeof model !== 'undefined' && model?.grid) ? model.grid.maxH : 0;
+  const placeName = $('#q')?.value || '';
+  const eco = classifyEcosystem(center.lat, center.lng, elev, placeName);
+  const sizeM = Number(sizeInput?.value || 1000);
+  const palette = ['#4ade80', '#2dd4bf', '#a3e635', '#34d399', '#38bdf8'];
+  const zoneConfigs = [
+    { dist: sizeM * 0.22, angle: 35, r: sizeM * 0.14, label: 'Zona Ecológica A · Dosel Principal' },
+    { dist: sizeM * 0.26, angle: 145, r: sizeM * 0.13, label: 'Zona Ecológica B · Corredor Vegetal' },
+    { dist: sizeM * 0.20, angle: 235, r: sizeM * 0.15, label: 'Zona Ecológica C · Estrato Arbóreo' },
+    { dist: sizeM * 0.28, angle: 315, r: sizeM * 0.12, label: 'Zona Ecológica D · Reserva Riparia' },
+    { dist: sizeM * 0.06, angle: 90, r: sizeM * 0.11, label: 'Zona Ecológica Central · Microclima' }
+  ];
+
+  eco.flora.forEach((sp, idx) => {
+    if (floraState.selectedSpecies >= 0 && floraState.selectedSpecies !== idx) return;
+    const cfg = zoneConfigs[idx % zoneConfigs.length];
+    const color = palette[idx % palette.length];
+    const poly = generateZonePolygonCoords(center.lat, center.lng, cfg.dist, cfg.angle, cfg.r, idx + 1);
+
+    L.polygon(poly.pts, {
+      color,
+      weight: 2,
+      opacity: 0.9,
+      fillColor: color,
+      fillOpacity: 0.22,
+      dashArray: '4 4'
+    }).addTo(floraState.layerGroup);
+
+    const badgeHtml = `
+      <div class="flora-zone-pin" style="--flora-color:${color}">
+        <span class="flora-zone-dot"></span>
+        <div class="flora-zone-info">
+          <b>${sp.name}</b>
+          <i>${sp.latin}</i>
+        </div>
+      </div>
+    `;
+    const icon = L.divIcon({
+      html: badgeHtml,
+      className: 'flora-zone-icon-wrap',
+      iconSize: [160, 36],
+      iconAnchor: [80, 18]
+    });
+    L.marker(poly.center, { icon, interactive: false }).addTo(floraState.layerGroup);
+  });
+
+  setFloraZoneHighlight(true, floraState.selectedSpecies);
+}
+window.updateFloraZonesOnMap = updateFloraZonesOnMap;
+
+function setFloraZonesActive(active, speciesIdx = -1) {
+  floraState.zonesActive = active;
+  floraState.selectedSpecies = speciesIdx;
+  updateFloraZonesOnMap();
+}
+window.setFloraZonesActive = setFloraZonesActive;
+
+$('#flora-zones-switch')?.addEventListener('change', (e) => {
+  setFloraZonesActive(e.target.checked, -1);
+});
+$('#map-btn-flora')?.addEventListener('click', () => {
+  setFloraZonesActive(!floraState.zonesActive, -1);
+});
+
 function updateBiodiversity() {
   const center = map.getCenter();
   const elev = (typeof model !== 'undefined' && model?.grid) ? model.grid.maxH : 0;
@@ -850,20 +964,41 @@ function updateBiodiversity() {
   const summary = $('#bio-summary');
   if (summary) summary.textContent = `${eco.soil}. ${eco.climate}`;
 
+  const palette = ['#4ade80', '#2dd4bf', '#a3e635', '#34d399', '#38bdf8'];
+  const zoneCodes = ['Zona A · Dosel', 'Zona B · Corredor', 'Zona C · Estrato', 'Zona D · Riparia', 'Zona E · Núcleo'];
+
   const floraList = $('#bio-flora-list');
   if (floraList) {
-    floraList.innerHTML = eco.flora.map(f => `
-      <div class="bio-card-entry">
+    floraList.innerHTML = eco.flora.map((f, idx) => `
+      <div class="bio-card-entry flora-interactive-entry ${floraState.selectedSpecies === idx ? 'active' : ''}" data-flora-idx="${idx}" title="Haz clic para localizar y marcar la zona de esta especie en el mapa y modelo 3D">
         <div class="bio-entry-top">
-          <b class="bio-entry-name">${f.name}</b>
+          <span class="flora-entry-title-wrap">
+            <span class="flora-zone-swatch" style="background:${palette[idx % palette.length]}"></span>
+            <b class="bio-entry-name">${f.name}</b>
+          </span>
           <i class="bio-entry-latin">${f.latin}</i>
         </div>
         <div class="bio-entry-bottom">
-          <span class="bio-entry-badge">${f.type}</span>
+          <span class="bio-entry-badge">${f.type} · ${zoneCodes[idx % zoneCodes.length]}</span>
           <span class="bio-entry-note">${f.note}</span>
         </div>
       </div>
     `).join('');
+
+    floraList.querySelectorAll('.flora-interactive-entry').forEach((card) => {
+      card.addEventListener('click', () => {
+        const idx = Number(card.getAttribute('data-flora-idx'));
+        const isSame = floraState.zonesActive && floraState.selectedSpecies === idx;
+        if (isSame) {
+          setFloraZonesActive(true, -1);
+        } else {
+          setFloraZonesActive(true, idx);
+        }
+        floraList.querySelectorAll('.flora-interactive-entry').forEach((c, i) => {
+          c.classList.toggle('active', floraState.selectedSpecies === i);
+        });
+      });
+    });
   }
 
   const faunaList = $('#bio-fauna-list');
@@ -890,12 +1025,16 @@ function updateBiodiversity() {
 
   const soilEl = $('#bio-soil');
   if (soilEl) soilEl.textContent = eco.soil;
+
+  if (floraState.zonesActive) {
+    updateFloraZonesOnMap();
+  }
 }
 
 window.updateBiodiversityCard = updateBiodiversity;
 map.on('moveend', () => {
-  const bioCard = $('#bio-card');
-  if (bioCard && !bioCard.hidden) updateBiodiversity();
+  const bioDrawer = $('#drawer-bio');
+  if ((bioDrawer && !bioDrawer.hidden) || floraState.zonesActive) updateBiodiversity();
 });
 
 // Biodiversity Card Subtabs & Close
@@ -911,27 +1050,7 @@ document.querySelectorAll('.bio-subtab').forEach((tab) => {
   });
 });
 
-$('#bio-card-close')?.addEventListener('click', () => {
-  const bioCard = $('#bio-card');
-  if (bioCard) bioCard.hidden = true;
-  $('#btn-toggle-bio')?.classList.remove('active');
-  $('#dock-btn-bio')?.classList.remove('active');
-});
-
-// Biodiversity Toggle (Studio Toolbar & Left Dock)
-const toggleBioCard = () => {
-  const bioCard = $('#bio-card');
-  if (!bioCard) return;
-  const isHidden = bioCard.hidden;
-  bioCard.hidden = !isHidden;
-  $('#btn-toggle-bio')?.classList.toggle('active', isHidden);
-  $('#dock-btn-bio')?.classList.toggle('active', isHidden);
-  if (isHidden) updateBiodiversity();
-};
-$('#btn-toggle-bio')?.addEventListener('click', toggleBioCard);
-$('#dock-btn-bio')?.addEventListener('click', toggleBioCard);
-
-// Studio Toolbar: Render Mode Buttons (Modelo 3D | Maqueta 3D Monocromática)
+// Studio Toolbar: Render Mode Buttons (Urbano GIS | Maqueta 3D Monocromática)
 $('#btn-render-model')?.addEventListener('click', () => {
   $('#btn-render-maqueta')?.classList.remove('active');
   $('#btn-render-model')?.classList.add('active');
@@ -975,29 +1094,41 @@ $('#cam-plan2d')?.addEventListener('click', (e) => {
   selectView('plan');
 });
 
-// Studio Top Bar Tools -> Toggle Left Dock Panels
-$('#btn-toggle-gis')?.addEventListener('click', () => {
-  if (window.toggleLeftPanel) window.toggleLeftPanel('gis');
-});
-$('#btn-toggle-radii')?.addEventListener('click', () => {
-  if (window.toggleLeftPanel) window.toggleLeftPanel('radii');
-});
-$('#btn-toggle-bio')?.addEventListener('click', () => {
-  if (window.toggleLeftPanel) window.toggleLeftPanel('bio');
-});
+// Studio Top Bar / Left Dock Openers for Full Vector Map & Axonometric Illustrator
+window.openVectorMapStudio = async () => {
+  if (!model) return;
+  await loadMapMod();
+  syncMapControls();
+  renderMap(true);
+};
+window.openIllustratorStudio = () => {
+  if (!model) return;
+  openIllustrator();
+};
 
-/* ---------------- Walking Distance / Radios de Proximidad (Axiom Image 5) ---------------- */
+/* ---------------- Walking Distance / Radios de Proximidad (2D Map + 3D Studio) ---------------- */
 
 const walkState = {
   active: false,
   minutes: '15',
+  customOrigin: null,
+  pickingOrigin: false,
   layerGroup: L.layerGroup().addTo(map)
 };
 
 function getCenterCoords() {
+  if (walkState.customOrigin) return walkState.customOrigin;
   if (model && model.center) return [model.center.lat, model.center.lon];
   const c = map.getCenter();
   return [c.lat, c.lng];
+}
+
+function offsetLatLon(lat, lon, distMeters, bearingDeg) {
+  const earthRadius = 6378137;
+  const brng = (bearingDeg * Math.PI) / 180;
+  const dLat = (distMeters * Math.cos(brng)) / earthRadius;
+  const dLon = (distMeters * Math.sin(brng)) / (earthRadius * Math.cos((Math.PI * lat) / 180));
+  return [lat + (dLat * 180) / Math.PI, lon + (dLon * 180) / Math.PI];
 }
 
 function updateWalkingDistanceDisplay() {
@@ -1018,26 +1149,37 @@ function updateWalkingDistanceDisplay() {
 
   const [lat, lon] = getCenterCoords();
   const rings = [
-    { r: 400, min: 5, color: '#f95738', weight: 1.5, op: 0.85, fillOp: 0.05 },
-    { r: 800, min: 10, color: '#f95738', weight: 1.2, op: 0.55, fillOp: 0.03 },
-    { r: 1200, min: 15, color: '#f95738', weight: 1.0, op: 0.35, fillOp: 0.02 }
+    { r: 400, min: 5, color: '#ffffff', weight: 2.2, op: 0.92, fillColor: '#e2e8f0', fillOp: 0.12, label: '5 min · 400 m' },
+    { r: 800, min: 10, color: '#cbd5e1', weight: 1.8, op: 0.78, fillColor: '#cbd5e1', fillOp: 0.07, label: '10 min · 800 m' },
+    { r: 1200, min: 15, color: '#94a3b8', weight: 1.5, op: 0.65, fillColor: '#94a3b8', fillOp: 0.04, label: '15 min · 1.2 km' }
   ];
 
-  rings.forEach(({ r, min, color, weight, op, fillOp }) => {
+  rings.forEach(({ r, min, color, weight, op, fillColor, fillOp, label }) => {
     if (walkState.minutes !== 'all' && min > Number(walkState.minutes)) return;
     L.circle([lat, lon], {
       radius: r,
       color,
       weight,
       opacity: op,
-      fillColor: color,
+      fillColor,
       fillOpacity: fillOp,
-      dashArray: '5 5'
+      dashArray: '6 4',
+      interactive: false
     }).addTo(walkState.layerGroup);
+
+    // Floating distance/time tag directly on top of each concentric circle
+    const labelPos = offsetLatLon(lat, lon, r, 0);
+    const ringBadge = L.divIcon({
+      html: `<div class="isochrone-ring-tag">${label}</div>`,
+      className: 'isochrone-ring-tag-wrap',
+      iconSize: [100, 22],
+      iconAnchor: [50, 11]
+    });
+    L.marker(labelPos, { icon: ringBadge, interactive: false }).addTo(walkState.layerGroup);
   });
 
-  // Center pin badge marker (Axiom Image 5 style: Nova Quarters)
-  const placeName = $('#q')?.value?.split(',')?.[0]?.trim() || (model ? 'Centro del Modelo' : 'Sitio');
+  // Center pin badge marker
+  const placeName = $('#q')?.value?.split(',')?.[0]?.trim() || (model ? 'Origen Isócrona' : 'Punto de Origen');
   const pinHtml = `
     <div class="walk-pin-wrapper">
       <div class="walk-pin-tag">${placeName}</div>
@@ -1053,9 +1195,9 @@ function updateWalkingDistanceDisplay() {
   // Update metrics chips inside radii-card
   const stats = getLayerStats(model);
   const totalBld = stats.totalBuildings || 120;
-  const wp5 = $('#walk-pois-5'); if (wp5) wp5.textContent = `~${Math.round(totalBld * 0.18)} POIs inmediatos`;
-  const wp10 = $('#walk-pois-10'); if (wp10) wp10.textContent = `~${Math.round(totalBld * 0.55)} equipamientos`;
-  const wp15 = $('#walk-pois-15'); if (wp15) wp15.textContent = `~${totalBld} entidades (100%)`;
+  const wp5 = $('#walk-pois-5'); if (wp5) wp5.textContent = `~${Math.round(totalBld * 0.18)} POIs (400m)`;
+  const wp10 = $('#walk-pois-10'); if (wp10) wp10.textContent = `~${Math.round(totalBld * 0.55)} POIs (800m)`;
+  const wp15 = $('#walk-pois-15'); if (wp15) wp15.textContent = `~${totalBld} POIs (1.2km)`;
   if ($('#radii-coords')) $('#radii-coords').textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)} · 4.8 km/h`;
 }
 window.updateWalkingDistanceDisplay = updateWalkingDistanceDisplay;
@@ -1081,15 +1223,34 @@ function setWalkMinutes(min) {
 $('#map-btn-walk')?.addEventListener('click', () => {
   const next = !walkState.active;
   setWalkActive(next);
-  if (next) {
-    document.querySelector('.axiom-insp-tab[data-tab="radii"]')?.click();
-  }
 });
 $('#map-walk-switch')?.addEventListener('change', (e) => {
   setWalkActive(e.target.checked);
 });
 $('#walk-switch-active')?.addEventListener('change', (e) => {
   setWalkActive(e.target.checked);
+});
+
+$('#btn-pick-walk-origin')?.addEventListener('click', () => {
+  walkState.pickingOrigin = !walkState.pickingOrigin;
+  const btn = $('#btn-pick-walk-origin');
+  if (btn) {
+    btn.classList.toggle('active', walkState.pickingOrigin);
+    btn.textContent = walkState.pickingOrigin ? 'Haz clic en el mapa para fijar origen...' : 'Fijar punto de origen en mapa';
+  }
+});
+
+map.on('click', (e) => {
+  if (walkState.pickingOrigin) {
+    walkState.customOrigin = [e.latlng.lat, e.latlng.lng];
+    walkState.pickingOrigin = false;
+    const btn = $('#btn-pick-walk-origin');
+    if (btn) {
+      btn.classList.remove('active');
+      btn.textContent = 'Cambiar punto de origen en mapa';
+    }
+    setWalkActive(true);
+  }
 });
 
 document.querySelectorAll('[data-walk]').forEach((b) => {
@@ -1139,7 +1300,7 @@ $('#btn-export-isochrones')?.addEventListener('click', () => {
 });
 
 map.on('move', () => {
-  if (walkState.active && !model) {
+  if (walkState.active && !walkState.customOrigin && !model) {
     updateWalkingDistanceDisplay();
   }
 });

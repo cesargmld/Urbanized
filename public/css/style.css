@@ -2605,52 +2605,125 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 600;
 }
 
-/* Area Slider */
+/* Area & Sensitivity Sliders — Matte Architectural Tone */
 .axiom-range {
   width: 100%;
-  accent-color: #f95738;
+  accent-color: #d4d4d8;
   height: 4px;
   border-radius: 2px;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   outline: none;
   cursor: pointer;
 }
 
-/* Big Coral CTA Button (Create Model) */
+/* Primary Action CTA Button — Subtle Matte Architectural Finish (No Gloss / No Neon) */
 .axiom-cta-btn {
   width: 100%;
-  height: 44px;
-  border-radius: 10px;
-  background: #f95738;
-  color: #ffffff;
-  font-size: 13px;
+  height: 40px;
+  border-radius: 9px;
+  background: #e4e4e7;
+  color: #090a0d;
+  font-size: 12.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  box-shadow: 0 4px 18px rgba(249, 87, 56, 0.38);
+  transition: background 0.16s ease, transform 0.16s ease;
+  box-shadow: none;
 }
 .axiom-cta-btn svg {
   stroke: currentColor;
-  stroke-width: 2.2;
+  stroke-width: 2;
   fill: none;
   transition: transform 0.18s ease;
 }
 .axiom-cta-btn:hover {
-  background: #ff6442;
-  transform: translateY(-1px);
-  box-shadow: 0 6px 24px rgba(249, 87, 56, 0.52);
+  background: #f4f4f5;
+  color: #000000;
+  box-shadow: none;
 }
 .axiom-cta-btn:hover svg {
   transform: translateX(2px);
 }
 .axiom-cta-btn:active {
   transform: translateY(0);
+}
+
+/* Expanded Extraction Parameters Drawer inside Setup Card */
+.axiom-params-drawer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  max-height: 290px;
+  overflow-y: auto;
+}
+.axiom-params-drawer[hidden] {
+  display: none !important;
+}
+.axiom-params-drawer::-webkit-scrollbar {
+  width: 4px;
+}
+.axiom-params-drawer::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+.axiom-sub-header {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #71717a;
+  margin-top: 2px;
+}
+.axiom-btn-pair {
+  display: flex;
+  gap: 6px;
+}
+.axiom-subtle-btn {
+  flex: 1;
+  height: 28px;
+  padding: 0 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  color: #d4d4d8;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.axiom-subtle-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.11);
+  color: #ffffff;
+}
+.axiom-subtle-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.axiom-micro-hint {
+  font-size: 10.5px;
+  color: #71717a;
+  line-height: 1.35;
+}
+.axiom-section-box {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+}
+.axiom-section-box[hidden] {
+  display: none !important;
 }
 
 /* ========================================================
@@ -2684,8 +2757,8 @@ input[type="range"]::-webkit-slider-thumb {
   justify-content: space-between;
 }
 .axiom-export-title {
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: #ffffff;
   letter-spacing: -0.02em;
   margin: 0;
@@ -2747,23 +2820,23 @@ input[type="range"]::-webkit-slider-thumb {
 .axiom-export-grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 7px;
 }
 .axiom-dl-tile {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  padding: 10px 12px;
-  background: rgba(255, 255, 255, 0.04);
+  padding: 9px 11px;
+  background: rgba(255, 255, 255, 0.035);
   border: 1px solid rgba(255, 255, 255, 0.08);
-  border-radius: 10px;
-  color: #ffffff;
+  border-radius: 9px;
+  color: #f4f4f5;
   cursor: pointer;
-  transition: all 0.16s ease;
+  transition: background 0.15s ease, border-color 0.15s ease;
   text-align: left;
 }
 .axiom-dl-tile b {
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }
@@ -2774,9 +2847,8 @@ input[type="range"]::-webkit-slider-thumb {
   margin-top: 2px;
 }
 .axiom-dl-tile:hover {
-  background: rgba(255, 255, 255, 0.09);
-  border-color: rgba(255, 255, 255, 0.2);
-  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
 }
 
 /* ========================================================
@@ -2799,11 +2871,11 @@ input[type="range"]::-webkit-slider-thumb {
   height: 36px;
   padding: 3px 6px;
   border-radius: 9999px;
-  background: rgba(14, 16, 22, 0.9);
+  background: rgba(14, 16, 22, 0.86);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.55);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -2834,48 +2906,18 @@ input[type="range"]::-webkit-slider-thumb {
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.28);
   transition: all 0.18s ease;
 }
 .axiom-island-dot.active {
-  background: #f95738;
-  box-shadow: 0 0 8px rgba(249, 87, 56, 0.8);
+  background: #e4e4e7;
+  box-shadow: none;
 }
 .axiom-island-sep {
   width: 1px;
   height: 14px;
   background: rgba(255, 255, 255, 0.1);
   margin: 0 2px;
-}
-
-/* Responsive */
-@media (max-width: 900px) {
-  .axiom-workspace {
-    flex-direction: column;
-    padding: 8px;
-    gap: 8px;
-  }
-  .axiom-inspector {
-    width: 100%;
-    min-width: 100%;
-    max-height: 45vh;
-  }
-  .axiom-search-box {
-    width: 180px;
-  }
-  .axiom-search-box:focus-within {
-    width: 220px;
-  }
-  .axiom-view-btn span {
-    display: none;
-  }
-  .axiom-live-badge {
-    display: none;
-  }
-  .studio-top-bar {
-    max-width: calc(100% - 20px);
-    overflow-x: auto;
-  }
 }
 
 /* ========================================================
@@ -2948,13 +2990,13 @@ input[type="range"]::-webkit-slider-thumb {
   height: 64px;
   top: -15px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0) 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0) 70%);
   animation: haloPulse 2.4s infinite ease-in-out;
   pointer-events: none;
 }
 @keyframes haloPulse {
   0%, 100% { transform: scale(0.85); opacity: 0.35; }
-  50% { transform: scale(1.25); opacity: 0.9; }
+  50% { transform: scale(1.25); opacity: 0.85; }
 }
 .axiom-loading-logo {
   animation: reticleSpin 20s linear infinite;
@@ -2992,18 +3034,17 @@ input[type="range"]::-webkit-slider-thumb {
   transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 .axiom-cell.filled {
-  background: #ffffff;
-  border-color: #ffffff;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.55);
+  background: #e4e4e7;
+  border-color: #e4e4e7;
 }
 .axiom-cell.active-pulse {
-  background: rgba(255, 255, 255, 0.7);
+  background: rgba(255, 255, 255, 0.65);
   border-color: #ffffff;
   animation: cellPulse 1.2s infinite ease-in-out;
 }
 @keyframes cellPulse {
   0%, 100% { opacity: 0.5; }
-  50% { opacity: 1; box-shadow: 0 0 12px rgba(255, 255, 255, 0.8); }
+  50% { opacity: 1; }
 }
 
 /* Tag LOADING */
@@ -3038,8 +3079,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ========================================================
-   AXIOM TYPOGRAPHIC DOT-LIST & FILTER ACCORDION (Image 1 & 2)
-   No noisy lines or heavy borders — pure dot + label + count
+   AXIOM TYPOGRAPHIC DOT-LIST & FILTER ACCORDION
    ======================================================== */
 .axiom-filter-accordion {
   display: flex;
@@ -3093,12 +3133,12 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 6px 8px;
+  padding: 5px 8px;
   border-radius: 8px;
   background: transparent;
   border: none;
   color: #64748b;
-  font-size: 12px;
+  font-size: 11.5px;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
@@ -3120,8 +3160,8 @@ input[type="range"]::-webkit-slider-thumb {
   transition: all 0.16s ease;
 }
 .axiom-dot-item.active .axiom-bullet {
-  background: var(--dot-color, #ffffff);
-  box-shadow: 0 0 8px var(--dot-color, rgba(255, 255, 255, 0.7));
+  background: var(--dot-color, #e4e4e7);
+  box-shadow: none;
 }
 .axiom-dot-text {
   flex: 1;
@@ -3137,7 +3177,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* ========================================================
-   WALKING DISTANCE PILL ON MAP (Axiom Image 5)
+   WALKING DISTANCE PILL & ISOCHRONE MARKERS ON MAP
    ======================================================== */
 .axiom-walk-pill {
   pointer-events: auto;
@@ -3146,11 +3186,11 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 4px;
   padding: 4px 6px 4px 12px;
   border-radius: 9999px;
-  background: rgba(14, 16, 23, 0.78);
+  background: rgba(14, 16, 23, 0.84);
   backdrop-filter: blur(24px) saturate(190%);
   -webkit-backdrop-filter: blur(24px) saturate(190%);
   border: 1px solid rgba(255, 255, 255, 0.13);
-  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.55);
 }
 .axiom-walk-pill[hidden] {
   display: none !important;
@@ -3176,22 +3216,137 @@ input[type="range"]::-webkit-slider-thumb {
   color: #ffffff;
 }
 .axiom-walk-time.active {
-  background: #f95738;
+  background: rgba(255, 255, 255, 0.16);
   color: #ffffff;
   font-weight: 600;
-  box-shadow: 0 2px 10px rgba(249, 87, 56, 0.45);
+  box-shadow: none;
+}
+
+/* Leaflet Custom Markers for Isochrones & Flora Zones (Zero White Box) */
+.walk-center-icon,
+.isochrone-ring-tag-wrap,
+.flora-zone-icon-wrap {
+  background: transparent !important;
+  border: none !important;
+}
+.isochrone-ring-tag {
+  transform: translate(-50%, -50%);
+  background: rgba(12, 14, 20, 0.88);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #f4f4f5;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 9999px;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.55);
+  pointer-events: none;
+}
+.walk-pin-tag {
+  background: rgba(16, 18, 24, 0.92);
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-family: var(--font-sans);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 9999px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.55);
+  white-space: nowrap;
+}
+.walk-pin-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #ffffff;
+  background: #18181b;
+  margin-top: 4px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+/* Flora Zone Pins on Map */
+.flora-zone-pin {
+  transform: translate(-50%, -50%);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  background: rgba(12, 15, 20, 0.9);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid var(--flora-color, #4ade80);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.65);
+  white-space: nowrap;
+  pointer-events: auto;
+}
+.flora-zone-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--flora-color, #4ade80);
+  flex-shrink: 0;
+}
+.flora-zone-info {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+.flora-zone-info b {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: #f4f4f5;
+}
+.flora-zone-info i,
+.flora-zone-info span {
+  font-size: 9px;
+  font-style: italic;
+  color: #cbd5e1;
+}
+
+/* Interactive Flora Entries in Biodiversity Drawer */
+.flora-interactive-entry {
+  cursor: pointer;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.flora-interactive-entry:hover {
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.16);
+}
+.flora-interactive-entry.active,
+.flora-interactive-entry.active-zone {
+  background: rgba(74, 222, 128, 0.1);
+  border-color: rgba(74, 222, 128, 0.35);
+}
+.flora-entry-title-wrap {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.flora-zone-swatch {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
 }
 
 /* ========================================================
    3D STUDIO LEFT-SIDE LIQUID GLASS ICON DOCK + DRAWER
-   ("esconder o desplegar los datos desde los iconos de la izq")
+   ("ubica centrado el toggle de iconos")
    ======================================================== */
 .axiom-left-system {
   position: absolute;
   left: 20px;
-  bottom: 24px;
+  top: 50%;
+  bottom: auto;
+  transform: translateY(-50%);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   gap: 12px;
   z-index: 600;
   pointer-events: none;
@@ -3204,12 +3359,12 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   gap: 6px;
   padding: 8px 6px;
-  background: rgba(14, 16, 23, 0.76);
+  background: rgba(14, 16, 23, 0.78);
   backdrop-filter: blur(28px) saturate(190%);
   -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.14);
 }
 
 .axiom-dock-icon {
@@ -3232,9 +3387,8 @@ input[type="range"]::-webkit-slider-thumb {
 }
 .axiom-dock-icon.active {
   color: #ffffff;
-  background: rgba(255, 255, 255, 0.14);
-  border-color: rgba(255, 255, 255, 0.22);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  background: rgba(255, 255, 255, 0.13);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 .axiom-dock-icon.active::before {
   content: '';
@@ -3242,11 +3396,11 @@ input[type="range"]::-webkit-slider-thumb {
   left: -4px;
   top: 50%;
   transform: translateY(-50%);
-  width: 3px;
+  width: 2.5px;
   height: 14px;
   border-radius: 99px;
-  background: #f95738;
-  box-shadow: 0 0 8px rgba(249, 87, 56, 0.8);
+  background: #e4e4e7;
+  box-shadow: none;
 }
 
 .axiom-left-drawer {
@@ -3259,18 +3413,18 @@ input[type="range"]::-webkit-slider-thumb {
 
 .axiom-drawer-card {
   width: 340px;
-  max-height: calc(100vh - 150px);
+  max-height: calc(100vh - 120px);
   overflow-y: auto;
-  background: rgba(14, 16, 23, 0.76);
+  background: rgba(14, 16, 23, 0.78);
   backdrop-filter: blur(28px) saturate(190%);
   -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: 20px;
   padding: 18px 20px;
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.68), inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.68), inset 0 1px 0 rgba(255, 255, 255, 0.14);
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 12px;
 }
 .axiom-drawer-card[hidden] {
   display: none !important;
@@ -3296,11 +3450,11 @@ input[type="range"]::-webkit-slider-thumb {
 
 .axiom-secondary-btn {
   width: 100%;
-  height: 36px;
-  border-radius: 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  color: #f4f4f6;
+  height: 34px;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  color: #e4e4e7;
   font-size: 11.5px;
   font-weight: 500;
   display: flex;
@@ -3311,8 +3465,8 @@ input[type="range"]::-webkit-slider-thumb {
   transition: all 0.16s ease;
 }
 .axiom-secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.24);
+  background: rgba(255, 255, 255, 0.11);
+  border-color: rgba(255, 255, 255, 0.22);
   color: #ffffff;
 }
 
@@ -3390,8 +3544,171 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
 }
 .axiom-mini-toggle input {
-  accent-color: #f95738;
+  accent-color: #d4d4d8;
   cursor: pointer;
 }
+
+/* ========================================================
+   VECTOR MAP 2D (#mapper) & AXONOMETRIC ILLUSTRATOR (#illustrator)
+   Left-Docked Liquid Glass Studio Sidebars + Interactive Stage
+   ======================================================== */
+.axiom-editor-sidebar {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  bottom: 20px;
+  width: 320px;
+  background: rgba(14, 16, 23, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 20px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.68), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 18px;
+  gap: 12px;
+  z-index: 600;
+}
+.axiom-editor-scroll {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding-right: 4px;
+}
+.axiom-editor-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+.axiom-editor-scroll::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 4px;
+}
+.axiom-editor-group {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.axiom-editor-group:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+.axiom-preset-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+.axiom-preset-grid button {
+  padding: 6px 6px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #a1a1aa;
+  font-size: 11px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: center;
+}
+.axiom-preset-grid button:hover {
+  background: rgba(255, 255, 255, 0.09);
+  color: #ffffff;
+}
+.axiom-preset-grid button.active,
+.axiom-preset-grid button[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.16);
+  border-color: rgba(255, 255, 255, 0.28);
+  color: #ffffff;
+  font-weight: 600;
+}
+.axiom-check-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+  color: #d4d4d8;
+  cursor: pointer;
+  padding: 2px 0;
+}
+.axiom-check-row input[type="checkbox"] {
+  accent-color: #d4d4d8;
+  width: 13px;
+  height: 13px;
+  cursor: pointer;
+}
+.axiom-editor-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+.editor-stage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 356px !important;
+  width: calc(100% - 356px) !important;
+  height: 100% !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #090a0d;
+  overflow: hidden;
+  padding: 24px;
+}
+#illu-canvas {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+  border-radius: 10px;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+}
+.editor-stage .map-sheet {
+  max-width: 100%;
+  max-height: 100%;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75);
+  border-radius: 6px;
+}
+.axiom-text-input {
+  width: 100%;
+  height: 32px;
+  padding: 0 10px;
+  border-radius: 7px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  color: #ffffff;
+  font-size: 11.5px;
+  outline: none;
+}
+.axiom-text-input:focus {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+/* Responsive */
+@media (max-width: 900px) {
+  .axiom-search-box {
+    width: 180px;
+  }
+  .axiom-search-box:focus-within {
+    width: 220px;
+  }
+  .axiom-view-btn span {
+    display: none;
+  }
+  .axiom-live-badge {
+    display: none;
+  }
+  .editor-stage {
+    left: 0 !important;
+    width: 100% !important;
+  }
+}
+
 
 
