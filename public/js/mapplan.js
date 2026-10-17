@@ -245,8 +245,9 @@ export function mapSVG(model, o) {
   }
   if (o.overlays.grid) {
     let st;
-    if (o.overlays.gridStep && o.overlays.gridStep !== 'auto') {
-      st = Number(o.overlays.gridStep) || 100;
+    const configuredStep = o.gridStep ?? o.overlays.gridStep;
+    if (configuredStep && configuredStep !== 'auto') {
+      st = Number(configuredStep) || 100;
     } else {
       st = niceStep(size / 6);
     }
@@ -263,23 +264,42 @@ export function mapSVG(model, o) {
         }
       }
     } else if (style === 'dots') {
-      const cr = fs * 0.12;
+      const cr = fs * 0.14;
       for (let x = st; x < size - 1e-6; x += st) {
         for (let y = st; y < size - 1e-6; y += st) {
           d += `M${f(x - cr)},${f(y)}A${f(cr)},${f(cr)} 0 1 0 ${f(x + cr)},${f(y)}A${f(cr)},${f(cr)} 0 1 0 ${f(x - cr)},${f(y)}`;
         }
       }
     } else {
-      for (let v = st; v < size - 1e-6; v += st) d += `M${f(v)},0V${size}M0,${f(v)}H${size}`;
+      // Líneas continuas de alta legibilidad arquitectónica
+      for (let v = st; v < size - 1e-6; v += st) {
+        d += `M${f(v)},0V${size}M0,${f(v)}H${size}`;
+      }
     }
-    groups.push(`<g id="GRID" fill="${style === 'dots' ? c.grid : 'none'}" stroke="${c.grid}" stroke-width="${pen(0.12)}">${d ? `<path d="${d}"/>` : ''}</g>`);
+
+    const gridColor = c.grid || '#888888';
+    // Ancho mínimo garantizado en metros para que nunca se desvanezca en subpíxeles
+    const gridLineWidth = style === 'line' ? Math.max(pen(0.24), size * 0.001) : Math.max(pen(0.3), size * 0.0014);
+    const gridOpacity = style === 'line' ? '0.75' : '0.9';
+    groups.push(`<g id="GRID" fill="${style === 'dots' ? gridColor : 'none'}" stroke="${gridColor}" stroke-width="${f(gridLineWidth)}" stroke-linecap="round" stroke-linejoin="round" opacity="${gridOpacity}">${d ? `<path d="${d}"/>` : ''}</g>`);
+
+    // Ticks perimetrales en los bordes del plano
+    let ticks = '';
+    const tickLen = fs * 0.22;
+    for (let v = st; v < size - 1e-6; v += st) {
+      ticks += `M${f(v)},0V${f(tickLen)}M${f(v)},${size}V${f(size - tickLen)}`;
+      ticks += `M0,${f(v)}H${f(tickLen)}M${size},${f(v)}H${f(size - tickLen)}`;
+    }
+    if (ticks) {
+      groups.push(`<g id="GRID_TICKS" stroke="${c.text}" stroke-width="${pen(0.22)}" opacity="0.85"><path d="${ticks}"/></g>`);
+    }
 
     let labels = '';
     for (let v = 0; v <= size + 1e-6; v += st) {
-      labels += `<text x="${f(v)}" y="${f(size + fs * 1.4)}" text-anchor="middle">${Math.round(v)}</text>`;
-      labels += `<text x="${f(-fs * 0.5)}" y="${f(size - v + fs * 0.35)}" text-anchor="end">${Math.round(v)}</text>`;
+      labels += `<text x="${f(v)}" y="${f(size + fs * 1.4)}" text-anchor="middle">${Math.round(v)} m</text>`;
+      labels += `<text x="${f(-fs * 0.5)}" y="${f(size - v + fs * 0.35)}" text-anchor="end">${Math.round(v)} m</text>`;
     }
-    extras.push(`<g id="GRID_LABELS" fill="${c.text}" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.8)}">${labels}</g>`);
+    extras.push(`<g id="GRID_LABELS" fill="${c.text}" font-family="Inter, Roboto, sans-serif" font-size="${f(fs * 0.75)}" font-weight="500">${labels}</g>`);
   }
 
   // Pines y Marcadores Personalizados (Imagen 3)
@@ -315,21 +335,30 @@ export function mapSVG(model, o) {
     extras.push(`<g id="SCALEBAR">${bar}</g>`);
   }
   if (o.overlays.north) {
-    const nx = size - fs, ny = barY - fs * 0.2, s2 = fs * 0.75;
-    const nStyle = o.overlays.northStyle || 'swiss';
+    const nx = size - fs * 1.2, ny = barY - fs * 0.2, s2 = fs * 0.75;
+    const nStyle = o.overlays.northStyle || 'minimal';
     let northShape = '';
     if (nStyle === 'swiss') {
-      northShape = `<path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.6)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}Z" fill="${c.text}"/>`
-        + `<path d="M${f(nx)},${f(ny)}L${f(nx - s2 * 0.6)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}Z" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/>`;
-    } else if (nStyle === 'minimal') {
-      northShape = `<line x1="${f(nx)}" y1="${f(ny + s2 * 2)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.15)}"/>`
-        + `<polyline points="${f(nx - s2 * 0.4)},${f(ny + s2 * 0.6)} ${f(nx)},${f(ny)} ${f(nx + s2 * 0.4)},${f(ny + s2 * 0.6)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.15)}"/>`;
+      // Aguja suiza arquitectónica elegante: mitad llena, mitad abierta
+      northShape = `<path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.38)},${f(ny + s2 * 1.7)}L${f(nx)},${f(ny + s2 * 1.35)}Z" fill="${c.text}"/>`
+        + `<path d="M${f(nx)},${f(ny)}L${f(nx - s2 * 0.38)},${f(ny + s2 * 1.7)}L${f(nx)},${f(ny + s2 * 1.35)}Z" fill="none" stroke="${c.text}" stroke-width="${pen(0.18)}"/>`
+        + `<line x1="${f(nx - s2 * 0.5)}" y1="${f(ny + s2 * 1.35)}" x2="${f(nx + s2 * 0.5)}" y2="${f(ny + s2 * 1.35)}" stroke="${c.text}" stroke-width="${pen(0.14)}"/>`
+        + `<text x="${f(nx)}" y="${f(ny - fs * 0.3)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${f(fs * 0.75)}" font-weight="600" fill="${c.text}">N</text>`;
+    } else if (nStyle === 'circle') {
+      // Indicador circular técnico Bauhaus
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + s2 * 0.9)}" r="${f(s2 * 0.9)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`
+        + `<line x1="${f(nx)}" y1="${f(ny + s2 * 0.9)}" x2="${f(nx)}" y2="${f(ny - s2 * 0.1)}" stroke="${c.text}" stroke-width="${pen(0.2)}"/>`
+        + `<polygon points="${f(nx)},${f(ny - s2 * 0.25)} ${f(nx + s2 * 0.25)},${f(ny + s2 * 0.35)} ${f(nx - s2 * 0.25)},${f(ny + s2 * 0.35)}" fill="${c.text}"/>`
+        + `<circle cx="${f(nx)}" cy="${f(ny + s2 * 0.9)}" r="${f(s2 * 0.14)}" fill="${c.text}"/>`
+        + `<text x="${f(nx)}" y="${f(ny - fs * 0.45)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${f(fs * 0.75)}" font-weight="600" fill="${c.text}">N</text>`;
     } else {
-      northShape = `<circle cx="${f(nx)}" cy="${f(ny + s2)}" r="${f(s2)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/>`
-        + `<path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.5)},${f(ny + s2 * 1.8)}L${f(nx)},${f(ny + s2 * 1.4)}L${f(nx - s2 * 0.5)},${f(ny + s2 * 1.8)}Z" fill="${c.text}"/>`;
+      // Minimalista puro de precisión
+      northShape = `<line x1="${f(nx)}" y1="${f(ny + s2 * 1.9)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.22)}" stroke-linecap="round"/>`
+        + `<path d="M${f(nx - s2 * 0.3)},${f(ny + s2 * 0.55)}L${f(nx)},${f(ny)}L${f(nx + s2 * 0.3)},${f(ny + s2 * 0.55)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.22)}" stroke-linecap="round" stroke-linejoin="round"/>`
+        + `<circle cx="${f(nx)}" cy="${f(ny + s2 * 1.9)}" r="${f(s2 * 0.1)}" fill="${c.text}"/>`
+        + `<text x="${f(nx)}" y="${f(ny - fs * 0.35)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${f(fs * 0.8)}" font-weight="600" letter-spacing="0.04em" fill="${c.text}">N</text>`;
     }
-    extras.push(`<g id="NORTH">${northShape}`
-      + `<text x="${f(nx)}" y="${f(ny + s2 * 1.8 + fs * 1.1)}" text-anchor="middle" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.85)}" font-weight="700" fill="${c.text}">N</text></g>`);
+    extras.push(`<g id="NORTH">${northShape}</g>`);
   }
 
   const frameShape = model.shape === 'circle'

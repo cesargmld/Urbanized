@@ -816,19 +816,92 @@
               <p class="export-coords">Cálculo paramétrico en tiempo real (Turf.js) y envolvente 3D</p>
             </div>
 
+            <!-- Selector de Modo de Representación: Envolvente, Levantamiento o Modelo de Proyecto -->
+            <div class="axiom-editor-group" style="padding:0; margin-bottom:8px;">
+              <span class="axiom-sub-header">Modo de Geometría</span>
+              <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr);" id="feas-geom-mode-group">
+                <button type="button" class="axiom-subtle-btn active" data-feasmode="envelope" style="font-size:10.5px; padding:6px 4px;">Envolvente</button>
+                <button type="button" class="axiom-subtle-btn" data-feasmode="massing" style="font-size:10.5px; padding:6px 4px;">Levantamiento</button>
+                <button type="button" class="axiom-subtle-btn" data-feasmode="project" style="font-size:10.5px; padding:6px 4px;">Proyecto 3D</button>
+              </div>
+            </div>
+
+            <!-- Ubicación y Adaptación del Predio en el Sitio -->
+            <div class="axiom-editor-group" style="padding:0; margin-bottom:8px;">
+              <span class="axiom-sub-header">Ubicación del Predio</span>
+              <div style="display:flex; gap:6px; margin-bottom:6px;">
+                <button type="button" class="axiom-subtle-btn" id="btn-feas-pick-location" style="flex:1; font-size:11px; padding:6px 8px;">
+                  <span>📍 Ubicar con Clic</span>
+                </button>
+                <button type="button" class="axiom-subtle-btn" id="btn-feas-snap-building" style="flex:1; font-size:11px; padding:6px 8px;">
+                  <span>🏢 Alinear a Edificio</span>
+                </button>
+              </div>
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label">Rotación del Lote</span>
+                  <span class="axiom-val" id="feas-val-rot">0°</span>
+                </div>
+                <input type="range" min="0" max="360" step="1" value="0" id="feas-rot" class="axiom-range">
+              </div>
+              <div class="axiom-row-between" style="gap:8px; margin-top:4px;">
+                <div style="flex:1;">
+                  <span class="axiom-label" style="font-size:10px;">Frente (m)</span>
+                  <input type="number" id="feas-lot-w" value="35" min="5" max="300" class="axiom-lang-select" style="width:100%; height:26px; padding:2px 6px;">
+                </div>
+                <div style="flex:1;">
+                  <span class="axiom-label" style="font-size:10px;">Fondo (m)</span>
+                  <input type="number" id="feas-lot-l" value="45" min="5" max="300" class="axiom-lang-select" style="width:100%; height:26px; padding:2px 6px;">
+                </div>
+              </div>
+            </div>
+
+            <!-- Carga de Modelo de Proyecto (SketchUp / GLTF / OBJ) -->
+            <div class="axiom-editor-group" id="feas-project-upload-group" style="padding:0; margin-bottom:8px;">
+              <span class="axiom-sub-header">Modelo 3D del Proyecto (SKP / GLTF / OBJ)</span>
+              <input type="file" id="feas-project-file-input" accept=".glb,.gltf,.obj" style="display:none;">
+              <button type="button" class="axiom-cta-btn" id="btn-feas-browse-file" style="width:100%; font-size:11px; padding:8px 10px;">
+                <span>📥 Cargar Archivo 3D (.glb, .gltf, .obj)</span>
+              </button>
+              <div id="feas-project-controls" hidden style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
+                <p class="export-coords" id="feas-project-name" style="color:#38bdf8; font-weight:600;"></p>
+                <div class="axiom-control-row">
+                  <div class="axiom-row-between">
+                    <span class="axiom-label">Escala Proyecto</span>
+                    <span class="axiom-val" id="feas-val-proj-scale">1.0x</span>
+                  </div>
+                  <input type="range" min="0.1" max="4.0" step="0.05" value="1.0" id="feas-proj-scale" class="axiom-range">
+                </div>
+                <div class="axiom-control-row">
+                  <div class="axiom-row-between">
+                    <span class="axiom-label">Giro Y</span>
+                    <span class="axiom-val" id="feas-val-proj-rot">0°</span>
+                  </div>
+                  <input type="range" min="0" max="360" step="2" value="0" id="feas-proj-rot" class="axiom-range">
+                </div>
+                <div class="axiom-control-row">
+                  <div class="axiom-row-between">
+                    <span class="axiom-label">Ajuste Altura Z</span>
+                    <span class="axiom-val" id="feas-val-proj-z">0.0 m</span>
+                  </div>
+                  <input type="range" min="-10" max="25" step="0.5" value="0" id="feas-proj-z" class="axiom-range">
+                </div>
+              </div>
+            </div>
+
             <!-- Métricas Calculadas en Tiempo Real -->
             <div class="axiom-export-summary" style="grid-template-columns: repeat(2, 1fr);">
               <div class="axiom-sum-item">
                 <span class="axiom-sum-label">Área del Lote</span>
-                <b class="axiom-sum-val"><span id="feas-out-lot">2,500</span> m²</b>
+                <b class="axiom-sum-val"><span id="feas-out-lot">1,575</span> m²</b>
               </div>
               <div class="axiom-sum-item">
                 <span class="axiom-sum-label">Área Desplante (COS)</span>
-                <b class="axiom-sum-val" style="color:#38bdf8;"><span id="feas-out-footprint">1,750</span> m²</b>
+                <b class="axiom-sum-val" style="color:#38bdf8;"><span id="feas-out-footprint">1,102</span> m²</b>
               </div>
               <div class="axiom-sum-item">
                 <span class="axiom-sum-label">Total Construible (CUS)</span>
-                <b class="axiom-sum-val" style="color:#4ade80;"><span id="feas-out-gfa">6,000</span> m²</b>
+                <b class="axiom-sum-val" style="color:#4ade80;"><span id="feas-out-gfa">3,780</span> m²</b>
               </div>
               <div class="axiom-sum-item">
                 <span class="axiom-sum-label">Altura / Niveles</span>
@@ -1219,6 +1292,7 @@
               <select id="illu-grid-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
                 <option value="cross">Cruces (+)</option>
                 <option value="dots">Puntos</option>
+                <option value="line">Líneas</option>
               </select>
             </div>
             <div class="axiom-control-row" style="margin-top:6px;">
@@ -1402,7 +1476,6 @@
           filterList.hidden = !isHidden;
           filterTrigger.setAttribute('aria-expanded', String(isHidden));
           filterTrigger.classList.toggle('open', isHidden);
-          document.getElementById('axiom-setup-card')?.classList.toggle('expanded', isHidden);
         });
       }
 

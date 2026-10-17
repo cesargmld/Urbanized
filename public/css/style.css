@@ -1,5 +1,6 @@
 /* Urbanized — Architectural Cartography & Moodboard Design System */
 :root {
+  color-scheme: dark;
   --bg-app: #000000;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
@@ -34,6 +35,7 @@
 }
 
 html, body {
+  color-scheme: dark;
   height: 100%;
   width: 100%;
   font-family: var(--font);
@@ -53,6 +55,7 @@ button, input, select {
   font-size: inherit;
   color: inherit;
   letter-spacing: inherit;
+  color-scheme: dark;
 }
 button {
   background: none;
@@ -243,20 +246,32 @@ button {
   background: #22c55e;
   box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
 }
-.axiom-lang-select {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  color: #94a3b8;
+.axiom-lang-select, select {
+  color-scheme: dark !important;
+  background-color: #12141a !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #f4f4f5 !important;
   border-radius: 8px;
   padding: 4px 8px;
   font-size: 11px;
-  font-weight: 600;
+  font-weight: 500;
   outline: none;
   cursor: pointer;
 }
-.axiom-lang-select:hover {
-  background: rgba(255, 255, 255, 0.08);
-  color: #ffffff;
+.axiom-lang-select:hover, select:hover {
+  background-color: #1a1d26 !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+}
+.axiom-lang-select option, select option {
+  color-scheme: dark !important;
+  background-color: #181a22 !important;
+  color: #f4f4f5 !important;
+  padding: 6px 10px !important;
+}
+.axiom-lang-select option:checked, select option:checked {
+  background-color: #272c38 !important;
+  color: #38bdf8 !important;
 }
 
 /* 2. MAIN APPLICATION WORKSPACE */
@@ -2475,9 +2490,6 @@ input[type="range"]::-webkit-slider-thumb {
   background: rgba(255, 255, 255, 0.16);
   border-radius: 4px;
 }
-.axiom-setup-card.expanded {
-  width: 470px;
-}
 
 /* ========================================================
    DISMISSABLE MAP NOTICE POPUP (Liquid Glass)
@@ -3938,9 +3950,6 @@ input[type="range"]::-webkit-slider-thumb,
     top: auto !important;
     max-height: 75vh !important;
     padding: 16px 14px !important;
-  }
-  .axiom-setup-card.expanded {
-    width: calc(100% - 24px) !important;
   }
   .axiom-params-drawer {
     max-height: 280px !important;

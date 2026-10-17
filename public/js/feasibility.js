@@ -14,6 +14,17 @@ class FeasibilityStore {
       front_setback_m: 3.0, // Remetimiento frontal (metros)
       side_setback_m: 1.5,  // Remetimiento perimetral/lateral (metros)
     };
+    this.siteOrigin = { x: 0, y: 0, z: 0 };
+    this.siteRotation = 0;       // 0 to 360 deg
+    this.lotWidth = 35;          // metros
+    this.lotLength = 45;         // metros
+    this.isPlacingLot = false;
+    this.geometryMode = 'envelope'; // 'envelope' | 'massing' | 'project'
+    this.customSnappedRing = null;
+    this.projectModel = null;
+    this.projectScale = 1.0;
+    this.projectRotY = 0;
+    this.projectOffsetZ = 0;
     this.metrics = {
       lotAreaM2: 0,
       footprintAreaM2: 0,
@@ -48,6 +59,80 @@ class FeasibilityStore {
     this.notify();
   }
 
+  setSiteOrigin(x, y, z) {
+    this.siteOrigin = { x: Number(x) || 0, y: Number(y) || 0, z: Number(z) || 0 };
+    this.customSnappedRing = null;
+    this.notify();
+  }
+
+  setSiteRotation(deg) {
+    this.siteRotation = Number(deg) || 0;
+    this.notify();
+  }
+
+  setLotDimensions(w, l) {
+    if (w) this.lotWidth = Math.max(5, Math.min(500, Number(w)));
+    if (l) this.lotLength = Math.max(5, Math.min(500, Number(l)));
+    this.customSnappedRing = null;
+    this.notify();
+  }
+
+  setGeometryMode(mode) {
+    if (['envelope', 'massing', 'project'].includes(mode)) {
+      this.geometryMode = mode;
+      this.notify();
+    }
+  }
+
+  setPlacingMode(bool) {
+    this.isPlacingLot = Boolean(bool);
+    this.notify();
+  }
+
+  setProjectAdjustments({ scale, rotY, offsetZ } = {}) {
+    if (scale !== undefined) this.projectScale = Number(scale);
+    if (rotY !== undefined) this.projectRotY = Number(rotY);
+    if (offsetZ !== undefined) this.projectOffsetZ = Number(offsetZ);
+    this.notify();
+  }
+
+  setProjectModel(obj, filename) {
+    this.projectModel = { object: obj, filename };
+    this.geometryMode = 'project';
+    this.notify();
+  }
+
+  snapToNearestBuilding(model, targetX = this.siteOrigin.x, targetY = this.siteOrigin.y) {
+    if (!model?.buildings || model.buildings.length === 0) return null;
+    let closestB = null;
+    let minDistSq = Infinity;
+    for (const b of model.buildings) {
+      const ring = b.rings?.[0];
+      if (!ring || ring.length < 3) continue;
+      let cx = 0, cy = 0;
+      for (const [bx, by] of ring) { cx += bx; cy += by; }
+      cx /= ring.length;
+      cy /= ring.length;
+      const distSq = (cx - targetX) ** 2 + (cy - targetY) ** 2;
+      if (distSq < minDistSq) {
+        minDistSq = distSq;
+        closestB = b;
+      }
+    }
+    if (closestB && closestB.rings?.[0]) {
+      const ring = closestB.rings[0];
+      let cx = 0, cy = 0;
+      for (const [bx, by] of ring) { cx += bx; cy += by; }
+      cx /= ring.length;
+      cy /= ring.length;
+      this.siteOrigin = { x: cx, y: cy, z: model?.grid?.heightAt ? model.grid.heightAt(cx, cy) : 0 };
+      this.customSnappedRing = ring.map(([bx, by]) => [bx, by, model?.grid?.heightAt ? model.grid.heightAt(bx, by) : 0]);
+      this.notify();
+      return closestB;
+    }
+    return null;
+  }
+
   /**
    * Convierte coordenadas locales en metros [x, y] a [lon, lat] WGS84 para Turf.js
    */
@@ -70,21 +155,38 @@ class FeasibilityStore {
 
   /**
    * Obtiene el polígono del lote en metros locales [x, y, z].
-   * Si el usuario trazó un polígono de predio (`model.site`), lo utiliza;
-   * de lo contrario, toma un predio objetivo central representativo para cálculo inmediato.
    */
   resolveTargetLotRing(model) {
+    if (this.customSnappedRing && this.customSnappedRing.length >= 3) {
+      return this.customSnappedRing.map(([x, y]) => {
+        const z = model?.grid?.heightAt ? model.grid.heightAt(x, y) : 0;
+        return [x, y, z];
+      });
+    }
     if (model?.site && model.site.length >= 3) {
       return model.site.map((p) => [Number(p[0]), Number(p[1]), Number(p[2] || 0)]);
     }
-    const z0 = model?.grid?.heightAt ? model.grid.heightAt(0, 0) : 0;
-    const halfLot = Math.min(25, (model?.size || 500) * 0.045); // Predio base 50x50m si no hay trazo manual
-    return [
-      [-halfLot, -halfLot, z0],
-      [halfLot, -halfLot, z0],
-      [halfLot, halfLot, z0],
-      [-halfLot, halfLot, z0],
+
+    const { x: ox, y: oy } = this.siteOrigin;
+    const rad = (this.siteRotation * Math.PI) / 180;
+    const cos = Math.cos(rad);
+    const sin = Math.sin(rad);
+    const hw = this.lotWidth / 2;
+    const hl = this.lotLength / 2;
+
+    const corners = [
+      [-hw, -hl],
+      [hw, -hl],
+      [hw, hl],
+      [-hw, hl],
     ];
+
+    return corners.map(([lx, ly]) => {
+      const rx = ox + lx * cos - ly * sin;
+      const ry = oy + lx * sin + ly * cos;
+      const rz = model?.grid?.heightAt ? model.grid.heightAt(rx, ry) : 0;
+      return [rx, ry, rz];
+    });
   }
 
   /**

@@ -668,23 +668,52 @@ export function createIllustrator(canvas, model) {
       const step = 100;
       const span = model.size || 1000;
       const half = span / 2;
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.08)';
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.22)';
-      ctx.lineWidth = 0.5;
+      const isDark = st.bg === '#000000' || st.bg === '#15171c';
+      const gridStroke = isDark ? 'rgba(255, 255, 255, 0.32)' : 'rgba(0, 0, 0, 0.28)';
+      const gridFill = isDark ? 'rgba(255, 255, 255, 0.55)' : 'rgba(0, 0, 0, 0.45)';
+      ctx.strokeStyle = gridStroke;
+      ctx.fillStyle = gridFill;
+      ctx.lineWidth = 1.0;
 
-      for (let gx = -half; gx <= half; gx += step) {
+      const style = state.overlays.gridStyle || 'cross';
+
+      if (style === 'line') {
+        // Líneas continuas en el plano de suelo axonométrico
+        for (let gx = -half; gx <= half; gx += step) {
+          const pStart = cam.project([gx, -half, 0]);
+          const pEnd = cam.project([gx, half, 0]);
+          if (pStart[2] > 0 && pEnd[2] > 0) {
+            ctx.beginPath();
+            ctx.moveTo(pStart[0], pStart[1]);
+            ctx.lineTo(pEnd[0], pEnd[1]);
+            ctx.stroke();
+          }
+        }
         for (let gy = -half; gy <= half; gy += step) {
-          const pt = cam.project([gx, gy, 0]);
-          if (pt[2] > 0) {
-            if (state.overlays.gridStyle === 'cross') {
-              ctx.beginPath();
-              ctx.moveTo(pt[0] - 4, pt[1]); ctx.lineTo(pt[0] + 4, pt[1]);
-              ctx.moveTo(pt[0], pt[1] - 4); ctx.lineTo(pt[0], pt[1] + 4);
-              ctx.stroke();
-            } else {
-              ctx.beginPath();
-              ctx.arc(pt[0], pt[1], 1.2, 0, Math.PI * 2);
-              ctx.fill();
+          const pStart = cam.project([-half, gy, 0]);
+          const pEnd = cam.project([half, gy, 0]);
+          if (pStart[2] > 0 && pEnd[2] > 0) {
+            ctx.beginPath();
+            ctx.moveTo(pStart[0], pStart[1]);
+            ctx.lineTo(pEnd[0], pEnd[1]);
+            ctx.stroke();
+          }
+        }
+      } else {
+        for (let gx = -half; gx <= half; gx += step) {
+          for (let gy = -half; gy <= half; gy += step) {
+            const pt = cam.project([gx, gy, 0]);
+            if (pt[2] > 0) {
+              if (style === 'cross') {
+                ctx.beginPath();
+                ctx.moveTo(pt[0] - 5, pt[1]); ctx.lineTo(pt[0] + 5, pt[1]);
+                ctx.moveTo(pt[0], pt[1] - 5); ctx.lineTo(pt[0], pt[1] + 5);
+                ctx.stroke();
+              } else {
+                ctx.beginPath();
+                ctx.arc(pt[0], pt[1], 1.8, 0, Math.PI * 2);
+                ctx.fill();
+              }
             }
           }
         }
@@ -692,7 +721,7 @@ export function createIllustrator(canvas, model) {
       ctx.restore();
     }
 
-    // 2. Norte Arquitectónico (Gira dinámicamente con la rotación de la cámara)
+    // 2. Norte Arquitectónico Minimalista
     if (state.overlays.north) {
       ctx.save();
       const p0 = cam.project([0, 0, 0]);
@@ -705,42 +734,52 @@ export function createIllustrator(canvas, model) {
       ctx.translate(nx, ny);
       ctx.rotate(northAngle);
 
-      const style = state.overlays.northStyle || 'swiss';
+      const style = state.overlays.northStyle || 'minimal';
       if (style === 'swiss') {
-        // Flecha suiza moderna: mitad negra, mitad blanca
+        // Aguja Suiza Arquitectónica (Dual tone estilizado)
         ctx.beginPath();
-        ctx.moveTo(0, -22); ctx.lineTo(7, 10); ctx.lineTo(0, 5); ctx.closePath();
+        ctx.moveTo(0, -22); ctx.lineTo(5, 8); ctx.lineTo(0, 4); ctx.closePath();
         ctx.fillStyle = txtColor; ctx.fill();
 
         ctx.beginPath();
-        ctx.moveTo(0, -22); ctx.lineTo(-7, 10); ctx.lineTo(0, 5); ctx.closePath();
+        ctx.moveTo(0, -22); ctx.lineTo(-5, 8); ctx.lineTo(0, 4); ctx.closePath();
         ctx.fillStyle = '#ffffff'; ctx.fill();
         ctx.strokeStyle = txtColor; ctx.lineWidth = 1; ctx.stroke();
-      } else if (style === 'minimal') {
-        // Línea fina minimalista
+
         ctx.beginPath();
-        ctx.moveTo(0, -24); ctx.lineTo(0, 12);
-        ctx.moveTo(-5, -16); ctx.lineTo(0, -24); ctx.lineTo(5, -16);
-        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.4; ctx.stroke();
+        ctx.moveTo(-6, 4); ctx.lineTo(6, 4);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1; ctx.stroke();
+      } else if (style === 'circle') {
+        // Círculo técnico Bauhaus
         ctx.beginPath();
-        ctx.arc(0, 12, 2.5, 0, Math.PI * 2);
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 0.9; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(0, -14);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.2; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, -18); ctx.lineTo(4, -8); ctx.lineTo(-4, -8); ctx.closePath();
+        ctx.fillStyle = txtColor; ctx.fill();
+        ctx.beginPath();
+        ctx.arc(0, 0, 2, 0, Math.PI * 2);
         ctx.fillStyle = txtColor; ctx.fill();
       } else {
-        // Círculo técnico de coordenadas
+        // Minimalista puro de precisión (Hairline needle)
         ctx.beginPath();
-        ctx.arc(0, 0, 16, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(0,0,0,0.18)'; ctx.lineWidth = 1; ctx.stroke();
+        ctx.moveTo(0, -24); ctx.lineTo(0, 14);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.4; ctx.stroke();
+
         ctx.beginPath();
-        ctx.moveTo(0, -16); ctx.lineTo(0, 16);
-        ctx.moveTo(-16, 0); ctx.lineTo(16, 0);
-        ctx.stroke();
+        ctx.moveTo(-4, -16); ctx.lineTo(0, -24); ctx.lineTo(4, -16);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.4; ctx.stroke();
+
         ctx.beginPath();
-        ctx.moveTo(0, -16); ctx.lineTo(5, -4); ctx.lineTo(-5, -4); ctx.closePath();
+        ctx.arc(0, 14, 2, 0, Math.PI * 2);
         ctx.fillStyle = txtColor; ctx.fill();
       }
 
       ctx.rotate(-northAngle);
-      ctx.font = '700 11px Inter, sans-serif';
+      ctx.font = '600 11px Inter, sans-serif';
       ctx.fillStyle = txtColor;
       ctx.textAlign = 'center';
       ctx.fillText('N', 0, 24);

@@ -1,6 +1,8 @@
 // 3D-превью модели (three.js).
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OBJLoader } from 'three/addons/loaders/OBJLoader.js';
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
 import { triangulate, UNIT_TREE } from './data.js?v=4.1';
 import { pinStore } from './pins.js?v=1.0';
@@ -49,9 +51,13 @@ function init(container) {
   const group = new THREE.Group();
   scene.add(group);
 
-  // Click handler for interactive 3D pin dropping
+  // Click handler for interactive 3D pin dropping and lot location placement
   renderer.domElement.addEventListener('pointerdown', (e) => {
-    if (!pinStore.isPlacing() || !ctx || !ctx.lastModel) return;
+    if (!ctx || !ctx.lastModel) return;
+    const isPlacingPin = pinStore.isPlacing();
+    const isPlacingLot = feasibilityStore.isPlacingLot;
+    if (!isPlacingPin && !isPlacingLot) return;
+
     const rect = renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -66,16 +72,26 @@ function init(container) {
     if (hits.length > 0) {
       const hit = hits[0].point;
       const model = ctx.lastModel;
-      const lat = model.center.lat + (hit.y / 111319.49);
-      const lon = model.center.lon + (hit.x / (111319.49 * Math.cos((model.center.lat * Math.PI) / 180)));
-      pinStore.addPin({
-        x: hit.x,
-        y: hit.y,
-        z: hit.z,
-        lat,
-        lon
-      });
-      pinStore.setPlacingMode(false);
+
+      if (isPlacingLot) {
+        feasibilityStore.setSiteOrigin(hit.x, hit.y, hit.z);
+        feasibilityStore.setPlacingMode(false);
+        renderFeasibilityVolume();
+        return;
+      }
+
+      if (isPlacingPin) {
+        const lat = model.center.lat + (hit.y / 111319.49);
+        const lon = model.center.lon + (hit.x / (111319.49 * Math.cos((model.center.lat * Math.PI) / 180)));
+        pinStore.addPin({
+          x: hit.x,
+          y: hit.y,
+          z: hit.z,
+          lat,
+          lon
+        });
+        pinStore.setPlacingMode(false);
+      }
     }
   });
 
@@ -989,6 +1005,7 @@ export function renderFeasibilityVolume() {
   if (!feasibilityStore.params.enabled) return;
   const metrics = feasibilityStore.compute(ctx.lastModel);
   const { lotRingLocal, footprintRingLocal, maxHeightM, effectiveLevels } = metrics;
+  const mode = feasibilityStore.geometryMode || 'envelope';
 
   if (!lotRingLocal || lotRingLocal.length < 3) return;
   const baseZ = (lotRingLocal[0]?.[2] ?? 0) + 0.5;
@@ -1004,7 +1021,6 @@ export function renderFeasibilityVolume() {
 
   if (!footprintRingLocal || footprintRingLocal.length < 3 || maxHeightM <= 0.1) return;
 
-  // 2. Caja / Prisma 3D translúcida normativa (Estilo Finch 3D / Autodesk Forma)
   const shape = new THREE.Shape();
   footprintRingLocal.forEach(([x, y], idx) => {
     if (idx === 0) shape.moveTo(x, y);
@@ -1012,46 +1028,161 @@ export function renderFeasibilityVolume() {
   });
   shape.closePath();
 
-  const extrudeGeo = new THREE.ExtrudeGeometry(shape, {
-    depth: maxHeightM,
-    bevelEnabled: false,
-  });
-  extrudeGeo.translate(0, 0, baseZ);
+  // 2. MODO 1: ENVOLVENTE NORMATIVA (Caja translúcida CUS/COS)
+  if (mode === 'envelope') {
+    const extrudeGeo = new THREE.ExtrudeGeometry(shape, { depth: maxHeightM, bevelEnabled: false });
+    extrudeGeo.translate(0, 0, baseZ);
 
-  const boxMat = new THREE.MeshStandardMaterial({
-    color: 0x38bdf8,
-    emissive: 0x0284c7,
-    emissiveIntensity: 0.22,
-    roughness: 0.25,
-    metalness: 0.1,
-    transparent: true,
-    opacity: 0.42,
-    side: THREE.DoubleSide,
-    depthWrite: false,
-  });
-  const volumeMesh = new THREE.Mesh(extrudeGeo, boxMat);
-  volumeMesh.renderOrder = 1000;
-  fGroup.add(volumeMesh);
+    const boxMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      emissive: 0x0284c7,
+      emissiveIntensity: 0.22,
+      roughness: 0.25,
+      metalness: 0.1,
+      transparent: true,
+      opacity: 0.42,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+    });
+    const volumeMesh = new THREE.Mesh(extrudeGeo, boxMat);
+    volumeMesh.renderOrder = 1000;
+    fGroup.add(volumeMesh);
 
-  // Aristas del volumen normativo
-  const edgesGeo = new THREE.EdgesGeometry(extrudeGeo, 20);
-  const edgesMat = new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.9 });
-  const edgesLine = new THREE.LineSegments(edgesGeo, edgesMat);
-  edgesLine.renderOrder = 1002;
-  fGroup.add(edgesLine);
+    // Aristas del volumen normativo
+    const edgesGeo = new THREE.EdgesGeometry(extrudeGeo, 20);
+    const edgesMat = new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.9 });
+    const edgesLine = new THREE.LineSegments(edgesGeo, edgesMat);
+    edgesLine.renderOrder = 1002;
+    fGroup.add(edgesLine);
 
-  // 3. Líneas de entrepiso (niveles) sobre el volumen translúcido
-  const wholeLevels = Math.floor(effectiveLevels);
-  for (let lvl = 1; lvl <= wholeLevels; lvl++) {
-    const zLvl = baseZ + lvl * LEVEL_HEIGHT_M;
-    if (zLvl >= baseZ + maxHeightM - 0.1) break;
-    const ringPts = footprintRingLocal.map(([x, y]) => new THREE.Vector3(x, y, zLvl));
-    ringPts.push(ringPts[0].clone());
-    const flGeo = new THREE.BufferGeometry().setFromPoints(ringPts);
-    const flMat = new THREE.LineBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.55 });
-    const flLine = new THREE.Line(flGeo, flMat);
-    flLine.renderOrder = 1002;
-    fGroup.add(flLine);
+    // Líneas de entrepiso (niveles) sobre el volumen translúcido
+    const wholeLevels = Math.floor(effectiveLevels);
+    for (let lvl = 1; lvl <= wholeLevels; lvl++) {
+      const zLvl = baseZ + lvl * LEVEL_HEIGHT_M;
+      if (zLvl >= baseZ + maxHeightM - 0.1) break;
+      const ringPts = footprintRingLocal.map(([x, y]) => new THREE.Vector3(x, y, zLvl));
+      ringPts.push(ringPts[0].clone());
+      const flGeo = new THREE.BufferGeometry().setFromPoints(ringPts);
+      const flMat = new THREE.LineBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.55 });
+      const flLine = new THREE.Line(flGeo, flMat);
+      flLine.renderOrder = 1002;
+      fGroup.add(flLine);
+    }
+  }
+
+  // 3. MODO 2: LEVANTAMIENTO PARAMÉTRICO (Masa arquitectónica sólida tipo maqueta)
+  else if (mode === 'massing') {
+    const massingGeo = new THREE.ExtrudeGeometry(shape, { depth: maxHeightM, bevelEnabled: false });
+    massingGeo.translate(0, 0, baseZ);
+
+    const massMat = new THREE.MeshStandardMaterial({
+      color: 0xf8fafc,
+      roughness: 0.35,
+      metalness: 0.05,
+      side: THREE.DoubleSide,
+    });
+    const massMesh = new THREE.Mesh(massingGeo, massMat);
+    massMesh.castShadow = true;
+    massMesh.receiveShadow = true;
+    fGroup.add(massMesh);
+
+    // Siluetas y aristas arquitectónicas de masa
+    const massEdges = new THREE.EdgesGeometry(massingGeo, 15);
+    const massEdgesMat = new THREE.LineBasicMaterial({ color: 0x1e293b, linewidth: 1.5 });
+    const massLine = new THREE.LineSegments(massEdges, massEdgesMat);
+    fGroup.add(massLine);
+
+    // Franjas de losa / entrepisos arquitectónicos
+    const wholeLevels = Math.floor(effectiveLevels);
+    for (let lvl = 1; lvl <= wholeLevels; lvl++) {
+      const zLvl = baseZ + lvl * LEVEL_HEIGHT_M;
+      if (zLvl >= baseZ + maxHeightM - 0.1) break;
+      const ringPts = footprintRingLocal.map(([x, y]) => new THREE.Vector3(x, y, zLvl));
+      ringPts.push(ringPts[0].clone());
+      const flGeo = new THREE.BufferGeometry().setFromPoints(ringPts);
+      const flMat = new THREE.LineBasicMaterial({ color: 0x0284c7, opacity: 0.85 });
+      fGroup.add(new THREE.Line(flGeo, flMat));
+    }
+  }
+
+  // 4. MODO 3: PROYECTO 3D IMPORTADO (Modelo exportado de SketchUp / OBJ / GLTF)
+  else if (mode === 'project') {
+    if (feasibilityStore.projectModel?.object) {
+      const pObj = feasibilityStore.projectModel.object.clone();
+      const s = feasibilityStore.projectScale || 1.0;
+      pObj.scale.set(s, s, s);
+      const totalRot = (feasibilityStore.siteRotation + (feasibilityStore.projectRotY || 0)) * (Math.PI / 180);
+      pObj.rotation.z = totalRot;
+      const pZ = baseZ + (feasibilityStore.projectOffsetZ || 0);
+      pObj.position.set(feasibilityStore.siteOrigin.x, feasibilityStore.siteOrigin.y, pZ);
+      fGroup.add(pObj);
+    }
+
+    // Dibujar wireframe de envolvente como referencia normativa
+    const ghostExtrude = new THREE.ExtrudeGeometry(shape, { depth: maxHeightM, bevelEnabled: false });
+    ghostExtrude.translate(0, 0, baseZ);
+    const ghostEdges = new THREE.EdgesGeometry(ghostExtrude, 20);
+    const ghostLine = new THREE.LineSegments(ghostEdges, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.45 }));
+    fGroup.add(ghostLine);
+  }
+}
+
+/**
+ * Carga un archivo 3D de proyecto (.glb, .gltf, .obj) exportado desde SketchUp, Revit, Rhino, etc.
+ */
+export async function loadProject3DFile(file) {
+  if (!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  const reader = new FileReader();
+
+  if (ext === 'glb' || ext === 'gltf') {
+    return new Promise((resolve, reject) => {
+      reader.onload = async (e) => {
+        try {
+          const loader = new GLTFLoader();
+          loader.parse(e.target.result, '', (gltf) => {
+            const root = gltf.scene || gltf.scenes[0];
+            const bbox = new THREE.Box3().setFromObject(root);
+            const center = bbox.getCenter(new THREE.Vector3());
+            root.position.set(-center.x, -center.y, -bbox.min.z);
+            const wrapper = new THREE.Group();
+            wrapper.add(root);
+            feasibilityStore.setProjectModel(wrapper, file.name);
+            resolve(wrapper);
+          }, reject);
+        } catch (err) { reject(err); }
+      };
+      reader.readAsArrayBuffer(file);
+    });
+  } else if (ext === 'obj') {
+    return new Promise((resolve, reject) => {
+      reader.onload = async (e) => {
+        try {
+          const loader = new OBJLoader();
+          const obj = loader.parse(e.target.result);
+          obj.traverse((child) => {
+            if (child.isMesh) {
+              child.material = new THREE.MeshStandardMaterial({
+                color: 0xf1f5f9,
+                roughness: 0.35,
+                metalness: 0.05,
+                side: THREE.DoubleSide,
+              });
+            }
+          });
+          const bbox = new THREE.Box3().setFromObject(obj);
+          const center = bbox.getCenter(new THREE.Vector3());
+          obj.position.set(-center.x, -center.y, -bbox.min.z);
+          const wrapper = new THREE.Group();
+          wrapper.add(obj);
+          feasibilityStore.setProjectModel(wrapper, file.name);
+          resolve(wrapper);
+        } catch (err) { reject(err); }
+      };
+      reader.readAsText(file);
+    });
+  } else {
+    throw new Error('Formato no compatible. Por favor sube un archivo .glb, .gltf o .obj.');
   }
 }
 

@@ -1,6 +1,6 @@
 import { buildModel, redetectTrees } from './data.js?v=5.7';
 import { FORMATS, stlScale } from './exporters.js?v=5.7';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, studioState } from './preview.js?v=5.7';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=5.7';
 import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
 import { feasibilityStore } from './feasibility.js?v=1.0';
 import { MAP_GRID_STEPS } from './mapplan.js?v=5.7';
@@ -1680,6 +1680,47 @@ function syncFeasibilityDrawer() {
   const vFrt = $('#feas-val-front'); if (vFrt) vFrt.textContent = `${Number(p.front_setback_m).toFixed(1)} m`;
   const vSid = $('#feas-val-side'); if (vSid) vSid.textContent = `${Number(p.side_setback_m).toFixed(1)} m`;
 
+  // Modo de Geometría
+  document.querySelectorAll('[data-feasmode]').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.feasmode === feasibilityStore.geometryMode);
+  });
+
+  // Rotación y dimensiones del lote
+  const sRot = $('#feas-rot'); if (sRot) sRot.value = feasibilityStore.siteRotation;
+  const vRot = $('#feas-val-rot'); if (vRot) vRot.textContent = `${feasibilityStore.siteRotation}°`;
+  const inW = $('#feas-lot-w'); if (inW) inW.value = feasibilityStore.lotWidth;
+  const inL = $('#feas-lot-l'); if (inL) inL.value = feasibilityStore.lotLength;
+
+  // Botón de ubicar
+  const btnPick = $('#btn-feas-pick-location');
+  if (btnPick) {
+    if (feasibilityStore.isPlacingLot) {
+      btnPick.style.background = '#0284c7';
+      btnPick.style.color = '#ffffff';
+      btnPick.innerHTML = '<span>📍 Clic en el terreno...</span>';
+    } else {
+      btnPick.style.background = '';
+      btnPick.style.color = '';
+      btnPick.innerHTML = '<span>📍 Ubicar con Clic</span>';
+    }
+  }
+
+  // Controles de proyecto 3D importado
+  const projControls = $('#feas-project-controls');
+  const projName = $('#feas-project-name');
+  if (feasibilityStore.projectModel) {
+    if (projControls) projControls.hidden = false;
+    if (projName) projName.textContent = `Archivo: ${feasibilityStore.projectModel.filename}`;
+    const sScale = $('#feas-proj-scale'); if (sScale) sScale.value = feasibilityStore.projectScale;
+    const vScale = $('#feas-val-proj-scale'); if (vScale) vScale.textContent = `${feasibilityStore.projectScale.toFixed(2)}x`;
+    const sPRot = $('#feas-proj-rot'); if (sPRot) sPRot.value = feasibilityStore.projectRotY;
+    const vPRot = $('#feas-val-proj-rot'); if (vPRot) vPRot.textContent = `${feasibilityStore.projectRotY}°`;
+    const sPZ = $('#feas-proj-z'); if (sPZ) sPZ.value = feasibilityStore.projectOffsetZ;
+    const vPZ = $('#feas-val-proj-z'); if (vPZ) vPZ.textContent = `${feasibilityStore.projectOffsetZ.toFixed(1)} m`;
+  } else {
+    if (projControls) projControls.hidden = true;
+  }
+
   const oLot = $('#feas-out-lot'); if (oLot) oLot.textContent = m.lotAreaM2.toLocaleString(loc);
   const oFp = $('#feas-out-footprint'); if (oFp) oFp.textContent = m.footprintAreaM2.toLocaleString(loc);
   const oGfa = $('#feas-out-gfa'); if (oGfa) oGfa.textContent = m.maxBuildableM2.toLocaleString(loc);
@@ -1708,6 +1749,68 @@ $('#feas-front')?.addEventListener('input', (e) => {
 });
 $('#feas-side')?.addEventListener('input', (e) => {
   feasibilityStore.setParams({ side_setback_m: Number(e.target.value) });
+});
+
+// Selector de modo de geometría (envolvente, levantamiento, proyecto)
+document.querySelectorAll('[data-feasmode]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    feasibilityStore.setGeometryMode(btn.dataset.feasmode);
+    renderFeasibilityVolume();
+  });
+});
+
+// Ubicación y alineación
+$('#btn-feas-pick-location')?.addEventListener('click', () => {
+  feasibilityStore.setPlacingMode(!feasibilityStore.isPlacingLot);
+});
+$('#btn-feas-snap-building')?.addEventListener('click', () => {
+  const b = feasibilityStore.snapToNearestBuilding(model);
+  if (b) {
+    renderFeasibilityVolume();
+  } else {
+    alert('No se encontró un edificio cercano al origen del lote.');
+  }
+});
+$('#feas-rot')?.addEventListener('input', (e) => {
+  feasibilityStore.setSiteRotation(Number(e.target.value));
+  renderFeasibilityVolume();
+});
+$('#feas-lot-w')?.addEventListener('change', (e) => {
+  feasibilityStore.setLotDimensions(e.target.value, $('#feas-lot-l')?.value);
+  renderFeasibilityVolume();
+});
+$('#feas-lot-l')?.addEventListener('change', (e) => {
+  feasibilityStore.setLotDimensions($('#feas-lot-w')?.value, e.target.value);
+  renderFeasibilityVolume();
+});
+
+// Carga de archivo 3D de proyecto (.glb, .gltf, .obj)
+$('#btn-feas-browse-file')?.addEventListener('click', () => {
+  $('#feas-project-file-input')?.click();
+});
+$('#feas-project-file-input')?.addEventListener('change', async (e) => {
+  const file = e.target.files?.[0];
+  if (file) {
+    try {
+      await loadProject3DFile(file);
+      renderFeasibilityVolume();
+      syncFeasibilityDrawer();
+    } catch (err) {
+      alert(`Error al cargar modelo 3D: ${err.message}`);
+    }
+  }
+});
+$('#feas-proj-scale')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ scale: Number(e.target.value) });
+  renderFeasibilityVolume();
+});
+$('#feas-proj-rot')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ rotY: Number(e.target.value) });
+  renderFeasibilityVolume();
+});
+$('#feas-proj-z')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ offsetZ: Number(e.target.value) });
+  renderFeasibilityVolume();
 });
 
 $('#btn-parse-zoning')?.addEventListener('click', async () => {
@@ -2194,7 +2297,10 @@ $('#map-grid-style')?.addEventListener('change', (e) => {
 });
 $('#map-grid-step')?.addEventListener('change', (e) => {
   if (mapOpts) {
-    mapOpts.gridStep = e.target.value === 'auto' ? 'auto' : Number(e.target.value);
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    const val = e.target.value === 'auto' ? 'auto' : Number(e.target.value);
+    mapOpts.gridStep = val;
+    mapOpts.overlays.gridStep = val;
     renderMap();
   }
 });
