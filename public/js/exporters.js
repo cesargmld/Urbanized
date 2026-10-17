@@ -2,6 +2,7 @@
 // Все координаты — метры, начало в центре участка, Z — вверх, ноль — самая низкая точка рельефа.
 import { LAYERS, triangulate, UNIT_TREE, treeBody, mergeBodies, BUILDING_CLASSES } from './data.js?v=4.1';
 import { imageryBlob } from './satellite.js?v=4.1';
+import { buildProfessionalDXF } from './dxfWriterPro.js?v=1.0';
 
 const TOOL = 'Urbanized';
 const f = (v) => (Math.round(v * 1000) / 1000).toString();
@@ -47,75 +48,10 @@ function linesOf(model) {
   return out;
 }
 
-/* ---------------- DXF (AutoCAD R12, читается всеми версиями AutoCAD) ---------------- */
+/* ---------------- DXF Profesional (AC1015 / LWPOLYLINE cerradas + Capas Arquitectónicas) ---------------- */
 
 export function toDXF(model) {
-  const o = [];
-  const w = (code, value) => o.push(code, value);
-  const layers = Object.keys(STYLE);
-  const h = model.frame?.half ?? ((model.size || 1000) / 2);
-
-  w(0, 'SECTION'); w(2, 'HEADER');
-  w(9, '$ACADVER'); w(1, 'AC1009');
-  w(9, '$INSBASE'); w(10, 0); w(20, 0); w(30, 0);
-  w(9, '$EXTMIN'); w(10, f(-h)); w(20, f(-h)); w(30, 0);
-  w(9, '$EXTMAX'); w(10, f(h)); w(20, f(h)); w(30, f(model.grid.maxH + 200));
-  w(0, 'ENDSEC');
-
-  w(0, 'SECTION'); w(2, 'TABLES');
-  w(0, 'TABLE'); w(2, 'LTYPE'); w(70, 1);
-  w(0, 'LTYPE'); w(2, 'CONTINUOUS'); w(70, 0); w(3, 'Solid line'); w(72, 65); w(73, 0); w(40, 0);
-  w(0, 'ENDTAB');
-  w(0, 'TABLE'); w(2, 'LAYER'); w(70, layers.length + 1);
-  w(0, 'LAYER'); w(2, '0'); w(70, 0); w(62, 7); w(6, 'CONTINUOUS');
-  for (const l of layers) { w(0, 'LAYER'); w(2, l); w(70, 0); w(62, STYLE[l].aci); w(6, 'CONTINUOUS'); }
-  w(0, 'ENDTAB');
-  w(0, 'ENDSEC');
-
-  // Дерево — блок TREE (крона радиусом 1, высота 1), вставки масштабируются по дереву.
-  const blockAt = o.length;
-  w(0, 'SECTION'); w(2, 'ENTITIES');
-  // Полигональная сетка (POLYFACE): одно тело — один объект, диагонали скрыты.
-  const polyface = (layer, { verts, faces }) => {
-    w(0, 'POLYLINE'); w(8, layer); w(66, 1); w(10, 0); w(20, 0); w(30, 0); w(70, 64); w(71, verts.length); w(72, faces.length);
-    for (const [x, y, z] of verts) { w(0, 'VERTEX'); w(8, layer); w(10, f(x)); w(20, f(y)); w(30, f(z)); w(70, 192); }
-    for (const { v, vis } of faces) {
-      w(0, 'VERTEX'); w(8, layer); w(10, 0); w(20, 0); w(30, 0); w(70, 128);
-      v.forEach((idx, k) => w(71 + k, vis[k] ? idx + 1 : -(idx + 1)));
-    }
-    w(0, 'SEQEND'); w(8, layer);
-  };
-  const polyline = (layer, pts, closed) => {
-    w(0, 'POLYLINE'); w(8, layer); w(66, 1); w(10, 0); w(20, 0); w(30, 0); w(70, closed ? 9 : 8);
-    for (const [x, y, z] of pts) { w(0, 'VERTEX'); w(8, layer); w(10, f(x)); w(20, f(y)); w(30, f(z)); w(70, 32); }
-    w(0, 'SEQEND'); w(8, layer);
-  };
-
-  if (model.terrain) polyface(LAYERS.TERRAIN, model.terrain);
-  for (const w of model.water ?? []) polyface(LAYERS.WATER, w);
-  for (const br of model.bridges ?? []) polyface(LAYERS.BRIDGES, br);
-  for (const rm of model.roadMeshes ?? []) polyface(rm.layer, rm);
-  for (const b of model.buildings) polyface(buildingLayer(b.cls), b);
-  for (const t of model.trees) {
-    w(0, 'INSERT'); w(8, LAYERS.TREES); w(2, 'TREE');
-    w(10, f(t.x)); w(20, f(t.y)); w(30, f(t.z)); w(41, f(t.r)); w(42, f(t.r)); w(43, f(t.h));
-  }
-  for (const { layer, items } of linesOf(model)) for (const it of items) polyline(layer, it.pts, it.closed);
-  w(0, 'ENDSEC');
-  w(0, 'EOF');
-  if (model.trees.length) {
-    const main = o.splice(blockAt);
-    w(0, 'SECTION'); w(2, 'BLOCKS');
-    w(0, 'BLOCK'); w(8, '0'); w(2, 'TREE'); w(70, 0); w(10, 0); w(20, 0); w(30, 0); w(3, 'TREE');
-    polyface('0', UNIT_TREE);
-    w(0, 'ENDBLK'); w(8, '0');
-    w(0, 'ENDSEC');
-    for (const x of main) o.push(x);
-  }
-
-  let s = '';
-  for (let i = 0; i < o.length; i += 2) s += `${String(o[i]).padStart(3)}\r\n${o[i + 1]}\r\n`;
-  return new Blob([s], { type: 'application/dxf' });
+  return buildProfessionalDXF(model);
 }
 
 /* ---------------- COLLADA (SketchUp 8+: Файл → Импорт → .dae) ---------------- */

@@ -1,7 +1,8 @@
 import { buildModel, redetectTrees } from './data.js?v=5.7';
 import { FORMATS, stlScale } from './exporters.js?v=5.7';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, studioState } from './preview.js?v=5.7';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, studioState } from './preview.js?v=5.7';
 import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
+import { feasibilityStore } from './feasibility.js?v=1.0';
 import { MAP_GRID_STEPS } from './mapplan.js?v=5.7';
 import { classifyEcosystem } from './biodiversity.js?v=5.7';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=5.7';
@@ -1668,9 +1669,79 @@ function applySite() {
     : null;
   model.site = ring;
   illu?.setSite(ring);
+  renderFeasibilityVolume();
+  syncFeasibilityDrawer();
   const resEl = $('#result');
   if (resEl && !resEl.hidden) refreshPlan(model);
 }
+
+// ---------------- Factibilidad Paramétrica (Turf.js + Gemini Flash-Lite) ----------------
+function syncFeasibilityDrawer() {
+  const p = feasibilityStore.params;
+  const m = feasibilityStore.compute(model);
+  const loc = locale();
+
+  const sw = $('#feas-enabled-toggle'); if (sw) sw.checked = p.enabled;
+  const sCos = $('#feas-cos'); if (sCos) sCos.value = p.cos;
+  const sCus = $('#feas-cus'); if (sCus) sCus.value = p.cus;
+  const sLvl = $('#feas-levels'); if (sLvl) sLvl.value = p.max_levels;
+  const sFrt = $('#feas-front'); if (sFrt) sFrt.value = p.front_setback_m;
+  const sSid = $('#feas-side'); if (sSid) sSid.value = p.side_setback_m;
+
+  const vCos = $('#feas-val-cos'); if (vCos) vCos.textContent = `${p.cos}%`;
+  const vCus = $('#feas-val-cus'); if (vCus) vCus.textContent = Number(p.cus).toFixed(2);
+  const vLvl = $('#feas-val-levels'); if (vLvl) vLvl.textContent = `${p.max_levels} niveles`;
+  const vFrt = $('#feas-val-front'); if (vFrt) vFrt.textContent = `${Number(p.front_setback_m).toFixed(1)} m`;
+  const vSid = $('#feas-val-side'); if (vSid) vSid.textContent = `${Number(p.side_setback_m).toFixed(1)} m`;
+
+  const oLot = $('#feas-out-lot'); if (oLot) oLot.textContent = m.lotAreaM2.toLocaleString(loc);
+  const oFp = $('#feas-out-footprint'); if (oFp) oFp.textContent = m.footprintAreaM2.toLocaleString(loc);
+  const oGfa = $('#feas-out-gfa'); if (oGfa) oGfa.textContent = m.maxBuildableM2.toLocaleString(loc);
+  const oH = $('#feas-out-height'); if (oH) oH.textContent = `${m.maxHeightM} m · ${m.effectiveLevels}N`;
+}
+window.syncFeasibilityDrawer = syncFeasibilityDrawer;
+
+feasibilityStore.subscribe(() => {
+  syncFeasibilityDrawer();
+});
+
+$('#feas-enabled-toggle')?.addEventListener('change', (e) => {
+  feasibilityStore.setParams({ enabled: e.target.checked });
+});
+$('#feas-cos')?.addEventListener('input', (e) => {
+  feasibilityStore.setParams({ cos: Number(e.target.value) });
+});
+$('#feas-cus')?.addEventListener('input', (e) => {
+  feasibilityStore.setParams({ cus: Number(e.target.value) });
+});
+$('#feas-levels')?.addEventListener('input', (e) => {
+  feasibilityStore.setParams({ max_levels: Number(e.target.value) });
+});
+$('#feas-front')?.addEventListener('input', (e) => {
+  feasibilityStore.setParams({ front_setback_m: Number(e.target.value) });
+});
+$('#feas-side')?.addEventListener('input', (e) => {
+  feasibilityStore.setParams({ side_setback_m: Number(e.target.value) });
+});
+
+$('#btn-parse-zoning')?.addEventListener('click', async () => {
+  const inputEl = $('#feas-zoning-input');
+  const statusEl = $('#feas-parse-status');
+  const btn = $('#btn-parse-zoning');
+  if (!inputEl || !inputEl.value.trim()) return;
+  try {
+    if (btn) btn.disabled = true;
+    if (statusEl) statusEl.textContent = 'Analizando extracto con Gemini Flash-Lite...';
+    const parsed = await feasibilityStore.parseZoningExtract(inputEl.value);
+    if (statusEl) {
+      statusEl.textContent = `✓ Aplicado: COS ${parsed.cos}% · CUS ${parsed.cus} · ${parsed.max_levels}N · Frontal ${parsed.front_setback_m}m · Lat ${parsed.side_setback_m}m`;
+    }
+  } catch (err) {
+    if (statusEl) statusEl.textContent = `⚠ ${err.message}`;
+  } finally {
+    if (btn) btn.disabled = false;
+  }
+});
 
 $('#site-draw')?.addEventListener('click', () => {
   site.drawing = !site.drawing;

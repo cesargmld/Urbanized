@@ -4,6 +4,7 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import earcut from 'https://cdn.jsdelivr.net/npm/earcut@3.0.1/+esm';
 import { triangulate, UNIT_TREE } from './data.js?v=4.1';
 import { pinStore } from './pins.js?v=1.0';
+import { feasibilityStore, LEVEL_HEIGHT_M } from './feasibility.js?v=1.0';
 
 let ctx;
 
@@ -332,7 +333,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     trees: new THREE.Group(),
     contours: new THREE.Group(),
     skirt: new THREE.Group(),
-    pins: new THREE.Group()
+    pins: new THREE.Group(),
+    feasibility: new THREE.Group()
   };
   ctx.layerGroups = layerGroups;
   ctx.buildingMeshes = [];
@@ -583,6 +585,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
 
   // 9. Interactive 3D Architectural Pins
   render3DPins();
+  renderFeasibilityVolume();
 
   // Camera placement
   if (!keepCamera) {
@@ -975,4 +978,83 @@ export function render3DPins() {
 // Keep 3D pins updated whenever the pinStore changes
 pinStore.subscribe(() => {
   render3DPins();
+});
+
+export function renderFeasibilityVolume() {
+  if (!ctx || !ctx.layerGroups?.feasibility || !ctx.lastModel) return;
+  const fGroup = ctx.layerGroups.feasibility;
+  fGroup.traverse((o) => { o.geometry?.dispose(); o.material?.map?.dispose(); o.material?.dispose(); });
+  fGroup.clear();
+
+  if (!feasibilityStore.params.enabled) return;
+  const metrics = feasibilityStore.compute(ctx.lastModel);
+  const { lotRingLocal, footprintRingLocal, maxHeightM, effectiveLevels } = metrics;
+
+  if (!lotRingLocal || lotRingLocal.length < 3) return;
+  const baseZ = (lotRingLocal[0]?.[2] ?? 0) + 0.5;
+
+  // 1. Contorno del lote original ('01_LOTE_OBJETIVO' - Rojo)
+  const lotPts = lotRingLocal.map(([x, y]) => new THREE.Vector3(x, y, baseZ + 0.2));
+  lotPts.push(lotPts[0].clone());
+  const lotLineGeo = new THREE.BufferGeometry().setFromPoints(lotPts);
+  const lotLineMat = new THREE.LineBasicMaterial({ color: 0xff3b30, depthTest: false, transparent: true, opacity: 0.95 });
+  const lotLine = new THREE.Line(lotLineGeo, lotLineMat);
+  lotLine.renderOrder = 1001;
+  fGroup.add(lotLine);
+
+  if (!footprintRingLocal || footprintRingLocal.length < 3 || maxHeightM <= 0.1) return;
+
+  // 2. Caja / Prisma 3D translúcida normativa (Estilo Finch 3D / Autodesk Forma)
+  const shape = new THREE.Shape();
+  footprintRingLocal.forEach(([x, y], idx) => {
+    if (idx === 0) shape.moveTo(x, y);
+    else shape.lineTo(x, y);
+  });
+  shape.closePath();
+
+  const extrudeGeo = new THREE.ExtrudeGeometry(shape, {
+    depth: maxHeightM,
+    bevelEnabled: false,
+  });
+  extrudeGeo.translate(0, 0, baseZ);
+
+  const boxMat = new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.22,
+    roughness: 0.25,
+    metalness: 0.1,
+    transparent: true,
+    opacity: 0.42,
+    side: THREE.DoubleSide,
+    depthWrite: false,
+  });
+  const volumeMesh = new THREE.Mesh(extrudeGeo, boxMat);
+  volumeMesh.renderOrder = 1000;
+  fGroup.add(volumeMesh);
+
+  // Aristas del volumen normativo
+  const edgesGeo = new THREE.EdgesGeometry(extrudeGeo, 20);
+  const edgesMat = new THREE.LineBasicMaterial({ color: 0x7dd3fc, transparent: true, opacity: 0.9 });
+  const edgesLine = new THREE.LineSegments(edgesGeo, edgesMat);
+  edgesLine.renderOrder = 1002;
+  fGroup.add(edgesLine);
+
+  // 3. Líneas de entrepiso (niveles) sobre el volumen translúcido
+  const wholeLevels = Math.floor(effectiveLevels);
+  for (let lvl = 1; lvl <= wholeLevels; lvl++) {
+    const zLvl = baseZ + lvl * LEVEL_HEIGHT_M;
+    if (zLvl >= baseZ + maxHeightM - 0.1) break;
+    const ringPts = footprintRingLocal.map(([x, y]) => new THREE.Vector3(x, y, zLvl));
+    ringPts.push(ringPts[0].clone());
+    const flGeo = new THREE.BufferGeometry().setFromPoints(ringPts);
+    const flMat = new THREE.LineBasicMaterial({ color: 0xe0f2fe, transparent: true, opacity: 0.55 });
+    const flLine = new THREE.Line(flGeo, flMat);
+    flLine.renderOrder = 1002;
+    fGroup.add(flLine);
+  }
+}
+
+feasibilityStore.subscribe(() => {
+  renderFeasibilityVolume();
 });
