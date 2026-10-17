@@ -21,6 +21,10 @@ const MIME = {
   '.stl': 'model/stl',
   '.ifc': 'application/x-step',
   '.fbx': 'application/octet-stream',
+  '.skp': 'application/octet-stream',
+  '.glb': 'model/gltf-binary',
+  '.gltf': 'model/gltf+json',
+  '.obj': 'text/plain',
 };
 
 const server = http.createServer(async (req, res) => {
@@ -124,6 +128,30 @@ const server = http.createServer(async (req, res) => {
     } catch (err) {
       res.writeHead(500, { 'Content-Type': 'application/json' });
       res.end(JSON.stringify({ error: err.message || 'Error parsing zoning text' }));
+    }
+    return;
+  }
+
+  // Conversor nativo de SketchUp (.skp) a GLB mediante openskp
+  if (req.url.startsWith('/api/convert-skp') && req.method === 'POST') {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    const buffer = Buffer.concat(chunks);
+    try {
+      const skp = require('openskp');
+      const skpFile = skp.openExisting(buffer);
+      const scene = skp.buildScene(skpFile);
+      const glb = skp.toGLB(scene);
+      res.writeHead(200, {
+        'Content-Type': 'model/gltf-binary',
+        'Content-Disposition': 'attachment; filename="project.glb"',
+        'Access-Control-Allow-Origin': '*',
+      });
+      res.end(Buffer.from(glb));
+    } catch (err) {
+      console.error('Error al convertir SKP:', err);
+      res.writeHead(400, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'No se pudo procesar el archivo .skp: ' + (err.message || 'formato o versión no soportada') }));
     }
     return;
   }

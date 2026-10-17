@@ -894,48 +894,125 @@ function updateFloraZonesOnMap() {
   const elev = (typeof model !== 'undefined' && model?.grid) ? model.grid.maxH : 0;
   const placeName = $('#q')?.value || '';
   const eco = classifyEcosystem(center.lat, center.lng, elev, placeName);
-  const sizeM = Number(sizeInput?.value || 1000);
   const palette = ['#4ade80', '#2dd4bf', '#a3e635', '#34d399', '#38bdf8'];
-  const zoneConfigs = [
-    { dist: sizeM * 0.22, angle: 35, r: sizeM * 0.14, label: 'Zona Ecológica A · Dosel Principal' },
-    { dist: sizeM * 0.26, angle: 145, r: sizeM * 0.13, label: 'Zona Ecológica B · Corredor Vegetal' },
-    { dist: sizeM * 0.20, angle: 235, r: sizeM * 0.15, label: 'Zona Ecológica C · Estrato Arbóreo' },
-    { dist: sizeM * 0.28, angle: 315, r: sizeM * 0.12, label: 'Zona Ecológica D · Reserva Riparia' },
-    { dist: sizeM * 0.06, angle: 90, r: sizeM * 0.11, label: 'Zona Ecológica Central · Microclima' }
-  ];
 
-  eco.flora.forEach((sp, idx) => {
-    if (floraState.selectedSpecies >= 0 && floraState.selectedSpecies !== idx) return;
-    const cfg = zoneConfigs[idx % zoneConfigs.length];
-    const color = palette[idx % palette.length];
-    const poly = generateZonePolygonCoords(center.lat, center.lng, cfg.dist, cfg.angle, cfg.r, idx + 1);
+  // Conversión de coordenadas métricas locales a coordenadas geográficas Lat/Lng reales
+  const localToLatLng = (x, y, frame) => {
+    const phi = (frame.lat * Math.PI) / 180;
+    const mLat = 111132.92 - 559.82 * Math.cos(2 * phi) + 1.175 * Math.cos(4 * phi);
+    const mLon = 111412.84 * Math.cos(phi) - 93.5 * Math.cos(3 * phi);
+    return [frame.lat + y / mLat, frame.lon + x / mLon];
+  };
 
-    L.polygon(poly.pts, {
-      color,
-      weight: 2,
-      opacity: 0.9,
-      fillColor: color,
-      fillOpacity: 0.22,
-      dashArray: '4 4'
-    }).addTo(floraState.layerGroup);
+  const realGreenAreas = [];
+  if (typeof model !== 'undefined' && model?.areas?.GREEN && model.areas.GREEN.length > 0) {
+    for (const ring of model.areas.GREEN) {
+      if (!ring || ring.length < 3) continue;
+      const latLngs = ring.map(([x, y]) => localToLatLng(x, y, model.frame));
+      let sumLat = 0, sumLng = 0;
+      latLngs.forEach(([la, lo]) => { sumLat += la; sumLng += lo; });
+      const cLat = sumLat / latLngs.length;
+      const cLng = sumLng / latLngs.length;
+      realGreenAreas.push({ latLngs, center: [cLat, cLng], ptsCount: ring.length });
+    }
+  }
 
-    const badgeHtml = `
-      <div class="flora-zone-pin" style="--flora-color:${color}">
-        <span class="flora-zone-dot"></span>
-        <div class="flora-zone-info">
-          <b>${sp.name}</b>
-          <i>${sp.latin}</i>
+  // 1. Si el modelo cuenta con polígonos verdes reales de OpenStreetMap (parques, jardines, reservas)
+  if (realGreenAreas.length > 0) {
+    realGreenAreas.sort((a, b) => b.ptsCount - a.ptsCount);
+
+    eco.flora.forEach((sp, idx) => {
+      if (floraState.selectedSpecies >= 0 && floraState.selectedSpecies !== idx) return;
+      const area = realGreenAreas[idx % realGreenAreas.length];
+      const color = palette[idx % palette.length];
+
+      L.polygon(area.latLngs, {
+        color,
+        weight: 2,
+        opacity: 0.95,
+        fillColor: color,
+        fillOpacity: 0.28,
+        dashArray: '3 3'
+      }).addTo(floraState.layerGroup);
+
+      const badgeHtml = `
+        <div class="flora-zone-pin" style="--flora-color:${color}">
+          <span class="flora-zone-dot"></span>
+          <div class="flora-zone-info">
+            <b>${sp.name}</b>
+            <i>${sp.latin}</i>
+          </div>
         </div>
-      </div>
-    `;
-    const icon = L.divIcon({
-      html: badgeHtml,
-      className: 'flora-zone-icon-wrap',
-      iconSize: [160, 36],
-      iconAnchor: [80, 18]
+      `;
+      const icon = L.divIcon({
+        html: badgeHtml,
+        className: 'flora-zone-icon-wrap',
+        iconSize: [160, 36],
+        iconAnchor: [80, 18]
+      });
+      L.marker(area.center, { icon, interactive: false }).addTo(floraState.layerGroup);
     });
-    L.marker(poly.center, { icon, interactive: false }).addTo(floraState.layerGroup);
-  });
+  } else if (typeof model !== 'undefined' && model?.trees && model.trees.length > 0) {
+    // 2. Si no hay polígonos delimitados pero existen árboles reales mapeados o detectados
+    const step = Math.max(1, Math.floor(model.trees.length / (eco.flora.length + 1)));
+    eco.flora.forEach((sp, idx) => {
+      if (floraState.selectedSpecies >= 0 && floraState.selectedSpecies !== idx) return;
+      const tree = model.trees[idx * step] || model.trees[0];
+      const treeLatLng = localToLatLng(tree.x, tree.y, model.frame);
+      const color = palette[idx % palette.length];
+
+      L.circle(treeLatLng, {
+        radius: Math.max(20, (tree.r || 5) * 4),
+        color,
+        weight: 1.8,
+        fillColor: color,
+        fillOpacity: 0.26,
+        dashArray: '4 4'
+      }).addTo(floraState.layerGroup);
+
+      const badgeHtml = `
+        <div class="flora-zone-pin" style="--flora-color:${color}">
+          <span class="flora-zone-dot"></span>
+          <div class="flora-zone-info">
+            <b>${sp.name}</b>
+            <i>${sp.latin}</i>
+          </div>
+        </div>
+      `;
+      const icon = L.divIcon({
+        html: badgeHtml,
+        className: 'flora-zone-icon-wrap',
+        iconSize: [160, 36],
+        iconAnchor: [80, 18]
+      });
+      L.marker(treeLatLng, { icon, interactive: false }).addTo(floraState.layerGroup);
+    });
+  } else {
+    // 3. Antes de generar el modelo 3D: mostramos las especies nativas ordenadas sobre el área de búsqueda
+    eco.flora.slice(0, 3).forEach((sp, idx) => {
+      if (floraState.selectedSpecies >= 0 && floraState.selectedSpecies !== idx) return;
+      const color = palette[idx % palette.length];
+      const offsetLat = (idx - 1) * 0.002;
+      const pos = [center.lat + offsetLat, center.lng];
+
+      const badgeHtml = `
+        <div class="flora-zone-pin" style="--flora-color:${color}">
+          <span class="flora-zone-dot"></span>
+          <div class="flora-zone-info">
+            <b>${sp.name}</b>
+            <i>${sp.latin}</i>
+          </div>
+        </div>
+      `;
+      const icon = L.divIcon({
+        html: badgeHtml,
+        className: 'flora-zone-icon-wrap',
+        iconSize: [160, 36],
+        iconAnchor: [80, 18]
+      });
+      L.marker(pos, { icon, interactive: false }).addTo(floraState.layerGroup);
+    });
+  }
 
   setFloraZoneHighlight(true, floraState.selectedSpecies);
 }
@@ -2218,6 +2295,8 @@ function syncMapControls() {
   }
   const pinsEl = $('#map-pins-toggle');
   if (pinsEl) pinsEl.checked = Boolean(mapOpts.overlays?.pins ?? true);
+  const scStyle = $('#map-scale-style');
+  if (scStyle && mapOpts.overlays?.scalebarStyle) scStyle.value = mapOpts.overlays.scalebarStyle;
   // ползунки силы доступны, только когда эффект включён
   const dep = { 'shadows.azimuth': 'shadows.on', 'shadows.altitude': 'shadows.on', 'shadows.strength': 'shadows.on', 'relief.hillshadeStrength': 'relief.hillshade', 'relief.depthStrength': 'relief.depth' };
   for (const [k, on] of Object.entries(dep)) {
@@ -2226,6 +2305,110 @@ function syncMapControls() {
   }
   renderMapScale();
   renderMapSwatches();
+  renderLayerStackControls();
+}
+
+const MAP_LAYERS_INFO = [
+  { key: 'buildings', name: 'Edificios / Huellas', icon: '🏢' },
+  { key: 'roads', name: 'Vialidades y Ejes', icon: '🛣️' },
+  { key: 'green', name: 'Áreas Verdes y Parques', icon: '🌳' },
+  { key: 'water', name: 'Cuerpos de Agua', icon: '💧' },
+  { key: 'contours', name: 'Curvas de Nivel', icon: '〰️' },
+  { key: 'relief', name: 'Relieve e Hipsometría', icon: '⛰️' },
+  { key: 'shadows', name: 'Sombras Arrojadas', icon: '☀️' },
+  { key: 'trees', name: 'Masa Arbórea (Árboles)', icon: '🌲' },
+  { key: 'rail', name: 'Ferrocarriles', icon: '🚆' },
+  { key: 'site', name: 'Polígono del Predio', icon: '📐' },
+];
+
+function renderLayerStackControls() {
+  const container = document.getElementById('map-layer-stack');
+  if (!container || !mapOpts) return;
+
+  if (!Array.isArray(mapOpts.layerOrder) || !mapOpts.layerOrder.length) {
+    mapOpts.layerOrder = ['relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site'];
+  }
+  if (!mapOpts.layerOpacities) {
+    mapOpts.layerOpacities = {};
+  }
+
+  container.innerHTML = mapOpts.layerOrder.map((key, idx) => {
+    const info = MAP_LAYERS_INFO.find((l) => l.key === key) || { key, name: key, icon: '📄' };
+    const isVisible = key === 'relief' ? Boolean(mapOpts.relief?.hillshade || mapOpts.relief?.depth)
+                    : key === 'shadows' ? Boolean(mapOpts.shadows?.on)
+                    : mapOpts.layers?.[key] !== false;
+    const opacity = mapOpts.layerOpacities[key] !== undefined ? mapOpts.layerOpacities[key] : 1.0;
+    const opPercent = Math.round(opacity * 100);
+
+    return `
+      <div class="axiom-layer-item" data-layerkey="${key}">
+        <div class="axiom-layer-head">
+          <label class="axiom-layer-left">
+            <input type="checkbox" class="layer-vis-cb" ${isVisible ? 'checked' : ''}>
+            <span>${info.icon} ${info.name}</span>
+          </label>
+          <div class="axiom-layer-actions">
+            <button type="button" class="layer-reorder-btn btn-layer-up" ${idx === 0 ? 'disabled' : ''} title="Subir nivel visual">▲</button>
+            <button type="button" class="layer-reorder-btn btn-layer-down" ${idx === mapOpts.layerOrder.length - 1 ? 'disabled' : ''} title="Bajar nivel visual">▼</button>
+          </div>
+        </div>
+        <div class="axiom-layer-op-row">
+          <input type="range" min="0" max="100" step="5" value="${opPercent}" class="axiom-range axiom-layer-op-slider" title="Opacidad de capa">
+          <span class="axiom-layer-op-val">${opPercent}%</span>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  container.querySelectorAll('.axiom-layer-item').forEach((itemEl, idx) => {
+    const key = itemEl.getAttribute('data-layerkey');
+    const visCb = itemEl.querySelector('.layer-vis-cb');
+    const slider = itemEl.querySelector('.axiom-layer-op-slider');
+    const valText = itemEl.querySelector('.axiom-layer-op-val');
+    const btnUp = itemEl.querySelector('.btn-layer-up');
+    const btnDown = itemEl.querySelector('.btn-layer-down');
+
+    visCb?.addEventListener('change', () => {
+      if (key === 'relief') {
+        if (!mapOpts.relief) mapOpts.relief = {};
+        mapOpts.relief.hillshade = visCb.checked;
+      } else if (key === 'shadows') {
+        if (!mapOpts.shadows) mapOpts.shadows = {};
+        mapOpts.shadows.on = visCb.checked;
+      } else {
+        if (!mapOpts.layers) mapOpts.layers = {};
+        mapOpts.layers[key] = visCb.checked;
+      }
+      renderMap();
+    });
+
+    slider?.addEventListener('input', () => {
+      const val = Number(slider.value) / 100;
+      mapOpts.layerOpacities[key] = val;
+      if (valText) valText.textContent = `${slider.value}%`;
+      renderMap();
+    });
+
+    btnUp?.addEventListener('click', () => {
+      if (idx > 0) {
+        const temp = mapOpts.layerOrder[idx];
+        mapOpts.layerOrder[idx] = mapOpts.layerOrder[idx - 1];
+        mapOpts.layerOrder[idx - 1] = temp;
+        renderLayerStackControls();
+        renderMap();
+      }
+    });
+
+    btnDown?.addEventListener('click', () => {
+      if (idx < mapOpts.layerOrder.length - 1) {
+        const temp = mapOpts.layerOrder[idx];
+        mapOpts.layerOrder[idx] = mapOpts.layerOrder[idx + 1];
+        mapOpts.layerOrder[idx + 1] = temp;
+        renderLayerStackControls();
+        renderMap();
+      }
+    });
+  });
 }
 window.openVectorMapStudio = async () => {
   await loadMapMod();
@@ -2315,7 +2498,6 @@ $('#map-pins-toggle')?.addEventListener('change', (e) => {
   if (mapOpts) {
     if (!mapOpts.overlays) mapOpts.overlays = {};
     mapOpts.overlays.pins = e.target.checked;
-    renderMap();
   }
 });
 $('#map-scale')?.addEventListener('change', (e) => { if (mapOpts) { mapOpts.scale = Number(e.target.value); renderMap(true); } });
@@ -2325,6 +2507,38 @@ $('#map-reset-colors')?.addEventListener('click', () => {
   renderMapSwatches();
   renderMap();
 });
+$('#btn-reset-layer-stack')?.addEventListener('click', () => {
+  if (!mapOpts) return;
+  mapOpts.layerOrder = ['relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site'];
+  mapOpts.layerOpacities = {};
+  renderLayerStackControls();
+  renderMap();
+});
+$('#map-scale-style')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.scalebarStyle = e.target.value;
+    renderMap();
+  }
+});
+$('#illu-scale-style')?.addEventListener('change', (e) => {
+  if (window.setIllustrateScaleStyle) {
+    window.setIllustrateScaleStyle(e.target.value);
+  }
+});
+
+// Exponer datos y estados del modelo activo para vistas guardadas e interconexión
+window.hasActiveModel = () => Boolean(model);
+window.getActiveModelData = () => model;
+window.getVectorMapState = () => (mapOpts ? structuredClone(mapOpts) : null);
+window.applyVectorMapConfig = (cfg) => {
+  if (cfg) {
+    mapOpts = structuredClone(cfg);
+    syncMapControls();
+    renderMap();
+  }
+};
+
 document.querySelectorAll('[data-mapexport]').forEach((b) => b.addEventListener('click', async () => {
   if (!model || !mapMod) return;
   const kind = b.dataset.mapexport;

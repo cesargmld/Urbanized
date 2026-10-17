@@ -117,6 +117,7 @@ export function createIllustrator(canvas, model) {
       north: true,
       northStyle: 'swiss', // 'swiss' | 'minimal' | 'circle'
       scalebar: true,
+      scalebarStyle: 'minimal', // 'minimal' | 'classic' | 'subdivided'
       grid: false,
       gridStyle: 'cross', // 'cross' | 'line'
     },
@@ -786,7 +787,7 @@ export function createIllustrator(canvas, model) {
       ctx.restore();
     }
 
-    // 3. Escala Gráfica
+    // 3. Escala Gráfica Arquitectónica
     if (state.overlays.scalebar) {
       ctx.save();
       const sx = 20, sy = height - 24;
@@ -794,23 +795,67 @@ export function createIllustrator(canvas, model) {
       const realMeters = Math.round((barLen / cam.scale) * 10) / 10;
       const niceMeters = realMeters >= 500 ? Math.round(realMeters / 100) * 100 : Math.round(realMeters / 50) * 50 || 100;
       const actualPixels = niceMeters * cam.scale;
+      const scaleStyle = state.overlays.scalebarStyle || 'minimal';
 
       ctx.fillStyle = txtColor;
       ctx.strokeStyle = txtColor;
-      ctx.lineWidth = 1.5;
 
-      ctx.beginPath();
-      ctx.moveTo(sx, sy); ctx.lineTo(sx + actualPixels, sy);
-      ctx.moveTo(sx, sy - 4); ctx.lineTo(sx, sy + 4);
-      ctx.moveTo(sx + actualPixels, sy - 4); ctx.lineTo(sx + actualPixels, sy + 4);
-      ctx.moveTo(sx + actualPixels / 2, sy - 2); ctx.lineTo(sx + actualPixels / 2, sy + 2);
-      ctx.stroke();
+      if (scaleStyle === 'classic') {
+        const seg = actualPixels / 4;
+        const bh = 5;
+        for (let i = 0; i < 4; i++) {
+          if (i % 2 === 0) {
+            ctx.fillStyle = txtColor;
+            ctx.fillRect(sx + i * seg, sy - bh, seg, bh);
+          } else {
+            ctx.strokeRect(sx + i * seg, sy - bh, seg, bh);
+          }
+        }
+        ctx.fillStyle = txtColor;
+        ctx.font = '500 10.5px Inter, sans-serif';
+        ctx.fillText('0', sx, sy - 8);
+        ctx.textAlign = 'right';
+        ctx.fillText(`${niceMeters} m`, sx + actualPixels, sy - 8);
+        ctx.textAlign = 'left';
+      } else if (scaleStyle === 'subdivided') {
+        const seg = actualPixels / 4;
+        const subSeg = seg / 4;
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy); ctx.lineTo(sx + actualPixels, sy);
+        for (let i = 0; i <= 4; i++) {
+          const hTick = i % 2 === 0 ? 5 : 3;
+          ctx.moveTo(sx + i * subSeg, sy - hTick); ctx.lineTo(sx + i * subSeg, sy + hTick);
+        }
+        for (let i = 1; i <= 4; i++) {
+          ctx.moveTo(sx + i * seg, sy - 5); ctx.lineTo(sx + i * seg, sy + 5);
+        }
+        ctx.stroke();
+        ctx.font = '500 10.5px Inter, sans-serif';
+        ctx.fillText('0', sx, sy - 8);
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(niceMeters / 4)}`, sx + seg, sy - 8);
+        ctx.textAlign = 'right';
+        ctx.fillText(`${niceMeters} m`, sx + actualPixels, sy - 8);
+        ctx.textAlign = 'left';
+      } else {
+        // Minimalist Swiss hairline
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(sx, sy); ctx.lineTo(sx + actualPixels, sy);
+        ctx.moveTo(sx, sy - 4); ctx.lineTo(sx, sy + 4);
+        ctx.moveTo(sx + actualPixels, sy - 4); ctx.lineTo(sx + actualPixels, sy + 4);
+        ctx.moveTo(sx + actualPixels / 2, sy - 2.5); ctx.lineTo(sx + actualPixels / 2, sy + 2.5);
+        ctx.stroke();
 
-      ctx.font = '500 11px Inter, sans-serif';
-      ctx.fillText('0', sx, sy - 7);
-      ctx.textAlign = 'right';
-      ctx.fillText(`${niceMeters} m`, sx + actualPixels, sy - 7);
-      ctx.textAlign = 'left';
+        ctx.font = '500 10.5px Inter, sans-serif';
+        ctx.fillText('0', sx, sy - 7);
+        ctx.textAlign = 'center';
+        ctx.fillText(`${Math.round(niceMeters / 2)}`, sx + actualPixels / 2, sy - 7);
+        ctx.textAlign = 'right';
+        ctx.fillText(`${niceMeters} m`, sx + actualPixels, sy - 7);
+        ctx.textAlign = 'left';
+      }
       ctx.restore();
     }
 
@@ -1274,10 +1319,27 @@ ${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
     setExplodedTier(tier, on) { state.explodedTiers[tier] = Boolean(on); list = null; render(); },
     setTierColor(tier, color) { state.tierColors[tier] = color; list = null; render(); },
     setContourLabels(on) { state.contourLabels = Boolean(on); list = null; render(); },
+    setScaleStyle(st) {
+      if (!state.overlays) state.overlays = {};
+      state.overlays.scalebarStyle = st;
+      render();
+    },
+    getState() { return structuredClone(state); },
+    applyState(cfg) {
+      if (cfg) {
+        Object.assign(state, cfg);
+        list = null;
+        render();
+      }
+    },
     toSVG,
     toPNG,
     invalidate() { list = null; render(); },
   };
+
+  window.getIllustrateState = () => inst.getState();
+  window.applyIllustrateConfig = (cfg) => inst.applyState(cfg);
+  window.setIllustrateScaleStyle = (st) => inst.setScaleStyle(st);
 
   pinStore.subscribe(() => {
     list = null;
@@ -1286,3 +1348,4 @@ ${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
 
   return inst;
 }
+

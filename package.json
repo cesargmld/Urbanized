@@ -18,5 +18,8 @@
     "archicad"
   ],
   "author": "",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "openskp": "^1.3.0"
+  }
 }

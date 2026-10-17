@@ -138,48 +138,72 @@ export function mapSVG(model, o) {
   const P = ([x, y]) => `${f(x + h)},${f(h - y)}`;
   const ring = (pts, closed = true) => `M${pts.map(P).join('L')}${closed ? 'Z' : ''}`;
   const pen = (mm) => f((mm * scale) / 1000); // толщина пера в мм на листе → метры
-  const groups = [];
-  const g = (id, attrs, body) => { if (body) groups.push(`<g id="${id}" ${attrs}>${body}</g>`); };
+  const layerSnippets = {};
+  const gl = (id, attrs, body) => (body ? `<g id="${id}" ${attrs}>${body}</g>` : '');
   const lines = (layer) => (model.lines[layer] ?? []).map((pts) => ring(pts, false)).join('');
   const areas = (layer) => (model.areas[layer] ?? []).map((pts) => ring(pts)).join('');
 
-  // рельеф
-  if (model.grid.maxH > 0.5) {
+  // 1. Relieve
+  layerSnippets.relief = (() => {
+    if (model.grid.maxH <= 0.5) return '';
+    const parts = [];
     if (o.relief.depth)
-      g('RELIEF_DEPTH', `opacity="${o.relief.depthStrength}"`, `<image href="${reliefRaster(model.grid, 'depth', { low: c.depthLow, high: c.depthHigh })}" x="0" y="0" width="${size}" height="${size}" preserveAspectRatio="none"/>`);
+      parts.push(gl('RELIEF_DEPTH', `opacity="${o.relief.depthStrength}"`, `<image href="${reliefRaster(model.grid, 'depth', { low: c.depthLow, high: c.depthHigh })}" x="0" y="0" width="${size}" height="${size}" preserveAspectRatio="none"/>`));
     if (o.relief.hillshade)
-      g('HILLSHADE', `opacity="${o.relief.hillshadeStrength}"`, `<image href="${reliefRaster(model.grid, 'hillshade', { azimuth: o.shadows.azimuth, altitude: Math.max(25, o.shadows.altitude) })}" x="0" y="0" width="${size}" height="${size}" preserveAspectRatio="none"/>`);
-  }
-  if (o.layers.contours && model.contours?.length) {
+      parts.push(gl('HILLSHADE', `opacity="${o.relief.hillshadeStrength}"`, `<image href="${reliefRaster(model.grid, 'hillshade', { azimuth: o.shadows.azimuth, altitude: Math.max(25, o.shadows.altitude) })}" x="0" y="0" width="${size}" height="${size}" preserveAspectRatio="none"/>`));
+    return parts.join('');
+  })();
+
+  // 2. Curvas de nivel
+  layerSnippets.contours = (() => {
+    if (!o.layers.contours || !model.contours?.length) return '';
     const ci = model.contourInterval ?? 5;
     const major = model.contours.filter((k) => Math.round(k.z / ci) % 5 === 0);
     const minor = model.contours.filter((k) => Math.round(k.z / ci) % 5 !== 0);
-    g('CONTOURS', `fill="none" stroke="${c.contour}" stroke-width="${pen(0.08)}"`, minor.map((k) => `<path d="${ring(k.pts, false)}"/>`).join(''));
-    g('CONTOURS_INDEX', `fill="none" stroke="${c.contour}" stroke-width="${pen(0.2)}"`, major.map((k) => `<path d="${ring(k.pts, false)}"/>`).join(''));
-  }
-  if (o.layers.green) g('GREEN', `fill="${c.green}"`, areas('GREEN') && `<path d="${areas('GREEN')}"/>`);
-  if (o.layers.water) {
-    g('WATER', `fill="${c.water}"`, areas('WATER') && `<path d="${areas('WATER')}"/>`);
-    g('WATERWAYS', `fill="none" stroke="${c.water}" stroke-width="${pen(0.5)}" stroke-linecap="round" stroke-linejoin="round"`, lines('WATER') && `<path d="${lines('WATER')}"/>`);
-  }
-  if (o.layers.roads) {
+    return gl('CONTOURS', `fill="none" stroke="${c.contour}" stroke-width="${pen(0.08)}"`, minor.map((k) => `<path d="${ring(k.pts, false)}"/>`).join(''))
+         + gl('CONTOURS_INDEX', `fill="none" stroke="${c.contour}" stroke-width="${pen(0.2)}"`, major.map((k) => `<path d="${ring(k.pts, false)}"/>`).join(''));
+  })();
+
+  // 3. Áreas verdes
+  layerSnippets.green = (() => {
+    if (!o.layers.green) return '';
+    return gl('GREEN', `fill="${c.green}"`, areas('GREEN') && `<path d="${areas('GREEN')}"/>`);
+  })();
+
+  // 4. Cuerpos de agua
+  layerSnippets.water = (() => {
+    if (!o.layers.water) return '';
+    return gl('WATER', `fill="${c.water}"`, areas('WATER') && `<path d="${areas('WATER')}"/>`)
+         + gl('WATERWAYS', `fill="none" stroke="${c.water}" stroke-width="${pen(0.5)}" stroke-linecap="round" stroke-linejoin="round"`, lines('WATER') && `<path d="${lines('WATER')}"/>`);
+  })();
+
+  // 5. Vialidades
+  layerSnippets.roads = (() => {
+    if (!o.layers.roads) return '';
+    const parts = [];
     if (model.roadAreas?.length) {
       for (const { layer, polys } of model.roadAreas)
-        g(layer, `fill="${layer === 'ROADS_AREA' ? c.road : c.path}" fill-rule="evenodd"`, `<path d="${polys.map((rs) => rs.map((r) => ring(r)).join('')).join('')}"/>`);
+        parts.push(gl(layer, `fill="${layer === 'ROADS_AREA' ? c.road : c.path}" fill-rule="evenodd"`, `<path d="${polys.map((rs) => rs.map((r) => ring(r)).join('')).join('')}"/>`));
     } else {
-      // без реальной ширины: линии с типовой шириной в метрах
-      const stroke = (layer, color, width) => g(layer, `fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"`, lines(layer) && `<path d="${lines(layer)}"/>`);
-      stroke('PATHS', c.path, 2.5);
-      stroke('ROADS_MINOR', c.road, 7);
-      stroke('ROADS_MAJOR', c.road, 13);
+      const stroke = (layer, color, width) => gl(layer, `fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"`, lines(layer) && `<path d="${lines(layer)}"/>`);
+      parts.push(stroke('PATHS', c.path, 2.5));
+      parts.push(stroke('ROADS_MINOR', c.road, 7));
+      parts.push(stroke('ROADS_MAJOR', c.road, 13));
     }
     if (model.lines.BRIDGES?.length)
-      g('BRIDGES', `fill="none" stroke="${c.road}" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"`, `<path d="${lines('BRIDGES')}"/>`);
-  }
-  if (o.layers.rail) g('RAILWAYS', `fill="none" stroke="${c.rail}" stroke-width="${pen(0.25)}" stroke-dasharray="${pen(1.6)} ${pen(0.8)}"`, lines('RAILWAYS') && `<path d="${lines('RAILWAYS')}"/>`);
+      parts.push(gl('BRIDGES', `fill="none" stroke="${c.road}" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"`, `<path d="${lines('BRIDGES')}"/>`));
+    return parts.join('');
+  })();
 
-  // тени: след основания, протянутый от солнца; прозрачность — у группы, чтобы наложения не темнели
-  if (o.shadows.on && (o.layers.buildings || o.layers.trees)) {
+  // 6. Ferrocarriles
+  layerSnippets.rail = (() => {
+    if (!o.layers.rail) return '';
+    return gl('RAILWAYS', `fill="none" stroke="${c.rail}" stroke-width="${pen(0.25)}" stroke-dasharray="${pen(1.6)} ${pen(0.8)}"`, lines('RAILWAYS') && `<path d="${lines('RAILWAYS')}"/>`);
+  })();
+
+  // 7. Sombras arrojadas
+  layerSnippets.shadows = (() => {
+    if (!o.shadows.on || (!o.layers.buildings && !o.layers.trees)) return '';
     const az = (o.shadows.azimuth * Math.PI) / 180, k = 1 / Math.tan((Math.max(4, o.shadows.altitude) * Math.PI) / 180);
     const ux = -Math.sin(az), uy = -Math.cos(az);
     const ccw = (pts) => {
@@ -205,25 +229,50 @@ export function mapSVG(model, o) {
         const len = t.h * k * 0.55;
         parts.push(`<circle cx="${f(t.x + ux * len + h)}" cy="${f(h - t.y - uy * len)}" r="${f(t.r * 0.9)}"/>`);
       }
-    g('SHADOWS', `fill="${c.shadow}" fill-rule="nonzero" opacity="${o.shadows.strength}"`, parts.join(''));
-  }
-  if (o.layers.trees && model.trees.length)
-    g('TREES', `fill="${c.tree}"`, model.trees.map((t) => `<circle cx="${f(t.x + h)}" cy="${f(h - t.y)}" r="${f(t.r)}"/>`).join(''));
-  if (o.layers.buildings && model.buildings.length) {
+    return gl('SHADOWS', `fill="${c.shadow}" fill-rule="nonzero" opacity="${o.shadows.strength}"`, parts.join(''));
+  })();
+
+  // 8. Árboles
+  layerSnippets.trees = (() => {
+    if (!o.layers.trees || !model.trees.length) return '';
+    return gl('TREES', `fill="${c.tree}"`, model.trees.map((t) => `<circle cx="${f(t.x + h)}" cy="${f(h - t.y)}" r="${f(t.r)}"/>`).join(''));
+  })();
+
+  // 9. Edificios
+  layerSnippets.buildings = (() => {
+    if (!o.layers.buildings || !model.buildings.length) return '';
     const stroke = o.outlineWidth > 0 ? ` stroke="${c.outline}" stroke-width="${pen(o.outlineWidth)}" stroke-linejoin="round"` : '';
     if (o.layers.byType) {
+      const parts = [];
       for (const cls of Object.keys(CLASS_COLORS)) {
         const list = model.buildings.filter((b) => (b.cls ?? 'other') === cls);
-        if (list.length) g(`BUILDINGS_${cls.toUpperCase()}`, `fill="${CLASS_COLORS[cls]}" fill-rule="evenodd"${stroke}`, list.map((b) => `<path d="${b.rings.map((r) => ring(r)).join('')}"/>`).join(''));
+        if (list.length) parts.push(gl(`BUILDINGS_${cls.toUpperCase()}`, `fill="${CLASS_COLORS[cls]}" fill-rule="evenodd"${stroke}`, list.map((b) => `<path d="${b.rings.map((r) => ring(r)).join('')}"/>`).join('')));
       }
+      return parts.join('');
     } else {
-      // сначала низкие объёмы, потом высокие: башня над подиумом читается целиком
       const list = model.buildings.slice().sort((a, b) => (a.height ?? 0) - (b.height ?? 0));
-      g('BUILDINGS', `fill="${c.building}" fill-rule="evenodd"${stroke}`, list.map((b) => `<path d="${b.rings.map((r) => ring(r)).join('')}"/>`).join(''));
+      return gl('BUILDINGS', `fill="${c.building}" fill-rule="evenodd"${stroke}`, list.map((b) => `<path d="${b.rings.map((r) => ring(r)).join('')}"/>`).join(''));
+    }
+  })();
+
+  // 10. Polígono de predio
+  layerSnippets.site = (() => {
+    if (!o.layers.site || !model.site || model.site.length <= 2) return '';
+    return gl('SITE', `fill="none" stroke="#c0392b" stroke-width="${pen(0.5)}" stroke-dasharray="${pen(3)} ${pen(1.5)}"`, `<path d="${ring(model.site)}"/>`);
+  })();
+
+  // Ensamble dinámico según el orden de capas y opacidad personalizada
+  const defaultOrder = ['relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site'];
+  const layerOrder = Array.isArray(o.layerOrder) && o.layerOrder.length ? o.layerOrder : defaultOrder;
+  const opacities = o.layerOpacities || {};
+
+  for (const layerKey of layerOrder) {
+    const snippet = layerSnippets[layerKey];
+    if (snippet) {
+      const op = opacities[layerKey] !== undefined ? opacities[layerKey] : 1.0;
+      groups.push(`<g id="LAYER_${layerKey.toUpperCase()}" opacity="${op}">${snippet}</g>`);
     }
   }
-  if (o.layers.site && model.site?.length > 2)
-    g('SITE', `fill="none" stroke="#c0392b" stroke-width="${pen(0.5)}" stroke-dasharray="${pen(3)} ${pen(1.5)}"`, `<path d="${ring(model.site)}"/>`);
 
   // сетка поверх карты, подписи — на полях
   const fs = size * 0.016;
@@ -326,12 +375,43 @@ export function mapSVG(model, o) {
   if (o.overlays.scalebar) {
     const len = niceStep(size / 5);
     const seg = len / 4, bh = fs * 0.45;
+    const style = o.overlays.scalebarStyle || 'classic';
     let bar = '';
-    for (let i = 0; i < 4; i++) bar += `<rect x="${f(i * seg)}" y="${f(barY)}" width="${f(seg)}" height="${f(bh)}" fill="${i % 2 ? c.bg : c.text}" stroke="${c.text}" stroke-width="${f(fs * 0.06)}"/>`;
-    bar += `<g fill="${c.text}" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.8)}">`
-      + `<text x="0" y="${f(barY + bh + fs * 1.1)}">0</text>`
-      + `<text x="${f(len)}" y="${f(barY + bh + fs * 1.1)}" text-anchor="middle">${len} m</text>`
-      + `<text x="${f(len + fs * 1.4)}" y="${f(barY + bh)}">1:${scale}</text></g>`;
+    if (style === 'minimal') {
+      // Minimalista / Línea suiza con ticks verticales de precisión
+      bar += `<line x1="0" y1="${f(barY + bh * 0.5)}" x2="${f(len)}" y2="${f(barY + bh * 0.5)}" stroke="${c.text}" stroke-width="${pen(0.24)}"/>`;
+      bar += `<line x1="0" y1="${f(barY)}" x2="0" y2="${f(barY + bh)}" stroke="${c.text}" stroke-width="${pen(0.24)}"/>`;
+      bar += `<line x1="${f(len)}" y1="${f(barY)}" x2="${f(len)}" y2="${f(barY + bh)}" stroke="${c.text}" stroke-width="${pen(0.24)}"/>`;
+      bar += `<line x1="${f(len / 2)}" y1="${f(barY + bh * 0.2)}" x2="${f(len / 2)}" y2="${f(barY + bh * 0.8)}" stroke="${c.text}" stroke-width="${pen(0.18)}"/>`;
+      bar += `<g fill="${c.text}" font-family="Inter, Roboto, sans-serif" font-size="${f(fs * 0.75)}" font-weight="500">`
+        + `<text x="0" y="${f(barY + bh + fs * 1.1)}">0</text>`
+        + `<text x="${f(len / 2)}" y="${f(barY + bh + fs * 1.1)}" text-anchor="middle">${Math.round(len / 2)} m</text>`
+        + `<text x="${f(len)}" y="${f(barY + bh + fs * 1.1)}" text-anchor="middle">${len} m</text>`
+        + `<text x="${f(len + fs * 1.4)}" y="${f(barY + bh * 0.7)}">1:${scale}</text></g>`;
+    } else if (style === 'subdivided') {
+      // Escalímetro técnico Bauhaus: primer segmento subdividido
+      const subSeg = seg / 4;
+      bar += `<line x1="0" y1="${f(barY + bh * 0.5)}" x2="${f(len)}" y2="${f(barY + bh * 0.5)}" stroke="${c.text}" stroke-width="${pen(0.24)}"/>`;
+      for (let i = 0; i <= 4; i++) {
+        const hTick = i % 2 === 0 ? bh : bh * 0.6;
+        bar += `<line x1="${f(i * subSeg)}" y1="${f(barY + (bh - hTick) / 2)}" x2="${f(i * subSeg)}" y2="${f(barY + (bh + hTick) / 2)}" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`;
+      }
+      for (let i = 1; i <= 4; i++) {
+        bar += `<line x1="${f(i * seg)}" y1="${f(barY)}" x2="${f(i * seg)}" y2="${f(barY + bh)}" stroke="${c.text}" stroke-width="${pen(0.24)}"/>`;
+      }
+      bar += `<g fill="${c.text}" font-family="Inter, Roboto, sans-serif" font-size="${f(fs * 0.75)}" font-weight="500">`
+        + `<text x="0" y="${f(barY + bh + fs * 1.1)}">0</text>`
+        + `<text x="${f(seg)}" y="${f(barY + bh + fs * 1.1)}" text-anchor="middle">${Math.round(seg)}</text>`
+        + `<text x="${f(len)}" y="${f(barY + bh + fs * 1.1)}" text-anchor="middle">${len} m</text>`
+        + `<text x="${f(len + fs * 1.4)}" y="${f(barY + bh * 0.7)}">1:${scale}</text></g>`;
+    } else {
+      // Clásico ajedrezado
+      for (let i = 0; i < 4; i++) bar += `<rect x="${f(i * seg)}" y="${f(barY)}" width="${f(seg)}" height="${f(bh)}" fill="${i % 2 ? c.bg : c.text}" stroke="${c.text}" stroke-width="${f(fs * 0.06)}"/>`;
+      bar += `<g fill="${c.text}" font-family="Roboto, Arial, sans-serif" font-size="${f(fs * 0.8)}">`
+        + `<text x="0" y="${f(barY + bh + fs * 1.1)}">0</text>`
+        + `<text x="${f(len)}" y="${f(barY + bh + fs * 1.1)}" text-anchor="middle">${len} m</text>`
+        + `<text x="${f(len + fs * 1.4)}" y="${f(barY + bh)}">1:${scale}</text></g>`;
+    }
     extras.push(`<g id="SCALEBAR">${bar}</g>`);
   }
   if (o.overlays.north) {

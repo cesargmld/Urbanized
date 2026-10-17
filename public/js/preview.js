@@ -1135,7 +1135,30 @@ export async function loadProject3DFile(file) {
   const ext = file.name.split('.').pop().toLowerCase();
   const reader = new FileReader();
 
-  if (ext === 'glb' || ext === 'gltf') {
+  if (ext === 'skp') {
+    const res = await fetch('/api/convert-skp', {
+      method: 'POST',
+      body: file,
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || `Error ${res.status} al procesar archivo SketchUp (.skp)`);
+    }
+    const arrayBuffer = await res.arrayBuffer();
+    return new Promise((resolve, reject) => {
+      const loader = new GLTFLoader();
+      loader.parse(arrayBuffer, '', (gltf) => {
+        const root = gltf.scene || gltf.scenes[0];
+        const bbox = new THREE.Box3().setFromObject(root);
+        const center = bbox.getCenter(new THREE.Vector3());
+        root.position.set(-center.x, -center.y, -bbox.min.z);
+        const wrapper = new THREE.Group();
+        wrapper.add(root);
+        feasibilityStore.setProjectModel(wrapper, file.name);
+        resolve(wrapper);
+      }, reject);
+    });
+  } else if (ext === 'glb' || ext === 'gltf') {
     return new Promise((resolve, reject) => {
       reader.onload = async (e) => {
         try {
@@ -1182,10 +1205,30 @@ export async function loadProject3DFile(file) {
       reader.readAsText(file);
     });
   } else {
-    throw new Error('Formato no compatible. Por favor sube un archivo .glb, .gltf o .obj.');
+    throw new Error('Formato no compatible. Por favor sube un archivo .skp (SketchUp), .glb, .gltf o .obj.');
   }
 }
 
 feasibilityStore.subscribe(() => {
   renderFeasibilityVolume();
 });
+
+// Integración con el Gestor de Vistas Guardadas (viewsManager)
+window.getCamera3DState = () => {
+  if (!ctx || !ctx.camera || !ctx.controls) return null;
+  return {
+    position: [ctx.camera.position.x, ctx.camera.position.y, ctx.camera.position.z],
+    target: [ctx.controls.target.x, ctx.controls.target.y, ctx.controls.target.z],
+    zoom: ctx.camera.zoom || 1,
+  };
+};
+
+window.applyCamera3DView = (cam) => {
+  if (!ctx || !ctx.camera || !ctx.controls || !cam) return;
+  if (cam.position) ctx.camera.position.set(...cam.position);
+  if (cam.target) ctx.controls.target.set(...cam.target);
+  if (cam.zoom) ctx.camera.zoom = cam.zoom;
+  ctx.camera.updateProjectionMatrix();
+  ctx.controls.update();
+};
+

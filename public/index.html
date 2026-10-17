@@ -28,7 +28,7 @@
        ======================================================== -->
   <header class="axiom-topbar">
     <div class="axiom-topbar-left">
-      <div class="axiom-brand" title="Urbanized Architectural Studio">
+      <div class="axiom-brand" id="axiom-brand-btn" role="button" tabindex="0" title="URBANIZED · Centro del Proyecto" style="cursor:pointer;">
         <svg class="axiom-logo" width="22" height="22" viewBox="0 0 24 24" fill="none">
           <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
           <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
@@ -37,33 +37,43 @@
         </svg>
         <span class="axiom-brand-title">URBANIZED</span>
       </div>
-    </div>
 
-    <!-- Center Search Bar (Symmetrically Centered) -->
-    <div class="axiom-topbar-center">
+      <!-- Search Bar in Topbar Left -->
       <div class="axiom-search-box search">
         <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="q" type="search" placeholder="Buscar ciudades, coordenadas, direcciones..." aria-label="Buscar lugar" autocomplete="off">
+        <input id="q" type="search" placeholder="Buscar ciudades, coordenadas..." aria-label="Buscar lugar" autocomplete="off">
         <ul id="results" class="results" hidden></ul>
       </div>
     </div>
 
-    <!-- Right Controls: View Switchers (Mapa | Modelo 3D | Vector Map | Axonometría) & Language -->
-    <div class="axiom-topbar-right">
+    <!-- Center Workspace Mode Switcher Capsule (Prominent Master Switcher) -->
+    <div class="axiom-topbar-center">
       <nav class="axiom-view-nav" role="tablist">
-        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="Mapa e Isócronas" data-tooltip="Mapa e Isócronas">
+        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="[1] Selector de Mapa Base" data-tooltip="[1] Mapa">
+          <span class="axiom-key-badge">1</span>
           <span>Mapa</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="Estudio 3D y Maqueta" data-tooltip="Estudio 3D">
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="[2] Estudio 3D y Factibilidad" data-tooltip="[2] Modelo 3D">
+          <span class="axiom-key-badge">2</span>
           <span>Modelo 3D</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="Editor de Lámina Vectorial 2D (Vector Map)" data-tooltip="Vector Map 2D">
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="[3] Vector Map 2D" data-tooltip="[3] Vector Map">
+          <span class="axiom-key-badge">3</span>
           <span>Vector Map</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="Axonometría Arquitectónica y Maqueta" data-tooltip="Axonometría">
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="[4] Axonometría y Maqueta" data-tooltip="[4] Axonometría">
+          <span class="axiom-key-badge">4</span>
           <span>Axonometría</span>
         </button>
       </nav>
+    </div>
+
+    <!-- Right Controls: Saved Views & Language -->
+    <div class="axiom-topbar-right">
+      <button type="button" class="axiom-btn-secondary" id="btn-open-views" title="Vistas Guardadas del Proyecto" style="font-size:11.5px; padding:5px 12px; display:inline-flex; align-items:center; gap:6px; border-radius:9999px;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+        <span>Vistas (<span id="views-count-badge">0</span>)</span>
+      </button>
 
       <select class="axiom-lang-select lang-pill" aria-label="Idioma">
         <option value="es">ES</option>
@@ -859,9 +869,9 @@
             <!-- Carga de Modelo de Proyecto (SketchUp / GLTF / OBJ) -->
             <div class="axiom-editor-group" id="feas-project-upload-group" style="padding:0; margin-bottom:8px;">
               <span class="axiom-sub-header">Modelo 3D del Proyecto (SKP / GLTF / OBJ)</span>
-              <input type="file" id="feas-project-file-input" accept=".glb,.gltf,.obj" style="display:none;">
+              <input type="file" id="feas-project-file-input" accept=".skp,.glb,.gltf,.obj" style="display:none;">
               <button type="button" class="axiom-cta-btn" id="btn-feas-browse-file" style="width:100%; font-size:11px; padding:8px 10px;">
-                <span>📥 Cargar Archivo 3D (.glb, .gltf, .obj)</span>
+                <span>📥 Cargar Modelo 3D (.skp, .glb, .obj)</span>
               </button>
               <div id="feas-project-controls" hidden style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
                 <p class="export-coords" id="feas-project-name" style="color:#38bdf8; font-weight:600;"></p>
@@ -1009,18 +1019,15 @@
             </div>
           </div>
 
-          <!-- Capas -->
+          <!-- Capas Reordenables y Opacidades (Layer Stack Manager) -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Capas del Plano</span>
-            <label class="axiom-check-row"><span>Edificios</span><input type="checkbox" data-mapopt="layers.buildings" checked></label>
-            <label class="axiom-check-row"><span>Vialidades</span><input type="checkbox" data-mapopt="layers.roads" checked></label>
-            <label class="axiom-check-row"><span>Ferrocarriles</span><input type="checkbox" data-mapopt="layers.rail" checked></label>
-            <label class="axiom-check-row"><span>Cuerpos de agua</span><input type="checkbox" data-mapopt="layers.water" checked></label>
-            <label class="axiom-check-row"><span>Áreas verdes</span><input type="checkbox" data-mapopt="layers.green" checked></label>
-            <label class="axiom-check-row"><span>Árboles</span><input type="checkbox" data-mapopt="layers.trees" checked></label>
-            <label class="axiom-check-row"><span>Curvas de nivel</span><input type="checkbox" data-mapopt="layers.contours" checked></label>
-            <label class="axiom-check-row"><span>Polígono de predio</span><input type="checkbox" data-mapopt="layers.site" checked></label>
-            <label class="axiom-check-row"><span>Colorear por uso de suelo</span><input type="checkbox" data-mapopt="layers.byType"></label>
+            <div class="axiom-row-between">
+              <span class="axiom-sub-header" style="margin:0;">Capas & Superposición</span>
+              <button type="button" class="axiom-back-btn" id="btn-reset-layer-stack" style="font-size:10px; padding:2px 6px;">Restablecer</button>
+            </div>
+            <p class="export-coords" style="margin:2px 0 6px;">Reorganiza con ▲ / ▼ para alterar el orden de dibujo y ajusta la opacidad independiente de cada capa.</p>
+            <div id="map-layer-stack" class="axiom-layer-stack"></div>
+            <label class="axiom-check-row" style="margin-top:6px;"><span>Colorear edificios por uso de suelo</span><input type="checkbox" data-mapopt="layers.byType"></label>
           </div>
 
           <!-- Luz, Sombra y Relieve -->
@@ -1054,8 +1061,15 @@
           <!-- Elementos de Lámina -->
           <div class="axiom-editor-group">
             <span class="axiom-sub-header">Elementos Cartográficos</span>
-            <label class="axiom-check-row"><span>Barra de escala gráfica</span><input type="checkbox" data-mapopt="overlays.scalebar" checked></label>
             <div class="axiom-row-between">
+              <label class="axiom-check-row" style="margin:0;"><span>Barra de escala gráfica</span><input type="checkbox" data-mapopt="overlays.scalebar" checked></label>
+              <select id="map-scale-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="classic">Clásica (Ajedrezada)</option>
+                <option value="minimal">Minimalista (Suiza)</option>
+                <option value="subdivided">Escalímetro Bauhaus</option>
+              </select>
+            </div>
+            <div class="axiom-row-between" style="margin-top:4px;">
               <label class="axiom-check-row" style="margin:0;"><span>Norte</span><input type="checkbox" data-mapopt="overlays.north" checked></label>
               <select id="map-north-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
                 <option value="swiss">Flecha Suiza</option>
@@ -1285,8 +1299,14 @@
                 <option value="minimal">Minimalista</option>
                 <option value="circle">Técnico</option>
               </select>
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <label class="axiom-check-row" style="margin:0;"><span>Escala gráfica métrica</span><input type="checkbox" id="illu-scalebar" checked></label>
+              <select id="illu-scale-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="minimal">Minimalista (Suiza)</option>
+                <option value="classic">Clásica (Ajedrezada)</option>
+                <option value="subdivided">Escalímetro Bauhaus</option>
+              </select>
             </div>
-            <label class="axiom-check-row" style="margin-top:4px;"><span>Escala gráfica métrica</span><input type="checkbox" id="illu-scalebar" checked></label>
             <div class="axiom-row-between" style="margin-top:4px;">
               <label class="axiom-check-row" style="margin:0;"><span>Retícula de replanteo</span><input type="checkbox" id="illu-grid"></label>
               <select id="illu-grid-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
@@ -1616,9 +1636,121 @@
           }
         });
       }
+    })();
+  </script>
+
+    <!-- Modal: Confirmación al Regresar a Mapa -->
+    <div id="modal-return-map" class="axiom-modal-overlay" hidden>
+      <div class="axiom-modal-dialog">
+        <div class="axiom-modal-header">
+          <div class="axiom-modal-title-wrap">
+            <span class="axiom-modal-icon">🗺️</span>
+            <h3>Regresar al Selector de Ubicación</h3>
+          </div>
+          <button type="button" class="axiom-modal-close-btn" id="modal-return-close" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="axiom-modal-body">
+          <p>Estás a punto de regresar al mapa base para seleccionar un nuevo polígono territorial o crear otro modelo.</p>
+          <div class="axiom-modal-callout">
+            <strong>Tu modelo actual se conserva:</strong> Puedes volver a él en cualquier momento haciendo clic en <em>Modelo 3D</em>, <em>Vector Map</em> o <em>Axonometría</em> en la barra superior mientras no inicies una nueva generación de polígono.
+          </div>
+          <p style="font-size:11.5px; color:#94a3b8; margin:0;">¿Deseas ir al mapa para una nueva búsqueda o continuar en el modelo actual?</p>
+        </div>
+        <div class="axiom-modal-actions">
+          <button type="button" class="axiom-btn-secondary" id="modal-btn-stay">Continuar en el Modelo Actual</button>
+          <button type="button" class="axiom-btn-primary" id="modal-btn-confirm-map">Ir al Mapa</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Centro de Proyecto / Project Hub (Logo Click) -->
+    <div id="modal-project-hub" class="axiom-modal-overlay" hidden>
+      <div class="axiom-modal-dialog" style="max-width:540px;">
+        <div class="axiom-modal-header">
+          <div class="axiom-modal-title-wrap">
+            <span class="axiom-modal-icon">🏛️</span>
+            <h3>URBANIZED · Centro del Proyecto</h3>
+          </div>
+          <button type="button" class="axiom-modal-close-btn" id="modal-hub-close" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="axiom-modal-body">
+          <div id="hub-model-info">
+            <p style="margin:0 0 8px; font-weight:600; color:#f1f5f9;">Información del Entorno Cargado</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:11.5px;">
+              <div style="background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.07);">
+                <span style="color:#94a3b8; display:block; font-size:10px;">UBICACIÓN</span>
+                <strong id="hub-coords" style="color:#ffffff;">--</strong>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.07);">
+                <span style="color:#94a3b8; display:block; font-size:10px;">DIMENSIONES</span>
+                <strong id="hub-dimensions" style="color:#ffffff;">--</strong>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.07);">
+                <span style="color:#94a3b8; display:block; font-size:10px;">EDIFICIOS / RELIEVE</span>
+                <strong id="hub-buildings" style="color:#ffffff;">--</strong>
+              </div>
+              <div style="background:rgba(255,255,255,0.04); padding:8px 10px; border-radius:8px; border:1px solid rgba(255,255,255,0.07);">
+                <span style="color:#94a3b8; display:block; font-size:10px;">ECOSISTEMA / BIOMA</span>
+                <strong id="hub-ecosystem" style="color:#ffffff;">--</strong>
+              </div>
+            </div>
+          </div>
+          <div class="axiom-modal-callout">
+            <strong>Espacio de Trabajo Seguro:</strong> El proyecto se conserva en memoria local para alternar libremente entre láminas 2D, axonométricas y modelo 3D.
+          </div>
+        </div>
+        <div class="axiom-modal-actions">
+          <button type="button" class="axiom-btn-danger" id="modal-hub-btn-reset">Reiniciar Proyecto</button>
+          <button type="button" class="axiom-btn-secondary" id="modal-hub-btn-views">Ver Vistas Guardadas</button>
+          <button type="button" class="axiom-btn-primary" id="modal-hub-btn-continue">Continuar</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal: Vistas Guardadas del Proyecto -->
+    <div id="modal-saved-views" class="axiom-modal-overlay" hidden>
+      <div class="axiom-modal-dialog" style="max-width:580px;">
+        <div class="axiom-modal-header">
+          <div class="axiom-modal-title-wrap">
+            <span class="axiom-modal-icon">💾</span>
+            <h3>Vistas Guardadas y Configuraciones</h3>
+          </div>
+          <button type="button" class="axiom-modal-close-btn" id="modal-views-close" aria-label="Cerrar">✕</button>
+        </div>
+        <div class="axiom-modal-body">
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
+            <input type="text" id="input-new-view-name" placeholder="Nombre de vista (ej. Planta General 1:2000, Axono Solar...)" class="axiom-lang-select" style="flex:1; height:34px; padding:0 12px; font-size:12px; text-align:left;">
+            <button type="button" class="axiom-btn-primary" id="btn-save-current-view">Guardar Actual</button>
+          </div>
+          <div id="saved-views-container" class="axiom-views-list" style="margin-top:6px;">
+            <!-- Generado dinámicamente -->
+          </div>
+        </div>
+        <div class="axiom-modal-actions">
+          <button type="button" class="axiom-btn-secondary" id="btn-export-views-json">Exportar JSON</button>
+          <button type="button" class="axiom-btn-secondary" id="btn-import-views-json">Importar JSON</button>
+          <input type="file" id="input-import-views-file" accept=".json" style="display:none;">
+          <button type="button" class="axiom-btn-primary" id="modal-views-close-btn">Cerrar</button>
+        </div>
+      </div>
+    </div>
+
+    <script type="module">
+      import { viewsManager } from './js/viewsManager.js?v=1.0';
 
       // View switcher across all 4 screens: Mapa (#app), Modelo 3D (#result), Vector Map (#mapper), Axonometría (#illustrator)
-      function switchView(viewName) {
+      let currentActiveView = 'app';
+
+      function switchView(viewName, force = false) {
+        if (!force && viewName === 'app' && currentActiveView !== 'app' && window.hasActiveModel?.()) {
+          // Confirmación amigable al regresar al mapa
+          const modal = document.getElementById('modal-return-map');
+          if (modal) {
+            modal.hidden = false;
+            return;
+          }
+        }
+
         document.querySelectorAll('.screen-layer').forEach(s => {
           const isActive = (s.id === viewName);
           s.classList.toggle('active', isActive);
@@ -1639,6 +1771,9 @@
                              (viewName === 'app' ? document.getElementById('view-btn-map') : null);
         if (activeNavBtn) activeNavBtn.classList.add('active');
 
+        currentActiveView = viewName;
+        window.currentWorkspaceMode = viewName;
+
         if (viewName === 'app' && window.appMap) {
           setTimeout(() => {
             window.appMap.invalidateSize();
@@ -1657,6 +1792,7 @@
       }
       window.switchWorkspaceView = switchView;
 
+      // Click en botones de modo
       document.querySelectorAll('.axiom-view-btn[data-view]').forEach(btn => {
         btn.addEventListener('click', () => {
           if (btn.classList.contains('disabled')) return;
@@ -1673,7 +1809,199 @@
       document.getElementById('btn-back-to-map')?.addEventListener('click', () => {
         switchView('app');
       });
-    })();
-  </script>
-</body>
+
+      // Modales de confirmación
+      document.getElementById('modal-return-close')?.addEventListener('click', () => {
+        document.getElementById('modal-return-map').hidden = true;
+      });
+      document.getElementById('modal-btn-stay')?.addEventListener('click', () => {
+        document.getElementById('modal-return-map').hidden = true;
+      });
+      document.getElementById('modal-btn-confirm-map')?.addEventListener('click', () => {
+        document.getElementById('modal-return-map').hidden = true;
+        switchView('app', true);
+      });
+
+      // Centro de Proyecto (Logo Click)
+      document.getElementById('axiom-brand-btn')?.addEventListener('click', () => {
+        const modal = document.getElementById('modal-project-hub');
+        if (!modal) return;
+        const m = window.getActiveModelData?.();
+        if (m) {
+          document.getElementById('hub-coords').textContent = `${m.center.lat.toFixed(4)}, ${m.center.lon.toFixed(4)}`;
+          document.getElementById('hub-dimensions').textContent = `${m.size} × ${m.size} m (${(m.size * m.size / 10000).toFixed(1)} ha)`;
+          document.getElementById('hub-buildings').textContent = `${m.buildings?.length || 0} edif · ΔZ: ${Math.round(m.grid?.maxH || 0)} m`;
+          document.getElementById('hub-ecosystem').textContent = m.ecosystem?.name || 'Clasificado';
+        } else {
+          document.getElementById('hub-coords').textContent = 'Ningún modelo cargado';
+          document.getElementById('hub-dimensions').textContent = '1000 × 1000 m';
+          document.getElementById('hub-buildings').textContent = 'En espera de generación';
+          document.getElementById('hub-ecosystem').textContent = 'Detección automática';
+        }
+        modal.hidden = false;
+      });
+      document.getElementById('modal-hub-close')?.addEventListener('click', () => {
+        document.getElementById('modal-project-hub').hidden = true;
+      });
+      document.getElementById('modal-hub-btn-continue')?.addEventListener('click', () => {
+        document.getElementById('modal-project-hub').hidden = true;
+      });
+      document.getElementById('modal-hub-btn-reset')?.addEventListener('click', () => {
+        if (confirm('¿Deseas reiniciar el espacio de trabajo y seleccionar una nueva zona?')) {
+          document.getElementById('modal-project-hub').hidden = true;
+          switchView('app', true);
+        }
+      });
+      document.getElementById('modal-hub-btn-views')?.addEventListener('click', () => {
+        document.getElementById('modal-project-hub').hidden = true;
+        openSavedViewsModal();
+      });
+
+      // Vistas Guardadas (Saved Views UI)
+      function updateViewsCountBadge() {
+        const badge = document.getElementById('views-count-badge');
+        if (badge) badge.textContent = String(viewsManager.getViews().length);
+      }
+      viewsManager.subscribe(() => updateViewsCountBadge());
+      updateViewsCountBadge();
+
+      function openSavedViewsModal() {
+        const modal = document.getElementById('modal-saved-views');
+        if (!modal) return;
+        renderSavedViewsList();
+        modal.hidden = false;
+      }
+      document.getElementById('btn-open-views')?.addEventListener('click', openSavedViewsModal);
+      document.getElementById('modal-views-close')?.addEventListener('click', () => {
+        document.getElementById('modal-saved-views').hidden = true;
+      });
+      document.getElementById('modal-views-close-btn')?.addEventListener('click', () => {
+        document.getElementById('modal-saved-views').hidden = true;
+      });
+
+      function renderSavedViewsList() {
+        const container = document.getElementById('saved-views-container');
+        if (!container) return;
+        const views = viewsManager.getViews();
+        if (!views.length) {
+          container.innerHTML = `<div style="text-align:center; padding:24px; color:#64748b; font-size:12px;">No hay vistas guardadas en este proyecto.<br>Haz clic en "Guardar Actual" para registrar el encuadre y estilo actual.</div>`;
+          return;
+        }
+        container.innerHTML = views.map(v => `
+          <div class="axiom-view-card">
+            <div class="axiom-view-meta">
+              <span class="axiom-view-name">${v.name}</span>
+              <span class="axiom-view-details">Modo: <strong>${v.mode === 'result' ? '3D' : v.mode === 'mapper' ? 'Vector 2D' : v.mode === 'illustrator' ? 'Axonometría' : 'Mapa'}</strong> · ${new Date(v.createdAt).toLocaleDateString()} ${new Date(v.createdAt).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit' })}</span>
+            </div>
+            <div class="axiom-view-btn-group">
+              <button type="button" class="axiom-btn-primary" data-applyview="${v.id}" style="padding:4px 10px; font-size:11px;">Restaurar</button>
+              <button type="button" class="axiom-btn-danger" data-delview="${v.id}" style="padding:4px 8px; font-size:11px;">🗑️</button>
+            </div>
+          </div>
+        `).join('');
+
+        container.querySelectorAll('[data-applyview]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-applyview');
+            applySavedView(id);
+            document.getElementById('modal-saved-views').hidden = true;
+          });
+        });
+
+        container.querySelectorAll('[data-delview]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-delview');
+            viewsManager.deleteView(id);
+            renderSavedViewsList();
+          });
+        });
+      }
+
+      function applySavedView(id) {
+        const views = viewsManager.getViews();
+        const v = views.find(item => item.id === id);
+        if (!v) return;
+
+        // Switch to the view's mode
+        switchView(v.mode, true);
+
+        // Apply mode-specific configuration
+        if (v.mode === 'result' && v.camera3D && window.applyCamera3DView) {
+          window.applyCamera3DView(v.camera3D);
+        }
+        if (v.mode === 'mapper' && v.vectorMap && window.applyVectorMapConfig) {
+          window.applyVectorMapConfig(v.vectorMap);
+        }
+        if (v.mode === 'illustrator' && v.illustrate && window.applyIllustrateConfig) {
+          window.applyIllustrateConfig(v.illustrate);
+        }
+      }
+      window.applySavedView = applySavedView;
+
+      document.getElementById('btn-save-current-view')?.addEventListener('click', () => {
+        const input = document.getElementById('input-new-view-name');
+        const name = input?.value?.trim() || `Vista ${viewsManager.getViews().length + 1}`;
+        const state = {
+          mode: currentActiveView,
+          modelId: window.getActiveModelData?.()?.id || null,
+          camera3D: window.getCamera3DState?.() || null,
+          vectorMap: window.getVectorMapState?.() || null,
+          illustrate: window.getIllustrateState?.() || null,
+          feasibility: window.getFeasibilityState?.() || null,
+        };
+        viewsManager.saveCurrentView(name, state);
+        if (input) input.value = '';
+        renderSavedViewsList();
+      });
+
+      // Export/Import Views JSON
+      document.getElementById('btn-export-views-json')?.addEventListener('click', () => {
+        const json = viewsManager.exportJSON();
+        const blob = new Blob([json], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `urbanized_vistas_${Date.now()}.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      });
+
+      document.getElementById('btn-import-views-json')?.addEventListener('click', () => {
+        document.getElementById('input-import-views-file')?.click();
+      });
+      document.getElementById('input-import-views-file')?.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (evt) => {
+          const res = viewsManager.importJSON(evt.target.result);
+          if (res.success) {
+            alert(`Se importaron ${res.count} vistas correctamente.`);
+            renderSavedViewsList();
+          } else {
+            alert(`Error al importar: ${res.error}`);
+          }
+        };
+        reader.readAsText(file);
+        e.target.value = '';
+      });
+
+      // Atajos de teclado para cambio de modos: [1] Mapa, [2] 3D, [3] Vector Map, [4] Axonometría
+      document.addEventListener('keydown', (e) => {
+        if (['INPUT', 'TEXTAREA', 'SELECT'].includes(e.target.tagName) || e.target.isContentEditable) return;
+        if (e.key === '1') switchView('app');
+        if (e.key === '2') {
+          const btn = document.getElementById('view-btn-studio');
+          if (btn && !btn.classList.contains('disabled')) switchView('result');
+        }
+        if (e.key === '3') {
+          const btn = document.getElementById('view-btn-mapper');
+          if (btn && !btn.classList.contains('disabled')) switchView('mapper');
+        }
+        if (e.key === '4') {
+          const btn = document.getElementById('view-btn-illu');
+          if (btn && !btn.classList.contains('disabled')) switchView('illustrator');
+        }
+      });
+    </script>
+  </body>
 </html>
