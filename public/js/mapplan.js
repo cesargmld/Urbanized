@@ -12,10 +12,10 @@ export const MAP_PRESETS = {
       water: '#a9cbe3', green: '#cfe0b8', tree: '#9cc17f', contour: '#cdbd9f', shadow: '#2b2924',
       depthLow: '#eef0e2', depthHigh: '#c8ab84', grid: '#b9b2a6', text: '#2b2b2b',
     },
-    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: false, site: true, byType: false },
+    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: false, site: true, byType: false, satellite: false, flora: false, fauna: false },
     shadows: { on: true, azimuth: 315, altitude: 35, strength: 0.22 },
     relief: { hillshade: true, hillshadeStrength: 0.45, depth: false, depthStrength: 0.7 },
-    overlays: { scalebar: true, north: true, grid: false },
+    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: true, pins: true },
     outlineWidth: 0.08,
   },
   figure: {
@@ -24,10 +24,10 @@ export const MAP_PRESETS = {
       water: '#dcdcdc', green: '#f1f1f1', tree: '#d6d6d6', contour: '#d0d0d0', shadow: '#000000',
       depthLow: '#ffffff', depthHigh: '#bdbdbd', grid: '#cfcfcf', text: '#111111',
     },
-    layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: true, byType: false },
+    layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: true, byType: false, satellite: false, flora: false, fauna: false },
     shadows: { on: false, azimuth: 315, altitude: 35, strength: 0.2 },
     relief: { hillshade: false, hillshadeStrength: 0.4, depth: false, depthStrength: 0.6 },
-    overlays: { scalebar: true, north: true, grid: false },
+    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: true, pins: true },
     outlineWidth: 0,
   },
   relief: {
@@ -36,10 +36,10 @@ export const MAP_PRESETS = {
       water: '#9fc4df', green: '#c7dcae', tree: '#8db872', contour: '#9c8463', shadow: '#2a2622',
       depthLow: '#dfeacb', depthHigh: '#c49668', grid: '#b0a898', text: '#2b2b2b',
     },
-    layers: { buildings: true, roads: true, rail: true, water: true, green: false, trees: false, contours: true, site: true, byType: false },
+    layers: { buildings: true, roads: true, rail: true, water: true, green: false, trees: false, contours: true, site: true, byType: false, satellite: false, flora: false, fauna: false },
     shadows: { on: false, azimuth: 315, altitude: 35, strength: 0.2 },
     relief: { hillshade: true, hillshadeStrength: 0.6, depth: true, depthStrength: 0.85 },
-    overlays: { scalebar: true, north: true, grid: false },
+    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: true, pins: true },
     outlineWidth: 0.08,
   },
   night: {
@@ -48,10 +48,10 @@ export const MAP_PRESETS = {
       water: '#1b3450', green: '#1d2a22', tree: '#2b4733', contour: '#2c313b', shadow: '#000000',
       depthLow: '#15171c', depthHigh: '#3a3f4c', grid: '#2e333d', text: '#d3d7df',
     },
-    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: false, site: true, byType: false },
+    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: false, site: true, byType: false, satellite: false, flora: false, fauna: false },
     shadows: { on: true, azimuth: 315, altitude: 30, strength: 0.5 },
     relief: { hillshade: true, hillshadeStrength: 0.5, depth: false, depthStrength: 0.6 },
-    overlays: { scalebar: true, north: true, grid: false },
+    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: true, pins: true },
     outlineWidth: 0,
   },
   blueprint: {
@@ -60,10 +60,10 @@ export const MAP_PRESETS = {
       water: '#183462', green: '#1d3e72', tree: '#2a5491', contour: '#4f73ad', shadow: '#0b1a33',
       depthLow: '#1d3e72', depthHigh: '#2c5aa0', grid: '#4f73ad', text: '#e8effc',
     },
-    layers: { buildings: true, roads: true, rail: true, water: true, green: false, trees: false, contours: true, site: true, byType: false },
+    layers: { buildings: true, roads: true, rail: true, water: true, green: false, trees: false, contours: true, site: true, byType: false, satellite: false, flora: false, fauna: false },
     shadows: { on: false, azimuth: 315, altitude: 35, strength: 0.3 },
     relief: { hillshade: false, hillshadeStrength: 0.4, depth: false, depthStrength: 0.6 },
-    overlays: { scalebar: true, north: true, grid: true },
+    overlays: { scalebar: true, north: true, grid: true, isochrones: false, labels: true, pins: true },
     outlineWidth: 0.1,
   },
   stipple: {
@@ -72,10 +72,10 @@ export const MAP_PRESETS = {
       water: '#e0ecf7', green: '#edf4e8', tree: '#1e3a8a', contour: '#93c5fd', shadow: '#1e3a8a',
       depthLow: '#ffffff', depthHigh: '#1e3a8a', grid: '#bfdbfe', text: '#1e3a8a',
     },
-    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: true, site: true, byType: false },
+    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: true, site: true, byType: false, satellite: false, flora: false, fauna: false },
     shadows: { on: true, azimuth: 315, altitude: 35, strength: 0.28 },
     relief: { hillshade: false, hillshadeStrength: 0.3, depth: false, depthStrength: 0.5 },
-    overlays: { scalebar: true, north: true, grid: true },
+    overlays: { scalebar: true, north: true, grid: true, isochrones: false, labels: true, pins: true },
     outlineWidth: 0.16,
     grain: 18,
   },
@@ -151,6 +151,7 @@ export function mapSVG(model, o) {
   const P = ([x, y]) => `${f(x + h)},${f(h - y)}`;
   const ring = (pts, closed = true) => `M${pts.map(P).join('L')}${closed ? 'Z' : ''}`;
   const pen = (mm) => f((mm * scale) / 1000); // толщина пера в мм на листе → метры
+  const groups = [];
   const layerSnippets = {};
   const gl = (id, attrs, body) => (body ? `<g id="${id}" ${attrs}>${body}</g>` : '');
   const lines = (layer) => (model.lines[layer] ?? []).map((pts) => ring(pts, false)).join('');
@@ -195,6 +196,32 @@ export function mapSVG(model, o) {
   layerSnippets.green = (() => {
     if (!o.layers.green) return '';
     return gl('GREEN', `fill="${c.green}"`, areas('GREEN') && `<path d="${areas('GREEN')}"/>`);
+  })();
+
+  // 3b. Zonas de Flora Nativa (Simbología sutil arquitectónica)
+  layerSnippets.flora = (() => {
+    if (!o.layers?.flora) return '';
+    const greenAreas = areas('GREEN');
+    const parts = [];
+    if (greenAreas) {
+      parts.push(`<path d="${greenAreas}" fill="#52795d" fill-opacity="0.25" stroke="#2d6a4f" stroke-width="${pen(0.22)}" stroke-dasharray="${pen(1.2)} ${pen(0.8)}"/>`);
+    }
+    if (model.trees?.length) {
+      for (const t of model.trees) {
+        parts.push(`<circle cx="${f(t.x + h)}" cy="${f(h - t.y)}" r="${f(t.r * 1.3)}" fill="none" stroke="#2d6a4f" stroke-width="${pen(0.14)}" stroke-dasharray="${pen(0.6)} ${pen(0.6)}"/>`);
+      }
+    }
+    return gl('FLORA_ZONES', '', parts.join(''));
+  })();
+
+  // 3c. Corredores Ecológicos de Fauna (Simbología sutil arquitectónica)
+  layerSnippets.fauna = (() => {
+    if (!o.layers?.fauna) return '';
+    const parts = [];
+    if (lines('WATER')) {
+      parts.push(`<path d="${lines('WATER')}" fill="none" stroke="#d97706" stroke-width="${pen(0.8)}" stroke-dasharray="${pen(2.2)} ${pen(1.4)}" opacity="0.75"/>`);
+    }
+    return gl('FAUNA_CORRIDORS', '', parts.join(''));
   })();
 
   // 4. Cuerpos de agua
@@ -331,7 +358,7 @@ export function mapSVG(model, o) {
   })();
 
   // Ensamble dinámico según el orden de capas y opacidad personalizada
-  const defaultOrder = ['satellite', 'relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
+  const defaultOrder = ['satellite', 'relief', 'contours', 'green', 'flora', 'water', 'fauna', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
   const layerOrder = Array.isArray(o.layerOrder) && o.layerOrder.length ? o.layerOrder : defaultOrder;
   const opacities = o.layerOpacities || {};
 
@@ -421,23 +448,31 @@ export function mapSVG(model, o) {
   }
 
   // Pines y Marcadores Personalizados (Imagen 3)
-  const pins = pinStore.getPins().filter((p) => p.visible);
-  if (pins.length > 0) {
-    let pinShapes = '';
-    for (const p of pins) {
-      const px = p.x + h;
-      const py = h - p.y;
-      const r = fs * 0.65;
-      pinShapes += `
-      <g id="PIN_${p.id}">
-        <circle cx="${f(px)}" cy="${f(py)}" r="${f(r * 1.6)}" fill="${p.color}" opacity="0.25"/>
-        <circle cx="${f(px)}" cy="${f(py)}" r="${f(r)}" fill="${p.color}" stroke="#ffffff" stroke-width="${pen(0.35)}"/>
-        <line x1="${f(px)}" y1="${f(py - r)}" x2="${f(px + r * 1.2)}" y2="${f(py - r * 2.2)}" stroke="${p.color}" stroke-width="${pen(0.25)}"/>
-        <rect x="${f(px + r * 1.2)}" y="${f(py - r * 3.4)}" width="${f(fs * 4.2)}" height="${f(fs * 1.3)}" rx="${f(fs * 0.3)}" fill="${p.color}"/>
-        <text x="${f(px + r * 1.6)}" y="${f(py - r * 2.5)}" fill="#ffffff" font-family="Inter, sans-serif" font-size="${f(fs * 0.65)}" font-weight="600">${esc(p.label.length > 14 ? p.label.slice(0, 13) + '…' : p.label)}</text>
-      </g>`;
+  if (o.overlays?.pins !== false) {
+    const pins = pinStore.getPins().filter((p) => p.visible);
+    if (pins.length > 0) {
+      let pinShapes = '';
+      for (const p of pins) {
+        const px = p.x + h;
+        const py = h - p.y;
+        const r = fs * 0.65;
+        const pStyle = p.style || 'glass';
+        const labelBg = pStyle === 'white' ? '#ffffff' : (pStyle === 'accent' ? p.color : (pStyle === 'wire' ? 'rgba(0,0,0,0.6)' : '#111215'));
+        const textCol = pStyle === 'white' ? '#111215' : '#ffffff';
+        const strokeCol = pStyle === 'white' ? '#cbd5e1' : (pStyle === 'wire' ? p.color : 'rgba(255,255,255,0.22)');
+        const needleH = Math.max(10, p.needleHeight || 45);
+        const stemScale = Math.min(2.5, Math.max(0.6, needleH / 45));
+        pinShapes += `
+        <g id="PIN_${p.id}">
+          <circle cx="${f(px)}" cy="${f(py)}" r="${f(r * 1.6)}" fill="${p.color}" opacity="0.25"/>
+          <circle cx="${f(px)}" cy="${f(py)}" r="${f(r)}" fill="${p.color}" stroke="#ffffff" stroke-width="${pen(0.35)}"/>
+          <line x1="${f(px)}" y1="${f(py - r)}" x2="${f(px + r * 1.2 * stemScale)}" y2="${f(py - r * 2.2 * stemScale)}" stroke="${p.color}" stroke-width="${pen(0.25)}"/>
+          <rect x="${f(px + r * 1.2 * stemScale)}" y="${f(py - r * 3.4 * stemScale)}" width="${f(fs * 4.2)}" height="${f(fs * 1.3)}" rx="${f(fs * 0.3)}" fill="${labelBg}" stroke="${strokeCol}" stroke-width="${pen(0.12)}"/>
+          <text x="${f(px + r * 1.6 * stemScale)}" y="${f(py - r * 2.5 * stemScale)}" fill="${textCol}" font-family="Inter, sans-serif" font-size="${f(fs * 0.65)}" font-weight="600">${esc(p.label.length > 14 ? p.label.slice(0, 13) + '…' : p.label)}</text>
+        </g>`;
+      }
+      groups.push(`<g id="CUSTOM_PINS">${pinShapes}</g>`);
     }
-    groups.push(`<g id="CUSTOM_PINS">${pinShapes}</g>`);
   }
 
   const barY = size + m * (o.overlays.grid ? 0.95 : 0.55);

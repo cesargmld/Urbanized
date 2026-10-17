@@ -205,11 +205,12 @@ export function createIllustrator(canvas, model) {
     return z;
   })();
 
-  /* --- Cálculo de vector de luz solar dinámico --- */
+  /* --- Cálculo de vector de luz solar dinámico (Físicamente alineado al Norte) --- */
   function getLightVector() {
     const azRad = (state.sunAz * Math.PI) / 180;
     const altRad = (Math.max(8, state.sunAlt) * Math.PI) / 180;
-    const v = [-Math.cos(altRad) * Math.cos(azRad), -Math.cos(altRad) * Math.sin(azRad), Math.sin(altRad)];
+    // Az 0° = Norte (+Y), Az 90° = Este (+X), Az 180° = Sur (-Y), Az 270° = Oeste (-X)
+    const v = [Math.sin(azRad) * Math.cos(altRad), Math.cos(azRad) * Math.cos(altRad), Math.sin(altRad)];
     const n = Math.hypot(...v) || 1;
     return v.map((x) => x / n);
   }
@@ -304,6 +305,18 @@ export function createIllustrator(canvas, model) {
         }
         add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], base + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], base + off]], { colorDirect: mat.stroke, weight: 1.2, edge: true });
         add('line', [...loop.map((i) => [t.verts[i][0], t.verts[i][1], t.verts[i][2] + off]), [t.verts[loop[0]][0], t.verts[loop[0]][1], t.verts[loop[0]][2] + off]], { colorDirect: mat.stroke, weight: 1.2, edge: true });
+      }
+
+      // Tapa inferior sólida para plinto/zócalo arquitectónico cerrado
+      const flatBottom = [];
+      for (const i of loop) flatBottom.push(t.verts[i][0], t.verts[i][1]);
+      const bTris = earcut(flatBottom, [], 2);
+      for (let ti = 0; ti < bTris.length; ti += 3) {
+        add('poly', [
+          [t.verts[loop[bTris[ti]]][0], t.verts[loop[bTris[ti]]][1], base + off],
+          [t.verts[loop[bTris[ti + 1]]][0], t.verts[loop[bTris[ti + 1]]][1], base + off],
+          [t.verts[loop[bTris[ti + 2]]][0], t.verts[loop[bTris[ti + 2]]][1], base + off]
+        ], { fillDirect: mat.color, flat: true, noStroke: true, order: -1 });
       }
     }
 
@@ -555,11 +568,11 @@ export function createIllustrator(canvas, model) {
         for (const t of activeTiers) {
           add('pinDot', [[p.x, p.y, t.z + 1.2]], { colorDirect: p.color });
         }
-        add('pinBadge', [[p.x, p.y, zMax + 25]], { label: p.label, color: p.color, type: p.type });
+        add('pinBadge', [[p.x, p.y, zMax + 25]], { label: p.label, color: p.color, type: p.type, style: p.style || 'glass', needleHeight: p.needleHeight || 45 });
       }
     } else if (!isExp) {
       for (const p of pins) {
-        add('pinBadge', [[p.x, p.y, p.z || 0]], { label: p.label, color: p.color, type: p.type, normal: true });
+        add('pinBadge', [[p.x, p.y, p.z || 0]], { label: p.label, color: p.color, type: p.type, normal: true, style: p.style || 'glass', needleHeight: p.needleHeight || 45 });
       }
     }
 
@@ -997,7 +1010,7 @@ export function createIllustrator(canvas, model) {
       ctx.restore();
     }
 
-    // 4. Bounding Box Corner Titles for Exploded Tiers (Imagen 4)
+    // 4. Bounding Box Margin Titles with Leader Lines for Exploded Tiers (Architectural Swiss Precision)
     if (state.exploded && state.explodedCornerLabels) {
       ctx.save();
       const half = (model.size || 1000) / 2;
@@ -1006,26 +1019,83 @@ export function createIllustrator(canvas, model) {
         { key: 'contours', z: 0, label: '01 / CONTOURS' },
         { key: 'hydrography', z: dZ * 1, label: '02 / HYDROGRAPHY' },
         { key: 'network', z: dZ * 2, label: '03 / NETWORK' },
-        { key: 'buildings', z: dZ * 3, label: '04 / URBAN AREAS (BUILDINGS)' },
+        { key: 'buildings', z: dZ * 3, label: '04 / URBAN AREAS' },
         { key: 'green', z: dZ * 4, label: '05 / GREEN AREAS' }
       ].filter((t) => state.explodedTiers[t.key]);
 
-      for (const t of activeTiers) {
-        const pt = cam.project([-half, -half, t.z]);
-        if (pt[2] > 0) {
-          ctx.font = 'bold 11px "JetBrains Mono", monospace';
+      if (activeTiers.length > 0) {
+        ctx.font = 'bold 10.5px "JetBrains Mono", monospace';
+        const tierData = activeTiers.map((t) => {
+          const corner = cam.project([-half, -half, t.z]);
           const txt = t.label;
-          const bw = ctx.measureText(txt).width + 18;
-          ctx.fillStyle = 'rgba(10, 11, 16, 0.92)';
-          roundRect(ctx, pt[0] - bw - 12, pt[1] - 11, bw, 22, 5);
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(255, 255, 255, 0.50)';
-          ctx.lineWidth = 1.1;
-          ctx.stroke();
+          const bw = ctx.measureText(txt).width + 20;
+          return { t, corner, txt, bw, y: corner[1] };
+        }).filter(d => d.corner[2] > 0);
+
+        // Sort by elevation / screen Y to space them out cleanly along the margin
+        tierData.sort((a, b) => a.y - b.y);
+
+        // Enforce a minimum vertical distance of 30px between successive badges to prevent any overlap
+        const minGap = 30;
+        for (let i = 1; i < tierData.length; i++) {
+          if (tierData[i].y < tierData[i - 1].y + minGap) {
+            tierData[i].y = tierData[i - 1].y + minGap;
+          }
+        }
+        // Keep within canvas bounds
+        const maxBottom = height - 45;
+        if (tierData.length > 0 && tierData[tierData.length - 1].y > maxBottom) {
+          const overflow = tierData[tierData.length - 1].y - maxBottom;
+          for (let i = 0; i < tierData.length; i++) tierData[i].y -= overflow;
+        }
+
+        const minCornerX = Math.min(...tierData.map(d => d.corner[0]));
+        const labelRightX = Math.max(140, Math.min(minCornerX - 45, width * 0.28));
+
+        for (const d of tierData) {
+          const { corner, txt, bw, y: badgeY } = d;
+
+          // 1. Hairline Leader Line with Corner Anchor Dot
+          ctx.beginPath();
+          ctx.arc(corner[0], corner[1], 2.5, 0, Math.PI * 2);
           ctx.fillStyle = '#ffffff';
-          ctx.textAlign = 'center';
+          ctx.fill();
+
+          ctx.beginPath();
+          ctx.setLineDash([4, 3]);
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = 0.9;
+          ctx.moveTo(corner[0], corner[1]);
+          const elbowX = (corner[0] + labelRightX) / 2;
+          ctx.lineTo(elbowX, corner[1]);
+          ctx.lineTo(elbowX, badgeY);
+          ctx.lineTo(labelRightX, badgeY);
+          ctx.stroke();
+          ctx.setLineDash([]);
+
+          // 2. High-End Frosted Glass Badge
+          const bx = labelRightX - bw;
+          ctx.fillStyle = 'rgba(10, 11, 16, 0.94)';
+          roundRect(ctx, bx, badgeY - 11, bw, 22, 5);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+          ctx.lineWidth = 1.0;
+          ctx.stroke();
+
+          // Tier accent dot
+          ctx.beginPath();
+          ctx.arc(bx + 10, badgeY, 3, 0, Math.PI * 2);
+          ctx.fillStyle = d.t.key === 'green' ? '#4ade80'
+                        : d.t.key === 'buildings' ? '#ffffff'
+                        : d.t.key === 'network' ? '#fbbf24'
+                        : d.t.key === 'hydrography' ? '#38bdf8'
+                        : '#94a3b8';
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.textAlign = 'left';
           ctx.textBaseline = 'middle';
-          ctx.fillText(txt, pt[0] - bw / 2 - 12, pt[1]);
+          ctx.fillText(txt, bx + 18, badgeY);
         }
       }
       ctx.restore();
@@ -1151,33 +1221,63 @@ export function createIllustrator(canvas, model) {
       } else if (it.kind === 'pinBadge') {
         ctx.save();
         const px = it.pt[0], py = it.pt[1];
+        const needleH = Math.max(10, it.needleHeight || 45);
+        const stemLen = (needleH / 45) * 28;
         if (it.normal) {
           ctx.beginPath();
           ctx.moveTo(px, py);
-          ctx.lineTo(px, py - 26);
+          ctx.lineTo(px, py - stemLen);
           ctx.strokeStyle = it.color || '#f97316';
           ctx.lineWidth = 1.5;
           ctx.stroke();
           ctx.beginPath();
           ctx.arc(px, py, 3, 0, Math.PI * 2);
-          ctx.fillStyle = it.color;
+          ctx.fillStyle = it.color || '#f97316';
           ctx.fill();
         }
-        const by = it.normal ? py - 38 : py;
+        const by = it.normal ? py - stemLen - 12 : py;
         ctx.font = 'bold 11px Inter, sans-serif';
         const txt = it.label || 'Marcador';
         const bw = ctx.measureText(txt).width + 26;
-        ctx.fillStyle = 'rgba(12, 13, 17, 0.94)';
-        roundRect(ctx, px - bw / 2, by - 11, bw, 22, 6);
-        ctx.fill();
-        ctx.strokeStyle = it.color || '#f97316';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
+        const pStyle = it.style || 'glass';
+
+        if (pStyle === 'white') {
+          ctx.fillStyle = '#ffffff';
+          roundRect(ctx, px - bw / 2, by - 11, bw, 22, 6);
+          ctx.fill();
+          ctx.strokeStyle = '#cbd5e1';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        } else if (pStyle === 'accent') {
+          ctx.fillStyle = it.color || '#0284c7';
+          roundRect(ctx, px - bw / 2, by - 11, bw, 22, 6);
+          ctx.fill();
+          ctx.strokeStyle = '#ffffff';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        } else if (pStyle === 'wire') {
+          ctx.fillStyle = 'rgba(10, 11, 14, 0.75)';
+          roundRect(ctx, px - bw / 2, by - 11, bw, 22, 6);
+          ctx.fill();
+          ctx.strokeStyle = it.color || '#ffffff';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        } else {
+          // 'glass'
+          ctx.fillStyle = 'rgba(12, 13, 17, 0.92)';
+          roundRect(ctx, px - bw / 2, by - 11, bw, 22, 6);
+          ctx.fill();
+          ctx.strokeStyle = it.color || '#f97316';
+          ctx.lineWidth = 1.2;
+          ctx.stroke();
+        }
+
         ctx.beginPath();
         ctx.arc(px - bw / 2 + 10, by, 4, 0, Math.PI * 2);
-        ctx.fillStyle = it.color || '#f97316';
+        ctx.fillStyle = pStyle === 'accent' ? '#ffffff' : (it.color || '#f97316');
         ctx.fill();
-        ctx.fillStyle = '#ffffff';
+
+        ctx.fillStyle = pStyle === 'white' ? '#0f172a' : '#ffffff';
         ctx.textAlign = 'left';
         ctx.textBaseline = 'middle';
         ctx.fillText(txt, px - bw / 2 + 18, by);

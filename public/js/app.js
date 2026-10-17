@@ -987,34 +987,11 @@ function updateFloraZonesOnMap() {
       });
       L.marker(treeLatLng, { icon, interactive: false }).addTo(floraState.layerGroup);
     });
-  } else {
-    // 3. Antes de generar el modelo 3D: mostramos las especies nativas ordenadas sobre el área de búsqueda
-    eco.flora.slice(0, 3).forEach((sp, idx) => {
-      if (floraState.selectedSpecies >= 0 && floraState.selectedSpecies !== idx) return;
-      const color = palette[idx % palette.length];
-      const offsetLat = (idx - 1) * 0.002;
-      const pos = [center.lat + offsetLat, center.lng];
-
-      const badgeHtml = `
-        <div class="flora-zone-pin" style="--flora-color:${color}">
-          <span class="flora-zone-dot"></span>
-          <div class="flora-zone-info">
-            <b>${sp.name}</b>
-            <i>${sp.latin}</i>
-          </div>
-        </div>
-      `;
-      const icon = L.divIcon({
-        html: badgeHtml,
-        className: 'flora-zone-icon-wrap',
-        iconSize: [160, 36],
-        iconAnchor: [80, 18]
-      });
-      L.marker(pos, { icon, interactive: false }).addTo(floraState.layerGroup);
-    });
   }
 
-  setFloraZoneHighlight(true, floraState.selectedSpecies);
+  if (typeof model !== 'undefined' && model) {
+    setFloraZoneHighlight(floraState.zonesActive, floraState.selectedSpecies);
+  }
 }
 window.updateFloraZonesOnMap = updateFloraZonesOnMap;
 
@@ -1152,15 +1129,21 @@ $('#btn-render-maqueta')?.addEventListener('click', () => {
   toggleMaquetaMode(true);
 });
 
-// Studio Toolbar: Camera Orbit 3D & Cenital
+// Studio Toolbar: Camera Orbit 3D, Isométrica 45° & Cenital
 $('#cam-persp')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-top').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso45, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   selectView('model');
   setCameraView('persp');
 });
+$('#cam-iso45')?.addEventListener('click', (e) => {
+  document.querySelectorAll('#cam-persp, #cam-iso45, #cam-top').forEach((b) => b.classList.remove('active'));
+  e.currentTarget.classList.add('active');
+  selectView('model');
+  setCameraView('iso45');
+});
 $('#cam-top')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-top').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-iso45, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   selectView('model');
   setCameraView('top');
@@ -1611,16 +1594,58 @@ function renderPinsDrawerList() {
   for (const pin of pins) {
     const row = document.createElement('div');
     row.className = 'studio-pin-row';
+    const isVis = pin.visible !== false;
+    const curStyle = pin.style || 'glass';
+    const curHeight = pin.needleHeight || 45;
+
     row.innerHTML = `
-      <span class="studio-pin-dot" style="background:${pin.color}; color:${pin.color};"></span>
-      <input type="text" class="studio-pin-name-input" value="${pin.label}">
-      <span class="studio-pin-type-tag">${pin.type}</span>
-      <button type="button" class="studio-pin-del" title="Eliminar marcador">&times;</button>
+      <div class="studio-pin-main-row">
+        <button type="button" class="studio-pin-vis-btn ${isVis ? 'active' : ''}" title="${isVis ? 'Ocultar hito' : 'Mostrar hito'}">
+          ${isVis ? '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>' : '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>'}
+        </button>
+        <input type="color" class="studio-pin-color-pick" value="${pin.color}" title="Cambiar color del hito">
+        <input type="text" class="studio-pin-name-input" value="${pin.label}">
+        <select class="studio-pin-style-select" title="Estilo gráfico del cartel">
+          <option value="glass" ${curStyle === 'glass' ? 'selected' : ''}>Glass</option>
+          <option value="white" ${curStyle === 'white' ? 'selected' : ''}>Blanco</option>
+          <option value="accent" ${curStyle === 'accent' ? 'selected' : ''}>Acento</option>
+          <option value="wire" ${curStyle === 'wire' ? 'selected' : ''}>Línea</option>
+        </select>
+        <button type="button" class="studio-pin-del" title="Eliminar marcador">&times;</button>
+      </div>
+      <div class="studio-pin-height-row">
+        <span class="axiom-label" style="font-size:9.5px;">Mástil:</span>
+        <input type="range" min="10" max="150" step="5" value="${curHeight}" class="studio-pin-height-slider axiom-range" title="Estirar mástil del hito">
+        <span class="studio-pin-height-val">${curHeight} m</span>
+      </div>
     `;
+
+    const visBtn = row.querySelector('.studio-pin-vis-btn');
+    visBtn.addEventListener('click', () => {
+      pinStore.updatePin(pin.id, { visible: !isVis });
+    });
+
+    const colInp = row.querySelector('.studio-pin-color-pick');
+    colInp.addEventListener('input', (e) => {
+      pinStore.updatePin(pin.id, { color: e.target.value });
+    });
 
     const inp = row.querySelector('.studio-pin-name-input');
     inp.addEventListener('change', (e) => {
       pinStore.updatePin(pin.id, { label: e.target.value });
+    });
+
+    const selStyle = row.querySelector('.studio-pin-style-select');
+    selStyle.addEventListener('change', (e) => {
+      pinStore.updatePin(pin.id, { style: e.target.value });
+    });
+
+    const hSlider = row.querySelector('.studio-pin-height-slider');
+    const hVal = row.querySelector('.studio-pin-height-val');
+    hSlider.addEventListener('input', (e) => {
+      const val = Number(e.target.value);
+      if (hVal) hVal.textContent = `${val} m`;
+      pinStore.updatePin(pin.id, { needleHeight: val });
     });
 
     const del = row.querySelector('.studio-pin-del');
@@ -1834,7 +1859,7 @@ function syncFeasibilityDrawer() {
   const inW = $('#feas-lot-w'); if (inW) inW.value = feasibilityStore.lotWidth;
   const inL = $('#feas-lot-l'); if (inL) inL.value = feasibilityStore.lotLength;
 
-  // Botón de ubicar
+  // Botón de ubicar predio / lote
   const btnPick = $('#btn-feas-pick-location');
   if (btnPick) {
     if (feasibilityStore.isPlacingLot) {
@@ -1844,25 +1869,46 @@ function syncFeasibilityDrawer() {
     } else {
       btnPick.style.background = '';
       btnPick.style.color = '';
-      btnPick.innerHTML = '<span>📍 Ubicar con Clic</span>';
+      btnPick.innerHTML = '<span>📍 Ubicar Predio con Clic</span>';
     }
   }
 
-  // Controles de proyecto 3D importado
-  const projControls = $('#feas-project-controls');
-  const projName = $('#feas-project-name');
-  if (feasibilityStore.projectModel) {
-    if (projControls) projControls.hidden = false;
-    if (projName) projName.textContent = `Archivo: ${feasibilityStore.projectModel.filename}`;
-    const sScale = $('#feas-proj-scale'); if (sScale) sScale.value = feasibilityStore.projectScale;
-    const vScale = $('#feas-val-proj-scale'); if (vScale) vScale.textContent = `${feasibilityStore.projectScale.toFixed(2)}x`;
-    const sPRot = $('#feas-proj-rot'); if (sPRot) sPRot.value = feasibilityStore.projectRotY;
-    const vPRot = $('#feas-val-proj-rot'); if (vPRot) vPRot.textContent = `${feasibilityStore.projectRotY}°`;
-    const sPZ = $('#feas-proj-z'); if (sPZ) sPZ.value = feasibilityStore.projectOffsetZ;
-    const vPZ = $('#feas-val-proj-z'); if (vPZ) vPZ.textContent = `${feasibilityStore.projectOffsetZ.toFixed(1)} m`;
-  } else {
-    if (projControls) projControls.hidden = true;
+  // Botón Paso 3: Clic en terreno para ubicar
+  const btnClickPlace = $('#btn-feas-click-place');
+  if (btnClickPlace) {
+    if (feasibilityStore.isPlacingLot) {
+      btnClickPlace.style.background = '#0284c7';
+      btnClickPlace.style.color = '#ffffff';
+      btnClickPlace.innerHTML = '<span>📍 Clic en el terreno para ubicar...</span>';
+    } else {
+      btnClickPlace.style.background = '';
+      btnClickPlace.style.color = '';
+      btnClickPlace.innerHTML = '<span data-i18n="feas.pickOnTerrain">📍 Clic en Terreno para Ubicar</span>';
+    }
   }
+
+  // Controles de proyecto 3D importado y manipulación libre
+  const projName = $('#feas-project-name');
+  if (projName) {
+    projName.textContent = feasibilityStore.projectModel
+      ? `Archivo cargado: ${feasibilityStore.projectModel.filename}`
+      : '';
+  }
+  const sX = $('#feas-proj-x'); if (sX) sX.value = feasibilityStore.projectOffsetX;
+  const vX = $('#feas-val-proj-x'); if (vX) vX.textContent = `${feasibilityStore.projectOffsetX} m`;
+  const sY = $('#feas-proj-y'); if (sY) sY.value = feasibilityStore.projectOffsetY;
+  const vY = $('#feas-val-proj-y'); if (vY) vY.textContent = `${feasibilityStore.projectOffsetY} m`;
+  const sPZ = $('#feas-proj-z'); if (sPZ) sPZ.value = feasibilityStore.projectOffsetZ;
+  const vPZ = $('#feas-val-proj-z'); if (vPZ) vPZ.textContent = `${Number(feasibilityStore.projectOffsetZ).toFixed(1)} m`;
+  const sPRot = $('#feas-proj-rot'); if (sPRot) sPRot.value = feasibilityStore.projectRotY;
+  const vPRot = $('#feas-val-proj-rot'); if (vPRot) vPRot.textContent = `${feasibilityStore.projectRotY}°`;
+  const sScale = $('#feas-proj-scale'); if (sScale) sScale.value = feasibilityStore.projectScale;
+  const vScale = $('#feas-val-proj-scale'); if (vScale) vScale.textContent = `${Number(feasibilityStore.projectScale).toFixed(2)}x`;
+
+  // Acabado del proyecto
+  document.querySelectorAll('#feas-project-finish-group [data-projfinish]').forEach((b) => {
+    b.classList.toggle('active', b.dataset.projfinish === (feasibilityStore.projectFinish || 'white'));
+  });
 
   const oLot = $('#feas-out-lot'); if (oLot) oLot.textContent = m.lotAreaM2.toLocaleString(loc);
   const oFp = $('#feas-out-footprint'); if (oFp) oFp.textContent = m.footprintAreaM2.toLocaleString(loc);
@@ -1905,6 +1951,11 @@ document.querySelectorAll('[data-feasmode]').forEach((btn) => {
 // Ubicación y alineación
 $('#btn-feas-pick-location')?.addEventListener('click', () => {
   feasibilityStore.setPlacingMode(!feasibilityStore.isPlacingLot);
+  syncFeasibilityDrawer();
+});
+$('#btn-feas-click-place')?.addEventListener('click', () => {
+  feasibilityStore.setPlacingMode(!feasibilityStore.isPlacingLot);
+  syncFeasibilityDrawer();
 });
 $('#btn-feas-snap-building')?.addEventListener('click', () => {
   const b = feasibilityStore.snapToNearestBuilding(model);
@@ -1927,7 +1978,7 @@ $('#feas-lot-l')?.addEventListener('change', (e) => {
   renderFeasibilityVolume();
 });
 
-// Carga de archivo 3D de proyecto (.glb, .gltf, .obj)
+// Carga de archivo 3D de proyecto (.skp, .glb, .gltf, .obj)
 $('#btn-feas-browse-file')?.addEventListener('click', () => {
   $('#feas-project-file-input')?.click();
 });
@@ -1943,17 +1994,35 @@ $('#feas-project-file-input')?.addEventListener('change', async (e) => {
     }
   }
 });
-$('#feas-proj-scale')?.addEventListener('input', (e) => {
-  feasibilityStore.setProjectAdjustments({ scale: Number(e.target.value) });
+
+// Manipulación libre en terreno (Paso 3)
+$('#feas-proj-x')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ offsetX: Number(e.target.value) });
+  renderFeasibilityVolume();
+});
+$('#feas-proj-y')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ offsetY: Number(e.target.value) });
+  renderFeasibilityVolume();
+});
+$('#feas-proj-z')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ offsetZ: Number(e.target.value) });
   renderFeasibilityVolume();
 });
 $('#feas-proj-rot')?.addEventListener('input', (e) => {
   feasibilityStore.setProjectAdjustments({ rotY: Number(e.target.value) });
   renderFeasibilityVolume();
 });
-$('#feas-proj-z')?.addEventListener('input', (e) => {
-  feasibilityStore.setProjectAdjustments({ offsetZ: Number(e.target.value) });
+$('#feas-proj-scale')?.addEventListener('input', (e) => {
+  feasibilityStore.setProjectAdjustments({ scale: Number(e.target.value) });
   renderFeasibilityVolume();
+});
+
+// Selector de acabado del proyecto
+document.querySelectorAll('#feas-project-finish-group [data-projfinish]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    feasibilityStore.setProjectAdjustments({ finish: btn.dataset.projfinish });
+    renderFeasibilityVolume();
+  });
 });
 
 $('#btn-parse-zoning')?.addEventListener('click', async () => {
@@ -2423,18 +2492,20 @@ function syncMapControls() {
 }
 
 const MAP_LAYERS_INFO = [
-  { key: 'satellite', name: 'Foto Satelital (Ortofoto)', icon: '🛰️' },
-  { key: 'buildings', name: 'Edificios / Huellas', icon: '🏢' },
-  { key: 'roads', name: 'Vialidades y Ejes', icon: '🛣️' },
-  { key: 'green', name: 'Áreas Verdes y Parques', icon: '🌳' },
-  { key: 'water', name: 'Cuerpos de Agua', icon: '💧' },
-  { key: 'contours', name: 'Curvas de Nivel', icon: '〰️' },
-  { key: 'relief', name: 'Relieve e Hipsometría', icon: '⛰️' },
-  { key: 'shadows', name: 'Sombras Arrojadas', icon: '☀️' },
-  { key: 'trees', name: 'Masa Arbórea (Árboles)', icon: '🌲' },
-  { key: 'rail', name: 'Ferrocarriles', icon: '🚆' },
-  { key: 'site', name: 'Polígono del Predio', icon: '📐' },
-  { key: 'labels', name: 'Etiquetas & Cotas de Texto', icon: '🏷️' },
+  { key: 'satellite', name: 'Foto Satelital (Ortofoto)', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>' },
+  { key: 'buildings', name: 'Edificios / Huellas', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="4" y="2" width="16" height="20" rx="1"/><line x1="9" y1="6" x2="10" y2="6"/><line x1="14" y1="6" x2="15" y2="6"/><line x1="9" y1="10" x2="10" y2="10"/><line x1="14" y1="10" x2="15" y2="10"/></svg>' },
+  { key: 'roads', name: 'Vialidades y Ejes', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19L10 5"/><path d="M20 19L14 5"/><line x1="12" y1="8" x2="12" y2="10" stroke-dasharray="2 2"/><line x1="12" y1="14" x2="12" y2="16" stroke-dasharray="2 2"/></svg>' },
+  { key: 'green', name: 'Áreas Verdes y Parques', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 22v-7"/><path d="M17 10a5 5 0 0 0-10 0c0 4 5 7 5 7s5-3 5-7z"/></svg>' },
+  { key: 'flora', name: 'Zonas de Flora Nativa', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8"/><path d="M12 8v8M8 12h8"/></svg>' },
+  { key: 'fauna', name: 'Corredores de Fauna', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 12c4-4 8 4 12 0s4-4 4-4"/></svg>' },
+  { key: 'water', name: 'Cuerpos de Agua', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M2 12c2.5-2 5 2 7.5 0s5 2 7.5 0 5-2 5-2"/></svg>' },
+  { key: 'contours', name: 'Curvas de Nivel', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 16c4-3 7 1 11-2s5-1 7-3"/></svg>' },
+  { key: 'relief', name: 'Relieve e Hipsometría', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 20L10 7l5 9 3-4 3 8z"/></svg>' },
+  { key: 'shadows', name: 'Sombras Arrojadas', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41"/></svg>' },
+  { key: 'trees', name: 'Masa Arbórea (Árboles)', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="10" r="6"/><line x1="12" y1="16" x2="12" y2="22"/></svg>' },
+  { key: 'rail', name: 'Ferrocarriles', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="19" x2="20" y2="19"/><line x1="4" y1="5" x2="20" y2="5"/><line x1="6" y1="3" x2="6" y2="21"/><line x1="12" y1="3" x2="12" y2="21"/><line x1="18" y1="3" x2="18" y2="21"/></svg>' },
+  { key: 'site', name: 'Polígono del Predio', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="3,3 21,5 18,21 5,19"/></svg>' },
+  { key: 'labels', name: 'Etiquetas & Cotas de Texto', icon: '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><circle cx="7" cy="7" r="1"/></svg>' },
 ];
 
 function renderLayerStackControls() {
@@ -2442,14 +2513,14 @@ function renderLayerStackControls() {
   if (!container || !mapOpts) return;
 
   if (!Array.isArray(mapOpts.layerOrder) || !mapOpts.layerOrder.length) {
-    mapOpts.layerOrder = ['satellite', 'relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
+    mapOpts.layerOrder = ['satellite', 'relief', 'contours', 'green', 'flora', 'water', 'fauna', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
   }
   if (!mapOpts.layerOpacities) {
     mapOpts.layerOpacities = {};
   }
 
   container.innerHTML = mapOpts.layerOrder.map((key, idx) => {
-    const info = MAP_LAYERS_INFO.find((l) => l.key === key) || { key, name: key, icon: '📄' };
+    const info = MAP_LAYERS_INFO.find((l) => l.key === key) || { key, name: key, icon: '' };
     const isVisible = key === 'relief' ? Boolean(mapOpts.relief?.hillshade || mapOpts.relief?.depth)
                     : key === 'shadows' ? Boolean(mapOpts.shadows?.on)
                     : key === 'satellite' ? Boolean(mapOpts.layers?.satellite)
@@ -2463,7 +2534,8 @@ function renderLayerStackControls() {
         <div class="axiom-layer-head">
           <label class="axiom-layer-left">
             <input type="checkbox" class="layer-vis-cb" ${isVisible ? 'checked' : ''}>
-            <span>${info.icon} ${info.name}</span>
+            <span class="axiom-layer-icon">${info.icon}</span>
+            <span class="axiom-layer-name">${info.name}</span>
           </label>
           <div class="axiom-layer-actions">
             <button type="button" class="layer-reorder-btn btn-layer-up" ${idx === 0 ? 'disabled' : ''} title="Subir nivel visual">▲</button>

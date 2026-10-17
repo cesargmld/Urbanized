@@ -49,20 +49,16 @@
     <!-- Center Workspace Mode Switcher Capsule (Prominent Master Switcher) -->
     <div class="axiom-topbar-center">
       <nav class="axiom-view-nav" role="tablist">
-        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="[1] Selector de Mapa Base" data-tooltip="[1] Mapa">
-          <span class="axiom-key-badge">1</span>
+        <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="Selector de Mapa Base" data-tooltip="Mapa">
           <span data-i18n="nav.map">Mapa</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="[2] Estudio 3D y Factibilidad" data-tooltip="[2] Modelo 3D">
-          <span class="axiom-key-badge">2</span>
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="Estudio 3D y Factibilidad" data-tooltip="Modelo 3D">
           <span data-i18n="nav.studio">Modelo 3D</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="[3] Vector Map 2D" data-tooltip="[3] Vector Map">
-          <span class="axiom-key-badge">3</span>
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="Vector Map 2D" data-tooltip="Vector Map">
           <span data-i18n="nav.vector">Vector Map</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="[4] Axonometría y Maqueta" data-tooltip="[4] Axonometría">
-          <span class="axiom-key-badge">4</span>
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="Axonometría y Maqueta" data-tooltip="Axonometría">
           <span data-i18n="nav.illu">Axonometría</span>
         </button>
       </nav>
@@ -93,7 +89,7 @@
       <div id="map"></div>
       <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
 
-      <!-- Top Floating Island Inside Map (Satélite | Mapa Oscuro | Isócronas | Zonas de Flora) -->
+      <!-- Top Floating Island Inside Map (Satélite | Mapa Oscuro) -->
       <div class="axiom-map-island" id="map-axiom-bar">
         <div class="axiom-island-capsule">
           <button type="button" class="axiom-island-btn active" id="map-btn-sat" data-base="sat" title="Vista Satelital">
@@ -104,27 +100,6 @@
             <span class="axiom-island-dot"></span>
             <span data-i18n="map.dark">Mapa Oscuro</span>
           </button>
-          <span class="axiom-island-sep"></span>
-          <button type="button" class="axiom-island-btn" id="map-btn-walk" title="Mostrar radios de proximidad e isócronas peatonales (5, 10, 15 min) en el mapa">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="3"/></svg>
-            <span data-i18n="map.iso">Isócronas</span>
-          </button>
-          <button type="button" class="axiom-island-btn" id="map-btn-flora" title="Demarcar zonas de flora y vegetación nativa sobre el mapa">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-            <span data-i18n="map.flora">Zonas de Flora</span>
-          </button>
-          <button type="button" class="axiom-island-btn" id="map-btn-pins" title="Añadir marcadores y pines personalizados sobre el mapa">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span data-i18n="map.pins">Pines</span>
-          </button>
-        </div>
-
-        <!-- Subtle Walking Distance Selector Pill (Appears when Isócronas is active) -->
-        <div class="axiom-walk-pill" id="walk-distance-pill" hidden>
-          <span class="axiom-walk-label">Isócronas a pie</span>
-          <button type="button" class="axiom-walk-time" data-walk="5">5 min (400m)</button>
-          <button type="button" class="axiom-walk-time" data-walk="10">10 min (800m)</button>
-          <button type="button" class="axiom-walk-time active" data-walk="15">15 min (1.2km)</button>
         </div>
       </div>
 
@@ -375,18 +350,21 @@
         <div class="axiom-island-capsule" id="capsule-render" role="group">
           <button type="button" class="axiom-island-btn active" id="btn-render-model" data-render="model" title="Modelo 3D con colores de uso de suelo GIS">
             <span class="axiom-island-dot active"></span>
-            <span>Urbano GIS</span>
+            <span data-i18n="cam.modelGis">Urbano GIS</span>
           </button>
           <button type="button" class="axiom-island-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta arquitectónica monocromática">
             <span class="axiom-island-dot"></span>
-            <span>Maqueta 3D</span>
+            <span data-i18n="cam.modelMaqueta">Maqueta 3D</span>
           </button>
           <span class="axiom-island-sep"></span>
           <button type="button" class="axiom-island-btn active" id="cam-persp" title="Órbita 3D en perspectiva">
-            <span>Órbita 3D</span>
+            <span data-i18n="cam.persp">Órbita 3D</span>
+          </button>
+          <button type="button" class="axiom-island-btn" id="cam-iso45" title="Vista isométrica a 45 grados">
+            <span data-i18n="cam.iso45">Isométrica 45°</span>
           </button>
           <button type="button" class="axiom-island-btn" id="cam-top" title="Vista cenital 3D">
-            <span>Cenital</span>
+            <span data-i18n="cam.top">Planta Cenital</span>
           </button>
         </div>
       </div>
@@ -837,40 +815,30 @@
             </button>
           </aside>
 
-          <!-- PANEL 7: FACTIBILIDAD PARAMÉTRICA (Estilo Finch 3D / Autodesk Forma + Gemini Flash-Lite) -->
+          <!-- PANEL 7: PROYECTO 3D & FACTIBILIDAD PARAMÉTRICA (3 Pasos Arquitectónicos) -->
           <aside class="axiom-drawer-card" id="drawer-feasibility" hidden>
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
-                <h2 class="axiom-export-title" data-i18n="feas.title">Factibilidad Normativa</h2>
+                <h2 class="axiom-export-title" data-i18n="feas.title">Proyecto 3D & Factibilidad</h2>
                 <div class="axiom-header-actions">
-                  <label class="axiom-mini-toggle" title="Mostrar volumen máximo construible 3D sobre el predio">
+                  <label class="axiom-mini-toggle" title="Mostrar volumen o modelo en el 3D">
                     <input type="checkbox" id="feas-enabled-toggle" checked>
-                    <span>Volumen 3D</span>
+                    <span>Activo</span>
                   </label>
                   <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
                 </div>
               </div>
-              <p class="export-coords">Cálculo paramétrico en tiempo real (Turf.js) y envolvente 3D</p>
+              <p class="export-coords">Integración de arquitectura de proyecto y cálculo de volumen 3D</p>
             </div>
 
-            <!-- Selector de Modo de Representación: Envolvente, Levantamiento o Modelo de Proyecto -->
-            <div class="axiom-editor-group" style="padding:0; margin-bottom:8px;">
-              <span class="axiom-sub-header" data-i18n="feas.geomMode">Modo de Geometría</span>
-              <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr);" id="feas-geom-mode-group">
-                <button type="button" class="axiom-subtle-btn active" data-feasmode="envelope" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeEnvelope">Envolvente</button>
-                <button type="button" class="axiom-subtle-btn" data-feasmode="massing" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeMassing">Levantamiento</button>
-                <button type="button" class="axiom-subtle-btn" data-feasmode="project" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeProject">Proyecto 3D</button>
-              </div>
-            </div>
-
-            <!-- Ubicación y Adaptación del Predio en el Sitio -->
-            <div class="axiom-editor-group" style="padding:0; margin-bottom:8px;">
-              <span class="axiom-sub-header" data-i18n="feas.lotLoc">Ubicación del Predio</span>
+            <!-- PASO 1: DELIMITAR PREDIO -->
+            <div class="axiom-editor-group" style="padding:0; margin-bottom:10px;">
+              <span class="axiom-sub-header" data-i18n="feas.step1">1. Delimitar Predio</span>
               <div style="display:flex; gap:6px; margin-bottom:6px;">
                 <button type="button" class="axiom-subtle-btn" id="btn-feas-pick-location" style="flex:1; font-size:11px; padding:6px 8px;">
-                  <span data-i18n="feas.pickLoc">📍 Ubicar con Clic</span>
+                  <span data-i18n="feas.pickLoc">📍 Ubicar Predio con Clic</span>
                 </button>
                 <button type="button" class="axiom-subtle-btn" id="btn-feas-snap-building" style="flex:1; font-size:11px; padding:6px 8px;">
                   <span data-i18n="feas.snapBldg">🏢 Alinear a Edificio</span>
@@ -895,35 +863,77 @@
               </div>
             </div>
 
-            <!-- Carga de Modelo de Proyecto (SketchUp / GLTF / OBJ) -->
-            <div class="axiom-editor-group" id="feas-project-upload-group" style="padding:0; margin-bottom:8px;">
-              <span class="axiom-sub-header" data-i18n="feas.uploadHeader">Modelo 3D del Proyecto (SKP / GLTF / OBJ)</span>
+            <!-- PASO 2: MODELO 3D DEL PROYECTO -->
+            <div class="axiom-editor-group" style="padding:0; margin-bottom:10px;">
+              <span class="axiom-sub-header" data-i18n="feas.step2">2. Modelo 3D del Proyecto</span>
+              <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:6px;" id="feas-geom-mode-group">
+                <button type="button" class="axiom-subtle-btn" data-feasmode="project" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeProject">Archivo 3D</button>
+                <button type="button" class="axiom-subtle-btn active" data-feasmode="envelope" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeEnvelope">Envolvente</button>
+                <button type="button" class="axiom-subtle-btn" data-feasmode="massing" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeMassing">Levantamiento</button>
+              </div>
               <input type="file" id="feas-project-file-input" accept=".skp,.glb,.gltf,.obj" style="display:none;">
               <button type="button" class="axiom-cta-btn" id="btn-feas-browse-file" style="width:100%; font-size:11px; padding:8px 10px;">
-                <span data-i18n="feas.browseFile">📥 Cargar Modelo 3D (.skp, .glb, .obj)</span>
+                <span data-i18n="feas.browseFile">📥 Cargar Archivo (.skp, .glb, .obj)</span>
               </button>
-              <div id="feas-project-controls" hidden style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
-                <p class="export-coords" id="feas-project-name" style="color:#38bdf8; font-weight:600;"></p>
-                <div class="axiom-control-row">
-                  <div class="axiom-row-between">
-                    <span class="axiom-label" data-i18n="feas.scale">Escala Proyecto</span>
-                    <span class="axiom-val" id="feas-val-proj-scale">1.0x</span>
-                  </div>
-                  <input type="range" min="0.1" max="4.0" step="0.05" value="1.0" id="feas-proj-scale" class="axiom-range">
+              <p class="export-coords" id="feas-project-name" style="margin-top:4px; font-size:11px; color:#38bdf8;"></p>
+            </div>
+
+            <!-- PASO 3: UBICACIÓN Y MANIPULACIÓN LIBRE EN TERRENO -->
+            <div class="axiom-editor-group" style="padding:0; margin-bottom:10px;">
+              <span class="axiom-sub-header" data-i18n="feas.step3">3. Ubicación y Manipulación Libre</span>
+              <button type="button" class="axiom-subtle-btn" id="btn-feas-click-place" style="width:100%; font-size:11px; padding:7px 10px; margin-bottom:6px;">
+                <span data-i18n="feas.pickOnTerrain">📍 Clic en Terreno para Ubicar</span>
+              </button>
+
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label" data-i18n="feas.posX">Desplazamiento X</span>
+                  <span class="axiom-val" id="feas-val-proj-x">0 m</span>
                 </div>
-                <div class="axiom-control-row">
-                  <div class="axiom-row-between">
-                    <span class="axiom-label" data-i18n="feas.rotY">Giro Y</span>
-                    <span class="axiom-val" id="feas-val-proj-rot">0°</span>
-                  </div>
-                  <input type="range" min="0" max="360" step="2" value="0" id="feas-proj-rot" class="axiom-range">
+                <input type="range" min="-150" max="150" step="1" value="0" id="feas-proj-x" class="axiom-range">
+              </div>
+
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label" data-i18n="feas.posY">Desplazamiento Y</span>
+                  <span class="axiom-val" id="feas-val-proj-y">0 m</span>
                 </div>
-                <div class="axiom-control-row">
-                  <div class="axiom-row-between">
-                    <span class="axiom-label" data-i18n="feas.adjZ">Ajuste Altura Z</span>
-                    <span class="axiom-val" id="feas-val-proj-z">0.0 m</span>
-                  </div>
-                  <input type="range" min="-10" max="25" step="0.5" value="0" id="feas-proj-z" class="axiom-range">
+                <input type="range" min="-150" max="150" step="1" value="0" id="feas-proj-y" class="axiom-range">
+              </div>
+
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label" data-i18n="feas.adjZ">Elevación Z</span>
+                  <span class="axiom-val" id="feas-val-proj-z">0.0 m</span>
+                </div>
+                <input type="range" min="-20" max="35" step="0.5" value="0" id="feas-proj-z" class="axiom-range">
+              </div>
+
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label" data-i18n="feas.rotY">Rotación</span>
+                  <span class="axiom-val" id="feas-val-proj-rot">0°</span>
+                </div>
+                <input type="range" min="0" max="360" step="1" value="0" id="feas-proj-rot" class="axiom-range">
+              </div>
+
+              <div class="axiom-control-row">
+                <div class="axiom-row-between">
+                  <span class="axiom-label" data-i18n="feas.scale">Escala</span>
+                  <span class="axiom-val" id="feas-val-proj-scale">1.0x</span>
+                </div>
+                <input type="range" min="0.1" max="4.0" step="0.05" value="1.0" id="feas-proj-scale" class="axiom-range">
+              </div>
+
+              <!-- Selector de Acabado Arquitectónico -->
+              <div style="margin-top:6px;">
+                <span class="axiom-label" style="font-size:10px; display:block; margin-bottom:4px;" data-i18n="feas.finishLabel">Acabado Arquitectónico</span>
+                <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr);" id="feas-project-finish-group">
+                  <button type="button" class="axiom-subtle-btn active" data-projfinish="white" style="font-size:10px; padding:5px 2px;" data-i18n="feas.finishWhite">Blanco Yeso</button>
+                  <button type="button" class="axiom-subtle-btn" data-projfinish="travertine" style="font-size:10px; padding:5px 2px;" data-i18n="feas.finishTravertine">Travertino</button>
+                  <button type="button" class="axiom-subtle-btn" data-projfinish="concrete" style="font-size:10px; padding:5px 2px;" data-i18n="feas.finishConcrete">Hormigón</button>
+                  <button type="button" class="axiom-subtle-btn" data-projfinish="steel" style="font-size:10px; padding:5px 2px;" data-i18n="feas.finishSteel">Acero Oscuro</button>
+                  <button type="button" class="axiom-subtle-btn" data-projfinish="accent" style="font-size:10px; padding:5px 2px;" data-i18n="feas.finishAccent">Azul Resaltado</button>
                 </div>
               </div>
             </div>
@@ -1523,15 +1533,14 @@
     <div class="axiom-loading-overlay"></div>
     <div class="axiom-loading-card">
       <div class="axiom-loader-radar-wrap">
-        <div class="axiom-radar-sweep"></div>
-        <div class="axiom-radar-ring ring-1"></div>
-        <div class="axiom-radar-ring ring-2"></div>
-        <svg class="axiom-loading-logo" width="30" height="30" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
-          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="2 2" />
-          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.5" stroke-dasharray="2 2" />
-          <circle cx="12" cy="12" r="1.8" fill="#ffffff" />
-        </svg>
+        <div class="axiom-arch-cube">
+          <div class="axiom-arch-cube-face top"></div>
+          <div class="axiom-arch-cube-face bottom"></div>
+          <div class="axiom-arch-cube-face front"></div>
+          <div class="axiom-arch-cube-face back"></div>
+          <div class="axiom-arch-cube-face left"></div>
+          <div class="axiom-arch-cube-face right"></div>
+        </div>
       </div>
 
       <div class="axiom-loading-meta-top">
@@ -1539,18 +1548,18 @@
         <span class="axiom-loading-pct" id="loading-pct">15%</span>
       </div>
 
-      <!-- High-End Continuous Laser Progress Bar -->
+      <!-- High-End Minimalist Hairline Progress Line -->
       <div class="axiom-laser-track" aria-label="Progreso">
         <div class="axiom-laser-fill" id="axiom-laser-fill" style="width: 15%;"></div>
       </div>
 
       <div class="axiom-loading-status">
-        <div class="axiom-loading-title" id="loading-title">Extrayendo datos cartográficos...</div>
-        <div class="axiom-loading-sub" id="loading-sub">Conectando con servidores OpenStreetMap</div>
+        <div class="axiom-loading-title" id="loading-title">Compilando entorno arquitectónico...</div>
+        <div class="axiom-loading-sub" id="loading-sub">Extrayendo topografía LiDAR y huellas vectoriales</div>
       </div>
 
       <div class="axiom-loading-telemetry" id="loading-telemetry">
-        <span>OSM</span> · <span>OVERTURE</span> · <span>COPERNICUS DEM</span>
+        <span>LiDAR DEM</span> · <span>VECTOR CAD</span> · <span>OVERTURE MAPS</span>
       </div>
     </div>
   </div>
@@ -1655,14 +1664,9 @@
 
         if (targetKey === 'bio') {
           if (window.updateBiodiversityCard) window.updateBiodiversityCard();
-          if (window.setFloraZonesActive) window.setFloraZonesActive(true, -1);
         }
         if (targetKey === 'radii') {
-          const sw = document.getElementById('walk-switch-active');
-          if (sw && !sw.checked) {
-            sw.checked = true;
-            sw.dispatchEvent(new Event('change'));
-          }
+          // Keep user-selected state
         }
         if (targetKey === 'sat') {
           if (window.syncSatelliteDrawer) window.syncSatelliteDrawer();
@@ -1671,11 +1675,6 @@
           if (window.renderPinsDrawerList) window.renderPinsDrawerList();
         }
         if (targetKey === 'feasibility') {
-          const feasSw = document.getElementById('feas-enabled-toggle');
-          if (feasSw && !feasSw.checked) {
-            feasSw.checked = true;
-            feasSw.dispatchEvent(new Event('change'));
-          }
           if (window.syncFeasibilityDrawer) window.syncFeasibilityDrawer();
         }
       }
@@ -1693,14 +1692,6 @@
           if (drawerContainer) drawerContainer.hidden = true;
           dockButtons.forEach(b => b.classList.remove('active'));
         });
-      });
-
-      // Clicking on the 3D viewer canvas dismisses open drawer to give full view
-      document.getElementById('viewer')?.addEventListener('click', (e) => {
-        if (drawerContainer && !drawerContainer.hidden && !e.target.closest('.axiom-left-system')) {
-          drawerContainer.hidden = true;
-          dockButtons.forEach(b => b.classList.remove('active'));
-        }
       });
 
       // Global Liquid Glass Tooltips
@@ -1741,26 +1732,25 @@
     })();
   </script>
 
-    <!-- Modal: Confirmación al Regresar a Mapa -->
+    <!-- Modal: Confirmación al Regresar a Mapa (Minimalist Swiss Design — 100% Bilingual) -->
     <div id="modal-return-map" class="axiom-modal-overlay" hidden>
-      <div class="axiom-modal-dialog">
+      <div class="axiom-modal-dialog" style="max-width:440px;">
         <div class="axiom-modal-header">
           <div class="axiom-modal-title-wrap">
-            <span class="axiom-modal-icon">🗺️</span>
-            <h3 data-i18n="modal.returnTitle">Regresar al Selector de Ubicación</h3>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 12l6-6M3 12l6 6"/></svg>
+            <h3 data-i18n="modal.returnTitle">Cambio de Ubicación</h3>
           </div>
           <button type="button" class="axiom-modal-close-btn" id="modal-return-close" aria-label="Cerrar">✕</button>
         </div>
         <div class="axiom-modal-body">
-          <p>Estás a punto de regresar al mapa base para seleccionar un nuevo polígono territorial o crear otro modelo.</p>
-          <div class="axiom-modal-callout">
-            <strong>Tu modelo actual se conserva:</strong> Puedes volver a él en cualquier momento haciendo clic en <em>Modelo 3D</em>, <em>Vector Map</em> o <em>Axonometría</em> en la barra superior mientras no inicies una nueva generación de polígono.
+          <p style="margin:0; font-size:12.5px; color:#f1f5f9;" data-i18n="modal.returnDesc">Estás regresando al mapa base para demarcar un nuevo polígono territorial o extraer otro modelo.</p>
+          <div class="axiom-modal-callout" style="background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.12); color:#cbd5e1; font-size:11.5px;" data-i18n="modal.returnNote">
+            Tu modelo 3D actual y configuraciones permanecerán seguros en memoria mientras no inicies una nueva generación.
           </div>
-          <p style="font-size:11.5px; color:#94a3b8; margin:0;">¿Deseas ir al mapa para una nueva búsqueda o continuar en el modelo actual?</p>
         </div>
         <div class="axiom-modal-actions">
-          <button type="button" class="axiom-btn-secondary" id="modal-btn-stay" data-i18n="modal.returnStay">Continuar en el Modelo Actual</button>
-          <button type="button" class="axiom-btn-primary" id="modal-btn-confirm-map" data-i18n="modal.returnConfirm">Ir al Mapa</button>
+          <button type="button" class="axiom-btn-secondary" id="modal-btn-stay" data-i18n="modal.returnStay">Permanecer en el Proyecto Actual</button>
+          <button type="button" class="axiom-btn-primary" id="modal-btn-confirm-map" data-i18n="modal.returnConfirm">Ir al Mapa Base</button>
         </div>
       </div>
     </div>
@@ -1770,7 +1760,7 @@
       <div class="axiom-modal-dialog" style="max-width:540px;">
         <div class="axiom-modal-header">
           <div class="axiom-modal-title-wrap">
-            <span class="axiom-modal-icon">🏛️</span>
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="2 2"/><line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
             <h3 data-i18n="modal.hubTitle">URBANIZED · Centro del Proyecto</h3>
           </div>
           <button type="button" class="axiom-modal-close-btn" id="modal-hub-close" aria-label="Cerrar">✕</button>

@@ -248,36 +248,65 @@ function createAltitudeSprite(text, size) {
   return sprite;
 }
 
-function createPinBadgeSprite(label, colorHex, size) {
+function createPinBadgeSprite(label, colorHex, size, style = 'glass') {
   const canvas = document.createElement('canvas');
   canvas.width = 380;
   canvas.height = 84;
   const c = canvas.getContext('2d');
   c.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Modern architectural pin badge with category accent
-  c.fillStyle = 'rgba(10, 11, 15, 0.92)';
-  c.beginPath();
   const r = 12, w = 376, h = 80, x = 2, y = 2;
+  c.beginPath();
   c.moveTo(x + r, y);
   c.arcTo(x + w, y, x + w, y + h, r);
   c.arcTo(x + w, y + h, x, y + h, r);
   c.arcTo(x, y + h, x, y, r);
   c.arcTo(x, y, x + w, y, r);
   c.closePath();
-  c.fill();
-  c.strokeStyle = colorHex || '#f97316';
-  c.lineWidth = 3;
-  c.stroke();
+
+  let textFill = '#ffffff';
+  let dotFill = colorHex || '#f97316';
+
+  if (style === 'white') {
+    c.fillStyle = '#ffffff';
+    c.fill();
+    c.strokeStyle = 'rgba(0, 0, 0, 0.15)';
+    c.lineWidth = 2.5;
+    c.stroke();
+    textFill = '#090a0f';
+  } else if (style === 'accent') {
+    c.fillStyle = colorHex || '#f97316';
+    c.fill();
+    c.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    c.lineWidth = 2.5;
+    c.stroke();
+    textFill = '#ffffff';
+    dotFill = '#ffffff';
+  } else if (style === 'wire') {
+    c.fillStyle = 'rgba(10, 11, 15, 0.4)';
+    c.fill();
+    c.strokeStyle = colorHex || '#f97316';
+    c.lineWidth = 2.5;
+    c.stroke();
+    textFill = '#ffffff';
+  } else {
+    // Glass default
+    c.fillStyle = 'rgba(10, 11, 15, 0.92)';
+    c.fill();
+    c.strokeStyle = colorHex || '#f97316';
+    c.lineWidth = 3;
+    c.stroke();
+    textFill = '#ffffff';
+  }
 
   // Color beacon dot
   c.beginPath();
   c.arc(36, 42, 12, 0, Math.PI * 2);
-  c.fillStyle = colorHex || '#f97316';
+  c.fillStyle = dotFill;
   c.fill();
 
   // Text label
-  c.fillStyle = '#ffffff';
+  c.fillStyle = textFill;
   c.font = 'bold 26px "Inter", sans-serif';
   c.textAlign = 'left';
   c.textBaseline = 'middle';
@@ -376,15 +405,26 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   if (isMaqueta) {
     scene.background = new THREE.Color(0x090a0d);
     if (ctx.sun) {
-      ctx.sun.position.set(-1.1, -1.0, 1.8);
+      ctx.sun.position.set(-0.9 * s, -1.1 * s, 1.8 * s);
       ctx.sun.intensity = 2.3;
     }
   } else {
     scene.background = new THREE.Color(0x090a0d);
     if (ctx.sun) {
-      ctx.sun.position.set(-0.6, -0.9, 1.4);
+      ctx.sun.position.set(-0.7 * s, -1.0 * s, 1.5 * s);
       ctx.sun.intensity = 1.75;
     }
+  }
+
+  if (ctx.sun && ctx.sun.shadow) {
+    const d = Math.max(1200, s * 1.5);
+    ctx.sun.shadow.camera.left = -d;
+    ctx.sun.shadow.camera.right = d;
+    ctx.sun.shadow.camera.top = d;
+    ctx.sun.shadow.camera.bottom = -d;
+    ctx.sun.shadow.camera.near = 10;
+    ctx.sun.shadow.camera.far = s * 6.0;
+    ctx.sun.shadow.camera.updateProjectionMatrix();
   }
 
   // 1. Terrain & Physical Pedestal Skirt
@@ -433,7 +473,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       const skirtMat = new THREE.MeshStandardMaterial({
         color: isMaqueta ? 0x1c1d22 : 0x14151a,
         roughness: 0.94,
-        metalness: 0.02
+        metalness: 0.02,
+        side: THREE.DoubleSide
       });
       const skirtMesh = new THREE.Mesh(skirtGeo, skirtMat);
       skirtMesh.receiveShadow = true;
@@ -697,13 +738,14 @@ export function setCameraView(type) {
   const zMid = ctx.zMid || 0;
   controls.target.set(0, 0, zMid);
 
-  if (type === 'iso' || type === 'chunk') {
-    // True 45-degree architectural axonometric / isometric projection via narrow telephoto FOV
-    camera.fov = 10;
-    camera.position.set(s * 3.5, -s * 3.5, s * 3.1 + zMid);
+  if (type === 'iso' || type === 'iso45' || type === 'chunk') {
+    // True 45-degree architectural axonometric / isometric projection
+    camera.fov = 8;
+    const d = s * 4.2;
+    camera.position.set(d * 0.7071, -d * 0.7071, d * 0.7071 + zMid);
   } else if (type === 'top') {
-    camera.fov = 20;
-    camera.position.set(0, -0.001, s * 2.8 + zMid);
+    camera.fov = 18;
+    camera.position.set(0, -0.001, s * 3.2 + zMid);
   } else {
     camera.fov = 35;
     camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
@@ -713,6 +755,22 @@ export function setCameraView(type) {
   camera.updateProjectionMatrix();
   controls.update();
 }
+window.setCameraView = setCameraView;
+
+export function setPreviewSun(azDeg = 135, altDeg = 45) {
+  if (!ctx || !ctx.sun) return;
+  const s = ctx.modelSize || 1000;
+  const azRad = (azDeg * Math.PI) / 180;
+  const altRad = (Math.max(10, altDeg) * Math.PI) / 180;
+  const dist = s * 2.0;
+  const sx = dist * Math.sin(azRad) * Math.cos(altRad);
+  const sy = dist * Math.cos(azRad) * Math.cos(altRad);
+  const sz = dist * Math.sin(altRad);
+  ctx.sun.position.set(sx, sy, sz);
+  ctx.sun.target.position.set(0, 0, ctx.zMid || 0);
+  ctx.sun.target.updateMatrixWorld();
+}
+window.setPreviewSun = setPreviewSun;
 
 export function setWalkRings(enabled, minutes = 15) {
   if (!ctx || !ctx.group) return;
@@ -974,10 +1032,9 @@ export function render3DPins() {
   if (!studioState.pins.visible) return;
   const pins = pinStore.getPins().filter((p) => p.visible);
   const s = ctx.modelSize || 1000;
-  const pinStemHeight = s * 0.048;
-
   for (const pin of pins) {
     const colHex = parseInt(pin.color.replace('#', '0x'), 16);
+    const pinStemHeight = pin.needleHeight ? Number(pin.needleHeight) : (s * 0.048);
 
     // 1. Ground Anchor Ring
     const groundGeo = new THREE.RingGeometry(s * 0.005, s * 0.011, 24);
@@ -1002,8 +1059,8 @@ export function render3DPins() {
     beacon.position.set(pin.x, pin.y, pin.z + pinStemHeight);
     pinGroup.add(beacon);
 
-    // 4. Sleek High-Res Architectural Text Badge
-    const labelSprite = createPinBadgeSprite(pin.label, pin.color, s);
+    // 4. Sleek High-Res Architectural Text Badge (With customizable styles)
+    const labelSprite = createPinBadgeSprite(pin.label, pin.color, s, pin.style || 'glass');
     labelSprite.position.set(pin.x, pin.y, pin.z + pinStemHeight + s * 0.024);
     pinGroup.add(labelSprite);
   }
@@ -1131,8 +1188,14 @@ export function renderFeasibilityVolume() {
       pObj.scale.set(s, s, s);
       const totalRot = (feasibilityStore.siteRotation + (feasibilityStore.projectRotY || 0)) * (Math.PI / 180);
       pObj.rotation.z = totalRot;
-      const pZ = baseZ + (feasibilityStore.projectOffsetZ || 0);
-      pObj.position.set(feasibilityStore.siteOrigin.x, feasibilityStore.siteOrigin.y, pZ);
+      const posX = (feasibilityStore.siteOrigin.x || 0) + (feasibilityStore.projectOffsetX || 0);
+      const posY = (feasibilityStore.siteOrigin.y || 0) + (feasibilityStore.projectOffsetY || 0);
+      const terrainZ = ctx.lastModel?.grid?.heightAt ? ctx.lastModel.grid.heightAt(posX, posY) : baseZ;
+      const pZ = terrainZ + (feasibilityStore.projectOffsetZ || 0);
+      pObj.position.set(posX, posY, pZ);
+
+      // Apply finish and shadow casting
+      applyFinishToObject(pObj, feasibilityStore.projectFinish || 'white');
       fGroup.add(pObj);
     }
 
@@ -1143,6 +1206,30 @@ export function renderFeasibilityVolume() {
     const ghostLine = new THREE.LineSegments(ghostEdges, new THREE.LineBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.45 }));
     fGroup.add(ghostLine);
   }
+}
+
+function applyFinishToObject(root, finish = 'white') {
+  if (!root) return;
+  const finishConfigs = {
+    white: { color: 0xf8fafc, roughness: 0.35, metalness: 0.05 },
+    travertine: { color: 0xf3e8d9, roughness: 0.65, metalness: 0.05 },
+    concrete: { color: 0x94a3b8, roughness: 0.85, metalness: 0.10 },
+    steel: { color: 0x18181b, roughness: 0.25, metalness: 0.85 },
+    accent: { color: 0x0284c7, roughness: 0.30, metalness: 0.10 }
+  };
+  const cfg = finishConfigs[finish] || finishConfigs.white;
+  root.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      child.material = new THREE.MeshStandardMaterial({
+        color: cfg.color,
+        roughness: cfg.roughness,
+        metalness: cfg.metalness,
+        side: THREE.DoubleSide
+      });
+    }
+  });
 }
 
 /**
@@ -1251,10 +1338,10 @@ window.applyCamera3DView = (cam) => {
 };
 
 export function setProjectModelStyle({ color = '#1e3a8a', texture = 'solid' } = {}) {
-  const model = feasibilityStore.projectModel;
-  if (!model) return;
+  const obj = feasibilityStore.projectModel?.object || feasibilityStore.projectModel;
+  if (!obj || !obj.traverse) return;
   const col = parseInt(color.replace('#', '0x'), 16);
-  model.traverse((child) => {
+  obj.traverse((child) => {
     if (child.isMesh) {
       child.castShadow = true;
       child.receiveShadow = true;

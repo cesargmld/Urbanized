@@ -385,13 +385,41 @@ const DICT = {
     'dl.stlNote': '.stl · 1:{scale}',
     'dl.satellite': 'Satellite',
 
+    // Studio 3D Camera Controls
+    'cam.persp': '3D Orbit',
+    'cam.iso45': 'Isometric 45°',
+    'cam.top': 'Top View',
+    'cam.modelGis': 'Urban GIS',
+    'cam.modelMaqueta': '3D Model Plinth',
+
     // Modals
-    'modal.returnTitle': 'Return to Location Picker',
-    'modal.returnDesc': 'You are about to return to the base map to select a new territorial boundary or create another model.',
-    'modal.returnCallout': 'Your current model is preserved: You can return to it anytime by clicking 3D Model, Vector Map, or Axonometry in the top bar as long as you do not generate a new polygon.',
-    'modal.returnQuestion': 'Do you want to go to the map for a new search or stay in the current model?',
-    'modal.returnStay': 'Stay in Current Model',
-    'modal.returnConfirm': 'Go to Map',
+    'modal.returnTitle': 'Change Location',
+    'modal.returnDesc': 'You are returning to the base map to define a new boundary or extract a new model.',
+    'modal.returnNote': 'Your active 3D project and edits will remain safe in memory until you confirm a new generation.',
+    'modal.returnStay': 'Stay in Project',
+    'modal.returnConfirm': 'Return to Map',
+
+    // 3-Step Project & Feasibility Workflow
+    'feas.step1': '1. Site Boundary',
+    'feas.step2': '2. 3D Project Model',
+    'feas.step3': '3. Free Placement & Controls',
+    'feas.pickOnTerrain': '📍 Click on Terrain to Place',
+    'feas.posX': 'Offset X (m)',
+    'feas.posY': 'Offset Y (m)',
+    'feas.finishLabel': 'Architectural Finish',
+    'feas.finishTravertine': 'Travertine',
+    'feas.finishConcrete': 'Exposed Concrete',
+    'feas.finishWhite': 'Plaster White',
+    'feas.finishSteel': 'Dark Steel',
+    'feas.finishAccent': 'Accent Blue',
+
+    // Pins styles
+    'pins.needleHeight': 'Stem height (m)',
+    'pins.style': 'Badge aesthetic',
+    'pins.styleGlass': 'Liquid Glass',
+    'pins.styleWhite': 'Pure White',
+    'pins.styleAccent': 'Accent Color',
+    'pins.styleWire': 'Hairline Wire',
 
     'modal.hubTitle': 'URBANIZED · Project Hub',
     'modal.hubInfo': 'Loaded Environment Information',
@@ -872,13 +900,41 @@ const DICT = {
     'dl.stlNote': '.stl · 1:{scale}',
     'dl.satellite': 'Satélite',
 
+    // Studio 3D Camera Controls
+    'cam.persp': 'Órbita 3D',
+    'cam.iso45': 'Isométrica 45°',
+    'cam.top': 'Planta Cenital',
+    'cam.modelGis': 'Urbano GIS',
+    'cam.modelMaqueta': 'Maqueta 3D',
+
     // Modales
-    'modal.returnTitle': 'Regresar al Selector de Ubicación',
-    'modal.returnDesc': 'Estás a punto de regresar al mapa base para seleccionar un nuevo polígono territorial o crear otro modelo.',
-    'modal.returnCallout': 'Tu modelo actual se conserva: Puedes volver a él en cualquier momento haciendo clic en Modelo 3D, Vector Map o Axonometría en la barra superior mientras no inicies una nueva generación de polígono.',
-    'modal.returnQuestion': '¿Deseas ir al mapa para una nueva búsqueda o continuar en el modelo actual?',
-    'modal.returnStay': 'Continuar en el Modelo Actual',
-    'modal.returnConfirm': 'Ir al Mapa',
+    'modal.returnTitle': 'Cambio de Ubicación',
+    'modal.returnDesc': 'Estás regresando al mapa base para demarcar un nuevo polígono territorial o extraer otro modelo.',
+    'modal.returnNote': 'Tu modelo 3D actual y configuraciones permanecerán seguros en memoria mientras no inicies una nueva generación.',
+    'modal.returnStay': 'Permanecer en el Proyecto Actual',
+    'modal.returnConfirm': 'Ir al Mapa Base',
+
+    // 3-Step Project & Feasibility Workflow
+    'feas.step1': '1. Delimitar Predio',
+    'feas.step2': '2. Modelo 3D del Proyecto',
+    'feas.step3': '3. Ubicación y Manipulación Libre',
+    'feas.pickOnTerrain': '📍 Clic en Terreno para Ubicar',
+    'feas.posX': 'Desplazamiento X (m)',
+    'feas.posY': 'Desplazamiento Y (m)',
+    'feas.finishLabel': 'Acabado Arquitectónico',
+    'feas.finishTravertine': 'Travertino',
+    'feas.finishConcrete': 'Hormigón Aparente',
+    'feas.finishWhite': 'Blanco Yeso',
+    'feas.finishSteel': 'Acero Oscuro',
+    'feas.finishAccent': 'Azul Resaltado',
+
+    // Estilos de Pines
+    'pins.needleHeight': 'Altura de aguja (m)',
+    'pins.style': 'Estilo de cápsula',
+    'pins.styleGlass': 'Vidrio Líquido',
+    'pins.styleWhite': 'Blanco Puro',
+    'pins.styleAccent': 'Color de Acento',
+    'pins.styleWire': 'Línea de Contorno',
 
     'modal.hubTitle': 'URBANIZED · Centro del Proyecto',
     'modal.hubInfo': 'Información del Entorno Cargado',

@@ -94,7 +94,7 @@ button {
 .axiom-topbar-left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 28px;
 }
 .axiom-brand {
   display: flex;
@@ -1029,14 +1029,14 @@ input[type="range"]::-webkit-slider-thumb {
   flex-direction: row !important;
   flex-wrap: nowrap !important;
   align-items: center !important;
-  background: rgba(17, 18, 22, 0.94);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(14, 16, 23, 0.72) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
   border-radius: 9999px;
   padding: 4px;
   gap: 3px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45), 0 2px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.14);
   white-space: nowrap !important;
 }
 
@@ -3053,58 +3053,38 @@ input[type="range"]::-webkit-slider-thumb,
 }
 .axiom-loader-radar-wrap {
   position: relative;
-  width: 72px;
-  height: 72px;
+  width: 54px;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 18px;
 }
-.axiom-radar-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  pointer-events: none;
-}
-.axiom-radar-ring.ring-1 {
-  width: 52px;
-  height: 52px;
-  animation: radarPulse 2.8s infinite ease-out;
-}
-.axiom-radar-ring.ring-2 {
-  width: 72px;
-  height: 72px;
-  border-style: dashed;
-  animation: radarPulse 3.5s infinite ease-out 0.6s;
-}
-@keyframes radarPulse {
-  0% { transform: scale(0.85); opacity: 0.15; }
-  50% { transform: scale(1.08); opacity: 0.6; }
-  100% { transform: scale(0.85); opacity: 0.15; }
-}
-.axiom-radar-sweep {
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  background: conic-gradient(from 0deg, rgba(255, 255, 255, 0) 0deg, rgba(255, 255, 255, 0.22) 360deg);
-  animation: radarSweep 2.2s linear infinite;
-  mask-image: radial-gradient(circle, transparent 38%, black 42%, black 68%, transparent 72%);
-  -webkit-mask-image: radial-gradient(circle, transparent 38%, black 42%, black 68%, transparent 72%);
-  pointer-events: none;
-}
-@keyframes radarSweep {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
-}
-.axiom-loading-logo {
+.axiom-arch-cube {
+  width: 38px;
+  height: 38px;
   position: relative;
-  z-index: 2;
-  animation: reticleSpin 24s linear infinite;
+  transform: rotateX(60deg) rotateZ(45deg);
+  transform-style: preserve-3d;
+  animation: archCubeOrbit 6s infinite linear;
 }
-@keyframes reticleSpin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+@keyframes archCubeOrbit {
+  0% { transform: rotateX(60deg) rotateZ(0deg); }
+  100% { transform: rotateX(60deg) rotateZ(360deg); }
 }
+.axiom-arch-cube-face {
+  position: absolute;
+  width: 38px;
+  height: 38px;
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background: rgba(255, 255, 255, 0.04);
+}
+.axiom-arch-cube-face.top    { transform: translateZ(19px); }
+.axiom-arch-cube-face.bottom { transform: translateZ(-19px); }
+.axiom-arch-cube-face.front  { transform: rotateY(90deg) translateZ(19px); }
+.axiom-arch-cube-face.back   { transform: rotateY(-90deg) translateZ(19px); }
+.axiom-arch-cube-face.left   { transform: rotateX(90deg) translateZ(19px); }
+.axiom-arch-cube-face.right  { transform: rotateX(-90deg) translateZ(19px); }
 
 .axiom-loading-meta-top {
   display: flex;
@@ -3117,8 +3097,8 @@ input[type="range"]::-webkit-slider-thumb,
   font-family: var(--font-mono);
   font-size: 10px;
   font-weight: 600;
-  letter-spacing: 0.18em;
-  color: #71717a;
+  letter-spacing: 0.16em;
+  color: #a1a1aa;
   text-transform: uppercase;
 }
 .axiom-loading-pct {
@@ -3128,22 +3108,22 @@ input[type="range"]::-webkit-slider-thumb,
   color: #ffffff;
 }
 
-/* Continuous Architectural Laser Progress Bar */
+/* Minimalist Hairline Progress Line */
 .axiom-laser-track {
   width: 100%;
-  height: 3px;
-  background: rgba(255, 255, 255, 0.08);
-  border-radius: 999px;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
   overflow: hidden;
   margin-bottom: 18px;
   position: relative;
 }
 .axiom-laser-fill {
   height: 100%;
-  background: linear-gradient(90deg, #52525b 0%, #ffffff 100%);
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-  border-radius: 999px;
-  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  background: #ffffff;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.4);
+  border-radius: 2px;
+  transition: width 0.28s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 /* Status Messages */
@@ -4022,7 +4002,8 @@ input[type="range"]::-webkit-slider-thumb,
 /* ========================================================
    CUSTOM PINS & MARKERS (Image 3 Architectural Palette)
    ======================================================== */
-.pin-placing-cursor, .pin-placing-cursor canvas, .pin-placing-cursor #map {
+.pin-placing-cursor, .pin-placing-cursor canvas, .pin-placing-cursor #map,
+.lot-placing-cursor, .lot-placing-cursor canvas, .lot-placing-cursor #map {
   cursor: crosshair !important;
 }
 
@@ -4063,26 +4044,59 @@ input[type="range"]::-webkit-slider-thumb,
 
 .studio-pin-row {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 10px;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 10px;
   background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 8px;
   transition: background 0.15s ease, border-color 0.15s ease;
 }
 
 .studio-pin-row:hover {
-  background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.15);
 }
 
-.studio-pin-dot {
-  width: 9px;
-  height: 9px;
+.studio-pin-main-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.studio-pin-vis-btn {
+  background: transparent;
+  border: none;
+  color: #64748b;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  border-radius: 4px;
+  transition: color 0.15s ease;
+}
+.studio-pin-vis-btn.active {
+  color: #38bdf8;
+}
+
+.studio-pin-color-pick {
+  width: 14px;
+  height: 14px;
+  border: none;
   border-radius: 50%;
+  padding: 0;
+  cursor: pointer;
+  background: transparent;
   flex-shrink: 0;
-  box-shadow: 0 0 6px currentColor;
+}
+.studio-pin-color-pick::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.studio-pin-color-pick::-webkit-color-swatch {
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 50%;
 }
 
 .studio-pin-name-input {
@@ -4103,20 +4117,42 @@ input[type="range"]::-webkit-slider-thumb,
   background: rgba(255, 255, 255, 0.06);
 }
 
-.studio-pin-type-tag {
+.studio-pin-style-select {
   font-size: 9.5px;
-  font-family: var(--font-mono);
-  color: rgba(255, 255, 255, 0.55);
-  background: rgba(255, 255, 255, 0.06);
-  padding: 2px 6px;
+  font-family: var(--font-sans);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: #cbd5e1;
   border-radius: 4px;
-  text-transform: uppercase;
+  padding: 1px 4px;
+  height: 20px;
+  outline: none;
+  cursor: pointer;
   flex-shrink: 0;
 }
 
+.studio-pin-height-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 18px;
+  width: 100%;
+}
+.studio-pin-height-slider {
+  flex: 1;
+  height: 3px;
+}
+.studio-pin-height-val {
+  font-size: 9.5px;
+  font-family: var(--font-mono);
+  color: #94a3b8;
+  width: 32px;
+  text-align: right;
+}
+
 .studio-pin-del {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -4128,6 +4164,7 @@ input[type="range"]::-webkit-slider-thumb,
   font-size: 14px;
   line-height: 1;
   transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
 .studio-pin-del:hover {
@@ -4253,6 +4290,21 @@ input[type="range"]::-webkit-slider-thumb,
   width: 13px;
   height: 13px;
   cursor: pointer;
+  flex-shrink: 0;
+}
+.axiom-layer-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  color: #94a3b8;
+  flex-shrink: 0;
+}
+.axiom-layer-name {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: #e2e8f0;
 }
 .axiom-layer-actions {
   display: flex;

@@ -24,7 +24,10 @@ class FeasibilityStore {
     this.projectModel = null;
     this.projectScale = 1.0;
     this.projectRotY = 0;
+    this.projectOffsetX = 0;
+    this.projectOffsetY = 0;
     this.projectOffsetZ = 0;
+    this.projectFinish = 'white';
     this.metrics = {
       lotAreaM2: 0,
       footprintAreaM2: 0,
@@ -89,10 +92,13 @@ class FeasibilityStore {
     this.notify();
   }
 
-  setProjectAdjustments({ scale, rotY, offsetZ } = {}) {
+  setProjectAdjustments({ scale, rotY, offsetZ, offsetX, offsetY, finish } = {}) {
     if (scale !== undefined) this.projectScale = Number(scale);
     if (rotY !== undefined) this.projectRotY = Number(rotY);
     if (offsetZ !== undefined) this.projectOffsetZ = Number(offsetZ);
+    if (offsetX !== undefined) this.projectOffsetX = Number(offsetX);
+    if (offsetY !== undefined) this.projectOffsetY = Number(offsetY);
+    if (finish !== undefined) this.projectFinish = String(finish);
     this.notify();
   }
 
