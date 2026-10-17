@@ -1367,10 +1367,24 @@
   <script>
     (function() {
       // Synchronize shape & mode segmented buttons
-      document.querySelectorAll('.shape-seg button, .mode-seg button').forEach(btn => {
+      document.querySelectorAll('.mode-seg button').forEach(btn => {
         btn.addEventListener('click', () => {
-          const parent = btn.parentElement;
-          parent?.querySelectorAll('button').forEach(b => {
+          const targetMode = btn.getAttribute('data-mode');
+          btn.parentElement?.querySelectorAll('button').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+          const m = document.getElementById('model-tools');
+          const s = document.getElementById('section-tools');
+          if (m) m.hidden = (targetMode !== 'model');
+          if (s) s.hidden = (targetMode !== 'section');
+        });
+      });
+      document.querySelectorAll('.shape-seg button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          btn.parentElement?.querySelectorAll('button').forEach(b => {
             b.classList.remove('active');
             b.setAttribute('aria-pressed', 'false');
           });
@@ -1388,6 +1402,7 @@
           filterList.hidden = !isHidden;
           filterTrigger.setAttribute('aria-expanded', String(isHidden));
           filterTrigger.classList.toggle('open', isHidden);
+          document.getElementById('axiom-setup-card')?.classList.toggle('expanded', isHidden);
         });
       }
 

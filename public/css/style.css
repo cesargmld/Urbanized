@@ -29,6 +29,10 @@
   padding: 0;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 html, body {
   height: 100%;
   width: 100%;
@@ -2447,19 +2451,32 @@ input[type="range"]::-webkit-slider-thumb {
   position: absolute;
   bottom: 24px;
   left: 24px;
-  width: 390px;
+  width: 420px;
   max-width: calc(100vw - 48px);
-  background: rgba(14, 16, 23, 0.78) !important;
+  max-height: calc(100vh - 80px);
+  overflow-y: auto;
+  background: rgba(14, 16, 23, 0.82) !important;
   backdrop-filter: blur(28px) saturate(190%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(190%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
   border-radius: 20px !important;
-  padding: 22px 20px !important;
+  padding: 24px 22px !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
   z-index: 500;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
+  transition: width 0.26s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease;
+}
+.axiom-setup-card::-webkit-scrollbar {
+  width: 4px;
+}
+.axiom-setup-card::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.16);
+  border-radius: 4px;
+}
+.axiom-setup-card.expanded {
+  width: 470px;
 }
 
 /* ========================================================
@@ -2537,12 +2554,21 @@ input[type="range"]::-webkit-slider-thumb {
 .axiom-setup-form {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 16px;
+}
+.axiom-tool-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.axiom-tool-stack[hidden] {
+  display: none !important;
 }
 .axiom-control-row {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
+  margin-bottom: 2px;
 }
 .axiom-row-between {
   display: flex;
@@ -2594,25 +2620,38 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 600;
 }
 
-/* Area & Sensitivity Sliders — Matte Architectural Tone */
+/* Area & Sensitivity Sliders — Matte Architectural Tone with Generous Vertical Clearance */
+input[type="range"],
 .axiom-range {
+  -webkit-appearance: none;
   width: 100%;
   accent-color: #d4d4d8;
-  height: 4px;
-  border-radius: 2px;
+  height: 6px;
+  border-radius: 99px;
   background: rgba(255, 255, 255, 0.12);
   outline: none;
   cursor: pointer;
+  margin: 6px 0 10px;
+}
+input[type="range"]::-webkit-slider-thumb,
+.axiom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.55);
 }
 
-/* Primary Action CTA Button — Subtle Matte Architectural Finish (No Gloss / No Neon) */
+/* Primary Action CTA Button — Subtle Matte Architectural Finish */
 .axiom-cta-btn {
   width: 100%;
-  height: 40px;
-  border-radius: 9px;
+  height: 44px;
+  border-radius: 11px;
   background: #e4e4e7;
   color: #090a0d;
-  font-size: 12.5px;
+  font-size: 13px;
   font-weight: 600;
   letter-spacing: -0.01em;
   display: flex;
@@ -2621,8 +2660,9 @@ input[type="range"]::-webkit-slider-thumb {
   gap: 8px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   cursor: pointer;
+  margin-top: 4px;
   transition: background 0.16s ease, transform 0.16s ease;
-  box-shadow: none;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
 }
 .axiom-cta-btn svg {
   stroke: currentColor;
@@ -2633,7 +2673,7 @@ input[type="range"]::-webkit-slider-thumb {
 .axiom-cta-btn:hover {
   background: #f4f4f5;
   color: #000000;
-  box-shadow: none;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
 }
 .axiom-cta-btn:hover svg {
   transform: translateX(2px);
@@ -2871,6 +2911,13 @@ input[type="range"]::-webkit-slider-thumb {
   display: flex;
   align-items: center;
   gap: 4px;
+  white-space: nowrap;
+  max-width: calc(100vw - 32px);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.axiom-island-capsule::-webkit-scrollbar {
+  display: none;
 }
 .axiom-island-btn {
   display: flex;
@@ -2884,6 +2931,8 @@ input[type="range"]::-webkit-slider-thumb {
   cursor: pointer;
   border: none;
   background: transparent;
+  white-space: nowrap;
+  flex-shrink: 0;
   transition: all 0.15s ease;
 }
 .axiom-island-btn:hover {
@@ -3106,19 +3155,21 @@ input[type="range"]::-webkit-slider-thumb {
 .axiom-filter-accordion {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 10px;
+  margin: 4px 0 6px;
 }
 .axiom-filter-trigger {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 7px 10px;
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.07);
+  height: 40px;
+  padding: 0 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.09);
   color: #cbd5e1;
-  font-size: 11.5px;
+  font-size: 12px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.16s ease;
@@ -3127,10 +3178,15 @@ input[type="range"]::-webkit-slider-thumb {
   background: rgba(255, 255, 255, 0.08);
   color: #ffffff;
 }
+.axiom-filter-trigger.open {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
 .axiom-filter-trigger-left {
   display: flex;
   align-items: center;
-  gap: 7px;
+  gap: 8px;
 }
 .axiom-chevron {
   transition: transform 0.2s ease;
@@ -3144,8 +3200,8 @@ input[type="range"]::-webkit-slider-thumb {
 .axiom-dot-list {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 4px 2px;
+  gap: 3px;
+  padding: 4px 0;
 }
 .axiom-dot-list[hidden] {
   display: none !important;
@@ -3155,20 +3211,21 @@ input[type="range"]::-webkit-slider-thumb {
   align-items: center;
   gap: 10px;
   width: 100%;
-  padding: 5px 8px;
+  height: 32px;
+  padding: 0 10px;
   border-radius: 8px;
   background: transparent;
   border: none;
-  color: #64748b;
-  font-size: 11.5px;
+  color: #94a3b8;
+  font-size: 12px;
   font-weight: 500;
   text-align: left;
   cursor: pointer;
   transition: color 0.15s ease, background 0.15s ease;
 }
 .axiom-dot-item:hover {
-  background: rgba(255, 255, 255, 0.04);
-  color: #cbd5e1;
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
 }
 .axiom-dot-item.active {
   color: #f4f4f6;
@@ -3828,15 +3885,35 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* Responsive & Mobile / Tablet UX */
-@media (max-width: 900px) {
-  .axiom-search-box {
-    width: 170px;
+@media (max-width: 1024px) {
+  .axiom-topbar {
+    padding: 0 14px;
+    gap: 10px;
+    display: flex;
+    justify-content: space-between;
   }
-  .axiom-search-box:focus-within {
-    width: 210px;
+  .axiom-topbar-center {
+    position: static;
+    transform: none;
+    flex: 1;
+    max-width: 220px;
+    margin: 0 8px;
+  }
+  .axiom-search-box {
+    width: 100% !important;
   }
   .axiom-live-badge {
     display: none;
+  }
+  .axiom-topbar-right {
+    gap: 6px;
+  }
+  .axiom-view-nav {
+    padding: 2px;
+  }
+  .axiom-view-btn {
+    padding: 4px 8px;
+    font-size: 11px;
   }
   .axiom-editor-sidebar {
     width: 290px !important;
@@ -3847,39 +3924,12 @@ input[type="range"]::-webkit-slider-thumb {
   }
 }
 
-@media (max-width: 768px) {
-  .axiom-topbar {
-    padding: 0 10px;
-    gap: 8px;
-  }
-  .axiom-topbar-center {
-    position: static;
-    transform: none;
-    flex: 1;
-    max-width: 170px;
-    margin: 0 4px;
-  }
-  .axiom-search-box {
-    width: 100% !important;
-  }
-  .axiom-topbar-right {
-    gap: 4px;
-  }
-  .axiom-view-nav {
-    padding: 2px;
-  }
-  .axiom-view-btn {
-    padding: 4px 6px;
-    font-size: 10.5px;
-  }
-}
-
 @media (max-width: 640px) {
   .axiom-brand-title {
     display: none;
   }
-  .axiom-search-box {
-    width: 120px !important;
+  .axiom-topbar-center {
+    display: none;
   }
   .axiom-setup-card {
     width: calc(100% - 24px) !important;
@@ -3887,6 +3937,13 @@ input[type="range"]::-webkit-slider-thumb {
     bottom: 12px !important;
     top: auto !important;
     max-height: 75vh !important;
+    padding: 16px 14px !important;
+  }
+  .axiom-setup-card.expanded {
+    width: calc(100% - 24px) !important;
+  }
+  .axiom-params-drawer {
+    max-height: 280px !important;
   }
   .map-axiom-bar {
     top: 58px;
