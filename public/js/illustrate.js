@@ -34,6 +34,13 @@ export const STYLES = {
     terrain: '#e5e5e5', building: '#ffffff', water: '#cccccc', green: '#e0e0e0', tree: '#bfbfbf',
     road: '#f5f5f5', roadMajor: '#eaeaea', bridge: '#cccccc', contour: '#d4d4d4', site: '#000000', shade: 0.55,
   },
+  // Modo Puntos / Risograph arquitectónico monocromático (Referencias 1, 2 y 3)
+  stipple: {
+    bg: '#ffffff', stroke: '#1e3a8a', width: 0.35, contours: true,
+    terrain: '#f4f7fb', building: '#ffffff', water: '#e0ecf7', green: '#edf5eb', tree: '#1e3a8a',
+    road: '#ffffff', roadMajor: '#f0f4f8', bridge: '#dbeafe', contour: '#93c5fd', site: '#1e3a8a', shade: 0.45,
+    isStipple: true,
+  },
 };
 
 // Paleta suave de tipologías GIS
@@ -115,12 +122,21 @@ export function createIllustrator(canvas, model) {
     soilName: model.ecosystem?.soil || 'Suelo Aluvial & Sedimentos Lacustres',
     overlays: {
       north: true,
-      northStyle: 'swiss', // 'swiss' | 'minimal' | 'circle'
+      northStyle: 'arch_bar_n', // 'arch_cross' | 'arch_bar' | 'arch_bar_n' | 'arch_notch' | 'arch_disc' | 'minimal' | 'swiss' | 'circle'
       scalebar: true,
       scalebarStyle: 'minimal', // 'minimal' | 'classic' | 'subdivided'
       grid: false,
       gridStyle: 'cross', // 'cross' | 'line'
+      labels: true,
     },
+    stippleInk: '#1e3a8a', // Tinta monocromática para Modo Puntos / Risograph (Referencias 1, 2)
+    treeStyle: 'branching', // 'minimal' | 'crown_hatch' | 'stipple' | 'branching' | 'detailed'
+    heroBuilding: {
+      id: null,
+      color: '#1e3a8a', // Deep Cobalt Blue por defecto
+      texture: 'solid', // 'solid' | 'travertine' | 'concrete' | 'wood' | 'hatched'
+    },
+    showLabels: true,
     thematic: {
       isochrones: false,
       flora: false,
@@ -151,11 +167,22 @@ export function createIllustrator(canvas, model) {
 
   let list = null, listKey = '';
 
-  const palette = () => ({
-    ...STYLES[state.style],
-    ...state.colors,
-    width: state.lineWidth ?? STYLES[state.style].width,
-  });
+  const palette = () => {
+    const base = STYLES[state.style] || STYLES.flat;
+    const res = {
+      ...base,
+      ...state.colors,
+      width: state.lineWidth ?? base.width,
+    };
+    if (state.style === 'stipple' && state.stippleInk) {
+      res.stroke = state.stippleInk;
+      res.tree = state.stippleInk;
+      res.site = state.stippleInk;
+      res.contour = shadeColor(state.stippleInk, 0.65);
+      res.water = shadeColor(state.stippleInk, 0.35);
+    }
+    return res;
+  };
 
   const classPalette = () => {
     // Si byType está activo, usar siempre los tonos vivos diferenciados (incluso en monocromo)
@@ -376,20 +403,79 @@ export function createIllustrator(canvas, model) {
       add('line', [...model.site, model.site[0]].map(([x, y, z]) => [x, y, (z || 0) + tierOffsets.contours + 0.5]), { color: 'site', weight: 2.4, site: true });
     }
 
-    // 8. Edificios 3D con tipologías (Tier 3: Urban Areas en Cascada)
+    // 7B. Sombras de suelo proyectadas (Directional Ground Cast Shadows)
+    if (showTier('buildings') && state.layers.buildings && !isExp) {
+      const light = getLightVector();
+      const lx = light[0], ly = light[1], lz = Math.max(0.18, light[2]);
+      const off = tierOffsets.buildings;
+      const shadowColor = state.style === 'stipple'
+        ? (state.stippleInk ? shadeColor(state.stippleInk, 0.25) : 'rgba(30, 58, 138, 0.16)')
+        : (state.style === 'mono' ? 'rgba(0, 0, 0, 0.16)' : 'rgba(28, 32, 42, 0.15)');
+
+      for (const b of (model.buildings ?? [])) {
+        if (!b.verts || b.verts.length < 6) continue;
+        const nHalf = Math.floor(b.verts.length / 2);
+        const z0 = b.verts[0][2], zTop = b.verts[nHalf]?.[2] || (z0 + 10);
+        const h = Math.min(75, Math.max(3, zTop - z0));
+        const shiftX = -(lx / lz) * h * 0.75;
+        const shiftY = -(ly / lz) * h * 0.75;
+        const groundZ = z0 + off + 0.08;
+
+        // Proyección del polígono superior en el suelo
+        const baseRing = b.verts.slice(0, nHalf);
+        const shadowPts = baseRing.map((v) => [v[0] + shiftX, v[1] + shiftY, groundZ]);
+        if (shadowPts.length >= 3) {
+          const flat = [];
+          for (const [sx, sy] of shadowPts) flat.push(sx, sy);
+          const tri = earcut(flat, [], 2);
+          for (let i = 0; i < tri.length; i += 3) {
+            add('poly', [shadowPts[tri[i]], shadowPts[tri[i + 1]], shadowPts[tri[i + 2]]], {
+              fillDirect: shadowColor,
+              flat: true,
+              noStroke: true,
+              bias: 0.12,
+              order: 1.15
+            });
+          }
+        }
+      }
+    }
+
+    // 8. Edificios 3D con tipologías y Edificio Héroe / Proyecto (Tier 3: Urban Areas en Cascada)
     if (showTier('buildings') && state.layers.buildings) {
       const off = tierOffsets.buildings;
       const bColor = isExp ? (state.tierColors.buildings || '#fafafa') : null;
-      for (const b of model.buildings ?? []) {
+      for (let bi = 0; bi < (model.buildings ?? []).length; bi++) {
+        const b = model.buildings[bi];
         let cx = 0, cy = 0, cz = 0;
         for (const v of b.verts) { cx += v[0]; cy += v[1]; cz += v[2]; }
         const g = [cx / b.verts.length, cy / b.verts.length, cz / b.verts.length + off];
+
+        const isHero = Boolean(state.heroBuilding?.enabled && (
+          (state.heroBuilding.id && b.id === state.heroBuilding.id) ||
+          (!state.heroBuilding.id && bi === 0) ||
+          b.isHero
+        ));
+
+        const heroOpts = isHero ? {
+          isHero: true,
+          heroColor: state.heroBuilding.color || '#1e3a8a',
+          heroTexture: state.heroBuilding.texture || 'solid',
+        } : {};
+
         for (const f of b.faces) {
           const poly = f.v.map((i) => {
             const p = b.verts[i];
             return [p[0], p[1], p[2] + off];
           });
-          add('poly', poly, { color: 'building', fillDirect: isExp ? bColor : null, cls: b.cls, edges: f.vis, g });
+          add('poly', poly, {
+            color: 'building',
+            fillDirect: isHero ? (state.heroBuilding.color || '#1e3a8a') : (isExp ? bColor : null),
+            cls: b.cls,
+            edges: f.vis,
+            g,
+            ...heroOpts
+          });
         }
       }
     }
@@ -642,7 +728,10 @@ export function createIllustrator(canvas, model) {
         gdepth,
         depth,
         order: it.order ?? 2,
-        fill: shadeColor(baseFill, it.flat ? 1 : it.side ? 0.88 : k)
+        fill: shadeColor(baseFill, it.flat ? 1 : it.side ? 0.88 : k),
+        isHero: it.isHero,
+        heroColor: it.heroColor,
+        heroTexture: it.heroTexture
       });
 
       if (st.stroke && !it.noStroke && !it.side && it.edges) {
@@ -735,8 +824,55 @@ export function createIllustrator(canvas, model) {
       ctx.translate(nx, ny);
       ctx.rotate(northAngle);
 
-      const style = state.overlays.northStyle || 'minimal';
-      if (style === 'swiss') {
+      const style = state.overlays.northStyle || 'arch_bar_n';
+      if (style === 'arch_cross') {
+        // 1. Imagen Ref: Círculo con cruz fina y barra norte en trazo grueso
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.0; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(-14, 0); ctx.lineTo(14, 0);
+        ctx.moveTo(0, 0); ctx.lineTo(0, 14);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.0; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(0, -14);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 2.8; ctx.lineCap = 'round'; ctx.stroke();
+      } else if (style === 'arch_bar') {
+        // 2. Imagen Ref: Círculo con radio norte en barra gruesa
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.0; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(0, -14);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 2.8; ctx.lineCap = 'round'; ctx.stroke();
+      } else if (style === 'arch_bar_n') {
+        // 3. Imagen Ref: Círculo barra con letra N arriba
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.0; ctx.stroke();
+        ctx.beginPath();
+        ctx.moveTo(0, 0); ctx.lineTo(0, -14);
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 2.8; ctx.lineCap = 'round'; ctx.stroke();
+        ctx.font = '700 11px Inter, sans-serif';
+        ctx.fillStyle = txtColor;
+        ctx.textAlign = 'center';
+        ctx.fillText('N', 0, -19);
+      } else if (style === 'arch_notch') {
+        // 4. Imagen Ref: Círculo con hendidura norte lineal
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, -Math.PI / 2 + 0.16, Math.PI * 1.5 - 0.16);
+        ctx.lineTo(2.2, -4);
+        ctx.lineTo(-2.2, -4);
+        ctx.closePath();
+        ctx.strokeStyle = txtColor; ctx.lineWidth = 1.0; ctx.stroke();
+      } else if (style === 'arch_disc') {
+        // 5. Imagen Ref: Disco sólido negro con hendidura blanca
+        ctx.beginPath();
+        ctx.arc(0, 0, 14, 0, Math.PI * 2);
+        ctx.fillStyle = txtColor; ctx.fill();
+        ctx.fillStyle = (st.bg === '#ffffff' ? '#ffffff' : (st.bg || '#ffffff'));
+        ctx.fillRect(-2, -14.5, 4, 11);
+      } else if (style === 'swiss') {
         // Aguja Suiza Arquitectónica (Dual tone estilizado)
         ctx.beginPath();
         ctx.moveTo(0, -22); ctx.lineTo(5, 8); ctx.lineTo(0, 4); ctx.closePath();
@@ -780,10 +916,12 @@ export function createIllustrator(canvas, model) {
       }
 
       ctx.rotate(-northAngle);
-      ctx.font = '600 11px Inter, sans-serif';
-      ctx.fillStyle = txtColor;
-      ctx.textAlign = 'center';
-      ctx.fillText('N', 0, 24);
+      if (['minimal', 'swiss', 'circle'].includes(style)) {
+        ctx.font = '600 11px Inter, sans-serif';
+        ctx.fillStyle = txtColor;
+        ctx.textAlign = 'center';
+        ctx.fillText('N', 0, 24);
+      }
       ctx.restore();
     }
 
@@ -911,6 +1049,71 @@ export function createIllustrator(canvas, model) {
         ctx.closePath();
         ctx.fillStyle = it.fill;
         ctx.fill();
+
+        // Si es Hero Building con textura arquitectónica especial (Referencias 1, 2, 3)
+        if (it.isHero && it.heroTexture && it.heroTexture !== 'solid') {
+          ctx.save();
+          ctx.beginPath();
+          it.pts.forEach((p, i) => (i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])));
+          ctx.closePath();
+          ctx.clip();
+
+          if (it.heroTexture === 'hatched') {
+            // Rayado técnico a 45 grados (Moodboard / Referencia 3)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+            ctx.lineWidth = 1.0;
+            const xs = it.pts.map((p) => p[0]);
+            const ys = it.pts.map((p) => p[1]);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+            const span = (maxX - minX) + (maxY - minY);
+            for (let d = -span; d <= span; d += 7) {
+              ctx.beginPath();
+              ctx.moveTo(minX + d, minY);
+              ctx.lineTo(minX + d + span, minY + span);
+              ctx.stroke();
+            }
+          } else if (it.heroTexture === 'travertine') {
+            // Textura veteada de travertino / piedra caliza
+            ctx.fillStyle = 'rgba(255, 248, 235, 0.28)';
+            ctx.fill();
+            ctx.strokeStyle = 'rgba(160, 120, 85, 0.3)';
+            ctx.lineWidth = 0.9;
+            const cy = it.pts[0][1];
+            for (let i = 0; i < 4; i++) {
+              ctx.beginPath();
+              ctx.moveTo(it.pts[0][0] - 60, cy + i * 9);
+              ctx.bezierCurveTo(it.pts[0][0] - 10, cy + i * 9 + 3, it.pts[0][0] + 20, cy + i * 9 - 3, it.pts[0][0] + 60, cy + i * 9 + 2);
+              ctx.stroke();
+            }
+          } else if (it.heroTexture === 'concrete') {
+            // Concreto aparente arquitectónico
+            ctx.fillStyle = 'rgba(226, 232, 240, 0.22)';
+            ctx.fill();
+            ctx.fillStyle = 'rgba(51, 65, 85, 0.2)';
+            for (let i = 0; i < 12; i++) {
+              const rx = it.pts[0][0] + ((i * 19) % 36) - 18;
+              const ry = it.pts[0][1] + ((i * 29) % 36) - 18;
+              ctx.fillRect(rx, ry, 1.5, 1.5);
+            }
+          } else if (it.heroTexture === 'wood') {
+            // Madera de balsa / listonado arquitectónico
+            ctx.strokeStyle = 'rgba(120, 80, 45, 0.35)';
+            ctx.lineWidth = 1.1;
+            const ys = it.pts.map((p) => p[1]);
+            const minY = Math.min(...ys), maxY = Math.max(...ys);
+            const xs = it.pts.map((p) => p[0]);
+            const minX = Math.min(...xs), maxX = Math.max(...xs);
+            for (let y = minY; y <= maxY; y += 6) {
+              ctx.beginPath();
+              ctx.moveTo(minX, y);
+              ctx.lineTo(maxX, y);
+              ctx.stroke();
+            }
+          }
+          ctx.restore();
+        }
+
         if (it.stroke) { ctx.strokeStyle = it.stroke; ctx.lineWidth = it.width; ctx.stroke(); }
       } else if (it.kind === 'line') {
         ctx.beginPath();
@@ -980,17 +1183,103 @@ export function createIllustrator(canvas, model) {
         ctx.fillText(txt, px - bw / 2 + 18, by);
         ctx.restore();
       } else {
-        ctx.beginPath();
-        ctx.moveTo(it.trunk[0][0], it.trunk[0][1]);
-        ctx.lineTo(it.trunk[1][0], it.trunk[1][1]);
-        ctx.strokeStyle = shadeColor(it.fill, 0.75);
-        ctx.lineWidth = Math.max(0.6, it.r * 0.18);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2);
-        ctx.fillStyle = it.fill;
-        ctx.fill();
-        if (st.stroke) { ctx.strokeStyle = st.stroke; ctx.lineWidth = st.width; ctx.stroke(); }
+        // Árboles con estilos arquitectónicos seleccionables
+        const tStyle = state.treeStyle || 'branching';
+        const txtC = st.stroke || st.text || '#18181b';
+
+        if (tStyle === 'branching') {
+          // Ramificación esquemática arquitectónica (Referencias 2 y 3)
+          ctx.beginPath();
+          ctx.moveTo(it.trunk[0][0], it.trunk[0][1]);
+          ctx.lineTo(it.trunk[1][0], it.trunk[1][1]);
+          ctx.strokeStyle = txtC;
+          ctx.lineWidth = Math.max(0.8, it.r * 0.16);
+          ctx.stroke();
+
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2);
+          ctx.fillStyle = it.fill;
+          ctx.globalAlpha = 0.45;
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+
+          const midY = (it.trunk[0][1] + it.trunk[1][1]) / 2;
+          ctx.beginPath();
+          ctx.moveTo(it.trunk[1][0], midY);
+          ctx.lineTo(it.trunk[1][0] - it.r * 0.52, midY - it.r * 0.42);
+          ctx.moveTo(it.trunk[1][0], midY + it.r * 0.2);
+          ctx.lineTo(it.trunk[1][0] + it.r * 0.52, midY - it.r * 0.32);
+          ctx.strokeStyle = txtC;
+          ctx.lineWidth = Math.max(0.6, it.r * 0.12);
+          ctx.stroke();
+        } else if (tStyle === 'crown_hatch') {
+          // Rayado radial arquitectónico
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2);
+          ctx.fillStyle = it.fill;
+          ctx.globalAlpha = 0.35;
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+          ctx.strokeStyle = txtC;
+          ctx.lineWidth = 0.8;
+          ctx.stroke();
+          for (let a = 0; a < Math.PI * 2; a += Math.PI / 4) {
+            ctx.beginPath();
+            ctx.moveTo(it.x + Math.cos(a) * it.r * 0.25, it.y + Math.sin(a) * it.r * 0.25);
+            ctx.lineTo(it.x + Math.cos(a) * it.r * 0.95, it.y + Math.sin(a) * it.r * 0.95);
+            ctx.stroke();
+          }
+        } else if (tStyle === 'stipple') {
+          // Trama de puntos / Halftone dot cluster
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2);
+          ctx.fillStyle = it.fill;
+          ctx.globalAlpha = 0.25;
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+          ctx.fillStyle = txtC;
+          for (let angle = 0; angle < Math.PI * 2; angle += Math.PI / 3) {
+            const dotR = it.r * 0.6;
+            ctx.beginPath();
+            ctx.arc(it.x + Math.cos(angle) * dotR, it.y + Math.sin(angle) * dotR, 1.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, 1.8, 0, Math.PI * 2);
+          ctx.fill();
+        } else if (tStyle === 'detailed') {
+          // Doble anillo concéntrico
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2);
+          ctx.fillStyle = it.fill;
+          ctx.globalAlpha = 0.3;
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+          ctx.strokeStyle = txtC;
+          ctx.lineWidth = 0.9;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, it.r * 0.55, 0, Math.PI * 2);
+          ctx.lineWidth = 0.6;
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, 1.6, 0, Math.PI * 2);
+          ctx.fillStyle = txtC;
+          ctx.fill();
+        } else {
+          // Minimal clásico
+          ctx.beginPath();
+          ctx.moveTo(it.trunk[0][0], it.trunk[0][1]);
+          ctx.lineTo(it.trunk[1][0], it.trunk[1][1]);
+          ctx.strokeStyle = shadeColor(it.fill, 0.75);
+          ctx.lineWidth = Math.max(0.6, it.r * 0.18);
+          ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(it.x, it.y, it.r, 0, Math.PI * 2);
+          ctx.fillStyle = it.fill;
+          ctx.fill();
+          if (st.stroke) { ctx.strokeStyle = st.stroke; ctx.lineWidth = st.width; ctx.stroke(); }
+        }
       }
     }
 
@@ -1074,6 +1363,7 @@ export function createIllustrator(canvas, model) {
   }
 
   function drawLabels(ctx, cam) {
+    if (state.overlays?.labels === false || state.showLabels === false) return;
     ctx.font = LABEL_FONT;
     ctx.textBaseline = 'middle';
     for (const l of state.labels) {
@@ -1177,19 +1467,57 @@ export function createIllustrator(canvas, model) {
       const dy = pN[1] - p0[1];
       const northAngleDeg = ((Math.atan2(dy, dx) + Math.PI / 2) * 180) / Math.PI;
       const nx = (canvas.clientWidth - 44) * k, ny = 48 * k;
+      const style = state.overlays.northStyle || 'arch_bar_n';
+      const r = 14 * k;
+      let inner = '';
+      if (style === 'arch_cross') {
+        inner = `<circle cx="0" cy="0" r="${n1(r)}" fill="none" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<line x1="${n1(-r)}" y1="0" x2="${n1(r)}" y2="0" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<line x1="0" y1="0" x2="0" y2="${n1(r)}" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<line x1="0" y1="0" x2="0" y2="${n1(-r)}" stroke="#18181b" stroke-width="${n1(2.8 * k)}" stroke-linecap="round"/>`;
+      } else if (style === 'arch_bar') {
+        inner = `<circle cx="0" cy="0" r="${n1(r)}" fill="none" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<line x1="0" y1="0" x2="0" y2="${n1(-r)}" stroke="#18181b" stroke-width="${n1(2.8 * k)}" stroke-linecap="round"/>`;
+      } else if (style === 'arch_bar_n') {
+        inner = `<circle cx="0" cy="0" r="${n1(r)}" fill="none" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<line x1="0" y1="0" x2="0" y2="${n1(-r)}" stroke="#18181b" stroke-width="${n1(2.8 * k)}" stroke-linecap="round"/>`
+          + `<text y="${n1(-19 * k)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${n1(11 * k)}" font-weight="700" fill="#18181b">N</text>`;
+      } else if (style === 'arch_notch') {
+        const slitW = 4 * k;
+        inner = `<circle cx="0" cy="0" r="${n1(r)}" fill="none" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<rect x="${n1(-slitW / 2)}" y="${n1(-r)}" width="${n1(slitW)}" height="${n1(r * 0.8)}" fill="#ffffff"/>`
+          + `<path d="M${n1(-slitW / 2)},${n1(-r)}L${n1(-slitW / 2)},${n1(-r * 0.2)}L${n1(slitW / 2)},${n1(-r * 0.2)}L${n1(slitW / 2)},${n1(-r)}" fill="none" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`;
+      } else if (style === 'arch_disc') {
+        const slitW = 4 * k;
+        inner = `<circle cx="0" cy="0" r="${n1(r)}" fill="#18181b"/>`
+          + `<rect x="${n1(-slitW / 2)}" y="${n1(-r)}" width="${n1(slitW)}" height="${n1(r * 0.8)}" fill="#ffffff"/>`;
+      } else if (style === 'circle') {
+        inner = `<circle cx="0" cy="0" r="${n1(r)}" fill="none" stroke="#18181b" stroke-width="${n1(1.0 * k)}"/>`
+          + `<line x1="0" y1="0" x2="0" y2="${n1(-r)}" stroke="#18181b" stroke-width="${n1(1.2 * k)}"/>`
+          + `<polygon points="0,${n1(-18 * k)} ${n1(4 * k)},${n1(-8 * k)} ${n1(-4 * k)},${n1(-8 * k)}" fill="#18181b"/>`
+          + `<circle cx="0" cy="0" r="${n1(2 * k)}" fill="#18181b"/>`
+          + `<text y="${n1(24 * k)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${n1(11 * k)}" font-weight="700" fill="#18181b">N</text>`;
+      } else if (style === 'swiss') {
+        inner = `<polygon points="0,${n1(-22 * k)} ${n1(7 * k)},${n1(10 * k)} 0,${n1(5 * k)}" fill="#18181b"/>`
+          + `<polygon points="0,${n1(-22 * k)} ${n1(-7 * k)},${n1(10 * k)} 0,${n1(5 * k)}" fill="#ffffff" stroke="#18181b" stroke-width="${n1(1 * k)}"/>`
+          + `<text y="${n1(24 * k)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${n1(11 * k)}" font-weight="700" fill="#18181b">N</text>`;
+      } else {
+        inner = `<line x1="0" y1="${n1(14 * k)}" x2="0" y2="${n1(-24 * k)}" stroke="#18181b" stroke-width="${n1(1.4 * k)}"/>`
+          + `<polyline points="${n1(-4 * k)},${n1(-16 * k)} 0,${n1(-24 * k)} ${n1(4 * k)},${n1(-16 * k)}" fill="none" stroke="#18181b" stroke-width="${n1(1.4 * k)}"/>`
+          + `<circle cx="0" cy="${n1(14 * k)}" r="${n1(2 * k)}" fill="#18181b"/>`
+          + `<text y="${n1(24 * k)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${n1(11 * k)}" font-weight="700" fill="#18181b">N</text>`;
+      }
       northSvg = `<g id="NORTH" transform="translate(${n1(nx)}, ${n1(ny)})">`
-        + `<g transform="rotate(${n1(northAngleDeg)})">`
-        + `<polygon points="0,${n1(-22 * k)} ${n1(7 * k)},${n1(10 * k)} 0,${n1(5 * k)}" fill="#18181b"/>`
-        + `<polygon points="0,${n1(-22 * k)} ${n1(-7 * k)},${n1(10 * k)} 0,${n1(5 * k)}" fill="#ffffff" stroke="#18181b" stroke-width="${n1(1 * k)}"/>`
-        + `</g><text y="${n1(24 * k)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${n1(11 * k)}" font-weight="700" fill="#18181b">N</text></g>`;
+        + `<g transform="rotate(${n1(northAngleDeg)})">${inner}</g></g>`;
     }
 
+    const showLabels = (state.overlays?.labels !== false && state.showLabels !== false);
     const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <!-- Urbanized · Axonometría Arquitectónica · ${model.size}x${model.size}m -->
 <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
 <g id="SCENE">${parts.join('')}</g>
 ${northSvg}
-${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
+${(showLabels && labels.length) ? `<g id="LABELS">${labels.join('')}</g>` : ''}
 </svg>`;
     return new Blob([svg], { type: 'image/svg+xml' });
   }
@@ -1324,6 +1652,18 @@ ${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
       state.overlays.scalebarStyle = st;
       render();
     },
+    setTreeStyle(ts) { state.treeStyle = ts; list = null; render(); },
+    setStippleInk(hex) { state.stippleInk = hex; list = null; render(); },
+    setHeroBuilding(opts) {
+      state.heroBuilding = { ...(state.heroBuilding || {}), ...(opts || {}) };
+      list = null;
+      render();
+    },
+    setShowLabels(show) {
+      state.showLabels = Boolean(show);
+      if (state.overlays) state.overlays.labels = Boolean(show);
+      render();
+    },
     getState() { return structuredClone(state); },
     applyState(cfg) {
       if (cfg) {
@@ -1340,6 +1680,10 @@ ${labels.length ? `<g id="LABELS">${labels.join('')}</g>` : ''}
   window.getIllustrateState = () => inst.getState();
   window.applyIllustrateConfig = (cfg) => inst.applyState(cfg);
   window.setIllustrateScaleStyle = (st) => inst.setScaleStyle(st);
+  window.setIllustrateTreeStyle = (ts) => inst.setTreeStyle(ts);
+  window.setIllustrateStippleInk = (hex) => inst.setStippleInk(hex);
+  window.setIllustrateHeroBuilding = (opts) => inst.setHeroBuilding(opts);
+  window.setIllustrateShowLabels = (show) => inst.setShowLabels(show);
 
   pinStore.subscribe(() => {
     list = null;

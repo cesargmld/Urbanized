@@ -1183,6 +1183,9 @@ window.openIllustratorStudio = () => {
 const walkState = {
   active: false,
   minutes: '15',
+  speedKmh: 4.8,
+  mode: '4.8',
+  customRadiusM: 1200,
   customOrigin: null,
   pickingOrigin: false,
   layerGroup: L.layerGroup().addTo(map)
@@ -1220,14 +1223,30 @@ function updateWalkingDistanceDisplay() {
   $('#btn-toggle-radii')?.classList.add('active');
 
   const [lat, lon] = getCenterCoords();
+  let rMax = 1200;
+  let tMax = Number(walkState.minutes) || 15;
+  if (walkState.mode === 'custom') {
+    rMax = walkState.customRadiusM || 1200;
+  } else {
+    const spd = walkState.speedKmh || 4.8;
+    rMax = Math.round((spd * (tMax / 60)) * 1000);
+  }
+
+  const r1 = Math.max(50, Math.round(rMax / 3));
+  const r2 = Math.max(100, Math.round((rMax * 2) / 3));
+  const r3 = rMax;
+
+  const t1 = Math.max(1, Math.round(tMax / 3));
+  const t2 = Math.max(2, Math.round((tMax * 2) / 3));
+  const t3 = tMax;
+
   const rings = [
-    { r: 400, min: 5, color: '#ffffff', weight: 2.2, op: 0.92, fillColor: '#e2e8f0', fillOp: 0.12, label: '5 min · 400 m' },
-    { r: 800, min: 10, color: '#cbd5e1', weight: 1.8, op: 0.78, fillColor: '#cbd5e1', fillOp: 0.07, label: '10 min · 800 m' },
-    { r: 1200, min: 15, color: '#94a3b8', weight: 1.5, op: 0.65, fillColor: '#94a3b8', fillOp: 0.04, label: '15 min · 1.2 km' }
+    { r: r1, min: t1, color: '#ffffff', weight: 2.2, op: 0.92, fillColor: '#e2e8f0', fillOp: 0.12, label: `${t1} min · ${r1 >= 1000 ? (r1 / 1000).toFixed(1) + ' km' : r1 + ' m'}` },
+    { r: r2, min: t2, color: '#cbd5e1', weight: 1.8, op: 0.78, fillColor: '#cbd5e1', fillOp: 0.07, label: `${t2} min · ${r2 >= 1000 ? (r2 / 1000).toFixed(1) + ' km' : r2 + ' m'}` },
+    { r: r3, min: t3, color: '#94a3b8', weight: 1.5, op: 0.65, fillColor: '#94a3b8', fillOp: 0.04, label: `${t3} min · ${r3 >= 1000 ? (r3 / 1000).toFixed(1) + ' km' : r3 + ' m'}` }
   ];
 
-  rings.forEach(({ r, min, color, weight, op, fillColor, fillOp, label }) => {
-    if (walkState.minutes !== 'all' && min > Number(walkState.minutes)) return;
+  rings.forEach(({ r, color, weight, op, fillColor, fillOp, label }) => {
     L.circle([lat, lon], {
       radius: r,
       color,
@@ -1244,8 +1263,8 @@ function updateWalkingDistanceDisplay() {
     const ringBadge = L.divIcon({
       html: `<div class="isochrone-ring-tag">${label}</div>`,
       className: 'isochrone-ring-tag-wrap',
-      iconSize: [100, 22],
-      iconAnchor: [50, 11]
+      iconSize: [110, 22],
+      iconAnchor: [55, 11]
     });
     L.marker(labelPos, { icon: ringBadge, interactive: false }).addTo(walkState.layerGroup);
   });
@@ -1265,12 +1284,15 @@ function updateWalkingDistanceDisplay() {
   setWalkRings(true, walkState.minutes);
 
   // Update metrics chips inside radii-card
-  const stats = getLayerStats(model);
-  const totalBld = stats.totalBuildings || 120;
-  const wp5 = $('#walk-pois-5'); if (wp5) wp5.textContent = `~${Math.round(totalBld * 0.18)} POIs (400m)`;
-  const wp10 = $('#walk-pois-10'); if (wp10) wp10.textContent = `~${Math.round(totalBld * 0.55)} POIs (800m)`;
-  const wp15 = $('#walk-pois-15'); if (wp15) wp15.textContent = `~${totalBld} POIs (1.2km)`;
-  if ($('#radii-coords')) $('#radii-coords').textContent = `${lat.toFixed(4)}, ${lon.toFixed(4)} · 4.8 km/h`;
+  const wp5 = $('#walk-pois-5'); if (wp5) wp5.textContent = `${r1} m`;
+  const wp10 = $('#walk-pois-10'); if (wp10) wp10.textContent = `${r2} m`;
+  const wp15 = $('#walk-pois-15'); if (wp15) wp15.textContent = `${r3 >= 1000 ? (r3 / 1000).toFixed(1) + ' km' : r3 + ' m'}`;
+  const tag1 = $('#walk-tag-1'); if (tag1) tag1.textContent = `${t1} min · Proximidad inmediata`;
+  const tag2 = $('#walk-tag-2'); if (tag2) tag2.textContent = `${t2} min · Barrio caminable`;
+  const tag3 = $('#walk-tag-3'); if (tag3) tag3.textContent = `${t3} min · Radio extendido`;
+  const timeDisp = $('#walk-time-display'); if (timeDisp) timeDisp.textContent = `${tMax} min`;
+  const distDisp = $('#walk-dist-display'); if (distDisp) distDisp.textContent = `${rMax.toLocaleString()} m`;
+  const radiiCoords = $('#radii-coords'); if (radiiCoords) radiiCoords.textContent = walkState.mode === 'custom' ? `Radio directo a ${rMax} m` : `Isócronas a ${walkState.speedKmh} km/h`;
 }
 window.updateWalkingDistanceDisplay = updateWalkingDistanceDisplay;
 
@@ -1285,12 +1307,46 @@ function setWalkActive(active) {
 
 function setWalkMinutes(min) {
   walkState.minutes = String(min);
+  const slider = $('#walk-time-slider');
+  if (slider) slider.value = String(min);
   document.querySelectorAll('[data-walk], [data-walktime]').forEach((b) => {
     const val = b.dataset.walk || b.dataset.walktime;
     b.classList.toggle('active', val === walkState.minutes);
   });
   updateWalkingDistanceDisplay();
 }
+
+$('#walk-speed-select')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  walkState.mode = val;
+  if (val === 'custom') {
+    $('#walk-time-row')?.setAttribute('hidden', '');
+    $('#walk-dist-row')?.removeAttribute('hidden');
+  } else {
+    walkState.speedKmh = Number(val);
+    $('#walk-time-row')?.removeAttribute('hidden');
+    $('#walk-dist-row')?.setAttribute('hidden', '');
+  }
+  updateWalkingDistanceDisplay();
+});
+
+$('#walk-time-slider')?.addEventListener('input', (e) => {
+  const val = Number(e.target.value);
+  walkState.minutes = String(val);
+  const timeDisp = $('#walk-time-display'); if (timeDisp) timeDisp.textContent = `${val} min`;
+  document.querySelectorAll('[data-walk], [data-walktime]').forEach((b) => {
+    const bVal = b.dataset.walk || b.dataset.walktime;
+    b.classList.toggle('active', bVal === walkState.minutes);
+  });
+  updateWalkingDistanceDisplay();
+});
+
+$('#walk-distance-slider')?.addEventListener('input', (e) => {
+  const val = Number(e.target.value);
+  walkState.customRadiusM = val;
+  const distDisp = $('#walk-dist-display'); if (distDisp) distDisp.textContent = `${val.toLocaleString()} m`;
+  updateWalkingDistanceDisplay();
+});
 
 $('#map-btn-walk')?.addEventListener('click', () => {
   const next = !walkState.active;
@@ -1357,14 +1413,24 @@ function createCirclePolygon(centerLat, centerLon, radiusMeters, properties) {
 
 $('#btn-export-isochrones')?.addEventListener('click', () => {
   const [lat, lon] = getCenterCoords();
+  const speed = walkState.speedKmh || 4.8;
+  const tMax = Number(walkState.minutes) || 15;
+  const rMax = walkState.mode === 'custom' ? walkState.customRadiusM : Math.round((speed * (tMax / 60)) * 1000);
+  const r1 = Math.max(50, Math.round(rMax / 3));
+  const r2 = Math.max(100, Math.round((rMax * 2) / 3));
+  const r3 = rMax;
+  const t1 = Math.max(1, Math.round(tMax / 3));
+  const t2 = Math.max(2, Math.round((tMax * 2) / 3));
+  const t3 = tMax;
+
   const featureCollection = {
     type: 'FeatureCollection',
     name: 'Urbanized_Walking_Distance_Isochrones',
     crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
     features: [
-      createCirclePolygon(lat, lon, 400, { time_min: 5, radius_m: 400, speed_kmh: 4.8, label: '5 min Walk' }),
-      createCirclePolygon(lat, lon, 800, { time_min: 10, radius_m: 800, speed_kmh: 4.8, label: '10 min Walk' }),
-      createCirclePolygon(lat, lon, 1200, { time_min: 15, radius_m: 1200, speed_kmh: 4.8, label: '15 min Walk' })
+      createCirclePolygon(lat, lon, r1, { time_min: t1, radius_m: r1, speed_kmh: speed, label: `${t1} min Isochrone` }),
+      createCirclePolygon(lat, lon, r2, { time_min: t2, radius_m: r2, speed_kmh: speed, label: `${t2} min Isochrone` }),
+      createCirclePolygon(lat, lon, r3, { time_min: t3, radius_m: r3, speed_kmh: speed, label: `${t3} min Isochrone` })
     ]
   };
   const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
@@ -2093,8 +2159,12 @@ function renderLabelList() {
     }));
 
     document.querySelectorAll('[data-illstyle]').forEach((b) => b.addEventListener('click', () => {
-      illu?.setStyle(b.dataset.illstyle);
+      const st = b.dataset.illstyle;
+      illu?.setStyle(st);
       document.querySelectorAll('[data-illstyle]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      const isStipple = st === 'stipple';
+      const stRow = $('#illu-stipple-row');
+      if (stRow) stRow.hidden = !isStipple;
       if (illu) document.querySelectorAll('[data-illlayer]').forEach((c) => { c.checked = illu.state.layers[c.dataset.illlayer]; });
       renderSwatches();
     }));
@@ -2145,9 +2215,11 @@ function renderLabelList() {
       if (out) out.textContent = `${alt}°`;
     });
 
-    // Elementos arquitectónicos de lámina (Norte, Escala, Retícula, Grosor)
+    // Elementos arquitectónicos de lámina (Norte, Escala, Retícula, Grosor, Árboles, Etiquetas)
     $('#illu-north')?.addEventListener('change', (e) => illu?.setOverlay('north', e.target.checked));
     $('#illu-north-style')?.addEventListener('change', (e) => illu?.setOverlay('northStyle', e.target.value));
+    $('#illu-tree-style')?.addEventListener('change', (e) => illu?.setTreeStyle(e.target.value));
+    $('#illu-toggle-labels')?.addEventListener('change', (e) => illu?.setShowLabels(e.target.checked));
     $('#illu-scalebar')?.addEventListener('change', (e) => illu?.setOverlay('scalebar', e.target.checked));
     $('#illu-grid')?.addEventListener('change', (e) => illu?.setOverlay('grid', e.target.checked));
     $('#illu-grid-style')?.addEventListener('change', (e) => illu?.setOverlay('gridStyle', e.target.value));
@@ -2156,6 +2228,44 @@ function renderLabelList() {
       illu?.setLineWidth(w);
       const out = $('#illu-line-width-out');
       if (out) out.textContent = `${w.toFixed(2)} pt`;
+    });
+
+    // Selector de tinta Stipple / Risograph
+    $('#illu-stipple-ink')?.addEventListener('input', (e) => {
+      illu?.setStippleInk(e.target.value);
+    });
+    document.querySelectorAll('.stipple-swatch').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.stipple-swatch').forEach((s) => s.classList.remove('active'));
+        btn.classList.add('active');
+        const color = btn.dataset.stipple;
+        const inkInput = $('#illu-stipple-ink');
+        if (inkInput) inkInput.value = color;
+        illu?.setStippleInk(color);
+      });
+    });
+
+    // Resaltado de Edificio Héroe / Proyecto (Referencias 1, 2, 3)
+    $('#illu-hero-enable')?.addEventListener('change', (e) => {
+      const enabled = e.target.checked;
+      const opts = $('#illu-hero-options');
+      if (opts) opts.hidden = !enabled;
+      const color = $('#illu-hero-color')?.value || '#1e3a8a';
+      const texture = $('#illu-hero-texture')?.value || 'solid';
+      illu?.setHeroBuilding({ enabled, color, texture });
+      if (window.setProjectModelStyle) window.setProjectModelStyle({ color, texture });
+    });
+    $('#illu-hero-color')?.addEventListener('input', (e) => {
+      const enabled = $('#illu-hero-enable')?.checked;
+      const texture = $('#illu-hero-texture')?.value || 'solid';
+      illu?.setHeroBuilding({ enabled, color: e.target.value, texture });
+      if (window.setProjectModelStyle) window.setProjectModelStyle({ color: e.target.value, texture });
+    });
+    $('#illu-hero-texture')?.addEventListener('change', (e) => {
+      const enabled = $('#illu-hero-enable')?.checked;
+      const color = $('#illu-hero-color')?.value || '#1e3a8a';
+      illu?.setHeroBuilding({ enabled, color, texture: e.target.value });
+      if (window.setProjectModelStyle) window.setProjectModelStyle({ color, texture: e.target.value });
     });
 
     // Exploded Layers Diagram (Imagen 4)
@@ -2284,6 +2394,10 @@ function syncMapControls() {
   document.querySelectorAll('[data-mappreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mappreset === mapOpts.preset)));
   const nStyle = $('#map-north-style');
   if (nStyle && mapOpts.overlays?.northStyle) nStyle.value = mapOpts.overlays.northStyle;
+  const tStyle = $('#map-tree-style');
+  if (tStyle && mapOpts.overlays?.treeStyle) tStyle.value = mapOpts.overlays.treeStyle;
+  const lToggle = $('#map-toggle-labels');
+  if (lToggle) lToggle.checked = mapOpts.overlays?.labels !== false;
   const gStyle = $('#map-grid-style');
   if (gStyle && mapOpts.overlays?.gridStyle) gStyle.value = mapOpts.overlays.gridStyle;
   const gStep = $('#map-grid-step');
@@ -2309,6 +2423,7 @@ function syncMapControls() {
 }
 
 const MAP_LAYERS_INFO = [
+  { key: 'satellite', name: 'Foto Satelital (Ortofoto)', icon: '🛰️' },
   { key: 'buildings', name: 'Edificios / Huellas', icon: '🏢' },
   { key: 'roads', name: 'Vialidades y Ejes', icon: '🛣️' },
   { key: 'green', name: 'Áreas Verdes y Parques', icon: '🌳' },
@@ -2319,6 +2434,7 @@ const MAP_LAYERS_INFO = [
   { key: 'trees', name: 'Masa Arbórea (Árboles)', icon: '🌲' },
   { key: 'rail', name: 'Ferrocarriles', icon: '🚆' },
   { key: 'site', name: 'Polígono del Predio', icon: '📐' },
+  { key: 'labels', name: 'Etiquetas & Cotas de Texto', icon: '🏷️' },
 ];
 
 function renderLayerStackControls() {
@@ -2326,7 +2442,7 @@ function renderLayerStackControls() {
   if (!container || !mapOpts) return;
 
   if (!Array.isArray(mapOpts.layerOrder) || !mapOpts.layerOrder.length) {
-    mapOpts.layerOrder = ['relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site'];
+    mapOpts.layerOrder = ['satellite', 'relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
   }
   if (!mapOpts.layerOpacities) {
     mapOpts.layerOpacities = {};
@@ -2336,6 +2452,8 @@ function renderLayerStackControls() {
     const info = MAP_LAYERS_INFO.find((l) => l.key === key) || { key, name: key, icon: '📄' };
     const isVisible = key === 'relief' ? Boolean(mapOpts.relief?.hillshade || mapOpts.relief?.depth)
                     : key === 'shadows' ? Boolean(mapOpts.shadows?.on)
+                    : key === 'satellite' ? Boolean(mapOpts.layers?.satellite)
+                    : key === 'labels' ? mapOpts.overlays?.labels !== false
                     : mapOpts.layers?.[key] !== false;
     const opacity = mapOpts.layerOpacities[key] !== undefined ? mapOpts.layerOpacities[key] : 1.0;
     const opPercent = Math.round(opacity * 100);
@@ -2375,6 +2493,10 @@ function renderLayerStackControls() {
       } else if (key === 'shadows') {
         if (!mapOpts.shadows) mapOpts.shadows = {};
         mapOpts.shadows.on = visCb.checked;
+      } else if (key === 'labels') {
+        if (!mapOpts.overlays) mapOpts.overlays = {};
+        mapOpts.overlays.labels = visCb.checked;
+        const cb = $('#map-toggle-labels'); if (cb) cb.checked = visCb.checked;
       } else {
         if (!mapOpts.layers) mapOpts.layers = {};
         mapOpts.layers[key] = visCb.checked;
@@ -2471,6 +2593,20 @@ $('#map-north-style')?.addEventListener('change', (e) => {
     renderMap();
   }
 });
+$('#map-tree-style')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.treeStyle = e.target.value;
+    renderMap();
+  }
+});
+$('#map-toggle-labels')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.labels = e.target.checked;
+    renderMap();
+  }
+});
 $('#map-grid-style')?.addEventListener('change', (e) => {
   if (mapOpts) {
     if (!mapOpts.overlays) mapOpts.overlays = {};
@@ -2560,7 +2696,9 @@ document.querySelectorAll('[data-mapexport]').forEach((b) => b.addEventListener(
 
 /* ---------------- Язык ---------------- */
 
-// выпадающий список языков
+// wyпадающий список языков
+window.applyLang = applyLang;
+window.t = t;
 for (const sel of document.querySelectorAll('.lang-select, .lang-pill')) {
   sel.innerHTML = LANGS.map((l) => `<option value="${l.code}">${l.name}</option>`).join('');
   sel.value = lang;

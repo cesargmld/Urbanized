@@ -66,6 +66,19 @@ export const MAP_PRESETS = {
     overlays: { scalebar: true, north: true, grid: true },
     outlineWidth: 0.1,
   },
+  stipple: {
+    colors: {
+      bg: '#ffffff', building: '#ffffff', outline: '#1e3a8a', road: '#ffffff', path: '#f0f4f8', rail: '#1e3a8a',
+      water: '#e0ecf7', green: '#edf4e8', tree: '#1e3a8a', contour: '#93c5fd', shadow: '#1e3a8a',
+      depthLow: '#ffffff', depthHigh: '#1e3a8a', grid: '#bfdbfe', text: '#1e3a8a',
+    },
+    layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: true, site: true, byType: false },
+    shadows: { on: true, azimuth: 315, altitude: 35, strength: 0.28 },
+    relief: { hillshade: false, hillshadeStrength: 0.3, depth: false, depthStrength: 0.5 },
+    overlays: { scalebar: true, north: true, grid: true },
+    outlineWidth: 0.16,
+    grain: 18,
+  },
 };
 export const MAP_COLOR_KEYS = ['bg', 'building', 'outline', 'road', 'path', 'water', 'green', 'tree', 'contour', 'shadow', 'depthLow', 'depthHigh', 'grid', 'text'];
 export const MAP_SCALES = [500, 1000, 2000, 5000, 10000];
@@ -142,6 +155,20 @@ export function mapSVG(model, o) {
   const gl = (id, attrs, body) => (body ? `<g id="${id}" ${attrs}>${body}</g>` : '');
   const lines = (layer) => (model.lines[layer] ?? []).map((pts) => ring(pts, false)).join('');
   const areas = (layer) => (model.areas[layer] ?? []).map((pts) => ring(pts)).join('');
+
+  // 0. Fotografía Satelital Real con Opacidad
+  layerSnippets.satellite = (() => {
+    if (!o.layers?.satellite) return '';
+    if (model.imagery?.canvas) {
+      try {
+        const dataUrl = model.imagery.canvas.toDataURL('image/jpeg', 0.88);
+        return gl('SATELLITE_IMG', '', `<image href="${dataUrl}" x="0" y="0" width="${size}" height="${size}" preserveAspectRatio="none"/>`);
+      } catch (e) {
+        return '';
+      }
+    }
+    return '';
+  })();
 
   // 1. Relieve
   layerSnippets.relief = (() => {
@@ -232,10 +259,31 @@ export function mapSVG(model, o) {
     return gl('SHADOWS', `fill="${c.shadow}" fill-rule="nonzero" opacity="${o.shadows.strength}"`, parts.join(''));
   })();
 
-  // 8. Árboles
+  // 8. Árboles con estilos arquitectónicos seleccionables
   layerSnippets.trees = (() => {
     if (!o.layers.trees || !model.trees.length) return '';
-    return gl('TREES', `fill="${c.tree}"`, model.trees.map((t) => `<circle cx="${f(t.x + h)}" cy="${f(h - t.y)}" r="${f(t.r)}"/>`).join(''));
+    const style = o.treeStyle || 'minimal';
+    const glyphs = model.trees.map((t) => {
+      const cx = f(t.x + h), cy = f(h - t.y), r = f(t.r);
+      const rad = Number(r);
+      if (style === 'crown_hatch') {
+        // Corona con sombreado de líneas radiales (estilo croquis arquitectónico)
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.12)}"/><path d="M${f(Number(cx) - rad * 0.7)},${cy}L${f(Number(cx) + rad * 0.7)},${cy} M${cx},${f(Number(cy) - rad * 0.7)}L${cx},${f(Number(cy) + rad * 0.7)}" stroke="${c.text}" stroke-width="${pen(0.12)}"/></g>`;
+      } else if (style === 'stipple') {
+        // Clúster de micropuntos punteados (estilo nórdico / halftone)
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.tree}" stroke-width="${pen(0.18)}" stroke-dasharray="${pen(0.5)} ${pen(0.5)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.55)}" fill="${c.tree}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.16))}" fill="${c.text}"/></g>`;
+      } else if (style === 'branching') {
+        // Ramificaciones esquemáticas de arquitectura (Referencias 2 y 3)
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}" opacity="0.45"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.8)}" x2="${cx}" y2="${f(Number(cy) - rad * 0.4)}" stroke="${c.text}" stroke-width="${pen(0.16)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.1)}" x2="${f(Number(cx) - rad * 0.55)}" y2="${f(Number(cy) - rad * 0.35)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.25)}" x2="${f(Number(cx) + rad * 0.55)}" y2="${f(Number(cy) - rad * 0.25)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/></g>`;
+      } else if (style === 'detailed') {
+        // Doble anillo técnico
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}" opacity="0.25"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.14)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.6)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.15))}" fill="${c.text}"/></g>`;
+      } else {
+        // minimal clásico con punto central
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.5, rad * 0.22))}" fill="${c.text}"/></g>`;
+      }
+    }).join('');
+    return gl('TREES', '', glyphs);
   })();
 
   // 9. Edificios
@@ -261,8 +309,29 @@ export function mapSVG(model, o) {
     return gl('SITE', `fill="none" stroke="#c0392b" stroke-width="${pen(0.5)}" stroke-dasharray="${pen(3)} ${pen(1.5)}"`, `<path d="${ring(model.site)}"/>`);
   })();
 
+  // 11. Etiquetas Arquitectónicas (Solo si o.overlays.labels !== false)
+  layerSnippets.labels = (() => {
+    if (o.overlays?.labels === false) return '';
+    const pins = pinStore?.getPins?.() || [];
+    if (!pins.length) return '';
+    const fsRef = size * 0.016;
+    const parts = pins.map((p) => {
+      const px = ((p.lng - model.frame.west) / (model.frame.east - model.frame.west)) * size;
+      const py = ((model.frame.north - p.lat) / (model.frame.north - model.frame.south)) * size;
+      const text = p.label || 'Punto';
+      const textW = Math.max(fsRef * 2.8, text.length * fsRef * 0.52);
+      return `<g class="axiom-callout-label" transform="translate(${f(px)}, ${f(py)})">`
+        + `<line x1="0" y1="0" x2="0" y2="${f(-fsRef * 1.6)}" stroke="${c.text}" stroke-width="${pen(0.14)}"/>`
+        + `<circle cx="0" cy="0" r="${f(fsRef * 0.22)}" fill="${p.color || c.text}"/>`
+        + `<rect x="${f(-textW / 2)}" y="${f(-fsRef * 2.7)}" width="${f(textW)}" height="${f(fsRef * 1.1)}" rx="${f(fsRef * 0.55)}" fill="#111215" stroke="rgba(255,255,255,0.22)" stroke-width="${pen(0.1)}"/>`
+        + `<text x="0" y="${f(-fsRef * 1.95)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${f(fsRef * 0.55)}" font-weight="600" fill="#ffffff">${text}</text>`
+        + `</g>`;
+    }).join('');
+    return gl('LABELS', '', parts);
+  })();
+
   // Ensamble dinámico según el orden de capas y opacidad personalizada
-  const defaultOrder = ['relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site'];
+  const defaultOrder = ['satellite', 'relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
   const layerOrder = Array.isArray(o.layerOrder) && o.layerOrder.length ? o.layerOrder : defaultOrder;
   const opacities = o.layerOpacities || {};
 
@@ -416,9 +485,37 @@ export function mapSVG(model, o) {
   }
   if (o.overlays.north) {
     const nx = size - fs * 1.2, ny = barY - fs * 0.2, s2 = fs * 0.75;
-    const nStyle = o.overlays.northStyle || 'minimal';
+    const nStyle = o.overlays.northStyle || 'arch_bar_n';
+    const r = s2 * 0.95;
     let northShape = '';
-    if (nStyle === 'swiss') {
+
+    if (nStyle === 'arch_cross') {
+      // 1. Imagen Ref: Círculo con cruz fina y barra norte en trazo grueso
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + r)}" r="${f(r)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`
+        + `<line x1="${f(nx - r)}" y1="${f(ny + r)}" x2="${f(nx + r)}" y2="${f(ny + r)}" stroke="${c.text}" stroke-width="${pen(0.12)}"/>`
+        + `<line x1="${f(nx)}" y1="${f(ny + r)}" x2="${f(nx)}" y2="${f(ny + 2 * r)}" stroke="${c.text}" stroke-width="${pen(0.12)}"/>`
+        + `<line x1="${f(nx)}" y1="${f(ny + r)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.55)}" stroke-linecap="round"/>`;
+    } else if (nStyle === 'arch_bar') {
+      // 2. Imagen Ref: Círculo con radio norte en barra gruesa
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + r)}" r="${f(r)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`
+        + `<line x1="${f(nx)}" y1="${f(ny + r)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.55)}" stroke-linecap="round"/>`;
+    } else if (nStyle === 'arch_bar_n') {
+      // 3. Imagen Ref: Círculo barra con letra N arriba
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + r)}" r="${f(r)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`
+        + `<line x1="${f(nx)}" y1="${f(ny + r)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.55)}" stroke-linecap="round"/>`
+        + `<text x="${f(nx)}" y="${f(ny - fs * 0.35)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${f(fs * 0.8)}" font-weight="700" letter-spacing="0.02em" fill="${c.text}">N</text>`;
+    } else if (nStyle === 'arch_notch') {
+      // 4. Imagen Ref: Círculo con hendidura norte lineal
+      const slitW = r * 0.18;
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + r)}" r="${f(r)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`
+        + `<rect x="${f(nx - slitW / 2)}" y="${f(ny - 0.5)}" width="${f(slitW)}" height="${f(r * 0.95)}" fill="${c.bg || '#ffffff'}"/>`
+        + `<path d="M${f(nx - slitW / 2)},${f(ny)}L${f(nx - slitW / 2)},${f(ny + r * 0.9)}L${f(nx + slitW / 2)},${f(ny + r * 0.9)}L${f(nx + slitW / 2)},${f(ny)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.16)}"/>`;
+    } else if (nStyle === 'arch_disc') {
+      // 5. Imagen Ref: Disco sólido negro con hendidura norte blanca
+      const slitW = r * 0.18;
+      northShape = `<circle cx="${f(nx)}" cy="${f(ny + r)}" r="${f(r)}" fill="${c.text}"/>`
+        + `<rect x="${f(nx - slitW / 2)}" y="${f(ny - 0.2)}" width="${f(slitW)}" height="${f(r * 0.95)}" fill="${c.bg || '#ffffff'}"/>`;
+    } else if (nStyle === 'swiss') {
       // Aguja suiza arquitectónica elegante: mitad llena, mitad abierta
       northShape = `<path d="M${f(nx)},${f(ny)}L${f(nx + s2 * 0.38)},${f(ny + s2 * 1.7)}L${f(nx)},${f(ny + s2 * 1.35)}Z" fill="${c.text}"/>`
         + `<path d="M${f(nx)},${f(ny)}L${f(nx - s2 * 0.38)},${f(ny + s2 * 1.7)}L${f(nx)},${f(ny + s2 * 1.35)}Z" fill="none" stroke="${c.text}" stroke-width="${pen(0.18)}"/>`
@@ -432,7 +529,7 @@ export function mapSVG(model, o) {
         + `<circle cx="${f(nx)}" cy="${f(ny + s2 * 0.9)}" r="${f(s2 * 0.14)}" fill="${c.text}"/>`
         + `<text x="${f(nx)}" y="${f(ny - fs * 0.45)}" text-anchor="middle" font-family="Inter, sans-serif" font-size="${f(fs * 0.75)}" font-weight="600" fill="${c.text}">N</text>`;
     } else {
-      // Minimalista puro de precisión
+      // Minimalista puro de precisión (Aguja con N)
       northShape = `<line x1="${f(nx)}" y1="${f(ny + s2 * 1.9)}" x2="${f(nx)}" y2="${f(ny)}" stroke="${c.text}" stroke-width="${pen(0.22)}" stroke-linecap="round"/>`
         + `<path d="M${f(nx - s2 * 0.3)},${f(ny + s2 * 0.55)}L${f(nx)},${f(ny)}L${f(nx + s2 * 0.3)},${f(ny + s2 * 0.55)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.22)}" stroke-linecap="round" stroke-linejoin="round"/>`
         + `<circle cx="${f(nx)}" cy="${f(ny + s2 * 1.9)}" r="${f(s2 * 0.1)}" fill="${c.text}"/>`

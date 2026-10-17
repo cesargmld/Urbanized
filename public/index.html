@@ -41,7 +41,7 @@
       <!-- Search Bar in Topbar Left -->
       <div class="axiom-search-box search">
         <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="q" type="search" placeholder="Buscar ciudades, coordenadas..." aria-label="Buscar lugar" autocomplete="off">
+        <input id="q" type="search" placeholder="Buscar ciudades, coordenadas..." aria-label="Buscar lugar" data-i18n-ph="search.ph" data-i18n-aria="search.aria" autocomplete="off">
         <ul id="results" class="results" hidden></ul>
       </div>
     </div>
@@ -51,28 +51,28 @@
       <nav class="axiom-view-nav" role="tablist">
         <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app" title="[1] Selector de Mapa Base" data-tooltip="[1] Mapa">
           <span class="axiom-key-badge">1</span>
-          <span>Mapa</span>
+          <span data-i18n="nav.map">Mapa</span>
         </button>
         <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result" title="[2] Estudio 3D y Factibilidad" data-tooltip="[2] Modelo 3D">
           <span class="axiom-key-badge">2</span>
-          <span>Modelo 3D</span>
+          <span data-i18n="nav.studio">Modelo 3D</span>
         </button>
         <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper" title="[3] Vector Map 2D" data-tooltip="[3] Vector Map">
           <span class="axiom-key-badge">3</span>
-          <span>Vector Map</span>
+          <span data-i18n="nav.vector">Vector Map</span>
         </button>
         <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator" title="[4] Axonometría y Maqueta" data-tooltip="[4] Axonometría">
           <span class="axiom-key-badge">4</span>
-          <span>Axonometría</span>
+          <span data-i18n="nav.illu">Axonometría</span>
         </button>
       </nav>
     </div>
 
     <!-- Right Controls: Saved Views & Language -->
     <div class="axiom-topbar-right">
-      <button type="button" class="axiom-btn-secondary" id="btn-open-views" title="Vistas Guardadas del Proyecto" style="font-size:11.5px; padding:5px 12px; display:inline-flex; align-items:center; gap:6px; border-radius:9999px;">
+      <button type="button" class="axiom-btn-secondary" id="btn-open-views" title="Vistas Guardadas del Proyecto" data-i18n-title="nav.savedViews" style="font-size:11.5px; padding:5px 12px; display:inline-flex; align-items:center; gap:6px; border-radius:9999px;">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        <span>Vistas (<span id="views-count-badge">0</span>)</span>
+        <span><span data-i18n="nav.views">Vistas</span> (<span id="views-count-badge">0</span>)</span>
       </button>
 
       <select class="axiom-lang-select lang-pill" aria-label="Idioma">
@@ -98,24 +98,24 @@
         <div class="axiom-island-capsule">
           <button type="button" class="axiom-island-btn active" id="map-btn-sat" data-base="sat" title="Vista Satelital">
             <span class="axiom-island-dot active"></span>
-            <span>Satélite</span>
+            <span data-i18n="map.sat">Satélite</span>
           </button>
           <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Cartografía Arquitectónica Oscura">
             <span class="axiom-island-dot"></span>
-            <span>Mapa Oscuro</span>
+            <span data-i18n="map.dark">Mapa Oscuro</span>
           </button>
           <span class="axiom-island-sep"></span>
           <button type="button" class="axiom-island-btn" id="map-btn-walk" title="Mostrar radios de proximidad e isócronas peatonales (5, 10, 15 min) en el mapa">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9" stroke-dasharray="3 2"/><circle cx="12" cy="12" r="3"/></svg>
-            <span>Isócronas</span>
+            <span data-i18n="map.iso">Isócronas</span>
           </button>
           <button type="button" class="axiom-island-btn" id="map-btn-flora" title="Demarcar zonas de flora y vegetación nativa sobre el mapa">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
-            <span>Zonas de Flora</span>
+            <span data-i18n="map.flora">Zonas de Flora</span>
           </button>
           <button type="button" class="axiom-island-btn" id="map-btn-pins" title="Añadir marcadores y pines personalizados sobre el mapa">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>Pines</span>
+            <span data-i18n="map.pins">Pines</span>
           </button>
         </div>
 
@@ -151,25 +151,25 @@
         <form id="panel" autocomplete="off" class="axiom-setup-form">
           <!-- Mode Switcher: Modelo 3D vs Corte Topográfico -->
           <div class="axiom-seg mode-seg" role="group">
-            <button type="button" class="axiom-seg-item active" data-mode="model" aria-pressed="true">Modelo 3D</button>
-            <button type="button" class="axiom-seg-item" data-mode="section" aria-pressed="false">Corte Topográfico</button>
+            <button type="button" class="axiom-seg-item active" data-mode="model" aria-pressed="true" data-i18n="mode.model">Modelo 3D</button>
+            <button type="button" class="axiom-seg-item" data-mode="section" aria-pressed="false" data-i18n="mode.section">Corte Topográfico</button>
           </div>
 
           <!-- 1. MODEL 3D EXTRACTION TOOLS -->
           <div id="model-tools" class="axiom-tool-stack">
             <!-- Shape Switcher -->
             <div class="axiom-control-row">
-              <span class="axiom-label">Forma de la base</span>
+              <span class="axiom-label" data-i18n="shape.label">Forma de la base</span>
               <div class="axiom-seg shape-seg" role="group">
-                <button type="button" class="axiom-seg-item active" data-shape="square" aria-pressed="true">Cuadrado</button>
-                <button type="button" class="axiom-seg-item" data-shape="circle" aria-pressed="false">Círculo</button>
+                <button type="button" class="axiom-seg-item active" data-shape="square" aria-pressed="true" data-i18n="shape.square">Cuadrado</button>
+                <button type="button" class="axiom-seg-item" data-shape="circle" aria-pressed="false" data-i18n="shape.circle">Círculo</button>
               </div>
             </div>
 
             <!-- Area Slider -->
             <div class="axiom-control-row">
               <div class="axiom-row-between">
-                <span class="axiom-label">Área a extraer</span>
+                <span class="axiom-label" data-i18n="setup.area">Área a extraer</span>
                 <span class="axiom-val" id="size-out">1.0 km</span>
               </div>
               <input id="size" type="range" min="250" max="3500" step="10" value="1000" aria-label="Dimensiones" class="axiom-range">
@@ -181,95 +181,95 @@
               <button type="button" class="axiom-filter-trigger" id="btn-map-filters" aria-expanded="false">
                 <span class="axiom-filter-trigger-left">
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/></svg>
-                  <span>Parámetros, Capas GIS y Sensibilidad</span>
+                  <span data-i18n="setup.filters">Parámetros, Capas GIS y Sensibilidad</span>
                 </span>
                 <svg class="axiom-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
 
               <div class="axiom-params-drawer" id="map-filters-list" hidden>
                 <!-- Group A: Edificios y Usos de Suelo -->
-                <span class="axiom-sub-header">Edificios y Equipamiento</span>
+                <span class="axiom-sub-header" data-i18n="setup.bldgHeader">Edificios y Equipamiento</span>
                 <div class="axiom-dot-list">
                   <button type="button" class="axiom-dot-item active" data-mapfilter="buildings">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Volúmenes de edificios</span>
+                    <span class="axiom-dot-text" data-i18n="setup.bldgVolumes">Volúmenes de edificios</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="poi_commercial">
                     <span class="axiom-bullet" style="--dot-color:#f97316;"></span>
-                    <span class="axiom-dot-text">Negocios y comercios</span>
+                    <span class="axiom-dot-text" data-i18n="setup.commercial">Negocios y comercios</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="poi_schools">
                     <span class="axiom-bullet" style="--dot-color:#60a5fa;"></span>
-                    <span class="axiom-dot-text">Escuelas y equipamiento</span>
+                    <span class="axiom-dot-text" data-i18n="setup.schools">Escuelas y equipamiento</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="poi_residential">
                     <span class="axiom-bullet" style="--dot-color:#f4f4f6;"></span>
-                    <span class="axiom-dot-text">Vivienda residencial</span>
+                    <span class="axiom-dot-text" data-i18n="setup.residential">Vivienda residencial</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="extraBuildings">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Completar con Overture Maps</span>
+                    <span class="axiom-dot-text" data-i18n="setup.overture">Completar con Overture Maps</span>
                   </button>
                 </div>
 
                 <!-- Group B: Vialidades y Transporte -->
-                <span class="axiom-sub-header">Vialidades e Infraestructura</span>
+                <span class="axiom-sub-header" data-i18n="setup.roadsHeader">Vialidades e Infraestructura</span>
                 <div class="axiom-dot-list">
                   <button type="button" class="axiom-dot-item active" data-mapfilter="roads">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Red vial y ferroviaria</span>
+                    <span class="axiom-dot-text" data-i18n="setup.roadsRail">Red vial y ferroviaria</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="roads_major">
                     <span class="axiom-bullet" style="--dot-color:#fbbf24;"></span>
-                    <span class="axiom-dot-text">Avenidas principales</span>
+                    <span class="axiom-dot-text" data-i18n="setup.roadsMajor">Avenidas principales</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="roads_minor">
                     <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
-                    <span class="axiom-dot-text">Calles secundarias y senderos</span>
+                    <span class="axiom-dot-text" data-i18n="setup.roadsMinor">Calles secundarias y senderos</span>
                   </button>
                   <button type="button" class="axiom-dot-item" data-mapfilter="roadWidth">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Ancho real de calzada (Superficies)</span>
+                    <span class="axiom-dot-text" data-i18n="setup.roadWidth">Ancho real de calzada (Superficies)</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="bridges">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Puentes y pasos a desnivel</span>
+                    <span class="axiom-dot-text" data-i18n="setup.bridges">Puentes y pasos a desnivel</span>
                   </button>
                 </div>
 
                 <!-- Group C: Topografía, Agua y Sensibilidad Arbórea -->
-                <span class="axiom-sub-header">Topografía, Agua y Arbolado</span>
+                <span class="axiom-sub-header" data-i18n="setup.natureHeader">Topografía, Agua y Arbolado</span>
                 <div class="axiom-dot-list">
                   <button type="button" class="axiom-dot-item active" data-mapfilter="terrain">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Relieve 3D (LiDAR / DEM)</span>
+                    <span class="axiom-dot-text" data-i18n="setup.terrain3d">Relieve 3D (LiDAR / DEM)</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="contours">
                     <span class="axiom-bullet" style="--dot-color:#d97706;"></span>
-                    <span class="axiom-dot-text">Curvas de nivel topográficas</span>
+                    <span class="axiom-dot-text" data-i18n="setup.contours">Curvas de nivel topográficas</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="nature">
                     <span class="axiom-bullet" style="--dot-color:#38bdf8;"></span>
-                    <span class="axiom-dot-text">Hidrología y parques</span>
+                    <span class="axiom-dot-text" data-i18n="setup.water">Hidrología y parques</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="trees">
                     <span class="axiom-bullet" style="--dot-color:#4ade80;"></span>
-                    <span class="axiom-dot-text">Árboles y masa vegetal</span>
+                    <span class="axiom-dot-text" data-i18n="setup.trees">Árboles y masa vegetal</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="detect">
                     <span class="axiom-bullet" style="--dot-color:#4ade80;"></span>
-                    <span class="axiom-dot-text">Detectar árboles por satélite</span>
+                    <span class="axiom-dot-text" data-i18n="setup.detectTrees">Detectar árboles por satélite</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="satellite">
                     <span class="axiom-bullet"></span>
-                    <span class="axiom-dot-text">Ortomosaico satelital</span>
+                    <span class="axiom-dot-text" data-i18n="setup.satellite">Ortomosaico satelital</span>
                   </button>
                 </div>
 
                 <!-- Sensibilidad de detección satelital -->
                 <div class="axiom-control-row" id="sens-field" style="padding: 4px 6px 2px;">
                   <div class="axiom-row-between">
-                    <span class="axiom-label">Sensibilidad arbórea</span>
+                    <span class="axiom-label" data-i18n="setup.treeSens">Sensibilidad arbórea</span>
                     <b class="axiom-val" id="sens-out">50%</b>
                   </div>
                   <input id="sens" type="range" min="0" max="100" step="5" value="50" aria-label="Sensibilidad" class="axiom-range">
@@ -278,12 +278,12 @@
                 <!-- Polígono de Predio -->
                 <div class="axiom-control-row" style="padding: 4px 6px 2px;">
                   <div class="axiom-row-between">
-                    <span class="axiom-label">Polígono de predio</span>
+                    <span class="axiom-label" data-i18n="site.title">Polígono de predio</span>
                     <span class="axiom-val" id="site-info">—</span>
                   </div>
                   <div class="axiom-btn-pair">
-                    <button type="button" class="axiom-subtle-btn" id="site-draw">Trazar en mapa</button>
-                    <button type="button" class="axiom-subtle-btn" id="site-clear" disabled>Limpiar</button>
+                    <button type="button" class="axiom-subtle-btn" id="site-draw" data-i18n="site.draw">Trazar en mapa</button>
+                    <button type="button" class="axiom-subtle-btn" id="site-clear" data-i18n="site.clear" disabled>Limpiar</button>
                   </div>
                 </div>
               </div>
@@ -291,7 +291,7 @@
 
             <!-- Subtle Matte Architectural Build Button (No glossy/neon shine) -->
             <button class="axiom-cta-btn" id="build" type="submit">
-              <span>Crear Modelo 3D</span>
+              <span data-i18n="build.idle">Crear Modelo 3D</span>
               <svg viewBox="0 0 24 24" width="15" height="15"><polyline points="9 18 15 12 9 6"></polyline></svg>
             </button>
           </div>
@@ -401,10 +401,10 @@
           <button type="button" class="axiom-dock-icon" data-drawer="export" data-tooltip="Descargar Activos CAD/BIM">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
-          <button type="button" class="axiom-dock-icon" data-drawer="gis" data-tooltip="Capas Urbanas GIS">
+          <button type="button" class="axiom-dock-icon" data-drawer="gis" data-tooltip="Capas Urbanas GIS" data-i18n-tooltip="dock.gis">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           </button>
-          <button type="button" class="axiom-dock-icon" data-drawer="bio" data-tooltip="Biodiversidad y Flora">
+          <button type="button" class="axiom-dock-icon" data-drawer="bio" data-tooltip="Biodiversidad y Flora" data-i18n-tooltip="dock.bio">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>
           </button>
           <button type="button" class="axiom-dock-icon" data-drawer="radii" data-tooltip="Isócronas Peatonales">
@@ -640,26 +640,55 @@
               <p class="export-coords" id="radii-coords">Isócronas a 4.8 km/h</p>
             </div>
 
-            <div class="axiom-seg" role="group">
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <span class="axiom-label" data-i18n="walk.mode">Modo de movilidad</span>
+              <select id="walk-speed-select" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="4.8" selected>Caminata estándar (4.8 km/h)</option>
+                <option value="6.0">Caminata ágil (6.0 km/h)</option>
+                <option value="15.0">Bicicleta urbana (15 km/h)</option>
+                <option value="20.0">Scooter / Patineta (20 km/h)</option>
+                <option value="custom">Radio directo (m)</option>
+              </select>
+            </div>
+
+            <!-- Slider de Tiempo / Minutos -->
+            <div class="axiom-control-row" style="margin-top:6px;" id="walk-time-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label" data-i18n="walk.time">Tiempo de recorrido</span>
+                <span class="axiom-val" id="walk-time-display">15 min</span>
+              </div>
+              <input type="range" min="1" max="60" step="1" value="15" id="walk-time-slider" class="axiom-range">
+            </div>
+
+            <!-- Slider de Distancia Directa -->
+            <div class="axiom-control-row" style="margin-top:6px;" id="walk-dist-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label" data-i18n="walk.distance">Radio directo</span>
+                <span class="axiom-val" id="walk-dist-display">1,200 m</span>
+              </div>
+              <input type="range" min="100" max="5000" step="50" value="1200" id="walk-distance-slider" class="axiom-range">
+            </div>
+
+            <div class="axiom-seg" role="group" style="margin-top:8px;">
               <button type="button" class="axiom-seg-item" data-walktime="5">5 min (400m)</button>
               <button type="button" class="axiom-seg-item" data-walktime="10">10 min (800m)</button>
               <button type="button" class="axiom-seg-item active" data-walktime="15">15 min (1.2km)</button>
             </div>
 
-            <div class="axiom-dot-list">
+            <div class="axiom-dot-list" style="margin-top:8px;">
               <div class="axiom-dot-item active">
                 <span class="axiom-bullet" style="--dot-color:#ffffff;"></span>
-                <span class="axiom-dot-text">Radio 5 min · Proximidad inmediata</span>
+                <span class="axiom-dot-text" id="walk-tag-1">Anillo interior · Proximidad inmediata</span>
                 <span class="axiom-dot-count" id="walk-pois-5">400 m</span>
               </div>
               <div class="axiom-dot-item active">
                 <span class="axiom-bullet" style="--dot-color:#cbd5e1;"></span>
-                <span class="axiom-dot-text">Radio 10 min · Barrio caminable</span>
+                <span class="axiom-dot-text" id="walk-tag-2">Anillo intermedio · Barrio caminable</span>
                 <span class="axiom-dot-count" id="walk-pois-10">800 m</span>
               </div>
               <div class="axiom-dot-item active">
                 <span class="axiom-bullet" style="--dot-color:#94a3b8;"></span>
-                <span class="axiom-dot-text">Radio 15 min · Ciudad de 15 min</span>
+                <span class="axiom-dot-text" id="walk-tag-3">Anillo exterior · Radio extendido</span>
                 <span class="axiom-dot-count" id="walk-pois-15">1200 m</span>
               </div>
             </div>
@@ -812,7 +841,7 @@
           <aside class="axiom-drawer-card" id="drawer-feasibility" hidden>
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
-                <h2 class="axiom-export-title">Factibilidad Normativa</h2>
+                <h2 class="axiom-export-title" data-i18n="feas.title">Factibilidad Normativa</h2>
                 <div class="axiom-header-actions">
                   <label class="axiom-mini-toggle" title="Mostrar volumen máximo construible 3D sobre el predio">
                     <input type="checkbox" id="feas-enabled-toggle" checked>
@@ -828,28 +857,28 @@
 
             <!-- Selector de Modo de Representación: Envolvente, Levantamiento o Modelo de Proyecto -->
             <div class="axiom-editor-group" style="padding:0; margin-bottom:8px;">
-              <span class="axiom-sub-header">Modo de Geometría</span>
+              <span class="axiom-sub-header" data-i18n="feas.geomMode">Modo de Geometría</span>
               <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr);" id="feas-geom-mode-group">
-                <button type="button" class="axiom-subtle-btn active" data-feasmode="envelope" style="font-size:10.5px; padding:6px 4px;">Envolvente</button>
-                <button type="button" class="axiom-subtle-btn" data-feasmode="massing" style="font-size:10.5px; padding:6px 4px;">Levantamiento</button>
-                <button type="button" class="axiom-subtle-btn" data-feasmode="project" style="font-size:10.5px; padding:6px 4px;">Proyecto 3D</button>
+                <button type="button" class="axiom-subtle-btn active" data-feasmode="envelope" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeEnvelope">Envolvente</button>
+                <button type="button" class="axiom-subtle-btn" data-feasmode="massing" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeMassing">Levantamiento</button>
+                <button type="button" class="axiom-subtle-btn" data-feasmode="project" style="font-size:10.5px; padding:6px 4px;" data-i18n="feas.modeProject">Proyecto 3D</button>
               </div>
             </div>
 
             <!-- Ubicación y Adaptación del Predio en el Sitio -->
             <div class="axiom-editor-group" style="padding:0; margin-bottom:8px;">
-              <span class="axiom-sub-header">Ubicación del Predio</span>
+              <span class="axiom-sub-header" data-i18n="feas.lotLoc">Ubicación del Predio</span>
               <div style="display:flex; gap:6px; margin-bottom:6px;">
                 <button type="button" class="axiom-subtle-btn" id="btn-feas-pick-location" style="flex:1; font-size:11px; padding:6px 8px;">
-                  <span>📍 Ubicar con Clic</span>
+                  <span data-i18n="feas.pickLoc">📍 Ubicar con Clic</span>
                 </button>
                 <button type="button" class="axiom-subtle-btn" id="btn-feas-snap-building" style="flex:1; font-size:11px; padding:6px 8px;">
-                  <span>🏢 Alinear a Edificio</span>
+                  <span data-i18n="feas.snapBldg">🏢 Alinear a Edificio</span>
                 </button>
               </div>
               <div class="axiom-control-row">
                 <div class="axiom-row-between">
-                  <span class="axiom-label">Rotación del Lote</span>
+                  <span class="axiom-label" data-i18n="feas.lotRot">Rotación del Lote</span>
                   <span class="axiom-val" id="feas-val-rot">0°</span>
                 </div>
                 <input type="range" min="0" max="360" step="1" value="0" id="feas-rot" class="axiom-range">
@@ -868,30 +897,30 @@
 
             <!-- Carga de Modelo de Proyecto (SketchUp / GLTF / OBJ) -->
             <div class="axiom-editor-group" id="feas-project-upload-group" style="padding:0; margin-bottom:8px;">
-              <span class="axiom-sub-header">Modelo 3D del Proyecto (SKP / GLTF / OBJ)</span>
+              <span class="axiom-sub-header" data-i18n="feas.uploadHeader">Modelo 3D del Proyecto (SKP / GLTF / OBJ)</span>
               <input type="file" id="feas-project-file-input" accept=".skp,.glb,.gltf,.obj" style="display:none;">
               <button type="button" class="axiom-cta-btn" id="btn-feas-browse-file" style="width:100%; font-size:11px; padding:8px 10px;">
-                <span>📥 Cargar Modelo 3D (.skp, .glb, .obj)</span>
+                <span data-i18n="feas.browseFile">📥 Cargar Modelo 3D (.skp, .glb, .obj)</span>
               </button>
               <div id="feas-project-controls" hidden style="margin-top:6px; display:flex; flex-direction:column; gap:6px;">
                 <p class="export-coords" id="feas-project-name" style="color:#38bdf8; font-weight:600;"></p>
                 <div class="axiom-control-row">
                   <div class="axiom-row-between">
-                    <span class="axiom-label">Escala Proyecto</span>
+                    <span class="axiom-label" data-i18n="feas.scale">Escala Proyecto</span>
                     <span class="axiom-val" id="feas-val-proj-scale">1.0x</span>
                   </div>
                   <input type="range" min="0.1" max="4.0" step="0.05" value="1.0" id="feas-proj-scale" class="axiom-range">
                 </div>
                 <div class="axiom-control-row">
                   <div class="axiom-row-between">
-                    <span class="axiom-label">Giro Y</span>
+                    <span class="axiom-label" data-i18n="feas.rotY">Giro Y</span>
                     <span class="axiom-val" id="feas-val-proj-rot">0°</span>
                   </div>
                   <input type="range" min="0" max="360" step="2" value="0" id="feas-proj-rot" class="axiom-range">
                 </div>
                 <div class="axiom-control-row">
                   <div class="axiom-row-between">
-                    <span class="axiom-label">Ajuste Altura Z</span>
+                    <span class="axiom-label" data-i18n="feas.adjZ">Ajuste Altura Z</span>
                     <span class="axiom-val" id="feas-val-proj-z">0.0 m</span>
                   </div>
                   <input type="range" min="-10" max="25" step="0.5" value="0" id="feas-proj-z" class="axiom-range">
@@ -902,19 +931,19 @@
             <!-- Métricas Calculadas en Tiempo Real -->
             <div class="axiom-export-summary" style="grid-template-columns: repeat(2, 1fr);">
               <div class="axiom-sum-item">
-                <span class="axiom-sum-label">Área del Lote</span>
+                <span class="axiom-sum-label" data-i18n="feas.lotArea">Área del Lote</span>
                 <b class="axiom-sum-val"><span id="feas-out-lot">1,575</span> m²</b>
               </div>
               <div class="axiom-sum-item">
-                <span class="axiom-sum-label">Área Desplante (COS)</span>
+                <span class="axiom-sum-label" data-i18n="feas.footprintArea">Área Desplante (COS)</span>
                 <b class="axiom-sum-val" style="color:#38bdf8;"><span id="feas-out-footprint">1,102</span> m²</b>
               </div>
               <div class="axiom-sum-item">
-                <span class="axiom-sum-label">Total Construible (CUS)</span>
+                <span class="axiom-sum-label" data-i18n="feas.gfa">Total Construible (CUS)</span>
                 <b class="axiom-sum-val" style="color:#4ade80;"><span id="feas-out-gfa">3,780</span> m²</b>
               </div>
               <div class="axiom-sum-item">
-                <span class="axiom-sum-label">Altura / Niveles</span>
+                <span class="axiom-sum-label" data-i18n="feas.maxHeight">Altura / Niveles</span>
                 <b class="axiom-sum-val"><span id="feas-out-height">14.0 m · 4N</span></b>
               </div>
             </div>
@@ -923,7 +952,7 @@
             <div class="axiom-editor-group" style="padding:0;">
               <div class="axiom-control-row">
                 <div class="axiom-row-between">
-                  <span class="axiom-label">COS (% Ocupación del Suelo)</span>
+                  <span class="axiom-label" data-i18n="feas.cos">COS (% Ocupación del Suelo)</span>
                   <span class="axiom-val" id="feas-val-cos">70%</span>
                 </div>
                 <input type="range" min="10" max="100" step="1" value="70" id="feas-cos" class="axiom-range">
@@ -931,7 +960,7 @@
 
               <div class="axiom-control-row">
                 <div class="axiom-row-between">
-                  <span class="axiom-label">CUS (Coeficiente de Utilización)</span>
+                  <span class="axiom-label" data-i18n="feas.cus">CUS (Coeficiente de Utilización)</span>
                   <span class="axiom-val" id="feas-val-cus">2.40</span>
                 </div>
                 <input type="range" min="0.5" max="15" step="0.1" value="2.4" id="feas-cus" class="axiom-range">
@@ -939,7 +968,7 @@
 
               <div class="axiom-control-row">
                 <div class="axiom-row-between">
-                  <span class="axiom-label">Niveles Máximos Permitidos</span>
+                  <span class="axiom-label" data-i18n="feas.levels">Niveles Máximos Permitidos</span>
                   <span class="axiom-val" id="feas-val-levels">4 niveles</span>
                 </div>
                 <input type="range" min="1" max="40" step="1" value="4" id="feas-levels" class="axiom-range">
@@ -947,7 +976,7 @@
 
               <div class="axiom-control-row">
                 <div class="axiom-row-between">
-                  <span class="axiom-label">Remetimiento Frontal (m)</span>
+                  <span class="axiom-label" data-i18n="feas.frontSetback">Remetimiento Frontal (m)</span>
                   <span class="axiom-val" id="feas-val-front">3.0 m</span>
                 </div>
                 <input type="range" min="0" max="25" step="0.5" value="3.0" id="feas-front" class="axiom-range">
@@ -955,7 +984,7 @@
 
               <div class="axiom-control-row">
                 <div class="axiom-row-between">
-                  <span class="axiom-label">Remetimiento Perimetral (m)</span>
+                  <span class="axiom-label" data-i18n="feas.sideSetback">Remetimiento Perimetral (m)</span>
                   <span class="axiom-val" id="feas-val-side">1.5 m</span>
                 </div>
                 <input type="range" min="0" max="20" step="0.5" value="1.5" id="feas-side" class="axiom-range">
@@ -964,7 +993,7 @@
 
             <!-- Parser de Normativa con Gemini Flash-Lite -->
             <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
-              <span class="axiom-sub-header">Parser IA de Normativa (Gemini Flash-Lite)</span>
+              <span class="axiom-sub-header" data-i18n="feas.aiHeader">Parser IA de Normativa (Gemini Flash-Lite)</span>
               <textarea
                 id="feas-zoning-input"
                 rows="3"
@@ -972,7 +1001,7 @@
                 style="width:100%; background:rgba(255,255,255,0.04); color:#f4f4f6; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:8px; font-size:11px; font-family:inherit; resize:vertical;"
               ></textarea>
               <button type="button" class="axiom-cta-btn" id="btn-parse-zoning" style="margin-top:6px;">
-                <span>Extraer Parámetros con Gemini Flash-Lite</span>
+                <span data-i18n="feas.aiBtn">Extraer Parámetros con Gemini Flash-Lite</span>
               </button>
               <p class="export-coords" id="feas-parse-status" style="margin-top:4px; font-size:11px;"></p>
             </div>
@@ -993,7 +1022,7 @@
       <aside class="axiom-editor-sidebar">
         <div class="axiom-export-header">
           <div class="axiom-export-title-row">
-            <h2 class="axiom-export-title">Vector Map (2D)</h2>
+            <h2 class="axiom-export-title" data-i18n="map.title">Vector Map (2D)</h2>
           </div>
           <p class="export-coords">Lámina cartográfica vectorial · Rueda para zoom</p>
         </div>
@@ -1001,20 +1030,21 @@
         <div class="axiom-editor-scroll">
           <!-- Estilos de Lámina -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Estilos de Lámina</span>
-            <div class="axiom-preset-grid">
-              <button type="button" class="axiom-subtle-btn" data-mappreset="classic" aria-pressed="true">Clásico</button>
-              <button type="button" class="axiom-subtle-btn" data-mappreset="figure">Lleno / Vacío</button>
-              <button type="button" class="axiom-subtle-btn" data-mappreset="relief">Relieve</button>
-              <button type="button" class="axiom-subtle-btn" data-mappreset="night">Nocturno</button>
-              <button type="button" class="axiom-subtle-btn" data-mappreset="blueprint">Blueprint</button>
+            <span class="axiom-sub-header" data-i18n="map.presets">Estilos de Lámina</span>
+            <div class="axiom-preset-grid" style="grid-template-columns: repeat(3, 1fr); gap: 6px;">
+              <button type="button" class="axiom-subtle-btn" data-mappreset="classic" aria-pressed="true" data-i18n="preset.classic">Clásico</button>
+              <button type="button" class="axiom-subtle-btn" data-mappreset="figure" data-i18n="preset.figure">Lleno / Vacío</button>
+              <button type="button" class="axiom-subtle-btn" data-mappreset="relief" data-i18n="preset.relief">Relieve</button>
+              <button type="button" class="axiom-subtle-btn" data-mappreset="night" data-i18n="preset.night">Nocturno</button>
+              <button type="button" class="axiom-subtle-btn" data-mappreset="blueprint" data-i18n="preset.blueprint">Blueprint</button>
+              <button type="button" class="axiom-subtle-btn" data-mappreset="stipple" data-i18n="preset.stipple">Puntos / Riso</button>
             </div>
           </div>
 
           <!-- Escala -->
           <div class="axiom-editor-group">
             <div class="axiom-row-between">
-              <span class="axiom-sub-header" style="margin:0;">Escala de Lámina</span>
+              <span class="axiom-sub-header" style="margin:0;" data-i18n="map.sheetScale">Escala de Lámina</span>
               <select id="map-scale" class="axiom-lang-select"></select>
             </div>
           </div>
@@ -1022,8 +1052,8 @@
           <!-- Capas Reordenables y Opacidades (Layer Stack Manager) -->
           <div class="axiom-editor-group">
             <div class="axiom-row-between">
-              <span class="axiom-sub-header" style="margin:0;">Capas & Superposición</span>
-              <button type="button" class="axiom-back-btn" id="btn-reset-layer-stack" style="font-size:10px; padding:2px 6px;">Restablecer</button>
+              <span class="axiom-sub-header" style="margin:0;" data-i18n="map.layerStack">Capas & Superposición</span>
+              <button type="button" class="axiom-back-btn" id="btn-reset-layer-stack" style="font-size:10px; padding:2px 6px;" data-i18n="map.resetStack">Restablecer</button>
             </div>
             <p class="export-coords" style="margin:2px 0 6px;">Reorganiza con ▲ / ▼ para alterar el orden de dibujo y ajusta la opacidad independiente de cada capa.</p>
             <div id="map-layer-stack" class="axiom-layer-stack"></div>
@@ -1032,8 +1062,8 @@
 
           <!-- Luz, Sombra y Relieve -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Luz, Sombra y Relieve</span>
-            <label class="axiom-check-row"><span>Sombras arrojadas</span><input type="checkbox" data-mapopt="shadows.on" checked></label>
+            <span class="axiom-sub-header" data-i18n="map.lightRelief">Luz, Sombra y Relieve</span>
+            <label class="axiom-check-row"><span data-i18n="map.castShadows">Sombras arrojadas</span><input type="checkbox" data-mapopt="shadows.on" checked></label>
             <div class="axiom-control-row">
               <span class="axiom-label">Azimut solar</span>
               <input type="range" min="0" max="355" step="5" data-mapopt="shadows.azimuth" class="axiom-range">
@@ -1046,12 +1076,12 @@
               <span class="axiom-label">Intensidad de sombra</span>
               <input type="range" min="0.05" max="0.8" step="0.01" data-mapopt="shadows.strength" class="axiom-range">
             </div>
-            <label class="axiom-check-row"><span>Sombreado topográfico (Hillshade)</span><input type="checkbox" data-mapopt="relief.hillshade" checked></label>
+            <label class="axiom-check-row"><span data-i18n="map.hillshade">Sombreado topográfico (Hillshade)</span><input type="checkbox" data-mapopt="relief.hillshade" checked></label>
             <div class="axiom-control-row">
               <span class="axiom-label">Fuerza hillshade</span>
               <input type="range" min="0.05" max="1" step="0.05" data-mapopt="relief.hillshadeStrength" class="axiom-range">
             </div>
-            <label class="axiom-check-row"><span>Hipsometría de profundidad</span><input type="checkbox" data-mapopt="relief.depth"></label>
+            <label class="axiom-check-row"><span data-i18n="map.depthMap">Hipsometría de profundidad</span><input type="checkbox" data-mapopt="relief.depth"></label>
             <div class="axiom-control-row">
               <span class="axiom-label">Fuerza profundidad</span>
               <input type="range" min="0.05" max="1" step="0.05" data-mapopt="relief.depthStrength" class="axiom-range">
@@ -1060,9 +1090,9 @@
 
           <!-- Elementos de Lámina -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Elementos Cartográficos</span>
+            <span class="axiom-sub-header" data-i18n="map.cartoElements">Elementos Cartográficos</span>
             <div class="axiom-row-between">
-              <label class="axiom-check-row" style="margin:0;"><span>Barra de escala gráfica</span><input type="checkbox" data-mapopt="overlays.scalebar" checked></label>
+              <label class="axiom-check-row" style="margin:0;"><span data-i18n="map.scalebar">Barra de escala gráfica</span><input type="checkbox" data-mapopt="overlays.scalebar" checked></label>
               <select id="map-scale-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
                 <option value="classic">Clásica (Ajedrezada)</option>
                 <option value="minimal">Minimalista (Suiza)</option>
@@ -1070,19 +1100,35 @@
               </select>
             </div>
             <div class="axiom-row-between" style="margin-top:4px;">
-              <label class="axiom-check-row" style="margin:0;"><span>Norte</span><input type="checkbox" data-mapopt="overlays.north" checked></label>
+              <label class="axiom-check-row" style="margin:0;"><span data-i18n="map.north">Norte</span><input type="checkbox" data-mapopt="overlays.north" checked></label>
               <select id="map-north-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
-                <option value="swiss">Flecha Suiza</option>
-                <option value="minimal">Minimalista</option>
-                <option value="circle">Técnico</option>
+                <option value="arch_bar_n" selected>Círculo barra con 'N' (Ref 3)</option>
+                <option value="arch_cross">Cruz con barra norte (Ref 1)</option>
+                <option value="arch_bar">Círculo barra norte (Ref 2)</option>
+                <option value="arch_notch">Círculo con hendidura (Ref 4)</option>
+                <option value="arch_disc">Disco negro con hendidura (Ref 5)</option>
+                <option value="minimal">Minimalista (Aguja con N)</option>
+                <option value="swiss">Flecha Suiza dual-tone</option>
+                <option value="circle">Técnico Bauhaus</option>
               </select>
             </div>
-            <label class="axiom-check-row" style="margin-top:4px;"><span>Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" data-mapopt="overlays.isochrones"></label>
-            <label class="axiom-check-row" style="margin-top:4px;"><span>Pines y marcadores personalizados</span><input type="checkbox" id="map-pins-toggle" checked></label>
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <span class="axiom-label" data-i18n="layer.trees">Estilo de arbolado</span>
+              <select id="map-tree-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="branching" selected>Ramificación esquemática (Refs 2 y 3)</option>
+                <option value="minimal">Minimal (Círculo y centro)</option>
+                <option value="crown_hatch">Rayado radial arquitectónico</option>
+                <option value="stipple">Trama de puntos / Halftone</option>
+                <option value="detailed">Doble anillo concéntrico</option>
+              </select>
+            </div>
+            <label class="axiom-check-row" style="margin-top:4px;"><span data-i18n="illu.labels">Etiquetas y marcadores de texto</span><input type="checkbox" id="map-toggle-labels" checked></label>
+            <label class="axiom-check-row" style="margin-top:4px;"><span data-i18n="walk.isochrones">Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" data-mapopt="overlays.isochrones"></label>
+            <label class="axiom-check-row" style="margin-top:4px;"><span data-i18n="map.pinsOverlay">Pines y marcadores personalizados</span><input type="checkbox" id="map-pins-toggle" checked></label>
 
             <!-- Parametric Grid Configuration (Imagen 2: 5m, 20m, 50m, 100m, 250m, 500m, 1km) -->
             <div class="axiom-row-between" style="margin-top:6px;">
-              <label class="axiom-check-row" style="margin:0;"><span>Retícula métrica</span><input type="checkbox" data-mapopt="overlays.grid"></label>
+              <label class="axiom-check-row" style="margin:0;"><span data-i18n="map.metricGrid">Retícula métrica</span><input type="checkbox" data-mapopt="overlays.grid"></label>
               <select id="map-grid-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
                 <option value="cross">Cruces (+)</option>
                 <option value="dots">Puntos (·)</option>
@@ -1106,7 +1152,7 @@
             <!-- Paper Noise Grain Texture (Imagen 2) -->
             <div class="axiom-control-row" style="margin-top:6px;">
               <div class="axiom-row-between">
-                <span class="axiom-label">Micro-grano de papel / Ruido</span>
+                <span class="axiom-label" data-i18n="map.paperNoise">Micro-grano de papel / Ruido</span>
                 <span class="axiom-val" id="map-grain-out">0%</span>
               </div>
               <input type="range" min="0" max="100" step="5" value="0" id="map-grain" class="axiom-range">
@@ -1121,16 +1167,16 @@
           <!-- Paleta de Colores Personalizable -->
           <div class="axiom-editor-group">
             <div class="axiom-row-between">
-              <span class="axiom-sub-header" style="margin:0;">Paleta de Colores</span>
-              <button type="button" class="axiom-back-btn" id="map-reset-colors">Restablecer</button>
+              <span class="axiom-sub-header" style="margin:0;" data-i18n="map.palette">Paleta de Colores</span>
+              <button type="button" class="axiom-back-btn" id="map-reset-colors" data-i18n="map.resetColors">Restablecer</button>
             </div>
             <div class="swatches" id="map-swatches"></div>
           </div>
         </div>
 
         <div class="axiom-editor-footer">
-          <button type="button" class="axiom-cta-btn" data-mapexport="svg">Descargar Vector .svg</button>
-          <button type="button" class="axiom-secondary-btn" data-mapexport="png">Descargar Imagen .png</button>
+          <button type="button" class="axiom-cta-btn" data-mapexport="svg" data-i18n="map.exportSvg">Descargar Vector .svg</button>
+          <button type="button" class="axiom-secondary-btn" data-mapexport="png" data-i18n="map.exportPng">Descargar Imagen .png</button>
         </div>
       </aside>
     </div>
@@ -1147,7 +1193,7 @@
       <aside class="axiom-editor-sidebar">
         <div class="axiom-export-header">
           <div class="axiom-export-title-row">
-            <h2 class="axiom-export-title">Axonometría</h2>
+            <h2 class="axiom-export-title" data-i18n="illu.title">Axonometría</h2>
           </div>
           <p class="export-coords">Arrastra para orbitar · Rueda para zoom · Shift para desplazar</p>
         </div>
@@ -1155,42 +1201,59 @@
         <div class="axiom-editor-scroll">
           <!-- Ángulo Axonométrico -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Vista Axonométrica</span>
+            <span class="axiom-sub-header" data-i18n="illu.view">Vista Axonométrica</span>
             <div class="axiom-preset-grid">
-              <button type="button" class="axiom-subtle-btn" data-illview="iso-nw">NO Iso</button>
-              <button type="button" class="axiom-subtle-btn" data-illview="iso-ne">NE Iso</button>
-              <button type="button" class="axiom-subtle-btn" data-illview="iso-sw" aria-pressed="true">SO Iso</button>
-              <button type="button" class="axiom-subtle-btn" data-illview="iso-se">SE Iso</button>
-              <button type="button" class="axiom-subtle-btn" data-illview="top">Planta</button>
-              <button type="button" class="axiom-subtle-btn" data-illview="eye">Peatonal</button>
+              <button type="button" class="axiom-subtle-btn" data-illview="iso-nw" data-i18n="illu.nw">NO Iso</button>
+              <button type="button" class="axiom-subtle-btn" data-illview="iso-ne" data-i18n="illu.ne">NE Iso</button>
+              <button type="button" class="axiom-subtle-btn" data-illview="iso-sw" aria-pressed="true" data-i18n="illu.sw">SO Iso</button>
+              <button type="button" class="axiom-subtle-btn" data-illview="iso-se" data-i18n="illu.se">SE Iso</button>
+              <button type="button" class="axiom-subtle-btn" data-illview="top" data-i18n="illu.top">Planta</button>
+              <button type="button" class="axiom-subtle-btn" data-illview="eye" data-i18n="illu.eye">Peatonal</button>
             </div>
-            <label class="axiom-check-row" style="margin-top:6px;"><span>Proyección con perspectiva</span><input type="checkbox" id="illu-persp"></label>
+            <label class="axiom-check-row" style="margin-top:6px;"><span data-i18n="illu.perspective">Proyección con perspectiva</span><input type="checkbox" id="illu-persp"></label>
           </div>
 
           <!-- Estilo Gráfico & Maqueta -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Acabado Gráfico</span>
-            <div class="axiom-preset-grid">
-              <button type="button" class="axiom-subtle-btn" data-illstyle="flat" aria-pressed="true">Sin contorno</button>
-              <button type="button" class="axiom-subtle-btn" data-illstyle="line">Línea fina</button>
-              <button type="button" class="axiom-subtle-btn" data-illstyle="mono">Maqueta B/N</button>
+            <span class="axiom-sub-header" data-i18n="illu.style">Acabado Gráfico</span>
+            <div class="axiom-preset-grid" style="grid-template-columns: repeat(2, 1fr); gap: 6px;">
+              <button type="button" class="axiom-subtle-btn active" data-illstyle="flat" aria-pressed="true" data-i18n="illu.flat">Sin contorno</button>
+              <button type="button" class="axiom-subtle-btn" data-illstyle="line" data-i18n="illu.line">Línea fina</button>
+              <button type="button" class="axiom-subtle-btn" data-illstyle="mono" data-i18n="illu.mono">Maqueta B/N</button>
+              <button type="button" class="axiom-subtle-btn" data-illstyle="stipple" id="illu-btn-stipple" data-i18n="illu.stipple">Puntos / Riso</button>
+            </div>
+
+            <!-- Selector de Tinta para Modo Puntos / Risograph (Referencias 1, 2) -->
+            <div id="illu-stipple-row" style="margin-top:8px;" hidden>
+              <div class="axiom-row-between">
+                <span class="axiom-label" data-i18n="illu.stippleInk">Tinta Risograph monocromática</span>
+                <input type="color" id="illu-stipple-ink" value="#1e3a8a" class="tier-color-input" title="Cambiar tinta de impresión">
+              </div>
+              <div class="axiom-swatches-row" style="display:flex; gap:6px; margin-top:6px;">
+                <button type="button" class="stipple-swatch active" data-stipple="#1e3a8a" style="background:#1e3a8a; width:22px; height:22px; border-radius:4px; border:1px solid rgba(255,255,255,0.2);" title="Azul Cobalto Profundo (Ref 1 & 2)"></button>
+                <button type="button" class="stipple-swatch" data-stipple="#18181b" style="background:#18181b; width:22px; height:22px; border-radius:4px; border:1px solid rgba(255,255,255,0.2);" title="Noir / Tinta Negra"></button>
+                <button type="button" class="stipple-swatch" data-stipple="#0284c7" style="background:#0284c7; width:22px; height:22px; border-radius:4px; border:1px solid rgba(255,255,255,0.2);" title="Cian Técnico / Blueprint"></button>
+                <button type="button" class="stipple-swatch" data-stipple="#9a3412" style="background:#9a3412; width:22px; height:22px; border-radius:4px; border:1px solid rgba(255,255,255,0.2);" title="Terracota Ladrillo"></button>
+                <button type="button" class="stipple-swatch" data-stipple="#064e3b" style="background:#064e3b; width:22px; height:22px; border-radius:4px; border:1px solid rgba(255,255,255,0.2);" title="Verde Bosque / Forest"></button>
+                <button type="button" class="stipple-swatch" data-stipple="#78350f" style="background:#78350f; width:22px; height:22px; border-radius:4px; border:1px solid rgba(255,255,255,0.2);" title="Sepia Mineral"></button>
+              </div>
             </div>
           </div>
 
           <!-- Multimapas Temáticos -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Multimapa Temático (Misma Vista)</span>
-            <label class="axiom-check-row"><span>Colorear tipologías GIS en maqueta</span><input type="checkbox" id="illu-bytype"></label>
+            <span class="axiom-sub-header" data-i18n="illu.thematic">Multimapa Temático (Misma Vista)</span>
+            <label class="axiom-check-row"><span data-i18n="illu.bytype">Colorear tipologías GIS en maqueta</span><input type="checkbox" id="illu-bytype"></label>
             <label class="axiom-check-row"><span>Isócronas peatonales (5, 10, 15 min)</span><input type="checkbox" id="illu-isochrones"></label>
-            <label class="axiom-check-row"><span>Capa Flora & Zonas Ecológicas</span><input type="checkbox" id="illu-flora"></label>
-            <label class="axiom-check-row"><span>Capa Fauna & Corredores</span><input type="checkbox" id="illu-fauna"></label>
-            <label class="axiom-check-row"><span>Pines y marcadores 3D</span><input type="checkbox" id="illu-pins-toggle" checked></label>
+            <label class="axiom-check-row"><span data-i18n="illu.flora">Capa Flora & Zonas Ecológicas</span><input type="checkbox" id="illu-flora"></label>
+            <label class="axiom-check-row"><span data-i18n="illu.fauna">Capa Fauna & Corredores</span><input type="checkbox" id="illu-fauna"></label>
+            <label class="axiom-check-row"><span data-i18n="illu.pins">Pines y marcadores 3D</span><input type="checkbox" id="illu-pins-toggle" checked></label>
           </div>
 
           <!-- Superposición de Capas QGIS Despiezada (Axonometría en Cascada - Imagen 4) -->
           <div class="axiom-editor-group">
             <div class="axiom-row-between">
-              <span class="axiom-sub-header" style="margin:0;">Superposición de Capas (Cascada)</span>
+              <span class="axiom-sub-header" style="margin:0;" data-i18n="illu.exploded">Superposición de Capas (Cascada)</span>
               <label class="axiom-mini-toggle">
                 <input type="checkbox" id="illu-exploded-switch">
                 <span>Activar</span>
@@ -1253,12 +1316,12 @@
 
           <!-- Base de Maqueta & Tipo de Suelo -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Base de Maqueta & Suelo</span>
+            <span class="axiom-sub-header" data-i18n="illu.baseSoil">Base de Maqueta & Suelo</span>
             <div class="axiom-preset-grid" style="grid-template-columns: repeat(2, 1fr);">
-              <button type="button" class="axiom-subtle-btn active" data-illbase="plaster" aria-pressed="true">Yeso Blanco</button>
-              <button type="button" class="axiom-subtle-btn" data-illbase="balsa">Madera Balsa</button>
-              <button type="button" class="axiom-subtle-btn" data-illbase="soil">Estrato Suelo</button>
-              <button type="button" class="axiom-subtle-btn" data-illbase="graphite">Grafito</button>
+              <button type="button" class="axiom-subtle-btn active" data-illbase="plaster" aria-pressed="true" data-i18n="illu.basePlaster">Yeso Blanco</button>
+              <button type="button" class="axiom-subtle-btn" data-illbase="balsa" data-i18n="illu.baseBalsa">Madera Balsa</button>
+              <button type="button" class="axiom-subtle-btn" data-illbase="soil" data-i18n="illu.baseSoilType">Estrato Suelo</button>
+              <button type="button" class="axiom-subtle-btn" data-illbase="graphite" data-i18n="illu.baseGraphite">Grafito</button>
             </div>
             <div class="axiom-soil-badge" id="illu-soil-badge" style="margin-top:6px;">Suelo Aluvial & Sedimentos Lacustres</div>
             <div class="axiom-control-row" style="margin-top:4px;">
@@ -1272,7 +1335,7 @@
 
           <!-- Sol & Sombra -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Posición Solar & Sombra</span>
+            <span class="axiom-sub-header" data-i18n="illu.sunPosition">Posición Solar & Sombra</span>
             <div class="axiom-control-row">
               <div class="axiom-row-between">
                 <span class="axiom-label">Azimut solar</span>
@@ -1293,12 +1356,29 @@
           <div class="axiom-editor-group">
             <span class="axiom-sub-header">Elementos de Lámina</span>
             <div class="axiom-row-between">
-              <label class="axiom-check-row" style="margin:0;"><span>Norte</span><input type="checkbox" id="illu-north" checked></label>
+              <label class="axiom-check-row" style="margin:0;"><span data-i18n="map.north">Norte</span><input type="checkbox" id="illu-north" checked></label>
               <select id="illu-north-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
-                <option value="swiss">Flecha Suiza</option>
-                <option value="minimal">Minimalista</option>
-                <option value="circle">Técnico</option>
+                <option value="arch_bar_n" selected>Círculo barra con 'N' (Ref 3)</option>
+                <option value="arch_cross">Cruz con barra norte (Ref 1)</option>
+                <option value="arch_bar">Círculo barra norte (Ref 2)</option>
+                <option value="arch_notch">Círculo con hendidura (Ref 4)</option>
+                <option value="arch_disc">Disco negro con hendidura (Ref 5)</option>
+                <option value="minimal">Minimalista (Aguja con N)</option>
+                <option value="swiss">Flecha Suiza dual-tone</option>
+                <option value="circle">Técnico Bauhaus</option>
               </select>
+            </div>
+            <div class="axiom-row-between" style="margin-top:4px;">
+              <span class="axiom-label" data-i18n="layer.trees">Estilo de arbolado</span>
+              <select id="illu-tree-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                <option value="branching" selected>Ramificación esquemática (Refs 2 y 3)</option>
+                <option value="minimal">Minimal (Círculo y centro)</option>
+                <option value="crown_hatch">Rayado radial arquitectónico</option>
+                <option value="stipple">Trama de puntos / Halftone</option>
+                <option value="detailed">Doble anillo concéntrico</option>
+              </select>
+            </div>
+            <label class="axiom-check-row" style="margin-top:4px;"><span data-i18n="illu.labels">Etiquetas y cotas de texto</span><input type="checkbox" id="illu-toggle-labels" checked></label>
             <div class="axiom-row-between" style="margin-top:4px;">
               <label class="axiom-check-row" style="margin:0;"><span>Escala gráfica métrica</span><input type="checkbox" id="illu-scalebar" checked></label>
               <select id="illu-scale-style" class="axiom-lang-select" style="font-size:11px; height:24px;">
@@ -1324,22 +1404,44 @@
             </div>
           </div>
 
+          <!-- Resaltado de Edificio Héroe / Proyecto (Referencias 1, 2, 3) -->
+          <div class="axiom-editor-group">
+            <span class="axiom-sub-header" data-i18n="illu.heroTitle">Modelo de Proyecto / Edificio Héroe</span>
+            <label class="axiom-check-row"><span data-i18n="illu.heroEnable">Resaltar edificio de proyecto</span><input type="checkbox" id="illu-hero-enable"></label>
+            <div id="illu-hero-options" hidden>
+              <div class="axiom-row-between" style="margin-top:6px;">
+                <span class="axiom-label" data-i18n="illu.heroColor">Color de acento</span>
+                <input type="color" id="illu-hero-color" value="#1e3a8a" class="tier-color-input" title="Color de edificio de proyecto">
+              </div>
+              <div class="axiom-row-between" style="margin-top:6px;">
+                <span class="axiom-label" data-i18n="illu.heroTexture">Textura arquitectónica</span>
+                <select id="illu-hero-texture" class="axiom-lang-select" style="font-size:11px; height:24px;">
+                  <option value="solid" selected>Color sólido acentuado (Ref 1)</option>
+                  <option value="hatched">Rayado técnico a 45° (Ref 3)</option>
+                  <option value="travertine">Piedra Travertino cálido</option>
+                  <option value="concrete">Concreto aparente</option>
+                  <option value="wood">Madera de balsa</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
           <!-- Capas Visibles -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Capas Visibles</span>
-            <label class="axiom-check-row"><span>Edificios</span><input type="checkbox" data-illlayer="buildings" checked></label>
-            <label class="axiom-check-row"><span>Árboles</span><input type="checkbox" data-illlayer="trees" checked></label>
-            <label class="axiom-check-row"><span>Vialidades</span><input type="checkbox" data-illlayer="roads" checked></label>
-            <label class="axiom-check-row"><span>Agua y áreas verdes</span><input type="checkbox" data-illlayer="nature" checked></label>
-            <label class="axiom-check-row"><span>Curvas de nivel</span><input type="checkbox" data-illlayer="contours" checked></label>
-            <label class="axiom-check-row"><span>Mostrar leyenda de usos</span><input type="checkbox" id="illu-legend" checked></label>
+            <span class="axiom-sub-header" data-i18n="illu.visibleLayers">Capas Visibles</span>
+            <label class="axiom-check-row"><span data-i18n="illu.layerBuildings">Edificios</span><input type="checkbox" data-illlayer="buildings" checked></label>
+            <label class="axiom-check-row"><span data-i18n="illu.layerTrees">Árboles</span><input type="checkbox" data-illlayer="trees" checked></label>
+            <label class="axiom-check-row"><span data-i18n="illu.layerRoads">Vialidades</span><input type="checkbox" data-illlayer="roads" checked></label>
+            <label class="axiom-check-row"><span data-i18n="illu.layerNature">Agua y áreas verdes</span><input type="checkbox" data-illlayer="nature" checked></label>
+            <label class="axiom-check-row"><span data-i18n="illu.layerContours">Curvas de nivel</span><input type="checkbox" data-illlayer="contours" checked></label>
+            <label class="axiom-check-row"><span data-i18n="illu.showLegend">Mostrar leyenda de usos</span><input type="checkbox" id="illu-legend" checked></label>
           </div>
 
           <!-- Paleta de Colores Personalizable -->
           <div class="axiom-editor-group">
             <div class="axiom-row-between">
-              <span class="axiom-sub-header" style="margin:0;">Paleta de Colores</span>
-              <button type="button" class="axiom-back-btn" id="illu-reset-colors">Restablecer</button>
+              <span class="axiom-sub-header" style="margin:0;" data-i18n="illu.colors">Paleta de Colores</span>
+              <button type="button" class="axiom-back-btn" id="illu-reset-colors" data-i18n="illu.resetColors">Restablecer</button>
             </div>
             <div class="swatches" id="illu-swatches"></div>
             <div class="swatches" id="illu-class-swatches"></div>
@@ -1347,10 +1449,10 @@
 
           <!-- Etiquetas y Cotas Libres Arrastrables -->
           <div class="axiom-editor-group">
-            <span class="axiom-sub-header">Etiquetas y Cotas Libres</span>
+            <span class="axiom-sub-header" data-i18n="illu.freeLabels">Etiquetas y Cotas Libres</span>
             <p class="export-coords" style="margin-bottom:6px;">Haz clic en 'Añadir etiqueta' y luego en el modelo. Arrástrala libremente con el ratón.</p>
             <div class="axiom-btn-pair">
-              <button type="button" class="axiom-subtle-btn" id="illu-label" style="flex:1;">Añadir etiqueta</button>
+              <button type="button" class="axiom-subtle-btn" id="illu-label" style="flex:1;" data-i18n="illu.addLabel">Añadir etiqueta</button>
               <input type="color" id="illu-color" value="#ffffff" aria-label="Color de etiqueta" style="width:32px; height:30px; border:none; background:none; cursor:pointer;">
             </div>
             <ul class="illu-labels" id="illu-label-list" style="margin-top:6px; list-style:none; display:flex; flex-direction:column; gap:4px;"></ul>
@@ -1358,8 +1460,8 @@
         </div>
 
         <div class="axiom-editor-footer">
-          <button type="button" class="axiom-cta-btn" data-illexport="svg">Descargar Vector .svg</button>
-          <button type="button" class="axiom-secondary-btn" data-illexport="png">Descargar Imagen .png (4K)</button>
+          <button type="button" class="axiom-cta-btn" data-illexport="svg" data-i18n="illu.exportSvg">Descargar Vector .svg</button>
+          <button type="button" class="axiom-secondary-btn" data-illexport="png" data-i18n="illu.exportPng">Descargar Imagen .png (4K)</button>
         </div>
       </aside>
     </div>
@@ -1645,7 +1747,7 @@
         <div class="axiom-modal-header">
           <div class="axiom-modal-title-wrap">
             <span class="axiom-modal-icon">🗺️</span>
-            <h3>Regresar al Selector de Ubicación</h3>
+            <h3 data-i18n="modal.returnTitle">Regresar al Selector de Ubicación</h3>
           </div>
           <button type="button" class="axiom-modal-close-btn" id="modal-return-close" aria-label="Cerrar">✕</button>
         </div>
@@ -1657,8 +1759,8 @@
           <p style="font-size:11.5px; color:#94a3b8; margin:0;">¿Deseas ir al mapa para una nueva búsqueda o continuar en el modelo actual?</p>
         </div>
         <div class="axiom-modal-actions">
-          <button type="button" class="axiom-btn-secondary" id="modal-btn-stay">Continuar en el Modelo Actual</button>
-          <button type="button" class="axiom-btn-primary" id="modal-btn-confirm-map">Ir al Mapa</button>
+          <button type="button" class="axiom-btn-secondary" id="modal-btn-stay" data-i18n="modal.returnStay">Continuar en el Modelo Actual</button>
+          <button type="button" class="axiom-btn-primary" id="modal-btn-confirm-map" data-i18n="modal.returnConfirm">Ir al Mapa</button>
         </div>
       </div>
     </div>
@@ -1669,7 +1771,7 @@
         <div class="axiom-modal-header">
           <div class="axiom-modal-title-wrap">
             <span class="axiom-modal-icon">🏛️</span>
-            <h3>URBANIZED · Centro del Proyecto</h3>
+            <h3 data-i18n="modal.hubTitle">URBANIZED · Centro del Proyecto</h3>
           </div>
           <button type="button" class="axiom-modal-close-btn" id="modal-hub-close" aria-label="Cerrar">✕</button>
         </div>
@@ -1700,9 +1802,9 @@
           </div>
         </div>
         <div class="axiom-modal-actions">
-          <button type="button" class="axiom-btn-danger" id="modal-hub-btn-reset">Reiniciar Proyecto</button>
-          <button type="button" class="axiom-btn-secondary" id="modal-hub-btn-views">Ver Vistas Guardadas</button>
-          <button type="button" class="axiom-btn-primary" id="modal-hub-btn-continue">Continuar</button>
+          <button type="button" class="axiom-btn-danger" id="modal-hub-btn-reset" data-i18n="modal.hubReset">Reiniciar Proyecto</button>
+          <button type="button" class="axiom-btn-secondary" id="modal-hub-btn-views" data-i18n="modal.hubViews">Ver Vistas Guardadas</button>
+          <button type="button" class="axiom-btn-primary" id="modal-hub-btn-continue" data-i18n="modal.hubContinue">Continuar</button>
         </div>
       </div>
     </div>
@@ -1713,14 +1815,14 @@
         <div class="axiom-modal-header">
           <div class="axiom-modal-title-wrap">
             <span class="axiom-modal-icon">💾</span>
-            <h3>Vistas Guardadas y Configuraciones</h3>
+            <h3 data-i18n="modal.viewsTitle">Vistas Guardadas y Configuraciones</h3>
           </div>
           <button type="button" class="axiom-modal-close-btn" id="modal-views-close" aria-label="Cerrar">✕</button>
         </div>
         <div class="axiom-modal-body">
           <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
             <input type="text" id="input-new-view-name" placeholder="Nombre de vista (ej. Planta General 1:2000, Axono Solar...)" class="axiom-lang-select" style="flex:1; height:34px; padding:0 12px; font-size:12px; text-align:left;">
-            <button type="button" class="axiom-btn-primary" id="btn-save-current-view">Guardar Actual</button>
+            <button type="button" class="axiom-btn-primary" id="btn-save-current-view" data-i18n="modal.viewsSaveCurrent">Guardar Actual</button>
           </div>
           <div id="saved-views-container" class="axiom-views-list" style="margin-top:6px;">
             <!-- Generado dinámicamente -->

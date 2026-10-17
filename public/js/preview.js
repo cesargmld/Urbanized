@@ -21,7 +21,7 @@ export const studioState = {
   contours: {
     visible: true,
     color: '#ffffff',
-    labels: true,
+    labels: false, // Etiquetas apagadas en modelo abierto 3D navegable (solo en edición)
     opacity: 0.9
   },
   buildings: {
@@ -29,13 +29,15 @@ export const studioState = {
     edgeOpacity: 0.45
   },
   pins: {
-    visible: true
+    visible: false // Pines apagados en modelo abierto 3D navegable (solo en edición)
   }
 };
 
 function init(container) {
   const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0c0c0e);
@@ -44,9 +46,20 @@ function init(container) {
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.maxPolarAngle = Math.PI * 0.49;
-  scene.add(new THREE.HemisphereLight(0xffffff, 0x9a9a9a, 2.2));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.6);
-  sun.position.set(-0.6, -0.9, 1.4);
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x828b94, 1.8));
+  const sun = new THREE.DirectionalLight(0xffffff, 2.2);
+  sun.position.set(-600, -900, 1400);
+  sun.castShadow = true;
+  sun.shadow.mapSize.width = 2048;
+  sun.shadow.mapSize.height = 2048;
+  sun.shadow.camera.near = 10;
+  sun.shadow.camera.far = 4000;
+  const d = 1400;
+  sun.shadow.camera.left = -d;
+  sun.shadow.camera.right = d;
+  sun.shadow.camera.top = d;
+  sun.shadow.camera.bottom = -d;
+  sun.shadow.bias = -0.0004;
   scene.add(sun);
   const group = new THREE.Group();
   scene.add(group);
@@ -404,6 +417,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       }
     }
     ctx.terrainMesh = new THREE.Mesh(geo, mat);
+    ctx.terrainMesh.receiveShadow = true;
     layerGroups.terrain.add(ctx.terrainMesh);
 
     // Apply live satellite filter if imagery is available
@@ -421,7 +435,9 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
         roughness: 0.94,
         metalness: 0.02
       });
-      layerGroups.skirt.add(new THREE.Mesh(skirtGeo, skirtMat));
+      const skirtMesh = new THREE.Mesh(skirtGeo, skirtMat);
+      skirtMesh.receiveShadow = true;
+      layerGroups.skirt.add(skirtMesh);
       const skirtEdges = new THREE.LineSegments(
         new THREE.EdgesGeometry(skirtGeo, 30),
         new THREE.LineBasicMaterial({ color: isMaqueta ? 0x3f3f46 : 0x27272a, transparent: true, opacity: 0.55 })
@@ -482,6 +498,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       ? new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
       : new THREE.MeshStandardMaterial({ color: bldgColor, roughness: 0.88, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
     const bMesh = new THREE.Mesh(geo, mat);
+    bMesh.castShadow = true;
+    bMesh.receiveShadow = true;
     targetGroup.add(bMesh);
     ctx.buildingMeshes.push(bMesh);
     targetGroup.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: edgeOp })));
@@ -1231,4 +1249,37 @@ window.applyCamera3DView = (cam) => {
   ctx.camera.updateProjectionMatrix();
   ctx.controls.update();
 };
+
+export function setProjectModelStyle({ color = '#1e3a8a', texture = 'solid' } = {}) {
+  const model = feasibilityStore.projectModel;
+  if (!model) return;
+  const col = parseInt(color.replace('#', '0x'), 16);
+  model.traverse((child) => {
+    if (child.isMesh) {
+      child.castShadow = true;
+      child.receiveShadow = true;
+      if (child.material) {
+        if (texture === 'travertine') {
+          child.material.color = new THREE.Color(0xf3e8d9);
+          child.material.roughness = 0.65;
+          child.material.metalness = 0.05;
+        } else if (texture === 'concrete') {
+          child.material.color = new THREE.Color(0x94a3b8);
+          child.material.roughness = 0.85;
+          child.material.metalness = 0.1;
+        } else if (texture === 'wood') {
+          child.material.color = new THREE.Color(0xd4a373);
+          child.material.roughness = 0.6;
+          child.material.metalness = 0.05;
+        } else {
+          child.material.color = new THREE.Color(col);
+          child.material.roughness = 0.35;
+          child.material.metalness = 0.1;
+        }
+        child.material.needsUpdate = true;
+      }
+    }
+  });
+}
+window.setProjectModelStyle = setProjectModelStyle;
 
