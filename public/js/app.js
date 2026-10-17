@@ -479,12 +479,9 @@ async function showResult(m) {
   updateBiodiversity();
 
   // Switch to result screen first so #viewer has non-zero dimensions when Three.js initializes
-  $('#dock-btn-studio')?.classList.remove('disabled');
   $('#view-btn-studio')?.classList.remove('disabled');
   $('#view-btn-mapper')?.classList.remove('disabled');
   $('#view-btn-illu')?.classList.remove('disabled');
-  $('#dock-btn-map')?.classList.remove('disabled');
-  $('#dock-btn-illu')?.classList.remove('disabled');
 
   if (window.switchWorkspaceView) {
     window.switchWorkspaceView('result');
@@ -1063,8 +1060,8 @@ document.querySelectorAll('.bio-subtab').forEach((tab) => {
 $('#btn-render-model')?.addEventListener('click', () => {
   $('#btn-render-maqueta')?.classList.remove('active');
   $('#btn-render-model')?.classList.add('active');
-  $('#btn-render-model .axiom-dot')?.classList.add('active');
-  $('#btn-render-maqueta .axiom-dot')?.classList.remove('active');
+  $('#btn-render-model .axiom-island-dot, #btn-render-model .axiom-dot')?.classList.add('active');
+  $('#btn-render-maqueta .axiom-island-dot, #btn-render-maqueta .axiom-dot')?.classList.remove('active');
   selectView('model');
   toggleMaquetaMode(false);
 });
@@ -1072,35 +1069,24 @@ $('#btn-render-model')?.addEventListener('click', () => {
 $('#btn-render-maqueta')?.addEventListener('click', () => {
   $('#btn-render-model')?.classList.remove('active');
   $('#btn-render-maqueta')?.classList.add('active');
-  $('#btn-render-maqueta .axiom-dot')?.classList.add('active');
-  $('#btn-render-model .axiom-dot')?.classList.remove('active');
+  $('#btn-render-maqueta .axiom-island-dot, #btn-render-maqueta .axiom-dot')?.classList.add('active');
+  $('#btn-render-model .axiom-island-dot, #btn-render-model .axiom-dot')?.classList.remove('active');
   selectView('model');
   toggleMaquetaMode(true);
 });
 
-// Studio Toolbar: Camera Perspective, Isometrics, Planta 3D & Planta 2D Vectorial
+// Studio Toolbar: Camera Orbit 3D & Cenital
 $('#cam-persp')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   selectView('model');
   setCameraView('persp');
 });
-$('#cam-iso')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
-  e.currentTarget.classList.add('active');
-  selectView('model');
-  setCameraView('iso');
-});
 $('#cam-top')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
+  document.querySelectorAll('#cam-persp, #cam-top').forEach((b) => b.classList.remove('active'));
   e.currentTarget.classList.add('active');
   selectView('model');
   setCameraView('top');
-});
-$('#cam-plan2d')?.addEventListener('click', (e) => {
-  document.querySelectorAll('#cam-persp, #cam-iso, #cam-top, #cam-plan2d').forEach((b) => b.classList.remove('active'));
-  e.currentTarget.classList.add('active');
-  selectView('plan');
 });
 
 // Studio Top Bar / Left Dock Openers for Full Vector Map & Axonometric Illustrator

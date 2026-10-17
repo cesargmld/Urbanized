@@ -7,7 +7,7 @@ export const LEVEL_HEIGHT_M = 3.5; // Altura estándar de entrepiso (m)
 class FeasibilityStore {
   constructor() {
     this.params = {
-      enabled: true,
+      enabled: false,
       cos: 70,              // % de ocupación de suelo permitido (ej. 70%)
       cus: 2.4,             // Coeficiente de utilización de suelo (ej. 2.4)
       max_levels: 4,        // Niveles máximos permitidos (ej. 4 niveles)

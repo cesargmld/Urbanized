@@ -360,45 +360,25 @@
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
       </div>
 
-      <!-- Studio Floating Top Bar Inside 3D Stage -->
-      <header class="studio-top-bar" id="studio-top-bar" aria-label="Controles del estudio">
-        <!-- Render Mode: Urbano GIS vs Maqueta 3D (Monocromática) -->
-        <div class="axiom-capsule" id="capsule-render" role="group">
-          <button type="button" class="axiom-btn active" id="btn-render-model" data-render="model" title="Modelo 3D con colores de uso de suelo GIS">
-            <span class="axiom-dot active"></span>
+      <!-- Studio Floating Top Island Inside 3D Stage (Single Compact Liquid Glass Pill at top: 14px) -->
+      <div class="axiom-map-island" id="studio-top-bar" aria-label="Controles de vista 3D">
+        <div class="axiom-island-capsule" id="capsule-render" role="group">
+          <button type="button" class="axiom-island-btn active" id="btn-render-model" data-render="model" title="Modelo 3D con colores de uso de suelo GIS">
+            <span class="axiom-island-dot active"></span>
             <span>Urbano GIS</span>
           </button>
-          <button type="button" class="axiom-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta arquitectónica monocromática de yeso">
-            <span class="axiom-dot"></span>
+          <button type="button" class="axiom-island-btn" id="btn-render-maqueta" data-render="maqueta" title="Maqueta arquitectónica monocromática">
+            <span class="axiom-island-dot"></span>
             <span>Maqueta 3D</span>
           </button>
-        </div>
-
-        <!-- Camera Projections & Technical 2D Plan -->
-        <div class="axiom-capsule" id="capsule-camera" role="group">
-          <button type="button" class="axiom-btn active" id="cam-persp" title="Perspectiva libre 3D">
-            <span>Perspectiva</span>
+          <span class="axiom-island-sep"></span>
+          <button type="button" class="axiom-island-btn active" id="cam-persp" title="Órbita 3D en perspectiva">
+            <span>Órbita 3D</span>
           </button>
-          <button type="button" class="axiom-btn" id="cam-iso" title="Axonometría / Isométrica 45°">
-            <span>Isométrica 45°</span>
-          </button>
-          <button type="button" class="axiom-btn" id="cam-top" title="Vista cenital 3D">
-            <span>Cenital 3D</span>
-          </button>
-          <button type="button" class="axiom-btn" id="cam-plan2d" title="Plano técnico vectorial 2D">
-            <span>Planta 2D</span>
+          <button type="button" class="axiom-island-btn" id="cam-top" title="Vista cenital 3D">
+            <span>Cenital</span>
           </button>
         </div>
-      </header>
-
-      <!-- Studio Floating Non-Blocking Hero Status Pill (Appears when 3D model is loaded, leaving model 100% visible) -->
-      <div class="axiom-studio-hero-pill" id="studio-hero-pill">
-        <span class="studio-hero-dot"></span>
-        <span class="studio-hero-text" id="hero-model-summary">Modelo 3D Generado · 100% Interactivo</span>
-        <button type="button" class="studio-hero-btn" id="btn-hero-export">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Descargar Activos</span>
-        </button>
       </div>
 
       <!-- ========================================================
@@ -406,7 +386,7 @@
            ("ubica centrado el toggle de iconos" + "esconder o desplegar desde la izq")
            ======================================================== -->
       <div class="axiom-left-system" id="studio-left-system">
-        <!-- Vertically Centered Icon Rail on the Left Edge -->
+        <!-- Vertically Centered Icon Rail on the Left Edge (Exclusively 3D Studio Tools — No Duplicate View Navigation) -->
         <nav class="axiom-left-dock" aria-label="Herramientas del modelo">
           <button type="button" class="axiom-dock-icon" data-drawer="export" data-tooltip="Descargar Activos CAD/BIM">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -429,13 +409,6 @@
           <button type="button" class="axiom-dock-icon" data-drawer="feasibility" data-tooltip="Factibilidad Normativa (COS / CUS / Finch 3D)">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
           </button>
-          <span class="axiom-dock-divider"></span>
-          <button type="button" class="axiom-dock-icon" id="dock-btn-map" data-switchview="mapper" data-tooltip="Vector Map 2D">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-          </button>
-          <button type="button" class="axiom-dock-icon" id="dock-btn-illu" data-switchview="illustrator" data-tooltip="Axonometría">
-            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><polygon points="15.5 8.5 13.5 13.5 8.5 15.5 10.5 10.5 15.5 8.5"/></svg>
-          </button>
         </nav>
 
         <!-- Collapsible Left Drawer Container (Starts hidden so the 3D model is 100% visible and interactive) -->
@@ -446,10 +419,6 @@
               <div class="axiom-export-title-row">
                 <h2 class="axiom-export-title">Descargar Activos</h2>
                 <div class="axiom-header-actions">
-                  <button type="button" class="axiom-back-btn" id="btn-back-to-map" title="Volver al mapa">
-                    <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
-                    <span>Mapa</span>
-                  </button>
                   <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel" data-tooltip="Cerrar panel">
                     <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                   </button>
@@ -768,8 +737,7 @@
             </div>
 
             <div class="axiom-row-between" style="margin-top:10px;">
-              <button type="button" class="axiom-back-btn" id="sat-btn-reset">Restablecer valores</button>
-              <button type="button" class="axiom-subtle-btn" id="sat-btn-bn-arch" style="font-size:11px;">Estilo Arquitectónico B/N</button>
+              <button type="button" class="axiom-subtle-btn" id="sat-btn-reset" style="width:100%;">Restablecer valores de textura y relieve</button>
             </div>
           </aside>
 
@@ -943,10 +911,6 @@
         <div class="axiom-export-header">
           <div class="axiom-export-title-row">
             <h2 class="axiom-export-title">Vector Map (2D)</h2>
-            <button type="button" class="axiom-back-btn" data-switchview="result">
-              <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              <span>3D Studio</span>
-            </button>
           </div>
           <p class="export-coords">Lámina cartográfica vectorial · Rueda para zoom</p>
         </div>
@@ -1097,10 +1061,6 @@
         <div class="axiom-export-header">
           <div class="axiom-export-title-row">
             <h2 class="axiom-export-title">Axonometría</h2>
-            <button type="button" class="axiom-back-btn" data-switchview="result" data-tooltip="Volver a 3D">
-              <svg viewBox="0 0 24 24" width="13" height="13"><polyline points="15 18 9 12 15 6"></polyline></svg>
-              <span>3D Studio</span>
-            </button>
           </div>
           <p class="export-coords">Arrastra para orbitar · Rueda para zoom · Shift para desplazar</p>
         </div>
@@ -1501,6 +1461,11 @@
           if (window.renderPinsDrawerList) window.renderPinsDrawerList();
         }
         if (targetKey === 'feasibility') {
+          const feasSw = document.getElementById('feas-enabled-toggle');
+          if (feasSw && !feasSw.checked) {
+            feasSw.checked = true;
+            feasSw.dispatchEvent(new Event('change'));
+          }
           if (window.syncFeasibilityDrawer) window.syncFeasibilityDrawer();
         }
       }
@@ -1518,11 +1483,6 @@
           if (drawerContainer) drawerContainer.hidden = true;
           dockButtons.forEach(b => b.classList.remove('active'));
         });
-      });
-
-      // Hero Pill button to open exporter
-      document.getElementById('btn-hero-export')?.addEventListener('click', () => {
-        openOrToggleLeftDrawer('export', true);
       });
 
       // Clicking on the 3D viewer canvas dismisses open drawer to give full view

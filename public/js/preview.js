@@ -11,19 +11,19 @@ let ctx;
 export const studioState = {
   satellite: {
     enabled: true,
-    saturation: 0,    // 0% (B/N as in Image 1) to 150%
-    contrast: 140,    // 50% to 250%
-    brightness: 75,   // 30% to 150%
-    invert: 0         // 0% to 100%
+    saturation: 100,
+    contrast: 100,
+    brightness: 100,
+    invert: 0
   },
   contours: {
     visible: true,
-    color: '#ffffff', // crisp white like in Image 1
-    labels: true,     // altitude numbers along contour lines
+    color: '#ffffff',
+    labels: true,
     opacity: 0.9
   },
   buildings: {
-    finish: 'white',  // 'white' (pure architectural chalk) | 'gis' (category colors) | 'mono' (graphite)
+    finish: 'gis',  // 'white' (pure architectural chalk) | 'gis' (category colors) | 'mono' (graphite)
     edgeOpacity: 0.45
   },
   pins: {
