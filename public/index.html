@@ -97,76 +97,205 @@
        ======================================================== -->
   <main class="axiom-workspace">
     <!-- ======================================================
-         VIEW 0: RAYON-STYLE DARK MODE WORKSPACE (#workspace-home)
+         VIEW 0: RAYON SAAS DARK MODE WORKSPACE (#workspace-home)
+         Faithful 1:1 match to reference screenshot media_1792357674705_ebefd8f8.png
          ====================================================== -->
-    <div id="workspace-home" class="screen-layer" style="display:none;">
-      <div class="ws-home-container">
-        <!-- Hero Header -->
-        <div class="ws-hero-banner">
-          <div class="ws-hero-left">
-            <span class="ws-mono-pill">URBANIZED STUDIO · WORKSPACE</span>
-            <h1 class="ws-hero-title" data-i18n="ws.title">Estudio de Morfología 3D, Cartografía QGIS & Axonometría</h1>
-            <p class="ws-hero-sub" data-i18n="ws.subtitle">Administra tus proyectos urbanos (.urbnz), restaura escenas de trabajo o explora plantillas de ciudades del mundo.</p>
-          </div>
-          <div class="ws-hero-actions">
-            <button type="button" class="axiom-cta-btn ws-action-btn" id="ws-btn-new-map">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span data-i18n="ws.newModel">Nuevo Modelo Urbano</span>
-            </button>
-            <button type="button" class="axiom-secondary-btn ws-action-btn" id="ws-btn-import-urbnz">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span data-i18n="ws.openUrbnz">Cargar Proyecto (.urbnz)</span>
-            </button>
-            <button type="button" class="axiom-subtle-btn ws-action-btn" id="ws-btn-resume-active" hidden>
-              <span data-i18n="ws.resumeActive">Volver al Modelo Activo →</span>
-            </button>
-          </div>
+    <div id="workspace-home" class="screen-layer rayon-home-screen" style="display:none;">
+      <!-- 1. LEFT SIDEBAR (Rayon Nav) -->
+      <aside class="rayon-home-sidebar">
+        <div class="rayon-user-dropdown" id="ws-user-menu">
+          <div class="rayon-user-avatar">C</div>
+          <span class="rayon-user-name">Cesar's space</span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
 
-        <!-- Workflow Guide Ribbon -->
-        <div class="ws-workflow-ribbon">
-          <div class="ws-step-card">
-            <span class="ws-step-num">01 / MAPA BASE</span>
-            <strong>Delimita el polígono urbano</strong>
-            <p>Selecciona de 250 m a 3.5 km o traza un corte topográfico en cualquier coordenada mundial.</p>
-          </div>
-          <div class="ws-step-card">
-            <span class="ws-step-num">02 / MODELO 3D</span>
-            <strong>Audita capas, relieve y proyecto</strong>
-            <p>Filtra usos GIS, relieve satelital, isócronas, pines e inserta tu edificio (.skp / .glb) o envolvente.</p>
-          </div>
-          <div class="ws-step-card">
-            <span class="ws-step-num">03 / CARTOGRAFÍA 2D</span>
-            <strong>Análisis estilo QGIS y planos</strong>
-            <p>Genera mapas Nolli, Usos de Suelo, Alturas, Topografía con cotas y Hatch Punteado exportable a SVG.</p>
-          </div>
-          <div class="ws-step-card">
-            <span class="ws-step-num">04 / AXONOMETRÍA</span>
-            <strong>Maqueta técnica y cascada explotada</strong>
-            <p>Diagramas isométricos, despiece de 5 capas en cascada, sombras solares y guardado en archivo .urbnz.</p>
-          </div>
-        </div>
+        <nav class="rayon-home-nav">
+          <button type="button" class="rayon-nav-item active" data-wsfilter="all">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <span data-i18n="ws.myModels">My models</span>
+          </button>
+          <button type="button" class="rayon-nav-item" data-wsfilter="notifications">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span data-i18n="ws.notifications">Notifications</span>
+          </button>
+          <button type="button" class="rayon-nav-item" data-wsfilter="pinned">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.89A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.89A2 2 0 0 0 5 15.24Z"/></svg>
+            <span data-i18n="ws.pinned">Pinned</span>
+          </button>
+          <button type="button" class="rayon-nav-item" data-wsfilter="archive">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
+            <span data-i18n="ws.archive">Archive</span>
+          </button>
 
-        <!-- Section 1: Recent Projects & Saved Scenes -->
-        <div class="ws-section">
-          <div class="ws-section-header">
-            <h2 class="ws-section-title" data-i18n="ws.recentTitle">Proyectos Recientes & Escenas Guardadas</h2>
-            <div style="display:flex; gap:8px;">
-              <button type="button" class="axiom-subtle-btn" id="ws-btn-save-current-urbnz" style="padding:5px 12px; font-size:11px;">Guardar Modelo Actual como .urbnz</button>
+          <div class="rayon-nav-section-title" data-i18n="ws.discover">Discover</div>
+          <button type="button" class="rayon-nav-item" data-wsfilter="templates">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <span data-i18n="ws.templates">Templates</span>
+            <span class="rayon-badge-new">NEW</span>
+          </button>
+          <button type="button" class="rayon-nav-item" id="btn-ws-tutorials">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+            <span data-i18n="ws.tutorials">Tutorials</span>
+          </button>
+          <button type="button" class="rayon-nav-item" id="btn-ws-docs">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            <span data-i18n="ws.documentation">Documentation</span>
+          </button>
+          <button type="button" class="rayon-nav-item" id="btn-ws-community">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            <span data-i18n="ws.community">Community forum</span>
+          </button>
+        </nav>
+      </aside>
+
+      <!-- 2. CENTER MAIN CONTENT (Rayon Models Grid) -->
+      <section class="rayon-home-main">
+        <header class="rayon-home-header">
+          <div class="rayon-breadcrumb-title">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+            <h1 data-i18n="ws.myModels">My models</h1>
+          </div>
+
+          <div class="rayon-header-actions">
+            <div class="rayon-search-box">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="text" id="ws-search-input" placeholder="Search" data-i18n-ph="ws.searchPh">
+            </div>
+
+            <select class="rayon-select" id="ws-sort-select">
+              <option value="last-edited">Last edited</option>
+              <option value="name">Name</option>
+              <option value="area">Area km²</option>
+            </select>
+
+            <button type="button" class="rayon-secondary-btn" id="ws-btn-import-urbnz">
+              <span data-i18n="ws.import">Import</span>
+            </button>
+
+            <button type="button" class="rayon-primary-btn" id="ws-btn-new-model">
+              <span data-i18n="ws.newModel">New model</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+            </button>
+          </div>
+        </header>
+
+        <div class="rayon-cards-grid" id="ws-cards-grid">
+          <!-- Card 1: Starter Model -->
+          <div class="rayon-model-card" data-cardtype="template" data-action="load-starter">
+            <div class="rayon-card-thumb">
+              <span class="rayon-tag-template">Template</span>
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#18181b"/>
+                <g stroke="rgba(255,255,255,0.08)" stroke-width="0.8">
+                  <line x1="0" y1="45" x2="300" y2="45"/><line x1="0" y1="90" x2="300" y2="90"/><line x1="0" y1="135" x2="300" y2="135"/>
+                  <line x1="75" y1="0" x2="75" y2="180"/><line x1="150" y1="0" x2="150" y2="180"/><line x1="225" y1="0" x2="225" y2="180"/>
+                </g>
+                <path d="M 60,130 L 140,80 L 220,130 L 140,170 Z" fill="#27272a" stroke="#52525b" stroke-width="1.2"/>
+                <path d="M 110,65 L 140,48 L 170,65 L 170,110 L 140,126 L 110,110 Z" fill="#3b82f6" fill-opacity="0.3" stroke="#60a5fa" stroke-width="1.2"/>
+                <path d="M 70,95 L 95,80 L 120,95 L 120,130 L 95,145 L 70,130 Z" fill="#f97316" fill-opacity="0.3" stroke="#fb923c" stroke-width="1.2"/>
+                <path d="M 160,95 L 185,80 L 210,95 L 210,130 L 185,145 L 160,130 Z" fill="#2dd4bf" fill-opacity="0.3" stroke="#5eead4" stroke-width="1.2"/>
+                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="14" font-weight="700">Starter Model</text>
+              </svg>
+            </div>
+            <div class="rayon-card-meta">
+              <strong class="rayon-card-title">Starter model</strong>
+              <span class="rayon-card-sub">Edited 2 hours ago · CDMX Reforma 1.0 km²</span>
             </div>
           </div>
-          <div class="ws-cards-grid" id="ws-recent-grid"></div>
+
+          <!-- Card 2: Eixample Cerda -->
+          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_bcn_eixample">
+            <div class="rayon-card-thumb">
+              <span class="rayon-tag-template">Template</span>
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#18181b"/>
+                <g stroke="#38bdf8" stroke-width="1.2" fill="none">
+                  <rect x="70" y="30" width="45" height="45" rx="10"/>
+                  <rect x="130" y="30" width="45" height="45" rx="10"/>
+                  <rect x="190" y="30" width="45" height="45" rx="10"/>
+                  <rect x="70" y="90" width="45" height="45" rx="10"/>
+                  <rect x="130" y="90" width="45" height="45" rx="10"/>
+                  <rect x="190" y="90" width="45" height="45" rx="10"/>
+                </g>
+                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="14" font-weight="700">Eixample Cerdà</text>
+              </svg>
+            </div>
+            <div class="rayon-card-meta">
+              <strong class="rayon-card-title">Eixample Cerdà</strong>
+              <span class="rayon-card-sub">Edited 1 day ago · Barcelona, ES</span>
+            </div>
+          </div>
+
+          <!-- Card 3: Lower Manhattan & SoHo -->
+          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_nyc_midtown">
+            <div class="rayon-card-thumb">
+              <span class="rayon-tag-template">Template</span>
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#18181b"/>
+                <g fill="rgba(168, 85, 247, 0.25)" stroke="#c084fc" stroke-width="1.2">
+                  <rect x="80" y="25" width="30" height="100"/>
+                  <rect x="120" y="45" width="25" height="80"/>
+                  <rect x="155" y="15" width="35" height="110"/>
+                  <rect x="200" y="55" width="25" height="70"/>
+                </g>
+                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="14" font-weight="700">Lower Manhattan & SoHo</text>
+              </svg>
+            </div>
+            <div class="rayon-card-meta">
+              <strong class="rayon-card-title">Lower Manhattan & SoHo</strong>
+              <span class="rayon-card-sub">Edited 3 days ago · New York, US</span>
+            </div>
+          </div>
+
+          <!-- Card 4: San Pedro Garza Garcia -->
+          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_mty_valle">
+            <div class="rayon-card-thumb">
+              <span class="rayon-tag-template">Template</span>
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#18181b"/>
+                <path d="M 40,120 Q 150,40 260,120" fill="none" stroke="#22c55e" stroke-width="1.8"/>
+                <path d="M 40,140 Q 150,60 260,140" fill="none" stroke="#4ade80" stroke-width="1.4"/>
+                <rect x="135" y="30" width="30" height="85" fill="rgba(34, 197, 94, 0.25)" stroke="#4ade80" stroke-width="1.2"/>
+                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="14" font-weight="700">San Pedro Garza García</text>
+              </svg>
+            </div>
+            <div class="rayon-card-meta">
+              <strong class="rayon-card-title">San Pedro Garza García</strong>
+              <span class="rayon-card-sub">Edited 1 week ago · Monterrey, MX</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Container for Active Model & Saved Scenes -->
+          <div id="ws-dynamic-projects" style="display:contents;"></div>
+        </div>
+      </section>
+
+      <!-- 3. RIGHT SIDEBAR (Rayon Info & Pro) -->
+      <aside class="rayon-home-right">
+        <div class="rayon-info-card">
+          <div class="rayon-info-header">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <strong data-i18n="ws.myModels">My models</strong>
+          </div>
+          <p class="rayon-info-text">
+            This space is just for you. Create 3D urban models, analytical QGIS cartography, and exploded axonometries. Save native .urbnz project files.
+          </p>
         </div>
 
-        <!-- Section 2: Urban Templates -->
-        <div class="ws-section">
-          <div class="ws-section-header">
-            <h2 class="ws-section-title" data-i18n="ws.templatesTitle">Plantillas Urbanas & Casos de Estudio</h2>
-            <span class="export-coords">Haz clic en cualquier plantilla para ubicar el marco y compilar su morfología 3D</span>
+        <div class="rayon-pro-card">
+          <div class="rayon-pro-top">
+            <span class="rayon-pro-badge">PRO</span>
+            <button type="button" class="rayon-pro-close" aria-label="Close">×</button>
           </div>
-          <div class="ws-cards-grid ws-templates-grid" id="ws-templates-grid"></div>
+          <h3 class="rayon-pro-title">Design without limits</h3>
+          <p class="rayon-pro-text">
+            Export native SketchUp (.skp) with structured layers, real dotted hatches, and custom urban templates.
+          </p>
+          <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="rayon-pro-btn" id="ws-btn-cgm-credit">
+            <span>CGM Atelier Pro</span>
+          </a>
         </div>
-      </div>
+      </aside>
     </div>
 
     <!-- ======================================================
@@ -456,16 +585,125 @@
 
         <!-- Collapsible Left Drawer Container (Starts OPEN on Capas GIS while 3D occupies the free right space) -->
         <div class="axiom-left-drawer" id="studio-left-drawer">
-          <!-- PANEL 1 (DEFAULT OPEN): CAPAS URBANAS GIS -->
+          <!-- PANEL 1 (DEFAULT OPEN): RAYON INSPECTOR & CAPAS URBANAS GIS -->
           <aside class="axiom-drawer-card" id="drawer-gis">
-            <div class="axiom-export-header">
+            <!-- Rayon Inspector Top Header (Avatar, History, Play, Share) -->
+            <div class="rayon-inspector-top">
+              <div class="rayon-inspector-avatar">C</div>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="rayon-icon-btn" title="Historial / Versiones">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                </button>
+                <button type="button" class="rayon-icon-btn" title="Presentación">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                </button>
+                <button type="button" class="rayon-share-btn" id="btn-inspector-share">Share</button>
+                <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Ocultar inspector" style="margin-left:4px;">
+                  <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Rayon Group: Model -->
+            <div class="rayon-accordion-group">
+              <div class="rayon-accordion-header">
+                <span style="font-size:12px; font-weight:600; color:#f4f4f6;">⌄ Model</span>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Name</span>
+                <input type="text" class="rayon-val-input" id="inspector-model-name" value="Starter model">
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Owner</span>
+                <span style="color:#f4f4f6; font-size:11.5px; font-weight:500;">Cesar</span>
+              </div>
+            </div>
+
+            <!-- Rayon Group: Model canvas -->
+            <div class="rayon-accordion-group">
+              <div class="rayon-accordion-header">
+                <span style="font-size:12px; font-weight:600; color:#f4f4f6;">⌄ Model canvas</span>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Display</span>
+                <div class="rayon-segmented">
+                  <button type="button" class="rayon-seg-btn active" id="inspector-seg-default">Default</button>
+                  <button type="button" class="rayon-seg-btn" id="inspector-seg-wireframe">Wireframe</button>
+                </div>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Grid</span>
+                <div class="rayon-segmented">
+                  <button type="button" class="rayon-seg-btn active" id="inspector-seg-grid-show">Show</button>
+                  <button type="button" class="rayon-seg-btn" id="inspector-seg-grid-hide">Hide</button>
+                </div>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Axis</span>
+                <div class="rayon-segmented">
+                  <button type="button" class="rayon-seg-btn active" id="inspector-seg-axis-show">Show</button>
+                  <button type="button" class="rayon-seg-btn" id="inspector-seg-axis-hide">Hide</button>
+                </div>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">View borders</span>
+                <div class="rayon-segmented">
+                  <button type="button" class="rayon-seg-btn active">Show</button>
+                  <button type="button" class="rayon-seg-btn">Hide</button>
+                </div>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Stroke scale</span>
+                <select class="rayon-select">
+                  <option>1:1</option>
+                  <option>1:2</option>
+                </select>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Background</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span class="rayon-color-box" style="background:#090a0d;"></span>
+                  <span style="font-family:var(--font-mono); font-size:11px; color:#e4e4e7;">#090A0D</span>
+                </div>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Active layer</span>
+                <div style="display:flex; align-items:center; gap:6px;">
+                  <span style="width:8px; height:8px; border-radius:50%; background:#38bdf8;"></span>
+                  <span style="color:#f4f4f6; font-size:11.5px;">Edificación 3D</span>
+                </div>
+              </div>
+              <div class="rayon-control-row">
+                <span class="rayon-label">Unit</span>
+                <select class="rayon-select">
+                  <option>Meters</option>
+                  <option>Feet</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Rayon Group: Axonometric View (media_1792356365877_56b3f17c.png) -->
+            <div class="rayon-accordion-group">
+              <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">AXONOMETRIC VIEW</span>
+              <div class="rayon-axon-grid">
+                <button type="button" class="rayon-axon-btn active" id="btn-cam-nw">NW Iso</button>
+                <button type="button" class="rayon-axon-btn" id="btn-cam-ne">NE Iso</button>
+                <button type="button" class="rayon-axon-btn" id="btn-cam-sw">SW Iso</button>
+                <button type="button" class="rayon-axon-btn" id="btn-cam-se">SE Iso</button>
+                <button type="button" class="rayon-axon-btn" id="btn-cam-top">Top</button>
+                <button type="button" class="rayon-axon-btn" id="btn-cam-eye">Eye Level</button>
+              </div>
+              <label style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; cursor:pointer; font-size:11.5px; color:#e4e4e7;">
+                <span>Perspective projection</span>
+                <input type="checkbox" id="chk-axon-persp" style="accent-color:#0ea5e9;">
+              </label>
+            </div>
+
+            <div class="axiom-export-header" style="margin-top:4px;">
               <div class="axiom-export-title-row">
                 <h2 class="axiom-export-title">Capas Urbanas GIS</h2>
                 <div class="axiom-header-actions">
                   <span class="axiom-count-pill" id="gis-total-badge">0</span>
-                  <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Ocultar menú lateral" data-tooltip="Ocultar panel para ampliar lienzo">
-                    <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                  </button>
                 </div>
               </div>
               <p class="export-coords">Filtra las capas activas de tu maqueta antes de pasar a Cartografía 2D o Axonometría</p>
@@ -1101,6 +1339,52 @@
         <div class="flat" id="view-plan" hidden><img alt="" draggable="false"></div>
         <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
+
+        <!-- Rayon Floating Tool Dock (media_1792357791582_b8127947.png) -->
+        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Rayon">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-3d" title="Seleccionar (V)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-wall-3d" title="Muro / Polígono (W)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-polyline-3d" title="Polilínea (P)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 8 7 16 17 20 5"/><circle cx="4" cy="19" r="1.5"/><circle cx="8" cy="7" r="1.5"/><circle cx="16" cy="17" r="1.5"/><circle cx="20" cy="5" r="1.5"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-line-3d" title="Línea (L)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-3d" title="Cota / Dimensión (D)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-text-3d" title="Texto (T)">
+            <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:13px;">T</span>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-arrow-3d" title="Flecha (A)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-arc-3d" title="Arco (C)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 A 16 16 0 0 1 20 4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-3d" title="Hatch Punteado / Trama (H)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="17" r="1.5" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-block-3d" title="Componente / Bloque (B)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-3d" title="Guardar Escena (S)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-comment-3d" title="Anotaciones (M)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Rayon Measurement Pill (media_1792357791582_b8127947.png) -->
+        <div class="rayon-canvas-measure-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21"/><line x1="21" y1="21" x2="3" y2="3"/></svg>
+          <span id="canvas-measure-text-3d">1.0 × 1.0 km</span>
+        </div>
       </div>
     </div>
 
@@ -1400,6 +1684,52 @@
         </div>
 
         <div class="flat" id="map-flat"><img alt="" draggable="false"></div>
+
+        <!-- Rayon Floating Tool Dock in Cartografía 2D -->
+        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Rayon">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-map" title="Seleccionar (V)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-wall-map" title="Muro / Polígono (W)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-polyline-map" title="Polilínea (P)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 8 7 16 17 20 5"/><circle cx="4" cy="19" r="1.5"/><circle cx="8" cy="7" r="1.5"/><circle cx="16" cy="17" r="1.5"/><circle cx="20" cy="5" r="1.5"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-line-map" title="Línea (L)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-map" title="Cota / Dimensión (D)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-text-map" title="Texto (T)">
+            <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:13px;">T</span>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-arrow-map" title="Flecha (A)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-arc-map" title="Arco (C)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 A 16 16 0 0 1 20 4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-map" title="Hatch Punteado / Trama (H)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="17" r="1.5" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-block-map" title="Componente / Bloque (B)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-map" title="Guardar Escena (S)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-comment-map" title="Anotaciones (M)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Rayon Measurement Pill in Cartografía 2D -->
+        <div class="rayon-canvas-measure-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21"/><line x1="21" y1="21" x2="3" y2="3"/></svg>
+          <span id="canvas-measure-text-map">1.0 × 1.0 km · 1:1000</span>
+        </div>
       </div>
     </div>
 
@@ -1791,6 +2121,52 @@
         </div>
 
         <canvas id="illu-canvas"></canvas>
+
+        <!-- Rayon Floating Tool Dock in Axonometría -->
+        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Rayon">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-illu" title="Seleccionar (V)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-wall-illu" title="Muro / Polígono (W)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-polyline-illu" title="Polilínea (P)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 8 7 16 17 20 5"/><circle cx="4" cy="19" r="1.5"/><circle cx="8" cy="7" r="1.5"/><circle cx="16" cy="17" r="1.5"/><circle cx="20" cy="5" r="1.5"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-line-illu" title="Línea (L)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-illu" title="Cota / Dimensión (D)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-text-illu" title="Texto (T)">
+            <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:13px;">T</span>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-arrow-illu" title="Flecha (A)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-arc-illu" title="Arco (C)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 A 16 16 0 0 1 20 4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-illu" title="Hatch Punteado / Trama (H)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="17" r="1.5" fill="currentColor"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-block-illu" title="Componente / Bloque (B)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-illu" title="Guardar Escena (S)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-comment-illu" title="Anotaciones (M)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          </button>
+        </div>
+
+        <!-- Rayon Measurement Pill in Axonometría -->
+        <div class="rayon-canvas-measure-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21"/><line x1="21" y1="21" x2="3" y2="3"/></svg>
+          <span id="canvas-measure-text-illu">1.0 × 1.0 km · Cascada 5N</span>
+        </div>
       </div>
     </div>
 
@@ -1800,7 +2176,7 @@
   </main>
 
   <!-- Ultra-Subtle Architectural Author Signature -->
-  <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="cgm-atelier-credit" title="CGM Atelier">made by cgm atelier</a>
+  <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="cgm-credit-subtle" title="CGM Atelier">made by cgm atelier</a>
 
   <!-- ========================================================
        FOCUSED TOPOGRAPHIC SECTION MODAL
@@ -2299,6 +2675,43 @@
       });
     });
 
+    // Rayon Inspector: Axonometric View Grid (NW Iso, NE Iso, SW Iso, SE Iso, Top, Eye Level)
+    const axonCamMap = {
+      'btn-cam-nw': 'iso-nw',
+      'btn-cam-ne': 'iso-ne',
+      'btn-cam-sw': 'iso-sw',
+      'btn-cam-se': 'iso-se',
+      'btn-cam-top': 'top',
+      'btn-cam-eye': 'eye'
+    };
+    Object.entries(axonCamMap).forEach(([btnId, camType]) => {
+      document.getElementById(btnId)?.addEventListener('click', (e) => {
+        document.querySelectorAll('.rayon-axon-btn').forEach(b => b.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        if (window.setCameraView) window.setCameraView(camType);
+      });
+    });
+
+    // Rayon Tool Dock Interactive Selection
+    document.querySelectorAll('.rayon-tool-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const parentDock = btn.closest('.rayon-tool-dock');
+        if (parentDock) {
+          parentDock.querySelectorAll('.rayon-tool-btn').forEach(b => b.classList.remove('active'));
+        }
+        btn.classList.add('active');
+      });
+    });
+
+    // Rayon Segmented Controls
+    document.querySelectorAll('.rayon-segmented .rayon-seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const group = btn.closest('.rayon-segmented');
+        if (group) group.querySelectorAll('.rayon-seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
     // Modal Return Map
     document.getElementById('modal-return-close')?.addEventListener('click', () => {
       document.getElementById('modal-return-map').hidden = true;
@@ -2334,121 +2747,114 @@
     // =====================================================
     // WORKSPACE HOME RENDERER (Rayon Dark Mode Hub)
     // =====================================================
+    // =====================================================
+    // WORKSPACE HOME RENDERER (Rayon SaaS Dark Hub)
+    // media_1792357674705_ebefd8f8.png
+    // =====================================================
     function renderWorkspaceHome() {
-      const resumeBtn = document.getElementById('ws-btn-resume-active');
-      if (resumeBtn) {
-        resumeBtn.hidden = !window.hasActiveModel?.();
-      }
+      const dynamicContainer = document.getElementById('ws-dynamic-projects');
+      if (dynamicContainer) {
+        let cardsHtml = '';
 
-      // 1. Render Recent Projects & Saved Scenes
-      const recentGrid = document.getElementById('ws-recent-grid');
-      if (recentGrid) {
-        const recents = viewsManager.getRecentProjects();
-        const scenes = viewsManager.getViews();
-
-        if (!recents.length && !scenes.length) {
-          recentGrid.innerHTML = `
-            <div class="ws-empty-card">
-              <strong>Sin proyectos guardados en esta sesión</strong>
-              <p>Construye un modelo 3D desde el Mapa o carga un archivo <code>.urbnz</code> desde tu computadora.</p>
+        // 1. If active model is in memory, show Active Model card
+        const activeModel = window.getActiveModelData?.();
+        if (activeModel) {
+          const lat = activeModel.center?.lat || 19.4326;
+          const lon = activeModel.center?.lon || -99.1332;
+          const bldgCount = activeModel.buildings?.length || 0;
+          cardsHtml += `
+            <div class="rayon-model-card" data-ws-action="open-active">
+              <div class="rayon-card-thumb">
+                <span class="rayon-tag-template" style="background:#0ea5e9;">Active</span>
+                <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                  <rect width="100%" height="100%" fill="#18181b"/>
+                  <circle cx="150" cy="90" r="45" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-dasharray="3 3"/>
+                  <rect x="130" y="70" width="40" height="40" fill="rgba(14, 165, 233, 0.25)" stroke="#38bdf8" stroke-width="1.2"/>
+                  <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="14" font-weight="700">Active Model · 3D</text>
+                </svg>
+              </div>
+              <div class="rayon-card-meta">
+                <strong class="rayon-card-title">${lat.toFixed(3)}, ${lon.toFixed(3)}</strong>
+                <span class="rayon-card-sub">Active in session · ${bldgCount} buildings</span>
+              </div>
             </div>
           `;
-        } else {
-          const recentCards = recents.map(r => `
-            <div class="ws-project-card" data-ws-lat="${r.lat}" data-ws-lon="${r.lon}" data-ws-size="${r.size}">
-              <div class="ws-card-preview">
-                <span class="ws-card-badge">${r.size} × ${r.size} m</span>
-                <span class="ws-card-coords">${Number(r.lat).toFixed(4)}, ${Number(r.lon).toFixed(4)}</span>
-              </div>
-              <div class="ws-card-body">
-                <h3>${r.name || 'Modelo Urbano'}</h3>
-                <p>${r.buildings || 0} edificios · ΔZ ${r.relief || 0} m · ${r.ecosystem || 'Urbano'}</p>
-                <div class="ws-card-actions">
-                  <button type="button" class="axiom-subtle-btn ws-fly-btn" data-lat="${r.lat}" data-lon="${r.lon}" data-size="${r.size}">Ir a Ubicación</button>
-                </div>
-              </div>
-            </div>
-          `).join('');
-
-          const sceneCards = scenes.map(v => `
-            <div class="ws-project-card ws-scene-card">
-              <div class="ws-card-preview ws-scene-preview">
-                <span class="ws-card-badge">${v.mode === 'result' ? 'MODELO 3D' : v.mode === 'mapper' ? 'CARTOGRAFÍA 2D' : 'AXONOMETRÍA'}</span>
-                <span class="ws-card-coords">${new Date(v.createdAt).toLocaleDateString()}</span>
-              </div>
-              <div class="ws-card-body">
-                <h3>${v.name}</h3>
-                <p>Escena guardada lista para restaurar</p>
-                <div class="ws-card-actions">
-                  <button type="button" class="axiom-cta-btn" data-ws-applyscene="${v.id}" style="padding:5px 10px; font-size:11px;">Abrir Escena</button>
-                </div>
-              </div>
-            </div>
-          `).join('');
-
-          recentGrid.innerHTML = recentCards + sceneCards;
-
-          recentGrid.querySelectorAll('.ws-fly-btn').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const lat = parseFloat(btn.getAttribute('data-lat'));
-              const lon = parseFloat(btn.getAttribute('data-lon'));
-              const size = parseInt(btn.getAttribute('data-size') || '1000', 10);
-              switchView('app', true);
-              if (window.flyToTemplateLocation) window.flyToTemplateLocation(lat, lon, size);
-            });
-          });
-
-          recentGrid.querySelectorAll('[data-ws-applyscene]').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const id = btn.getAttribute('data-ws-applyscene');
-              applySavedView(id);
-            });
-          });
         }
+
+        // 2. Saved Scenes
+        const scenes = viewsManager.getViews();
+        scenes.forEach(s => {
+          const modeLabel = s.mode === 'result' ? '3D Model' : s.mode === 'mapper' ? 'Cartografía 2D' : 'Axonometría';
+          cardsHtml += `
+            <div class="rayon-model-card" data-ws-scene="${s.id}">
+              <div class="rayon-card-thumb">
+                <span class="rayon-tag-template" style="background:#8b5cf6;">Scene</span>
+                <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                  <rect width="100%" height="100%" fill="#18181b"/>
+                  <path d="M 60,120 L 150,70 L 240,120 L 150,165 Z" fill="#27272a" stroke="#8b5cf6" stroke-width="1.4"/>
+                  <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">${s.name}</text>
+                </svg>
+              </div>
+              <div class="rayon-card-meta">
+                <strong class="rayon-card-title">${s.name}</strong>
+                <span class="rayon-card-sub">${modeLabel} · Saved scene</span>
+              </div>
+            </div>
+          `;
+        });
+
+        dynamicContainer.innerHTML = cardsHtml;
+
+        // Wire dynamic clicks
+        dynamicContainer.querySelectorAll('[data-ws-action="open-active"]').forEach(card => {
+          card.addEventListener('click', () => switchView('result', true));
+        });
+
+        dynamicContainer.querySelectorAll('[data-ws-scene]').forEach(card => {
+          card.addEventListener('click', () => {
+            const id = card.getAttribute('data-ws-scene');
+            applySavedView(id);
+          });
+        });
       }
 
-      // 2. Render Urban Templates
-      const tplGrid = document.getElementById('ws-templates-grid');
-      if (tplGrid) {
-        const templates = viewsManager.getTemplates();
-        tplGrid.innerHTML = templates.map(t => `
-          <div class="ws-project-card ws-tpl-card">
-            <div class="ws-card-preview" style="border-bottom: 2px solid ${t.accent};">
-              <span class="ws-card-badge" style="color:${t.accent}; border-color:${t.accent}44;">${t.tag}</span>
-              <span class="ws-card-coords">${t.lat.toFixed(3)}, ${t.lon.toFixed(3)}</span>
-            </div>
-            <div class="ws-card-body">
-              <h3>${t.name}</h3>
-              <p>${t.subtitle} · Marco de ${t.size} × ${t.size} m</p>
-              <div class="ws-card-actions">
-                <button type="button" class="axiom-subtle-btn ws-tpl-btn" data-lat="${t.lat}" data-lon="${t.lon}" data-size="${t.size}">Cargar en Mapa →</button>
-              </div>
-            </div>
-          </div>
-        `).join('');
+      // Wire static template cards once
+      document.querySelectorAll('#ws-cards-grid [data-action="load-starter"]').forEach(card => {
+        card.onclick = () => {
+          if (window.hasActiveModel?.()) switchView('result', true);
+          else switchView('app', true);
+        };
+      });
 
-        tplGrid.querySelectorAll('.ws-tpl-btn').forEach(btn => {
-          btn.addEventListener('click', () => {
-            const lat = parseFloat(btn.getAttribute('data-lat'));
-            const lon = parseFloat(btn.getAttribute('data-lon'));
-            const size = parseInt(btn.getAttribute('data-size') || '1000', 10);
+      document.querySelectorAll('#ws-cards-grid [data-tpl]').forEach(card => {
+        card.onclick = () => {
+          const tplKey = card.getAttribute('data-tpl');
+          const tpl = viewsManager.getTemplates().find(t => t.id === tplKey);
+          if (tpl) {
             switchView('app', true);
-            if (window.flyToTemplateLocation) window.flyToTemplateLocation(lat, lon, size);
+            if (window.flyToTemplateLocation) window.flyToTemplateLocation(tpl.lat, tpl.lon, tpl.size);
+          }
+        };
+      });
+
+      // Filter search input
+      const searchInput = document.getElementById('ws-search-input');
+      if (searchInput && !searchInput.dataset.bound) {
+        searchInput.dataset.bound = 'true';
+        searchInput.addEventListener('input', (e) => {
+          const q = e.target.value.toLowerCase().trim();
+          document.querySelectorAll('#ws-cards-grid .rayon-model-card').forEach(card => {
+            const text = card.textContent.toLowerCase();
+            card.style.display = (!q || text.includes(q)) ? '' : 'none';
           });
         });
       }
     }
     window.renderWorkspaceHome = renderWorkspaceHome;
 
-    document.getElementById('ws-btn-new-map')?.addEventListener('click', () => switchView('app', true));
-    document.getElementById('ws-btn-resume-active')?.addEventListener('click', () => {
-      if (window.hasActiveModel?.()) switchView('result', true);
-    });
+    document.getElementById('ws-btn-new-model')?.addEventListener('click', () => switchView('app', true));
     document.getElementById('ws-btn-import-urbnz')?.addEventListener('click', () => {
       document.getElementById('input-open-urbnz')?.click();
-    });
-    document.getElementById('ws-btn-save-current-urbnz')?.addEventListener('click', () => {
-      triggerDownloadUrbnz();
     });
 
     // =====================================================

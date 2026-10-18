@@ -738,14 +738,25 @@ export function setCameraView(type) {
   const zMid = ctx.zMid || 0;
   controls.target.set(0, 0, zMid);
 
-  if (type === 'iso' || type === 'iso45' || type === 'chunk') {
-    // True 45-degree architectural axonometric / isometric projection
-    camera.fov = 8;
-    const d = s * 4.2;
+  const d = s * 4.2;
+  if (type === 'iso-nw') {
+    camera.fov = 10;
+    camera.position.set(-d * 0.7071, d * 0.7071, d * 0.7071 + zMid);
+  } else if (type === 'iso-ne') {
+    camera.fov = 10;
+    camera.position.set(d * 0.7071, d * 0.7071, d * 0.7071 + zMid);
+  } else if (type === 'iso-sw' || type === 'iso' || type === 'iso45') {
+    camera.fov = 10;
+    camera.position.set(-d * 0.7071, -d * 0.7071, d * 0.7071 + zMid);
+  } else if (type === 'iso-se') {
+    camera.fov = 10;
     camera.position.set(d * 0.7071, -d * 0.7071, d * 0.7071 + zMid);
   } else if (type === 'top') {
-    camera.fov = 18;
-    camera.position.set(0, -0.001, s * 3.2 + zMid);
+    camera.fov = 16;
+    camera.position.set(0, -0.001, s * 3.4 + zMid);
+  } else if (type === 'eye') {
+    camera.fov = 48;
+    camera.position.set(0, -s * 0.52, zMid + 32);
   } else {
     camera.fov = 35;
     camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);

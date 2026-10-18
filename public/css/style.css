@@ -3853,12 +3853,10 @@ input[type="range"]::-webkit-slider-thumb,
   border-top: 1px solid rgba(255, 255, 255, 0.08);
 }
 .editor-stage {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 356px !important;
-  width: calc(100% - 356px) !important;
+  position: relative;
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  width: auto !important;
   height: 100% !important;
   display: flex;
   align-items: center;
@@ -3935,8 +3933,9 @@ input[type="range"]::-webkit-slider-thumb,
     width: 290px !important;
   }
   .editor-stage {
-    left: 290px !important;
-    width: calc(100% - 290px) !important;
+    left: 0 !important;
+    width: auto !important;
+    flex: 1 1 0% !important;
   }
 }
 
@@ -4557,62 +4556,81 @@ input[type="range"]::-webkit-slider-thumb,
 #result .axiom-left-system,
 #mapper .axiom-left-system,
 #illustrator .axiom-left-system {
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  bottom: auto !important;
-  transform: none !important;
-  display: flex !important;
-  flex-direction: row !important;
-  align-items: center !important;
-  gap: 10px !important;
-  padding: 12px 0 12px 12px !important;
-  height: 100% !important;
+  display: contents !important;
+}
+
+#result .axiom-left-dock,
+#mapper .axiom-left-dock,
+#illustrator .axiom-left-dock {
+  order: 1 !important;
+  width: 44px !important;
+  min-width: 44px !important;
+  max-width: 44px !important;
   flex-shrink: 0 !important;
-  z-index: 600 !important;
+  height: 100% !important;
+  background: #0c0c0e !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  align-items: center !important;
+  padding: 12px 0 !important;
+  gap: 4px !important;
+  z-index: 500 !important;
   pointer-events: auto !important;
-  background: #090a0d;
 }
 
-#result .axiom-left-drawer,
-#mapper .axiom-left-drawer,
-#illustrator .axiom-left-drawer {
-  height: 100%;
-  display: flex;
-  align-items: stretch;
+#result .axiom-dock-icon,
+#mapper .axiom-dock-icon,
+#illustrator .axiom-dock-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #94a3b8 !important;
+  background: transparent !important;
+  border: none !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease, color 0.15s ease !important;
 }
 
-#result .axiom-drawer-card,
-#mapper .axiom-drawer-card,
-#illustrator .axiom-drawer-card {
-  width: 344px;
-  height: calc(100vh - 76px);
-  max-height: calc(100vh - 76px);
-  overflow-y: auto;
-  background: rgba(14, 16, 23, 0.92);
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
-  border: 1px solid rgba(255, 255, 255, 0.13);
-  border-radius: 18px;
-  padding: 16px 18px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
+#result .axiom-dock-icon:hover,
+#mapper .axiom-dock-icon:hover,
+#illustrator .axiom-dock-icon:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+
+#result .axiom-dock-icon.active,
+#mapper .axiom-dock-icon.active,
+#illustrator .axiom-dock-icon.active {
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #38bdf8 !important;
+}
+
+#result .axiom-dock-icon.active::before,
+#mapper .axiom-dock-icon.active::before,
+#illustrator .axiom-dock-icon.active::before {
+  display: none !important;
 }
 
 #result .viewer-wrap,
 #mapper .editor-stage,
 #illustrator .editor-stage {
-  position: relative !important;
-  left: auto !important;
-  top: auto !important;
-  right: auto !important;
-  bottom: auto !important;
+  order: 2 !important;
   flex: 1 1 0% !important;
   min-width: 0 !important;
   width: auto !important;
   height: 100% !important;
+  position: relative !important;
+  left: 0 !important;
+  top: 0 !important;
+  right: auto !important;
+  bottom: auto !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
@@ -4620,9 +4638,62 @@ input[type="range"]::-webkit-slider-thumb,
   overflow: hidden !important;
 }
 
+#result .axiom-left-drawer,
+#mapper .axiom-left-drawer,
+#illustrator .axiom-left-drawer {
+  order: 3 !important;
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  flex-shrink: 0 !important;
+  height: 100% !important;
+  background: #111114 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-right: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  z-index: 500 !important;
+  pointer-events: auto !important;
+  padding: 0 !important;
+}
+
+#result .axiom-left-drawer[hidden],
+#mapper .axiom-left-drawer[hidden],
+#illustrator .axiom-left-drawer[hidden] {
+  display: none !important;
+}
+
+#result .axiom-drawer-card[hidden],
+#mapper .axiom-drawer-card[hidden],
+#illustrator .axiom-drawer-card[hidden],
+.axiom-drawer-card[hidden] {
+  display: none !important;
+}
+
+#result .axiom-drawer-card,
+#mapper .axiom-drawer-card,
+#illustrator .axiom-drawer-card {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  overflow-y: auto !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 14px 16px !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+}
+
 #mapper .editor-stage,
 #illustrator .editor-stage {
-  padding: 58px 20px 20px 20px !important;
+  padding: 20px !important;
 }
 
 #result .viewer-wrap #studio-top-bar,
@@ -4917,10 +4988,753 @@ input[type="range"]::-webkit-slider-thumb,
   border-color: rgba(255, 255, 255, 0.2);
 }
 
-@media (max-width: 960px) {
-  .ws-workflow-ribbon {
-    grid-template-columns: repeat(2, 1fr);
-  }
+/* ========================================================
+   RAYON DESIGN SYSTEM (1:1 FIDELITY WITH REFERENCE SCREENS)
+   media_1792357674705_ebefd8f8.png & media_1792357791582_b8127947.png
+   ======================================================== */
+
+/* --- 1. RAYON WORKSPACE HOME (3-COLUMN SAAS DASHBOARD) --- */
+.rayon-home-screen.active {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  background: #0c0c0e !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif !important;
+}
+
+.rayon-home-sidebar {
+  width: 230px !important;
+  height: 100% !important;
+  background: #111113 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 16px 10px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 16px !important;
+  flex-shrink: 0 !important;
+}
+
+.rayon-user-dropdown {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  cursor: pointer;
+  color: #f4f4f6;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.15s ease;
+}
+
+.rayon-user-dropdown:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.rayon-user-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.rayon-user-name {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rayon-home-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rayon-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rayon-nav-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+
+.rayon-nav-item.active {
+  background: rgba(14, 165, 233, 0.12) !important;
+  color: #38bdf8 !important;
+  font-weight: 600;
+}
+
+.rayon-nav-section-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #64748b;
+  padding: 14px 10px 6px 10px;
+  text-transform: capitalize;
+}
+
+.rayon-badge-new {
+  margin-left: auto;
+  font-size: 9px;
+  font-weight: 700;
+  color: #0284c7;
+  background: rgba(14, 165, 233, 0.15);
+  padding: 2px 5px;
+  border-radius: 4px;
+  border: 1px solid rgba(14, 165, 233, 0.3);
+}
+
+.rayon-home-main {
+  flex: 1 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  padding: 24px 36px 48px 36px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 24px !important;
+}
+
+.rayon-home-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rayon-breadcrumb-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f4f4f6;
+}
+
+.rayon-breadcrumb-title h1 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.rayon-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.rayon-search-box {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  width: 200px;
+}
+
+.rayon-search-box input {
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #f4f4f6;
+  font-size: 12px;
+  width: 100%;
+}
+
+.rayon-select {
+  background: #18181b;
+  color: #e4e4e7;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 12px;
+  outline: none;
+  cursor: pointer;
+}
+
+.rayon-secondary-btn {
+  background: #18181b;
+  color: #e4e4e7;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  padding: 6px 14px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.rayon-secondary-btn:hover {
+  background: #27272a;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.rayon-primary-btn {
+  background: #0066ff !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 6px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.35) !important;
+  transition: background 0.15s ease !important;
+}
+
+.rayon-primary-btn:hover {
+  background: #0052cc !important;
+}
+
+.rayon-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 20px;
+}
+
+.rayon-model-card {
+  background: #141416;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.rayon-model-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.22);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6);
+}
+
+.rayon-card-thumb {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: #18181b;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rayon-tag-template {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  z-index: 2;
+  background: #ea580c;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+
+.rayon-thumb-svg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.rayon-card-meta {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: #141416;
+}
+
+.rayon-card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f4f4f6;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rayon-card-sub {
+  font-size: 11.5px;
+  color: #71717a;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.rayon-home-right {
+  width: 270px !important;
+  height: 100% !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 24px 18px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  background: #0e0e10 !important;
+  flex-shrink: 0 !important;
+}
+
+.rayon-info-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rayon-info-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #f4f4f6;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.rayon-info-text {
+  font-size: 11.5px;
+  color: #71717a;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.rayon-pro-card {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 14px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.rayon-pro-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.rayon-pro-badge {
+  font-size: 10px;
+  font-weight: 800;
+  color: #38bdf8;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.rayon-pro-close {
+  background: transparent;
+  border: none;
+  color: #71717a;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.rayon-pro-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #f4f4f6;
+  margin: 0;
+}
+
+.rayon-pro-text {
+  font-size: 11px;
+  color: #a1a1aa;
+  line-height: 1.45;
+  margin: 0;
+}
+
+.rayon-pro-btn {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.rayon-pro-btn:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* --- 2. RAYON STUDIO EDITOR (1:1 TO media_1792357791582_b8127947.png) --- */
+.rayon-studio-layout {
+  display: flex !important;
+  flex-direction: row !important;
+  width: 100% !important;
+  height: 100% !important;
+  overflow: hidden !important;
+  position: relative !important;
+  background: #090a0d !important;
+}
+
+.rayon-left-rail {
+  width: 44px !important;
+  height: 100% !important;
+  background: #0c0c0e !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  align-items: center !important;
+  padding: 10px 0 !important;
+  z-index: 100 !important;
+  flex-shrink: 0 !important;
+}
+
+.rayon-rail-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.rayon-rail-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rayon-rail-icon:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.rayon-rail-icon.active {
+  background: rgba(14, 165, 233, 0.15) !important;
+  color: #38bdf8 !important;
+}
+
+.rayon-center-stage {
+  flex: 1 1 0% !important;
+  min-width: 0 !important;
+  height: 100% !important;
+  position: relative !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #090a0d !important;
+  overflow: hidden !important;
+}
+
+.rayon-tool-dock {
+  position: absolute !important;
+  bottom: 22px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 600 !important;
+  background: rgba(18, 18, 20, 0.94) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+  padding: 4px 6px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+.rayon-tool-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rayon-tool-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.rayon-tool-btn.active {
+  background: #27272a;
+  color: #ffffff;
+}
+
+.rayon-canvas-measure-pill {
+  position: absolute;
+  bottom: 18px;
+  right: 18px;
+  z-index: 550;
+  background: rgba(18, 18, 20, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 4px 8px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #a1a1aa;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* --- 3. RAYON RIGHT INSPECTOR PANEL --- */
+.rayon-inspector-panel {
+  width: 300px !important;
+  height: 100% !important;
+  background: #121214 !important;
+  border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  z-index: 100 !important;
+  flex-shrink: 0 !important;
+  padding: 14px 16px !important;
+  gap: 14px !important;
+}
+
+.rayon-accordion-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.rayon-accordion-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: #f4f4f6;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 4px 0;
+}
+
+.rayon-accordion-header svg {
+  transition: transform 0.18s ease;
+}
+
+.rayon-control-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.rayon-label {
+  color: #a1a1aa;
+  font-size: 11.5px;
+}
+
+.rayon-val-input {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  color: #f4f4f6;
+  padding: 4px 8px;
+  font-size: 11.5px;
+  font-family: inherit;
+  width: 140px;
+}
+
+.rayon-segmented {
+  display: inline-flex;
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 5px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.rayon-seg-btn {
+  background: transparent;
+  border: none;
+  color: #a1a1aa;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.rayon-seg-btn.active {
+  background: #27272a;
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.rayon-color-box {
+  width: 22px;
+  height: 22px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  cursor: pointer;
+}
+
+/* 3x2 Axonometric Camera Grid matching media_1792356365877_56b3f17c.png */
+.rayon-axon-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-top: 4px;
+}
+
+.rayon-axon-btn {
+  background: #18181b;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  padding: 7px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #a1a1aa;
+  text-align: center;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.rayon-axon-btn:hover {
+  background: #27272a;
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.rayon-axon-btn.active {
+  background: #27272a !important;
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+}
+
+/* --- RAYON TOP INSPECTOR HEADER & SHARE BUTTON --- */
+.rayon-inspector-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  margin-bottom: 4px !important;
+}
+
+.rayon-inspector-avatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: #0ea5e9;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  box-shadow: 0 2px 6px rgba(14, 165, 233, 0.4);
+}
+
+.rayon-icon-btn {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: transparent;
+  border: none;
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.rayon-icon-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #ffffff;
+}
+
+.rayon-share-btn {
+  background: #0066ff !important;
+  color: #ffffff !important;
+  border: none !important;
+  border-radius: 6px !important;
+  padding: 5px 14px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: background 0.15s ease !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  box-shadow: 0 2px 8px rgba(0, 102, 255, 0.4) !important;
+}
+
+.rayon-share-btn:hover {
+  background: #0052cc !important;
+}
+
+.cgm-credit-subtle {
+  position: fixed;
+  bottom: 8px;
+  right: 14px;
+  font-size: 10px;
+  font-family: var(--font-mono, monospace);
+  color: rgba(255, 255, 255, 0.3);
+  text-decoration: none;
+  z-index: 1000;
+  transition: color 0.15s ease;
+  pointer-events: auto;
+  letter-spacing: 0.02em;
+}
+
+.cgm-credit-subtle:hover {
+  color: rgba(255, 255, 255, 0.75);
 }
 
 
