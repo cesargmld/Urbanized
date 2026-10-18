@@ -1,15 +1,16 @@
-import { buildModel, redetectTrees } from './data.js?v=5.7';
-import { FORMATS, stlScale } from './exporters.js?v=5.7';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=5.7';
+import { buildModel, redetectTrees } from './data.js?v=6.0';
+import { FORMATS, stlScale } from './exporters.js?v=6.0';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.0';
 import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
 import { feasibilityStore } from './feasibility.js?v=1.0';
-import { MAP_GRID_STEPS } from './mapplan.js?v=5.7';
-import { classifyEcosystem } from './biodiversity.js?v=5.7';
-import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=5.7';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=5.7';
-import { createIllustrator } from './illustrate.js?v=5.7';
-import * as billing from './billing.js?v=5.7';
-import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=5.7';
+import { MAP_GRID_STEPS } from './mapplan.js?v=6.0';
+import { classifyEcosystem } from './biodiversity.js?v=6.0';
+import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=6.0';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=6.0';
+import { createIllustrator } from './illustrate.js?v=6.0';
+import { viewsManager } from './viewsManager.js?v=6.0';
+import * as billing from './billing.js?v=6.0';
+import { quote, areaOfModel, areaKm2 as areaOf, sizeCredits, coveredBy, parseModelId, MAX_SIDE_M, FREE_AREA_KM2, USD_PER_CREDIT } from './pricing.js?v=6.0';
 // цена кредитов в долларах — по малому пакету ($0,50 за кредит); в больших пакетах дешевле
 const creditsUsd = (n) => {
   const v = n * USD_PER_CREDIT;
@@ -229,24 +230,30 @@ buildBtn?.addEventListener('click', (e) => {
   }
 });
 
-const terrainToggle = panel.elements.terrain, contoursToggle = panel.elements.contours;
-terrainToggle.addEventListener('change', () => {
-  contoursToggle.disabled = !terrainToggle.checked;
-  if (!terrainToggle.checked) contoursToggle.checked = false;
-});
+const terrainToggle = panel.elements?.terrain, contoursToggle = panel.elements?.contours;
+if (terrainToggle && contoursToggle) {
+  terrainToggle.addEventListener('change', () => {
+    contoursToggle.disabled = !terrainToggle.checked;
+    if (!terrainToggle.checked) contoursToggle.checked = false;
+  });
+}
 const sens = $('#sens');
 function syncTreeControls() {
-  panel.elements.detect.disabled = !panel.elements.trees.checked;
-  $('#sens-field').classList.toggle('off', !panel.elements.trees.checked || !panel.elements.detect.checked);
-  $('#sens-out').textContent = `${sens.value}%`;
+  if (panel.elements?.detect && panel.elements?.trees) {
+    panel.elements.detect.disabled = !panel.elements.trees.checked;
+    $('#sens-field')?.classList.toggle('off', !panel.elements.trees.checked || !panel.elements.detect.checked);
+  }
+  if (sens && $('#sens-out')) {
+    $('#sens-out').textContent = `${sens.value}%`;
+  }
 }
-panel.elements.trees.addEventListener('change', syncTreeControls);
-panel.elements.buildings.addEventListener('change', () => { panel.elements.extraBuildings.disabled = !panel.elements.buildings.checked; });
-panel.elements.roads.addEventListener('change', () => { panel.elements.bridges.disabled = panel.elements.roadWidth.disabled = !panel.elements.roads.checked; });
-panel.elements.detect.addEventListener('change', syncTreeControls);
-sens.addEventListener('input', syncTreeControls);
+panel.elements?.trees?.addEventListener?.('change', syncTreeControls);
+panel.elements?.buildings?.addEventListener?.('change', () => { if (panel.elements?.extraBuildings) panel.elements.extraBuildings.disabled = !panel.elements.buildings.checked; });
+panel.elements?.roads?.addEventListener?.('change', () => { if (panel.elements?.bridges) panel.elements.bridges.disabled = !panel.elements.roads.checked; if (panel.elements?.roadWidth) panel.elements.roadWidth.disabled = !panel.elements.roads.checked; });
+panel.elements?.detect?.addEventListener?.('change', syncTreeControls);
+sens?.addEventListener?.('input', syncTreeControls);
 // после сборки ползунок пересчитывает деревья на готовой модели, без повторной загрузки
-sens.addEventListener('change', async () => {
+sens?.addEventListener?.('change', async () => {
   if (!model?.detection?.enabled || building) return;
   redetectTrees(model, sens.value / 100);
   renderMeta(model);
@@ -477,6 +484,7 @@ async function showResult(m) {
   setMode('model');
   renderMeta(m);
   updateBiodiversity();
+  try { viewsManager.addRecentProject(m); } catch { /* ignore */ }
 
   // Switch to result screen first so #viewer has non-zero dimensions when Three.js initializes
   $('#view-btn-studio')?.classList.remove('disabled');
@@ -487,7 +495,7 @@ async function showResult(m) {
     window.switchWorkspaceView('result');
   }
 
-  const { showModel, triggerResize } = await import('./preview.js?v=5.7');
+  const { showModel, triggerResize } = await import('./preview.js?v=6.0');
   showModel($('#viewer'), m);
   setTimeout(() => triggerResize?.(), 60);
   setTimeout(() => triggerResize?.(), 220);
@@ -533,6 +541,25 @@ async function showResult(m) {
 window.loadModelDirectly = async (customModel) => {
   model = customModel;
   await showResult(model);
+};
+window.flyToTemplateLocation = (lat, lon, size = 1200) => {
+  if (sizeInput) sizeInput.value = String(size);
+  map.setView([lat, lon], 15, { animate: true });
+  setTimeout(() => { map.invalidateSize(); fitFrame(); }, 100);
+};
+window.loadHydratedUrbnzModel = async (res) => {
+  if (!res || !res.model) return;
+  model = res.model;
+  if (res.vectorMap) {
+    await loadMapMod();
+    mapOpts = res.vectorMap;
+    syncMapControls();
+  }
+  await showResult(model);
+  if (res.illustrate) {
+    openIllustrator();
+    if (illu && illu.applyState) illu.applyState(res.illustrate);
+  }
 };
 
 function lockDownloads(locked) {
@@ -2223,9 +2250,36 @@ function renderLabelList() {
     canvas.addEventListener('dblclick', () => illu?.reset());
 
     document.querySelectorAll('[data-illview]').forEach((b) => b.addEventListener('click', () => {
-      illu?.setView(b.dataset.illview);
-      document.querySelectorAll('[data-illview]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+      const targetView = b.dataset.illview;
+      illu?.setView(targetView);
+      document.querySelectorAll('[data-illview]').forEach((x) => {
+        const isCurrent = x.dataset.illview === targetView;
+        x.setAttribute('aria-pressed', String(isCurrent));
+        x.classList.toggle('active', isCurrent);
+      });
     }));
+
+    $('#illu-persp-pill')?.addEventListener('click', (e) => {
+      if (!illu) return;
+      const next = !illu.state.perspective;
+      illu.setPerspective(next);
+      e.currentTarget.classList.toggle('active', next);
+      e.currentTarget.setAttribute('aria-pressed', String(next));
+      const cb = $('#illu-persp');
+      if (cb) cb.checked = next;
+    });
+
+    $('#illu-exploded-pill')?.addEventListener('click', (e) => {
+      if (!illu) return;
+      const next = !illu.state.exploded;
+      illu.setExploded(next);
+      e.currentTarget.classList.toggle('active', next);
+      e.currentTarget.setAttribute('aria-pressed', String(next));
+      const sw = $('#illu-exploded-switch');
+      if (sw) sw.checked = next;
+      const opts = $('#illu-exploded-options');
+      if (opts) opts.hidden = !next;
+    });
 
     document.querySelectorAll('[data-illstyle]').forEach((b) => b.addEventListener('click', () => {
       const st = b.dataset.illstyle;
@@ -2234,14 +2288,27 @@ function renderLabelList() {
       const isStipple = st === 'stipple';
       const stRow = $('#illu-stipple-row');
       if (stRow) stRow.hidden = !isStipple;
-      if (illu) document.querySelectorAll('[data-illlayer]').forEach((c) => { c.checked = illu.state.layers[c.dataset.illlayer]; });
+      if (illu) {
+        document.querySelectorAll('[data-illlayer]').forEach((c) => { c.checked = illu.state.layers[c.dataset.illlayer]; });
+        const hm = $('#illu-hatch-mode');
+        if (hm) hm.value = illu.state.hatchMode || (isStipple ? 'dots' : 'none');
+      }
       renderSwatches();
     }));
 
-    // Multimapas temáticos: Tipología GIS, Isócronas, Flora, Fauna
+    // Multimapas temáticos: Tipología GIS, Alturas, Isócronas, Flora, Fauna
     $('#illu-bytype')?.addEventListener('change', (e) => {
       illu?.setByType(e.target.checked);
+      if (e.target.checked && $('#illu-byheight')) $('#illu-byheight').checked = false;
       renderSwatches();
+    });
+    $('#illu-byheight')?.addEventListener('change', (e) => {
+      illu?.setByHeight(e.target.checked);
+      if (e.target.checked && $('#illu-bytype')) $('#illu-bytype').checked = false;
+      renderSwatches();
+    });
+    $('#illu-hatch-mode')?.addEventListener('change', (e) => {
+      illu?.setHatchMode(e.target.value);
     });
     $('#illu-isochrones')?.addEventListener('change', (e) => {
       illu?.setThematic('isochrones', e.target.checked);
@@ -2342,6 +2409,11 @@ function renderLabelList() {
       const active = e.target.checked;
       const opts = $('#illu-exploded-options');
       if (opts) opts.hidden = !active;
+      const pill = $('#illu-exploded-pill');
+      if (pill) {
+        pill.classList.toggle('active', active);
+        pill.setAttribute('aria-pressed', String(active));
+      }
       illu?.setExploded(active);
     });
     $('#illu-explode-offset')?.addEventListener('input', (e) => {
@@ -2373,7 +2445,14 @@ function renderLabelList() {
     });
 
     document.querySelectorAll('[data-illlayer]').forEach((c) => c.addEventListener('change', () => illu?.setLayer(c.dataset.illlayer, c.checked)));
-    $('#illu-persp')?.addEventListener('change', (e) => illu?.setPerspective(e.target.checked));
+    $('#illu-persp')?.addEventListener('change', (e) => {
+      illu?.setPerspective(e.target.checked);
+      const pill = $('#illu-persp-pill');
+      if (pill) {
+        pill.classList.toggle('active', e.target.checked);
+        pill.setAttribute('aria-pressed', String(e.target.checked));
+      }
+    });
     $('#illu-legend')?.addEventListener('change', (e) => illu?.setLegend(e.target.checked));
     $('#illu-reset-colors')?.addEventListener('click', () => { illu?.resetColors(); renderSwatches(); });
     $('#illu-color')?.addEventListener('input', (e) => illu?.setLabelColor(e.target.value));
@@ -2405,7 +2484,7 @@ function renderLabelList() {
   }
 }
 
-/* ---------------- Векторная карта ---------------- */
+/* ---------------- Векторная карта (Cartografía 2D QGIS) ---------------- */
 
 let mapOpened = false, mapMod = null, mapOpts = null, mapUrl = null, mapQueued = false, mapSize = '';
 const mapBox = $('#map-flat');
@@ -2413,7 +2492,7 @@ const getPath = (o, path) => path.split('.').reduce((a, k) => a?.[k], o);
 const setPath = (o, path, v) => { const ks = path.split('.'); const last = ks.pop(); ks.reduce((a, k) => a[k], o)[last] = v; };
 
 async function loadMapMod() {
-  mapMod ??= await import('./mapplan.js?v=5.6');
+  mapMod ??= await import('./mapplan.js?v=6.0');
   mapOpts ??= mapMod.presetOptions('classic');
   return mapMod;
 }
@@ -2460,7 +2539,13 @@ function syncMapControls() {
     if (el.type === 'checkbox') el.checked = Boolean(v);
     else el.value = v;
   });
-  document.querySelectorAll('[data-mappreset]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mappreset === mapOpts.preset)));
+  document.querySelectorAll('[data-mappreset]').forEach((b) => {
+    const isActive = b.dataset.mappreset === mapOpts.preset;
+    b.setAttribute('aria-pressed', String(isActive));
+    b.classList.toggle('active', isActive);
+  });
+  const hm = $('#map-hatch-mode');
+  if (hm) hm.value = mapOpts.hatchMode || 'none';
   const nStyle = $('#map-north-style');
   if (nStyle && mapOpts.overlays?.northStyle) nStyle.value = mapOpts.overlays.northStyle;
   const tStyle = $('#map-tree-style');
@@ -2518,6 +2603,9 @@ function renderLayerStackControls() {
   if (!mapOpts.layerOpacities) {
     mapOpts.layerOpacities = {};
   }
+  if (!mapOpts.layerHatches) {
+    mapOpts.layerHatches = { buildings: 'none', green: 'none' };
+  }
 
   container.innerHTML = mapOpts.layerOrder.map((key, idx) => {
     const info = MAP_LAYERS_INFO.find((l) => l.key === key) || { key, name: key, icon: '' };
@@ -2528,6 +2616,8 @@ function renderLayerStackControls() {
                     : mapOpts.layers?.[key] !== false;
     const opacity = mapOpts.layerOpacities[key] !== undefined ? mapOpts.layerOpacities[key] : 1.0;
     const opPercent = Math.round(opacity * 100);
+    const hasHatchOption = key === 'buildings' || key === 'green';
+    const curHatch = mapOpts.layerHatches[key] || 'none';
 
     return `
       <div class="axiom-layer-item" data-layerkey="${key}">
@@ -2538,6 +2628,14 @@ function renderLayerStackControls() {
             <span class="axiom-layer-name">${info.name}</span>
           </label>
           <div class="axiom-layer-actions">
+            ${hasHatchOption ? `
+              <select class="layer-hatch-select" title="Trama / Hatch de capa">
+                <option value="none" ${curHatch === 'none' ? 'selected' : ''}>Sólido</option>
+                <option value="dots" ${curHatch === 'dots' ? 'selected' : ''}>Puntos</option>
+                <option value="diag" ${curHatch === 'diag' ? 'selected' : ''}>Diag 45°</option>
+                <option value="cross" ${curHatch === 'cross' ? 'selected' : ''}>Cruzado</option>
+              </select>
+            ` : ''}
             <button type="button" class="layer-reorder-btn btn-layer-up" ${idx === 0 ? 'disabled' : ''} title="Subir nivel visual">▲</button>
             <button type="button" class="layer-reorder-btn btn-layer-down" ${idx === mapOpts.layerOrder.length - 1 ? 'disabled' : ''} title="Bajar nivel visual">▼</button>
           </div>
@@ -2555,8 +2653,15 @@ function renderLayerStackControls() {
     const visCb = itemEl.querySelector('.layer-vis-cb');
     const slider = itemEl.querySelector('.axiom-layer-op-slider');
     const valText = itemEl.querySelector('.axiom-layer-op-val');
+    const hatchSel = itemEl.querySelector('.layer-hatch-select');
     const btnUp = itemEl.querySelector('.btn-layer-up');
     const btnDown = itemEl.querySelector('.btn-layer-down');
+
+    hatchSel?.addEventListener('change', () => {
+      if (!mapOpts.layerHatches) mapOpts.layerHatches = {};
+      mapOpts.layerHatches[key] = hatchSel.value;
+      renderMap();
+    });
 
     visCb?.addEventListener('change', () => {
       if (key === 'relief') {
@@ -2642,19 +2747,31 @@ function renderMapSwatches() {
   }
 }
 
-document.querySelectorAll('[data-mappreset]').forEach((b) => b.addEventListener('click', () => {
+document.querySelectorAll('[data-mappreset]').forEach((b) => b.addEventListener('click', async () => {
+  await loadMapMod();
   if (!mapMod) return;
-  // пресет меняет графику, а настройки листа (сетка, линейка, север, масштаб) остаются
   const scale = mapOpts?.scale ?? null, overlays = mapOpts?.overlays;
   mapOpts = mapMod.presetOptions(b.dataset.mappreset);
   mapOpts.scale = scale;
-  if (overlays) mapOpts.overlays = { ...overlays };
+  if (overlays) mapOpts.overlays = { ...overlays, ...mapOpts.overlays };
   syncMapControls();
   renderMap();
 }));
+$('#map-hatch-mode')?.addEventListener('change', (e) => {
+  if (mapOpts) {
+    mapOpts.hatchMode = e.target.value;
+    renderMap();
+  }
+});
 document.querySelectorAll('[data-mapopt]').forEach((el) => el.addEventListener(el.type === 'checkbox' ? 'change' : 'input', () => {
   if (!mapOpts) return;
-  setPath(mapOpts, el.dataset.mapopt, el.type === 'checkbox' ? el.checked : Number(el.value));
+  const path = el.dataset.mapopt;
+  setPath(mapOpts, path, el.type === 'checkbox' ? el.checked : Number(el.value));
+  if (path === 'layers.byType' && el.checked) {
+    setPath(mapOpts, 'layers.byHeight', false);
+  } else if (path === 'layers.byHeight' && el.checked) {
+    setPath(mapOpts, 'layers.byType', false);
+  }
   if (el.type === 'checkbox') syncMapControls();
   renderMap();
 }));
@@ -2706,6 +2823,7 @@ $('#map-pins-toggle')?.addEventListener('change', (e) => {
   if (mapOpts) {
     if (!mapOpts.overlays) mapOpts.overlays = {};
     mapOpts.overlays.pins = e.target.checked;
+    renderMap();
   }
 });
 $('#map-scale')?.addEventListener('change', (e) => { if (mapOpts) { mapOpts.scale = Number(e.target.value); renderMap(true); } });
@@ -2717,8 +2835,9 @@ $('#map-reset-colors')?.addEventListener('click', () => {
 });
 $('#btn-reset-layer-stack')?.addEventListener('click', () => {
   if (!mapOpts) return;
-  mapOpts.layerOrder = ['relief', 'contours', 'green', 'water', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site'];
+  mapOpts.layerOrder = ['satellite', 'relief', 'contours', 'green', 'flora', 'water', 'fauna', 'rail', 'roads', 'shadows', 'trees', 'buildings', 'site', 'labels'];
   mapOpts.layerOpacities = {};
+  mapOpts.layerHatches = { buildings: 'none', green: 'none' };
   renderLayerStackControls();
   renderMap();
 });
@@ -2734,6 +2853,48 @@ $('#illu-scale-style')?.addEventListener('change', (e) => {
     window.setIllustrateScaleStyle(e.target.value);
   }
 });
+
+// Interconexión Cartografía 2D -> Terreno Modelo 3D
+async function applyCartographyAs3DBase() {
+  if (!model) return;
+  await loadMapMod();
+  const cleanOpts = structuredClone(mapOpts);
+  cleanOpts.overlays = {
+    ...cleanOpts.overlays,
+    grid: false,
+    frame: false,
+    scalebar: false,
+    north: false,
+    title: false,
+    cartoLegend: false
+  };
+  const svg = mapMod.mapSVG(model, cleanOpts);
+  const blob = await mapMod.mapPNG(svg, 2048);
+  const url = URL.createObjectURL(blob);
+  try {
+    const img = await new Promise((resolve, reject) => {
+      const i = new Image();
+      i.onload = () => resolve(i);
+      i.onerror = reject;
+      i.src = url;
+    });
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 2048;
+    const c = canvas.getContext('2d');
+    c.drawImage(img, 0, 0, 2048, 2048);
+    model._origImagery ??= model.imagery;
+    model.imagery = { canvas };
+    const { showModel } = await import('./preview.js?v=6.0');
+    showModel($('#viewer'), model, { keepCamera: true });
+    updateSatelliteTexture({ enabled: true, saturation: 100, contrast: 100, brightness: 100, invert: 0 });
+    syncSatelliteDrawer();
+    if (window.switchWorkspaceView) window.switchWorkspaceView('result');
+  } finally {
+    URL.revokeObjectURL(url);
+  }
+}
+$('#btn-apply-carto-to-3d')?.addEventListener('click', applyCartographyAs3DBase);
+$('#btn-island-apply-carto')?.addEventListener('click', applyCartographyAs3DBase);
 
 // Exponer datos y estados del modelo activo para vistas guardadas e interconexión
 window.hasActiveModel = () => Boolean(model);
