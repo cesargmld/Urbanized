@@ -1462,6 +1462,11 @@ export function set3DCanvasBackground(hexColor) {
   if (!ctx || !ctx.scene) return;
   const col = new THREE.Color(hexColor);
   ctx.scene.background = col;
+  if (ctx.renderer) {
+    ctx.renderer.setClearColor(col, 1);
+  }
+  const viewer = document.getElementById('viewer');
+  if (viewer) viewer.style.backgroundColor = hexColor;
   const isLight = hexColor.toUpperCase() === '#FFFFFF';
   if (ctx.sun) {
     ctx.sun.intensity = isLight ? 2.5 : 2.0;
@@ -1529,6 +1534,19 @@ export function addConceptualMassBlock({ width = 30, depth = 25, levels = 6, use
   return mesh;
 }
 window.addConceptualMassBlock = addConceptualMassBlock;
+
+export function removeLastConceptualMassBlock() {
+  if (!conceptualBlocksGroup || conceptualBlocksGroup.children.length === 0) return;
+  const last = conceptualBlocksGroup.children.pop();
+  if (last) {
+    if (last.geometry) last.geometry.dispose();
+    if (last.material) {
+      if (Array.isArray(last.material)) last.material.forEach(m => m.dispose());
+      else last.material.dispose();
+    }
+  }
+}
+window.removeLastConceptualMassBlock = removeLastConceptualMassBlock;
 
 let current3DGridHelper = null;
 let current3DAxesHelper = null;

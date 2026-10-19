@@ -1343,89 +1343,86 @@
           </div>
         </div>
 
-        <!-- Group: Modelado & Inserción 3D (Parametric Block + Real 3D File Loader) -->
-        <div class="rayon-accordion-group">
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">MODELADO & INSERCIÓN 3D</span>
+        <!-- Group: Propiedades de Selección (Custom Properties) -->
+        <div class="rayon-accordion-group" id="inspector-group-properties">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">PROPIEDADES DE SELECCIÓN</span>
+            <span id="inspector-sel-badge" style="font-size:9.5px; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.08); color:#a1a1aa;">Polígono General</span>
           </div>
 
-          <!-- Añadir Bloque Paramétrico -->
-          <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
-            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px;">
-              <div>
-                <span style="font-size:9.5px; color:#71717a; display:block;">Ancho X</span>
-                <input type="number" id="insp-block-w" value="30" min="5" max="300" step="5" class="rayon-val-input" style="width:100%; text-align:center;">
+          <!-- Estado A: Sin bloque seleccionado (Propiedades globales del sitio) -->
+          <div id="inspector-sel-empty" style="display:flex; flex-direction:column; gap:6px;">
+            <div style="background:#18181b; padding:8px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); font-size:11px; display:flex; flex-direction:column; gap:4px;">
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Polígono Activo:</span>
+                <strong id="inspector-site-name" style="color:#f4f4f6;">Monterrey Centro</strong>
               </div>
-              <div>
-                <span style="font-size:9.5px; color:#71717a; display:block;">Fondo Y</span>
-                <input type="number" id="insp-block-d" value="25" min="5" max="300" step="5" class="rayon-val-input" style="width:100%; text-align:center;">
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Área de Terreno:</span>
+                <strong id="inspector-site-area" style="color:#38bdf8;">1,575 m²</strong>
               </div>
-              <div>
-                <span style="font-size:9.5px; color:#71717a; display:block;">Pisos Z</span>
-                <input type="number" id="insp-block-levels" value="6" min="1" max="60" step="1" class="rayon-val-input" style="width:100%; text-align:center;">
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Orientación:</span>
+                <span style="color:#e4e4e7;">0.0° Norte Real</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Zonificación:</span>
+                <span style="color:#a1a1aa;">Mixto Urbano (HM/6/30)</span>
               </div>
             </div>
-
-            <select id="insp-block-use" class="rayon-select" style="font-size:11px; margin-top:2px;">
-              <option value="residential">Residencial</option>
-              <option value="commercial">Comercial</option>
-              <option value="office">Corporativo / Oficinas</option>
-              <option value="mixed">Usos Mixtos</option>
-              <option value="equipment">Equipamiento</option>
-            </select>
-
-            <button type="button" class="rayon-share-btn" id="inspector-btn-add-block" style="justify-content:center; padding:6px 10px; font-size:11px; font-weight:600; margin-top:2px;">
-              + Añadir Bloque al Modelo
-            </button>
+            <p style="font-size:10px; color:#71717a; line-height:1.4; margin:2px 0 0 0;">
+              Haz clic en cualquier bloque o masa conceptual en el lienzo 3D para inspeccionar y ajustar sus parámetros técnicos.
+            </p>
           </div>
 
-          <!-- Cargar Modelo 3D (.glb, .gltf, .obj) -->
-          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:8px; margin-top:8px;">
-            <input type="file" id="inspector-model-file-input" accept=".glb,.gltf,.obj" style="display:none;">
-            <button type="button" class="rayon-secondary-btn" id="inspector-btn-upload-model" style="width:100%; justify-content:center; padding:6px 10px; font-size:11px; display:inline-flex; align-items:center; gap:6px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-              <span>Cargar Modelo (.glb, .gltf, .obj)</span>
-            </button>
-            <span id="inspector-loaded-model-name" style="display:block; font-size:10px; color:#38bdf8; text-align:center; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Sin archivo cargado</span>
-          </div>
-        </div>
-
-        <!-- Group: Cuantificador Geométrico Real -->
-        <div class="rayon-accordion-group">
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">CUANTIFICADOR GEOMÉTRICO 3D</span>
-          </div>
-          <div id="inspector-quant-grid" style="background:#18181b; padding:10px; border-radius:6px; margin-top:6px; display:flex; flex-direction:column; gap:5px; font-size:11px; font-family:var(--font-mono, monospace);">
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Área Desplante (COS):</span>
-              <strong id="quant-footprint" style="color:#38bdf8; font-weight:600;">750 m²</strong>
+          <!-- Estado B: Con bloque seleccionado -->
+          <div id="inspector-sel-active" style="display:none; flex-direction:column; gap:6px;">
+            <div style="background:#18181b; padding:8px 10px; border-radius:6px; border:1px solid rgba(56,189,248,0.25); font-size:11px; display:flex; flex-direction:column; gap:5px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="color:#71717a;">Tag SketchUp:</span>
+                <span id="sel-block-tag" style="color:#38bdf8; font-size:10px; font-weight:600; font-family:var(--font-mono, monospace);">02_Estructura_y_Nucleos</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Dimensiones:</span>
+                <span id="sel-block-dims" style="color:#f4f4f6; font-weight:500;">30 × 25 m</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Pisos / Altura:</span>
+                <span id="sel-block-height" style="color:#f4f4f6;">6 pisos · 19.2 m</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Uso / Programa:</span>
+                <span id="sel-block-use" style="color:#4ade80; font-weight:500;">Residencial</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.06); padding-top:4px;">
+                <span style="color:#71717a;">Huella (COS):</span>
+                <strong id="sel-block-fp" style="color:#38bdf8;">750 m²</strong>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span style="color:#71717a;">Construido (CUS):</span>
+                <strong id="sel-block-gfa" style="color:#4ade80;">4,500 m²</strong>
+              </div>
             </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">M² Construidos (CUS):</span>
-              <strong id="quant-gfa" style="color:#4ade80; font-weight:600;">4,500 m²</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Volumen Total:</span>
-              <strong id="quant-volume" style="color:#f4f4f6; font-weight:600;">14,400 m³</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Área Fachada/Envolvente:</span>
-              <strong id="quant-envelope" style="color:#fbbf24; font-weight:600;">2,112 m²</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.08); padding-top:4px; margin-top:2px;">
-              <span style="color:#71717a;">Niveles / Altura:</span>
-              <strong id="quant-height" style="color:#f4f4f6;">6 pisos · 19.2 m</strong>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Tag BIM SketchUp:</span>
-              <span id="quant-tag" style="color:#a1a1aa; font-size:10px;">02_Estructura_y_Nucleos</span>
+            <div style="display:flex; gap:4px; margin-top:2px;">
+              <button type="button" class="rayon-secondary-btn" id="btn-deselect-block" style="flex:1; justify-content:center; padding:5px 8px; font-size:10.5px;">
+                Deseleccionar
+              </button>
+              <button type="button" class="axiom-subtle-btn" id="btn-delete-selected-block" style="flex:1; justify-content:center; padding:5px 8px; font-size:10.5px; color:#f87171; border-color:rgba(239,68,68,0.25);">
+                Eliminar Bloque
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Group: Orientación Cámara 3D -->
-        <div class="rayon-accordion-group">
-          <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ORIENTACIÓN CÁMARA 3D</span>
+        <!-- Group: Orientación Cámara & Escenas Guardadas -->
+        <div class="rayon-accordion-group" style="border-bottom:none;">
+          <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ESCENAS & CÁMARA 3D</span>
+            <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene" title="Congelar escena actual (+ Escena)" style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:#38bdf8; cursor:pointer;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ Guardar Escena</span>
+            </button>
+          </div>
           <div class="rayon-axon-grid">
             <button type="button" class="rayon-axon-btn active" id="btn-cam-nw">Isometría NW</button>
             <button type="button" class="rayon-axon-btn" id="btn-cam-ne">Isometría NE</button>
@@ -1434,21 +1431,13 @@
             <button type="button" class="rayon-axon-btn" id="btn-cam-top">Planta / Cenital</button>
             <button type="button" class="rayon-axon-btn" id="btn-cam-eye">Perspectiva Peatonal</button>
           </div>
-        </div>
-
-        <!-- Group: Escenas Guardadas (Scenes) -->
-        <div class="rayon-accordion-group" style="border-bottom:none;">
-          <div style="display:flex; align-items:center; justify-content:space-between;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ESCENAS GUARDADAS</span>
-            <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene" title="Congelar escena actual (+ Escena)" style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:2px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.12); color:#38bdf8;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ Escena</span>
-            </button>
-          </div>
-          <div id="inspector-scenes-list" style="display:flex; flex-direction:column; gap:4px; margin-top:6px;">
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 6px; background:#18181b; border-radius:4px; font-size:11px;">
-              <span style="color:#f4f4f6;">Escena 01 · Axonometría NW</span>
-              <span style="color:#71717a;">3D</span>
+          <div style="margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span style="font-size:10px; color:#71717a; text-transform:uppercase; letter-spacing:0.05em;">Escenas Congeladas</span>
+              <span id="inspector-scenes-count" style="font-size:9.5px; color:#52525b;">1 escena</span>
+            </div>
+            <div id="inspector-scenes-list" style="display:flex; flex-direction:column; gap:4px;">
+              <!-- Escenas dinámicas se renderizan aquí -->
             </div>
           </div>
         </div>
@@ -2423,6 +2412,7 @@
 
         <!-- Form: Login -->
         <form id="form-auth-login" onsubmit="return false;" style="display:flex; flex-direction:column; gap:12px;">
+          <div id="auth-login-error" style="display:none; color:#f87171; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 10px; font-size:11.5px; line-height:1.4;"></div>
           <div>
             <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Correo Electrónico o Usuario</label>
             <input type="text" id="auth-login-email" placeholder="usuario@estudio.com" autocomplete="username" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
@@ -2434,13 +2424,17 @@
           <button type="button" class="rayon-share-btn" id="btn-auth-login-submit" style="width:100%; justify-content:center; padding:9px 12px; font-weight:600; font-size:12px; margin-top:4px;">
             Iniciar Sesión
           </button>
-          <div style="text-align:center; margin-top:4px;">
+          <div style="font-size:10.5px; color:#71717a; text-align:center; margin-top:2px;">
+            Acceso demo estudio: <code style="color:#a1a1aa;">cesar@cgmatelier.com</code> / <code style="color:#a1a1aa;">arquitectura2026</code>
+          </div>
+          <div style="text-align:center; margin-top:2px;">
             <button type="button" id="btn-continue-guest" style="background:none; border:none; color:#71717a; font-size:11px; cursor:pointer; text-decoration:underline;">Continuar como Invitado (Modo local)</button>
           </div>
         </form>
 
         <!-- Form: Register (Hidden by default) -->
         <form id="form-auth-register" onsubmit="return false;" style="display:none; flex-direction:column; gap:12px;">
+          <div id="auth-reg-error" style="display:none; color:#f87171; background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.3); border-radius:6px; padding:8px 10px; font-size:11.5px; line-height:1.4;"></div>
           <div>
             <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Nombre Completo / Arquitecto</label>
             <input type="text" id="auth-reg-name" placeholder="Ej. Cesar González" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
@@ -2669,6 +2663,8 @@
           const isLight = bgHex.toUpperCase() === '#FFFFFF';
           document.documentElement.style.setProperty('--canvas-overlay-color', isLight ? '#111114' : '#ffffff');
           document.documentElement.style.setProperty('--canvas-bg-color', bgHex);
+          const viewerEl = document.getElementById('viewer');
+          if (viewerEl) viewerEl.style.backgroundColor = bgHex;
         });
       });
 
@@ -3175,40 +3171,112 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       if (fReg) fReg.style.display = 'flex';
     });
 
-    // Iniciar Sesión submit
-    document.getElementById('btn-auth-login-submit')?.addEventListener('click', () => {
-      const email = document.getElementById('auth-login-email')?.value.trim() || 'usuario@estudio.com';
-      const name = email.includes('@') ? email.split('@')[0] : email;
-      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
-      authState.isLoggedIn = true;
-      authState.name = capitalized;
-      authState.email = email;
-      if (!authState.workspaces.includes('CGM Atelier')) {
-        authState.workspaces.push('CGM Atelier');
+    // Iniciar Sesión submit (REAL AUTHENTICATION)
+    document.getElementById('btn-auth-login-submit')?.addEventListener('click', async () => {
+      const errBox = document.getElementById('auth-login-error');
+      if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+      const email = document.getElementById('auth-login-email')?.value.trim();
+      const password = document.getElementById('auth-login-pass')?.value;
+
+      if (!email) {
+        if (errBox) { errBox.textContent = 'Por favor ingresa tu correo electrónico.'; errBox.style.display = 'block'; }
+        return;
       }
-      authState.activeWorkspace = 'CGM Atelier';
-      saveAuthState();
-      showCadToast(`Sesión iniciada como ${authState.name} · Workspace: ${authState.activeWorkspace}`);
-      const m = document.getElementById('modal-user-workspace');
-      if (m) m.hidden = true;
+      if (!password) {
+        if (errBox) { errBox.textContent = 'Por favor introduce tu contraseña.'; errBox.style.display = 'block'; }
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-auth-login-submit');
+      const origText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Verificando credenciales...'; }
+
+      try {
+        const res = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Credenciales no válidas.');
+        }
+
+        // Real login successful
+        authState.isLoggedIn = true;
+        authState.name = data.user.name;
+        authState.email = data.user.email;
+        authState.workspaces = data.user.workspaces || ['CGM Atelier'];
+        authState.activeWorkspace = data.user.activeWorkspace || authState.workspaces[0] || 'CGM Atelier';
+        saveAuthState();
+        showCadToast(`Sesión iniciada como ${authState.name} · ${authState.activeWorkspace}`);
+        const m = document.getElementById('modal-user-workspace');
+        if (m) m.hidden = true;
+      } catch (err) {
+        if (errBox) {
+          errBox.textContent = err.message || 'Error al iniciar sesión.';
+          errBox.style.display = 'block';
+        }
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
+      }
     });
 
-    // Crear Cuenta submit
-    document.getElementById('btn-auth-reg-submit')?.addEventListener('click', () => {
-      const name = document.getElementById('auth-reg-name')?.value.trim() || 'Nuevo Arquitecto';
-      const email = document.getElementById('auth-reg-email')?.value.trim() || 'arqui@estudio.com';
+    // Crear Cuenta submit (REAL REGISTRATION)
+    document.getElementById('btn-auth-reg-submit')?.addEventListener('click', async () => {
+      const errBox = document.getElementById('auth-reg-error');
+      if (errBox) { errBox.style.display = 'none'; errBox.textContent = ''; }
+      const name = document.getElementById('auth-reg-name')?.value.trim();
+      const email = document.getElementById('auth-reg-email')?.value.trim();
+      const password = document.getElementById('auth-reg-pass')?.value;
       const ws = document.getElementById('auth-reg-ws')?.value.trim() || 'Estudio Principal';
-      authState.isLoggedIn = true;
-      authState.name = name;
-      authState.email = email;
-      if (!authState.workspaces.includes(ws)) {
-        authState.workspaces.push(ws);
+
+      if (!name) {
+        if (errBox) { errBox.textContent = 'Introduce tu nombre completo.'; errBox.style.display = 'block'; }
+        return;
       }
-      authState.activeWorkspace = ws;
-      saveAuthState();
-      showCadToast(`Cuenta creada. Bienvenido, ${authState.name} · ${ws}`);
-      const m = document.getElementById('modal-user-workspace');
-      if (m) m.hidden = true;
+      if (!email || !email.includes('@')) {
+        if (errBox) { errBox.textContent = 'Introduce un correo electrónico válido.'; errBox.style.display = 'block'; }
+        return;
+      }
+      if (!password || password.length < 6) {
+        if (errBox) { errBox.textContent = 'La contraseña debe tener un mínimo de 6 caracteres.'; errBox.style.display = 'block'; }
+        return;
+      }
+
+      const submitBtn = document.getElementById('btn-auth-reg-submit');
+      const origText = submitBtn ? submitBtn.textContent : '';
+      if (submitBtn) { submitBtn.disabled = true; submitBtn.textContent = 'Creando cuenta...'; }
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name, email, password, workspace: ws })
+        });
+        const data = await res.json();
+        if (!res.ok || !data.ok) {
+          throw new Error(data.error || 'Error al crear la cuenta.');
+        }
+
+        // Real registration successful
+        authState.isLoggedIn = true;
+        authState.name = data.user.name;
+        authState.email = data.user.email;
+        authState.workspaces = data.user.workspaces || [ws];
+        authState.activeWorkspace = data.user.activeWorkspace || ws;
+        saveAuthState();
+        showCadToast(`Cuenta creada. Bienvenido, ${authState.name} · ${authState.activeWorkspace}`);
+        const m = document.getElementById('modal-user-workspace');
+        if (m) m.hidden = true;
+      } catch (err) {
+        if (errBox) {
+          errBox.textContent = err.message || 'Error al registrar usuario.';
+          errBox.style.display = 'block';
+        }
+      } finally {
+        if (submitBtn) { submitBtn.disabled = false; submitBtn.textContent = origText; }
+      }
     });
 
     // Continuar como Invitado
@@ -3229,6 +3297,13 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         authState.activeWorkspace = sel.value;
         saveAuthState();
         showCadToast(`Workspace activo cambiado a: ${sel.value}`);
+        if (authState.isLoggedIn && authState.email) {
+          fetch('/api/auth/workspace', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: authState.email, workspaceName: sel.value, action: 'select' })
+          }).catch(console.error);
+        }
       }
     });
 
@@ -3244,6 +3319,13 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       if (inp) inp.value = '';
       saveAuthState();
       showCadToast(`Nuevo workspace "${wsName}" creado y activado`);
+      if (authState.isLoggedIn && authState.email) {
+        fetch('/api/auth/workspace', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: authState.email, workspaceName: wsName, action: 'create' })
+        }).catch(console.error);
+      }
     });
 
     // Guardar Cambios de Perfil
@@ -3264,6 +3346,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       authState.name = 'Invitado';
       authState.email = '';
       authState.activeWorkspace = 'Personal';
+      authState.workspaces = ['Personal'];
       saveAuthState();
       showCadToast('Sesión cerrada. Has regresado al modo Invitado.');
       const m = document.getElementById('modal-user-workspace');
@@ -3358,6 +3441,8 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       const container = document.getElementById('inspector-scenes-list');
       if (!container) return;
       const views = viewsManager.getViews();
+      const countEl = document.getElementById('inspector-scenes-count');
+      if (countEl) countEl.textContent = `${views.length} escena${views.length === 1 ? '' : 's'}`;
       if (!views || views.length === 0) {
         container.innerHTML = '<span style="color:#71717a; font-size:11px; padding:4px;">No hay escenas guardadas</span>';
         return;
@@ -3495,37 +3580,87 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     // =====================================================
     // 3D MODELING & PARAMETRIC BLOCKS (INSPECTOR & DOCK)
     // =====================================================
+    // =====================================================
+    // 3D MODELING & PARAMETRIC BLOCKS (DRAWER TAB 4 & INSPECTOR)
+    // =====================================================
+    let lastAddedBlock = null;
+
+    function clearInspectorBlockSelection() {
+      const emptyEl = document.getElementById('inspector-sel-empty');
+      const actEl = document.getElementById('inspector-sel-active');
+      const badge = document.getElementById('inspector-sel-badge');
+      if (emptyEl) emptyEl.style.display = 'flex';
+      if (actEl) actEl.style.display = 'none';
+      if (badge) {
+        badge.textContent = 'Polígono General';
+        badge.style.background = 'rgba(255,255,255,0.08)';
+        badge.style.color = '#a1a1aa';
+      }
+    }
+    window.clearInspectorBlockSelection = clearInspectorBlockSelection;
+
+    function showBlockInInspector(block) {
+      const emptyEl = document.getElementById('inspector-sel-empty');
+      const actEl = document.getElementById('inspector-sel-active');
+      const badge = document.getElementById('inspector-sel-badge');
+      if (emptyEl) emptyEl.style.display = 'none';
+      if (actEl) actEl.style.display = 'flex';
+      if (badge) {
+        badge.textContent = 'Bloque Seleccionado';
+        badge.style.background = 'rgba(56,189,248,0.15)';
+        badge.style.color = '#38bdf8';
+      }
+      const fp = Math.round(block.width * block.depth);
+      const gfa = Math.round(fp * block.levels);
+      const h = (block.levels * 3.2).toFixed(1);
+      const tagEl = document.getElementById('sel-block-tag');
+      const dimsEl = document.getElementById('sel-block-dims');
+      const hEl = document.getElementById('sel-block-height');
+      const useEl = document.getElementById('sel-block-use');
+      const fpEl = document.getElementById('sel-block-fp');
+      const gfaEl = document.getElementById('sel-block-gfa');
+
+      const useNames = {
+        residential: 'Residencial',
+        commercial: 'Comercial',
+        office: 'Corporativo / Oficinas',
+        mixed: 'Usos Mixtos',
+        equipment: 'Equipamiento'
+      };
+
+      if (tagEl) tagEl.textContent = '02_Estructura_y_Nucleos';
+      if (dimsEl) dimsEl.textContent = `${block.width} × ${block.depth} m`;
+      if (hEl) hEl.textContent = `${block.levels} pisos · ${h} m`;
+      if (useEl) useEl.textContent = useNames[block.use] || block.use;
+      if (fpEl) fpEl.textContent = `${fp.toLocaleString()} m²`;
+      if (gfaEl) gfaEl.textContent = `${gfa.toLocaleString()} m²`;
+    }
+    window.showBlockInInspector = showBlockInInspector;
+
     function spawnParametricBlock(w, d, levels, use) {
       if (window.addConceptualMassBlock) {
         window.addConceptualMassBlock({ width: w, depth: d, levels, use });
       }
+      lastAddedBlock = { width: w, depth: d, levels, use };
+
       // Calculate real geometric metrics
       const fp = Math.round(w * d);
       const gfa = Math.round(fp * levels);
       const height = (levels * 3.2).toFixed(1);
-      const vol = Math.round(fp * (levels * 3.2));
-      const env = Math.round(2 * (w + d) * (levels * 3.2) + fp);
 
-      const elFp = document.getElementById('quant-footprint');
-      const elGfa = document.getElementById('quant-gfa');
-      const elVol = document.getElementById('quant-volume');
-      const elEnv = document.getElementById('quant-envelope');
-      const elH = document.getElementById('quant-height');
-      if (elFp) elFp.textContent = `${fp.toLocaleString()} m²`;
-      if (elGfa) elGfa.textContent = `${gfa.toLocaleString()} m²`;
-      if (elVol) elVol.textContent = `${vol.toLocaleString()} m³`;
-      if (elEnv) elEnv.textContent = `${env.toLocaleString()} m²`;
-      if (elH) elH.textContent = `${levels} pisos · ${height} m`;
+      // Update Left Drawer Tab 5 (Tables) metrics
+      const elFp = document.getElementById('feas-out-footprint');
+      const elGfa = document.getElementById('feas-out-gfa');
+      const elH = document.getElementById('feas-out-height');
+      if (elFp) elFp.textContent = `${fp.toLocaleString()}`;
+      if (elGfa) elGfa.textContent = `${gfa.toLocaleString()}`;
+      if (elH) elH.textContent = `${height} m · ${levels}N`;
+
+      // Reflect into Right Inspector Custom Properties
+      showBlockInInspector(lastAddedBlock);
+
       showCadToast(`Bloque de ${w}×${d} m (${levels} niveles) añadido al modelo`);
     }
-
-    document.getElementById('inspector-btn-add-block')?.addEventListener('click', () => {
-      const w = parseFloat(document.getElementById('insp-block-w')?.value) || 30;
-      const d = parseFloat(document.getElementById('insp-block-d')?.value) || 25;
-      const levels = parseInt(document.getElementById('insp-block-levels')?.value) || 6;
-      const use = document.getElementById('insp-block-use')?.value || 'residential';
-      spawnParametricBlock(w, d, levels, use);
-    });
 
     document.getElementById('btn-add-conceptual-block')?.addEventListener('click', () => {
       const w = parseFloat(document.getElementById('block-dim-w')?.value) || 30;
@@ -3535,8 +3670,21 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       spawnParametricBlock(w, d, levels, use);
     });
 
+    document.getElementById('btn-deselect-block')?.addEventListener('click', () => {
+      clearInspectorBlockSelection();
+      showCadToast('Selección desmarcada');
+    });
+
+    document.getElementById('btn-delete-selected-block')?.addEventListener('click', () => {
+      if (window.removeLastConceptualMassBlock) {
+        window.removeLastConceptualMassBlock();
+      }
+      clearInspectorBlockSelection();
+      showCadToast('Bloque volumétrico eliminado del modelo');
+    });
+
     // =====================================================
-    // 3D FILE LOADER (.glb, .gltf, .obj)
+    // 3D FILE LOADER (.glb, .gltf, .obj, .skp)
     // =====================================================
     async function handle3DFileUpload(file) {
       if (!file) return;
@@ -3544,11 +3692,11 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       try {
         if (window.loadExternal3DModel) {
           const metrics = await window.loadExternal3DModel(file);
-          const nameEl = document.getElementById('inspector-loaded-model-name');
           const feasName = document.getElementById('feas-file-name');
-          if (nameEl) nameEl.textContent = file.name;
+          const inspModelName = document.getElementById('inspector-model-name');
           if (feasName) feasName.textContent = file.name;
-          showCadToast(`Modelo "${file.name}" cargado y cuantificado con éxito`);
+          if (inspModelName) inspModelName.value = file.name.replace(/\.[^/.]+$/, '');
+          showCadToast(`Modelo "${file.name}" cargado y sincronizado con éxito`);
         }
       } catch (err) {
         console.error('Error cargando modelo 3D:', err);
@@ -3556,12 +3704,6 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       }
     }
 
-    document.getElementById('inspector-btn-upload-model')?.addEventListener('click', () => {
-      document.getElementById('inspector-model-file-input')?.click();
-    });
-    document.getElementById('inspector-model-file-input')?.addEventListener('change', (e) => {
-      handle3DFileUpload(e.target.files?.[0]);
-    });
     document.getElementById('feas-btn-upload-skp')?.addEventListener('click', () => {
       document.getElementById('feas-file-input')?.click();
     });

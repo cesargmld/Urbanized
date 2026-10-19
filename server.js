@@ -51,6 +51,55 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Real Authentication API for URBNZD
+  if (req.url.startsWith('/api/auth')) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+
+    if (req.method === 'OPTIONS') {
+      res.writeHead(200);
+      res.end();
+      return;
+    }
+
+    let body = '';
+    for await (const chunk of req) body += chunk;
+    let parsedBody = {};
+    try {
+      if (body) parsedBody = JSON.parse(body);
+    } catch (e) {
+      parsedBody = {};
+    }
+
+    const { registerUser, loginUser, manageWorkspace } = require('./lib/auth');
+
+    if (req.url.startsWith('/api/auth/register') && req.method === 'POST') {
+      const result = registerUser(parsedBody);
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+      return;
+    }
+
+    if (req.url.startsWith('/api/auth/login') && req.method === 'POST') {
+      const result = loginUser(parsedBody);
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+      return;
+    }
+
+    if (req.url.startsWith('/api/auth/workspace') && req.method === 'POST') {
+      const result = manageWorkspace(parsedBody);
+      res.writeHead(result.status, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify(result));
+      return;
+    }
+
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ ok: true, service: 'URBNZD Auth Engine' }));
+    return;
+  }
+
   // Mock API endpoints to avoid 404s
   if (req.url.startsWith('/api/status') || req.url.startsWith('/api/quota')) {
     res.writeHead(200, { 'Content-Type': 'application/json' });

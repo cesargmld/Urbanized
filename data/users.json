@@ -1,0 +1,27 @@
+[
+  {
+    "id": "usr_cgm_master",
+    "name": "Cesar González",
+    "email": "cesar@cgmatelier.com",
+    "salt": "fdcc6e364836fa26609c1c422d133707",
+    "hash": "f44e107aaa0f8634b3f5d3997f51a844a7a7b1690b83def04b31d2aab9a6013c6efb8bc7aa5cdc70aa7ec50fa3d36bd45cfba3f0167f57cf6a96de4391820a3f",
+    "workspaces": [
+      "CGM Atelier",
+      "Estudio Principal"
+    ],
+    "activeWorkspace": "CGM Atelier",
+    "createdAt": "2026-10-19T04:44:17.733Z"
+  },
+  {
+    "id": "usr_1792385078666_hdnkp",
+    "name": "Arquitecto MTY",
+    "email": "mty@tallerurbano.com",
+    "salt": "e6175b4857466a23098891243407778d",
+    "hash": "6ac2c39d9845479dab3d00aaac1aec4b19a521accdb185518a55103d785fe96151ef78f4453d91bcdda813cf732b8817ccd08713a37fadf43b5d7efeb8acf343",
+    "workspaces": [
+      "Taller Urbano MTY"
+    ],
+    "activeWorkspace": "Taller Urbano MTY",
+    "createdAt": "2026-10-19T04:44:38.666Z"
+  }
+]
