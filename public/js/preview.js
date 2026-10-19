@@ -1403,6 +1403,8 @@ feasibilityStore.subscribe(() => {
   renderFeasibilityVolume();
 });
 
+let activeCanvasBg = '#090A0D';
+
 // Integración con el Gestor de Vistas Guardadas (viewsManager)
 window.getCamera3DState = () => {
   if (!ctx || !ctx.camera || !ctx.controls) return null;
@@ -1410,17 +1412,21 @@ window.getCamera3DState = () => {
     position: [ctx.camera.position.x, ctx.camera.position.y, ctx.camera.position.z],
     target: [ctx.controls.target.x, ctx.controls.target.y, ctx.controls.target.z],
     zoom: ctx.camera.zoom || 1,
+    fov: ctx.camera.fov || 35,
   };
 };
 
 window.applyCamera3DView = (cam) => {
   if (!ctx || !ctx.camera || !ctx.controls || !cam) return;
+  if (cam.fov) ctx.camera.fov = cam.fov;
   if (cam.position) ctx.camera.position.set(...cam.position);
   if (cam.target) ctx.controls.target.set(...cam.target);
   if (cam.zoom) ctx.camera.zoom = cam.zoom;
   ctx.camera.updateProjectionMatrix();
   ctx.controls.update();
 };
+
+window.getActiveCanvasBg = () => activeCanvasBg;
 
 export function setProjectModelStyle({ color = '#1e3a8a', texture = 'solid' } = {}) {
   const obj = feasibilityStore.projectModel?.object || feasibilityStore.projectModel;
@@ -1460,6 +1466,7 @@ window.setProjectModelStyle = setProjectModelStyle;
 let conceptualBlocksGroup = null;
 
 export function set3DCanvasBackground(hexColor) {
+  activeCanvasBg = hexColor;
   if (!ctx || !ctx.scene) return;
   const col = new THREE.Color(hexColor);
   ctx.scene.background = col;
@@ -1722,3 +1729,5 @@ window.toggleSectionCut3D = toggleSectionCut3D;
 window.setSectionCutPosition = setSectionCutPosition;
 window.setSectionCutAxis = setSectionCutAxis;
 window.isSectionCutActive = () => isSectionActive;
+window.toggleMaquetaMode = toggleMaquetaMode;
+window.isMaquetaModeActive = isMaquetaModeActive;

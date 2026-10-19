@@ -156,10 +156,33 @@ class ViewsManager {
   }
 
   saveCurrentScene(name) {
+    let thumbnail = null;
+    let renderMode = 'model';
+    let canvasBg = '#090A0D';
+    let sectionCut = false;
+
+    if (typeof window !== 'undefined') {
+      const canvas = document.querySelector('#viewer canvas, #map-canvas, #illu-canvas');
+      if (canvas) {
+        try {
+          thumbnail = canvas.toDataURL('image/jpeg', 0.65);
+        } catch (e) {
+          console.warn('Could not capture scene thumbnail:', e);
+        }
+      }
+      if (window.isMaquetaModeActive?.()) renderMode = 'maqueta';
+      if (window.getActiveCanvasBg?.()) canvasBg = window.getActiveCanvasBg();
+      if (window.isSectionCutActive?.()) sectionCut = window.isSectionCutActive();
+    }
+
     return this.saveCurrentView(name, {
       mode: (typeof window !== 'undefined' && window.currentWorkspaceMode) || 'result',
       modelId: (typeof window !== 'undefined' && window.getActiveModelData?.()?.id) || null,
       camera3D: (typeof window !== 'undefined' && window.getCamera3DState?.()) || null,
+      renderMode,
+      canvasBg,
+      sectionCut,
+      thumbnail,
       vectorMap: (typeof window !== 'undefined' && window.getVectorMapState?.()) || null,
       illustrate: (typeof window !== 'undefined' && window.getIllustrateState?.()) || null,
       feasibility: (typeof window !== 'undefined' && window.getFeasibilityState?.()) || null,
@@ -174,6 +197,10 @@ class ViewsManager {
       modelId: state.modelId || null,
       mode: state.mode || 'result', // 'result', 'mapper', 'illustrator'
       camera3D: state.camera3D ? structuredClone(state.camera3D) : null,
+      renderMode: state.renderMode || 'model',
+      canvasBg: state.canvasBg || '#090A0D',
+      sectionCut: Boolean(state.sectionCut),
+      thumbnail: state.thumbnail || null,
       illustrate: state.illustrate ? structuredClone(state.illustrate) : null,
       vectorMap: state.vectorMap ? structuredClone(state.vectorMap) : null,
       feasibility: state.feasibility ? structuredClone(state.feasibility) : null,

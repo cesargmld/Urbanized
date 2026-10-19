@@ -738,23 +738,34 @@
           </div>
         </aside>
 
-        <!-- TAB 2: SHEETS / LÁMINAS (Láminas de Impresión Normalizadas) -->
+        <!-- TAB 2: SHEETS / LÁMINAS (Láminas & Formatos tipo InDesign) -->
         <aside class="axiom-drawer-card" id="studio-tab-pages" hidden>
           <div class="axiom-export-header">
             <div class="axiom-export-title-row">
               <h2 class="axiom-export-title">Láminas & Formatos</h2>
               <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel">✕</button>
             </div>
-            <p class="export-coords">Configuración de planos técnicos según estándares de arquitectura</p>
+            <p class="export-coords">Composición editorial tipo InDesign · Pliegos técnicos y pasos de diagramación</p>
           </div>
 
-          <!-- 1. Formato Normalizado de Hoja -->
+          <!-- 1. Vistas & Escenas Creadas (Top) -->
           <div class="axiom-editor-group" style="padding:0;">
-            <span class="axiom-sub-header">Formato de Lámina</span>
+            <div class="axiom-row-between" style="margin-bottom:6px;">
+              <span class="axiom-sub-header" style="margin:0;">Vistas & Escenas Guardadas</span>
+              <button type="button" id="btn-sheet-quick-add-scene" style="background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.25); color:#38bdf8; font-size:10px; padding:2px 7px; border-radius:4px; cursor:pointer;">+ Capturar Escena</button>
+            </div>
+            <div id="sheet-scenes-available-list" style="display:flex; flex-direction:column; gap:5px; max-height:120px; overflow-y:auto; padding-right:2px;">
+              <!-- Se listan las escenas disponibles -->
+            </div>
+          </div>
+
+          <!-- 2. Formato Normalizado de Hoja -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <span class="axiom-sub-header">Formato del Pliego</span>
             <div class="axiom-control-row">
               <span class="rayon-label">Medida Estándar</span>
               <select id="sheet-format-select" class="rayon-select" style="font-size:11.5px;">
-                <option value="90x60" selected>90 × 60 cm (Estándar Oficial)</option>
+                <option value="90x60" selected>90 × 60 cm (Pliego Oficial)</option>
                 <option value="arch-d">Arch D 24×36" (61 × 91.4 cm)</option>
                 <option value="iso-a1">ISO A1 (59.4 × 84.1 cm)</option>
                 <option value="iso-a2">ISO A2 (42.0 × 59.4 cm)</option>
@@ -780,8 +791,36 @@
             </div>
           </div>
 
-          <!-- 2. Cuadro de Datos y Rotulación (Title Block) -->
-          <div class="axiom-editor-group" style="padding:0; margin-top:10px;">
+          <!-- 3. Composición / Distribución de Vistas (Layout) -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <span class="axiom-sub-header">Diagramación de Pliego</span>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:8px;">
+              <button type="button" class="axiom-subtle-btn active" data-sheet-layout="1" id="btn-layout-1" style="font-size:10.5px; padding:6px 4px; text-align:center;">
+                <span style="font-weight:600; display:block;">1 Vista</span>
+                <span style="color:#71717a; font-size:9px;">Plano Completo</span>
+              </button>
+              <button type="button" class="axiom-subtle-btn" data-sheet-layout="2" id="btn-layout-2" style="font-size:10.5px; padding:6px 4px; text-align:center;">
+                <span style="font-weight:600; display:block;">2 Encontradas</span>
+                <span style="color:#71717a; font-size:9px;">50/50 Comparativa</span>
+              </button>
+              <button type="button" class="axiom-subtle-btn" data-sheet-layout="3" id="btn-layout-3" style="font-size:10.5px; padding:6px 4px; text-align:center;">
+                <span style="font-weight:600; display:block;">3 Vistas</span>
+                <span style="color:#71717a; font-size:9px;">Tríptico Técnico</span>
+              </button>
+              <button type="button" class="axiom-subtle-btn" data-sheet-layout="4" id="btn-layout-4" style="font-size:10.5px; padding:6px 4px; text-align:center;">
+                <span style="font-weight:600; display:block;">4 Pasos</span>
+                <span style="color:#71717a; font-size:9px;">Secuencia Urbana</span>
+              </button>
+            </div>
+
+            <!-- Viewports Dynamic Assignment -->
+            <div id="sheet-viewports-assign-container" style="display:flex; flex-direction:column; gap:6px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.06); border-radius:8px; padding:8px;">
+              <!-- Viewport rows -->
+            </div>
+          </div>
+
+          <!-- 4. Cuadro de Datos y Rotulación (Title Block) -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
             <div class="axiom-row-between">
               <span class="axiom-sub-header" style="margin:0;">Cuadro de Datos (Title Block)</span>
               <label class="axiom-mini-toggle">
@@ -807,21 +846,36 @@
               </select>
             </div>
             <div class="axiom-control-row">
-              <span class="rayon-label">Autor del Plano</span>
-              <span id="sheet-author-tag" style="font-size:11px; color:#e4e4e7; font-weight:500;">CGM Atelier</span>
+              <span class="rayon-label">Autor</span>
+              <span id="sheet-author-tag" style="font-size:11px; color:#e4e4e7; font-weight:500;">URBNZD · by CGM Atelier</span>
             </div>
           </div>
 
-          <!-- 3. Botones de Acción de Lámina (Sticky Bottom) -->
+          <!-- 5. Barra de Páginas / Pliegos (Pages Bar tipo InDesign - Abajo en la misma vista) -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <div class="axiom-row-between" style="margin-bottom:6px;">
+              <span class="axiom-sub-header" style="margin:0;">Pliegos del Proyecto (Pages)</span>
+              <button type="button" id="btn-add-sheet-page" style="background:none; border:none; color:#38bdf8; font-size:11px; cursor:pointer; font-weight:600;">+ Añadir Pliego</button>
+            </div>
+            <div id="sheet-pages-pills" style="display:flex; gap:6px; flex-wrap:wrap;">
+              <!-- Pills dinámicas de pliegos -->
+            </div>
+          </div>
+
+          <!-- 6. Botones de Acción de Lámina (Sticky Bottom) -->
           <div class="drawer-sticky-bottom">
-            <button type="button" class="rayon-secondary-btn" id="btn-toggle-sheet-frame" style="justify-content:center; padding:7px 12px; font-size:11.5px;">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-              <span>Ver Marco de Lámina (Overlay CAD)</span>
+            <button type="button" class="rayon-share-btn" id="btn-open-sheet-compositor" style="justify-content:center; padding:8px 12px; font-weight:600; font-size:11.5px; background:linear-gradient(135deg, #1e293b, #0f172a); border:1px solid rgba(56,189,248,0.35); color:#ffffff;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              <span>Ver Composición de Lámina (Modo InDesign)</span>
             </button>
-            <button type="button" class="rayon-share-btn" id="btn-export-sheet-pdf" style="justify-content:center; padding:8px 12px; font-weight:600; font-size:11.5px;">
+            <button type="button" class="axiom-cta-btn" id="btn-export-sheet-pdf" style="justify-content:center; padding:8px 12px; font-weight:600; font-size:11.5px;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              <span>Descargar Lámina de Impresión (4K)</span>
+              <span>Descargar Lámina de Pliego (4K)</span>
             </button>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:2px;">
+              <button type="button" class="axiom-subtle-btn" id="btn-sheet-export-only-2d" style="font-size:10px; padding:5px 6px; text-align:center;">Exportar sólo 2D</button>
+              <button type="button" class="axiom-subtle-btn" id="btn-sheet-export-only-axo" style="font-size:10px; padding:5px 6px; text-align:center;">Exportar sólo Axo</button>
+            </div>
           </div>
         </aside>
 
@@ -1244,14 +1298,6 @@
               <span data-i18n="cam.top">Planta Cenital</span>
             </button>
           </div>
-
-          <!-- Cápsula 3: Captura de Escena -->
-          <div class="axiom-island-capsule" id="capsule-scene" role="group" aria-label="Guardar escena" style="border:1px solid rgba(56,189,248,0.3); background:rgba(18,20,28,0.92);">
-            <button type="button" class="axiom-island-btn" id="btn-quick-save-scene-3d" title="Congelar esta escena (cámara, capas y estilo)" style="color:#38bdf8; font-weight:600; display:inline-flex; align-items:center; gap:5px;">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-              <span>+ Escena</span>
-            </button>
-          </div>
         </div>
 
         <div class="viewer" id="viewer"></div>
@@ -1259,7 +1305,7 @@
         <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
 
-        <!-- URBNZD Functional 3D Tool Dock -->
+        <!-- URBNZD Functional 3D Tool Dock (Pure CAD Modeling Tools - No Duplicates) -->
         <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas 3D">
           <button type="button" class="rayon-tool-btn active" id="dock-tool-select-3d" title="Seleccionar / Inspeccionar (V)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
@@ -1272,9 +1318,6 @@
           </button>
           <button type="button" class="rayon-tool-btn" id="dock-tool-section-3d" title="Plano de Sección / Corte (X)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-3d" title="Guardar Escena (S)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
           <button type="button" class="rayon-tool-btn" id="dock-tool-export-3d" title="Capturar Imagen Render (E)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
@@ -1290,12 +1333,13 @@
 
       <!-- 4. PERMANENT RIGHT INSPECTOR (300px) - Rayon style with swatches and camera -->
       <aside class="rayon-inspector-panel" id="studio-right-inspector">
-        <!-- Header (Avatar, Profile, Share) -->
-        <div class="rayon-inspector-top">
-          <div class="rayon-inspector-avatar" id="inspector-user-avatar" style="cursor:pointer;" title="Perfil y Workspace">I</div>
+        <!-- Header (User Avatar & Clean Badge - No Duplicate Share Button) -->
+        <div class="rayon-inspector-top" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.08);">
           <div style="display:flex; align-items:center; gap:8px;">
-            <button type="button" class="rayon-share-btn" id="btn-inspector-share">Share</button>
+            <div class="rayon-inspector-avatar" id="inspector-user-avatar" style="cursor:pointer;" title="Perfil y Workspace">I</div>
+            <span style="font-size:11.5px; font-weight:600; color:#f4f4f6;">Inspector 3D</span>
           </div>
+          <span style="font-size:10px; color:#38bdf8; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.2); padding:1px 6px; border-radius:4px; font-weight:500;">Contextual</span>
         </div>
 
         <!-- Group: Model -->
@@ -2254,41 +2298,73 @@
       </div>
     </div>
   </div>
+  <!-- ========================================================
+       URBNZD ARCHITECTURAL SHARE MODAL WINDOW
+       ======================================================== -->
+  <div class="modal-backdrop" id="modal-share-project" hidden style="position:fixed; inset:0; z-index:9999; background:rgba(0,0,0,0.78); backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); display:none; align-items:center; justify-content:center;">
+    <div class="modal-window" style="width:480px; max-width:calc(100vw - 32px); background:#111114; border:1px solid rgba(255,255,255,0.14); border-radius:18px; padding:24px; box-shadow:0 30px 80px rgba(0,0,0,0.85); color:#f4f4f6;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div style="width:32px; height:32px; border-radius:8px; background:rgba(56,189,248,0.12); border:1px solid rgba(56,189,248,0.25); display:flex; align-items:center; justify-content:center; color:#38bdf8;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          </div>
+          <div>
+            <h3 style="margin:0; font-size:14.5px; font-weight:700; color:#ffffff;">Compartir Proyecto Urbano</h3>
+            <span style="font-size:11px; color:#a1a1aa;">Enlace directo a este modelo y sus escenas</span>
+          </div>
+        </div>
+        <button type="button" id="modal-share-close" style="background:none; border:none; color:#71717a; cursor:pointer; font-size:17px; padding:4px;" aria-label="Cerrar">✕</button>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:11px; font-weight:600; color:#d4d4d8; margin-bottom:6px;">Enlace Directo al Proyecto</label>
+        <div style="display:flex; gap:8px;">
+          <input type="text" id="share-link-input" readonly style="flex:1; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:9px 12px; color:#ffffff; font-size:11.5px; font-family:var(--font-mono, monospace);">
+          <button type="button" class="rayon-share-btn" id="btn-copy-share-link" style="padding:9px 16px; font-weight:600; white-space:nowrap;">
+            Copiar Enlace
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Share Details -->
+      <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:18px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+          <div>
+            <strong style="font-size:12px; color:#f4f4f6; display:block;">Visor Interactivo 3D</strong>
+            <span style="font-size:11px; color:#71717a;">Permite a clientes o colaboradores orbitar el modelo sin instalar software</span>
+          </div>
+          <span style="font-size:10px; color:#38bdf8; font-weight:600; background:rgba(56,189,248,0.12); padding:2px 8px; border-radius:12px;">Activo</span>
+        </div>
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:10px;">
+          <div>
+            <strong style="font-size:12px; color:#f4f4f6; display:block;">Descargar Archivo Nativo .urbnz</strong>
+            <span style="font-size:11px; color:#71717a;">Exporta todo el paquete con mallas, vegetación y escenas guardadas</span>
+          </div>
+          <button type="button" class="rayon-secondary-btn" id="btn-share-download-urbnz" style="padding:5px 12px; font-size:11px;">Descargar</button>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:space-between; align-items:center; border-top:1px solid rgba(255,255,255,0.08); padding-top:14px; font-size:11px; color:#71717a;">
+        <span>URBNZD · by CGM Atelier</span>
+        <button type="button" class="rayon-secondary-btn" id="btn-share-done" style="padding:6px 16px;">Listo</button>
+      </div>
+    </div>
+  </div>
 
   <!-- ========================================================
        RAYON-STYLE AESTHETIC LOADER (media_1792369520403_bd7d918c.png)
        ======================================================== -->
   <div class="rayon-loader-modal" id="axiom-loading-modal" hidden>
     <div class="rayon-loader-card">
-      <!-- URBNZD Architectural Imagotype (Precision CAD Reticle & Coordinate Datum) -->
-      <div class="rayon-loader-glyph-wrap">
-        <svg viewBox="0 0 160 160" class="rayon-loader-svg" width="140" height="140">
-          <!-- CAD drafting grid -->
-          <g stroke="rgba(255, 255, 255, 0.07)" stroke-width="0.8">
-            <line x1="20" y1="20" x2="140" y2="20"/><line x1="20" y1="50" x2="140" y2="50"/><line x1="20" y1="80" x2="140" y2="80"/><line x1="20" y1="110" x2="140" y2="110"/><line x1="20" y1="140" x2="140" y2="140"/>
-            <line x1="20" y1="20" x2="20" y2="140"/><line x1="50" y1="20" x2="50" y2="140"/><line x1="80" y1="20" x2="80" y2="140"/><line x1="110" y1="20" x2="110" y2="140"/><line x1="140" y1="20" x2="140" y2="140"/>
-          </g>
-          <!-- Outer Compass Reticle Circle -->
-          <circle cx="80" cy="80" r="54" fill="none" stroke="#ffffff" stroke-width="1.8"/>
-          <!-- Inner Dashed Concentric Radius -->
-          <circle cx="80" cy="80" r="38" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1" stroke-dasharray="3 3"/>
-          <!-- Cardinal & Ordinal Axis Crosshairs -->
-          <line x1="14" y1="80" x2="146" y2="80" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 3" opacity="0.65"/>
-          <line x1="80" y1="14" x2="80" y2="146" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 3" opacity="0.65"/>
-          <!-- Cardinal Ticks -->
-          <line x1="80" y1="22" x2="80" y2="29" stroke="#ffffff" stroke-width="2"/>
-          <line x1="80" y1="131" x2="80" y2="138" stroke="#ffffff" stroke-width="2"/>
-          <line x1="22" y1="80" x2="29" y2="80" stroke="#ffffff" stroke-width="2"/>
-          <line x1="131" y1="80" x2="138" y2="80" stroke="#ffffff" stroke-width="2"/>
-          <!-- Isometric Urban Volume Core -->
-          <path d="M 80,52 L 104,66 L 80,80 L 56,66 Z" fill="rgba(255,255,255,0.22)" stroke="#ffffff" stroke-width="1.4"/>
-          <path d="M 56,66 L 80,80 L 80,102 L 56,88 Z" fill="rgba(255,255,255,0.08)" stroke="#ffffff" stroke-width="1.4"/>
-          <path d="M 80,80 L 104,66 L 104,88 L 80,102 Z" fill="rgba(255,255,255,0.14)" stroke="#ffffff" stroke-width="1.4"/>
-          <!-- Central Pulsing Coordinate Datum Point -->
-          <circle cx="80" cy="80" r="3" fill="#38bdf8"/>
-          <!-- URBNZD Brand Wordmark below glyph -->
-          <text x="80" y="122" text-anchor="middle" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" letter-spacing="0.22em">URBNZD</text>
+      <!-- URBNZD Official Header Logo (Clean Reticle & Brand Datum) -->
+      <div class="rayon-loader-glyph-wrap" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:18px;">
+        <svg class="axiom-logo" width="46" height="46" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
+          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
+          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
+          <circle cx="12" cy="12" r="1.5" fill="#38bdf8" />
         </svg>
+        <span class="axiom-brand-title" style="font-size:16px; font-weight:700; letter-spacing:0.22em; color:#ffffff;">URBNZD</span>
       </div>
 
       <!-- Rotating Architectural Pro Tip -->
@@ -2366,6 +2442,107 @@
         <button type="button" class="axiom-btn-danger" id="modal-hub-btn-reset" data-i18n="modal.hubReset">Ir a Workspace</button>
         <button type="button" class="axiom-btn-secondary" id="modal-hub-btn-views" data-i18n="modal.hubViews">Escenas Guardadas</button>
         <button type="button" class="axiom-btn-primary" id="modal-hub-btn-continue" data-i18n="modal.hubContinue">Continuar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       INDESIGN-STYLE SHEET COMPOSITOR MODAL
+       Full-Screen Virtual Drafting Table & Sheet Layout
+       ======================================================== -->
+  <div class="modal-backdrop" id="modal-sheet-compositor" hidden style="position:fixed; inset:0; z-index:9998; background:rgba(6,7,10,0.92); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); display:none; flex-direction:column;">
+    <!-- Top Compositor Header Bar -->
+    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 24px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(18,19,26,0.85); flex-shrink:0;">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          <strong id="compositor-sheet-title" style="font-size:13px; font-weight:700; color:#ffffff; letter-spacing:0.04em;">PLIEGO 01 · 90 × 60 cm</strong>
+        </div>
+        <span style="color:#52525b; font-size:12px;">|</span>
+        <div id="compositor-pages-tabs" style="display:flex; gap:6px;">
+          <!-- Tabs de Pliegos rápidos en el header -->
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px;">
+        <span id="compositor-scale-badge" style="font-size:11px; color:#a1a1aa; background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">Escala: 1:1000</span>
+        <button type="button" class="rayon-share-btn" id="btn-compositor-download-4k" style="padding:6px 16px; font-size:11.5px; font-weight:600; display:flex; align-items:center; gap:6px;">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          <span>Descargar Pliego (4K)</span>
+        </button>
+        <button type="button" id="btn-compositor-close" class="rayon-secondary-btn" style="padding:6px 14px; font-size:11.5px;">✕ Cerrar</button>
+      </div>
+    </div>
+
+    <!-- Virtual Drafting Table Canvas Area (Scrollable / Centered Artboard) -->
+    <div style="flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:32px; background:radial-gradient(circle at center, #14161f 0%, #08090c 100%); position:relative;">
+      <!-- Architectural Paper Sheet (Normalized Aspect Ratio) -->
+      <div id="compositor-paper-sheet" style="position:relative; width:920px; height:613px; background:#fbfbfb; color:#18181b; box-shadow:0 30px 90px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.15); border-radius:3px; display:flex; flex-direction:column; padding:18px; box-sizing:border-box;">
+        
+        <!-- Technical 10mm Border Line -->
+        <div style="position:absolute; inset:8px; border:1px solid rgba(0,0,0,0.22); pointer-events:none;"></div>
+        <!-- CAD Corner Crop Marks -->
+        <div style="position:absolute; top:4px; left:4px; width:12px; height:12px; border-top:1.5px solid #000; border-left:1.5px solid #000; pointer-events:none;"></div>
+        <div style="position:absolute; top:4px; right:4px; width:12px; height:12px; border-top:1.5px solid #000; border-right:1.5px solid #000; pointer-events:none;"></div>
+        <div style="position:absolute; bottom:4px; left:4px; width:12px; height:12px; border-bottom:1.5px solid #000; border-left:1.5px solid #000; pointer-events:none;"></div>
+        <div style="position:absolute; bottom:4px; right:4px; width:12px; height:12px; border-bottom:1.5px solid #000; border-right:1.5px solid #000; pointer-events:none;"></div>
+
+        <!-- Viewports Container (Dynamic Grid) -->
+        <div id="compositor-viewports-grid" style="flex:1; display:grid; gap:12px; position:relative; z-index:2; margin-bottom:10px;">
+          <!-- Viewports rendered dynamically based on layout -->
+        </div>
+
+        <!-- Sheet Footer: Graphic Scale, North Arrow & Architectural Title Block -->
+        <div style="height:56px; display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid rgba(0,0,0,0.18); padding-top:6px; position:relative; z-index:2;">
+          <!-- Left: Graphic Scale Bar and North Symbol -->
+          <div style="display:flex; align-items:center; gap:20px;">
+            <!-- North Arrow -->
+            <div style="display:flex; flex-direction:column; align-items:center; gap:1px;">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="10" stroke="#18181b" stroke-width="1.2"/>
+                <polygon points="12,4 15,12 12,10" fill="#18181b"/>
+                <polygon points="12,4 9,12 12,10" fill="none" stroke="#18181b" stroke-width="0.8"/>
+              </svg>
+              <span style="font-size:8px; font-weight:700; color:#18181b; letter-spacing:0.1em;">NORTE</span>
+            </div>
+            <!-- Graphic Scale Bar -->
+            <div>
+              <div style="display:flex; align-items:center; width:140px; height:4px; background:#18181b;">
+                <div style="width:50%; height:100%; background:#fff; border:1px solid #18181b; box-sizing:border-box;"></div>
+              </div>
+              <div style="display:flex; justify-content:space-between; width:140px; font-size:7.5px; font-weight:600; color:#18181b; margin-top:2px; font-family:monospace;">
+                <span>0</span><span>50</span><span>100m</span>
+              </div>
+            </div>
+            <div style="font-size:8.5px; color:#52525b; line-height:1.2;">
+              <div>PROYECCIÓN UTM WGS84</div>
+              <div>COTA Z EN METROS</div>
+            </div>
+          </div>
+
+          <!-- Right: Professional Title Block (Rotulación Oficial) -->
+          <div style="display:flex; border:1px solid #18181b; background:#ffffff; font-size:9px; color:#18181b; text-transform:uppercase;">
+            <div style="padding:4px 10px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center;">
+              <span style="font-size:7px; color:#71717a; letter-spacing:0.05em;">PROYECTO</span>
+              <strong id="compositor-tb-project" style="font-size:9.5px; font-weight:700;">PLAN MAESTRO URBANO</strong>
+              <span id="compositor-tb-loc" style="font-size:7.5px; color:#52525b;">MONTERREY, N.L.</span>
+            </div>
+            <div style="padding:4px 8px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+              <span style="font-size:7px; color:#71717a;">ESCALA</span>
+              <strong id="compositor-tb-scale" style="font-size:9px; font-weight:700;">1:1000</strong>
+            </div>
+            <div style="padding:4px 8px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+              <span style="font-size:7px; color:#71717a;">PLIEGO</span>
+              <strong id="compositor-tb-sheetnum" style="font-size:9px; font-weight:700;">PL-01</strong>
+            </div>
+            <div style="padding:4px 12px; background:#18181b; color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+              <span style="font-size:6.5px; color:#a1a1aa; letter-spacing:0.12em;">AUTOR</span>
+              <span style="font-size:9px; font-weight:700; letter-spacing:0.06em;">URBNZD</span>
+              <span style="font-size:6px; color:#38bdf8;">by CGM Atelier</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
   </div>
@@ -2984,6 +3161,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
       }
     }
+    window.switchView = switchView;
     window.switchWorkspaceView = switchView;
 
     document.querySelectorAll('.axiom-view-btn[data-view]').forEach(btn => {
@@ -3480,45 +3658,74 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     // =====================================================
     // RIGHT INSPECTOR SCENES PANEL & QUICK SCENE FREEZE
     // =====================================================
+    let currentLoadedSceneId = null;
+
     function updateInspectorScenes() {
       const container = document.getElementById('inspector-scenes-list');
-      if (!container) return;
+      const drawerList = document.getElementById('sheet-scenes-available-list');
       const views = viewsManager.getViews();
       const countEl = document.getElementById('inspector-scenes-count');
       if (countEl) countEl.textContent = `${views.length} escena${views.length === 1 ? '' : 's'}`;
+
       if (!views || views.length === 0) {
-        container.innerHTML = '<span style="color:#71717a; font-size:11px; padding:4px;">No hay escenas guardadas</span>';
+        if (container) container.innerHTML = '<span style="color:#71717a; font-size:11px; padding:4px;">No hay escenas guardadas</span>';
+        if (drawerList) drawerList.innerHTML = '<span style="color:#71717a; font-size:10.5px; padding:4px;">No hay escenas aún. Haz clic en "+ Capturar Escena".</span>';
         return;
       }
-      container.innerHTML = views.map(v => {
+
+      const renderItemHtml = (v, isDrawer = false) => {
         const modeTag = v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO';
+        const isActive = currentLoadedSceneId === v.id;
+        const activeBorder = isActive ? 'border:1px solid #38bdf8; background:rgba(56,189,248,0.12);' : 'border:1px solid rgba(255,255,255,0.06); background:#18181b;';
+        const thumbHtml = v.thumbnail 
+          ? `<img src="${v.thumbnail}" style="width:34px; height:22px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,255,255,0.15); flex-shrink:0;" alt="">`
+          : `<div style="width:34px; height:22px; background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); border-radius:3px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#71717a" stroke-width="2"><circle cx="12" cy="12" r="9"/></svg></div>`;
+
         return `
-          <div style="display:flex; align-items:center; justify-content:space-between; padding:5px 8px; background:#18181b; border-radius:4px; font-size:11px; cursor:pointer;" data-scene-id="${v.id}" class="scene-item-row">
-            <span style="color:#f4f4f6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:160px;" title="${v.name}">${v.name}</span>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <span style="color:#38bdf8; font-size:9.5px; font-weight:600; background:rgba(56,189,248,0.1); padding:1px 4px; border-radius:3px;">${modeTag}</span>
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:5px 8px; border-radius:6px; font-size:11px; cursor:pointer; gap:8px; transition:all 0.15s; ${activeBorder}" data-scene-id="${v.id}" class="scene-item-row ${isActive ? 'active-scene-row' : ''}">
+            <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+              ${thumbHtml}
+              <div style="display:flex; flex-direction:column; overflow:hidden;">
+                <span style="color:#f4f4f6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:${isDrawer ? '150px' : '135px'}; font-weight:${isActive ? '600' : '400'};" title="${v.name}">${v.name}</span>
+                <span style="font-size:9px; color:${isActive ? '#38bdf8' : '#71717a'};">${isActive ? '● En pantalla' : 'Guardada'}</span>
+              </div>
+            </div>
+            <div style="display:flex; align-items:center; gap:5px; flex-shrink:0;">
+              <span style="color:#38bdf8; font-size:9px; font-weight:700; background:rgba(56,189,248,0.1); padding:1px 5px; border-radius:3px; letter-spacing:0.04em;">${modeTag}</span>
               <button type="button" class="scene-del-btn" data-del-scene="${v.id}" style="background:none; border:none; color:#71717a; cursor:pointer; font-size:11px; padding:0 2px;" title="Eliminar">✕</button>
             </div>
           </div>
         `;
-      }).join('');
+      };
 
-      container.querySelectorAll('.scene-item-row').forEach(row => {
-        row.addEventListener('click', (e) => {
-          if (e.target.closest('[data-del-scene]')) return;
-          const id = row.getAttribute('data-scene-id');
-          applySavedView(id);
-        });
-      });
+      if (container) container.innerHTML = views.map(v => renderItemHtml(v, false)).join('');
+      if (drawerList) drawerList.innerHTML = views.map(v => renderItemHtml(v, true)).join('');
 
-      container.querySelectorAll('[data-del-scene]').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const id = btn.getAttribute('data-del-scene');
-          viewsManager.deleteView(id);
-          updateInspectorScenes();
+      const bindClicks = (root) => {
+        if (!root) return;
+        root.querySelectorAll('.scene-item-row').forEach(row => {
+          row.addEventListener('click', (e) => {
+            if (e.target.closest('[data-del-scene]')) return;
+            const id = row.getAttribute('data-scene-id');
+            applySavedView(id);
+          });
         });
-      });
+
+        root.querySelectorAll('[data-del-scene]').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const id = btn.getAttribute('data-del-scene');
+            viewsManager.deleteView(id);
+            if (currentLoadedSceneId === id) currentLoadedSceneId = null;
+            updateInspectorScenes();
+            if (typeof renderSheetViewports === 'function') renderSheetViewports();
+          });
+        });
+      };
+
+      bindClicks(container);
+      bindClicks(drawerList);
+      if (typeof renderSheetViewports === 'function') renderSheetViewports();
     }
 
     function saveSceneQuickly() {
@@ -3527,12 +3734,15 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       const defaultName = `Escena ${viewsManager.getViews().length + 1} · ${modeTag}`;
       const name = prompt('Nombre para congelar esta escena (cámara, capas y estilo):', defaultName);
       if (!name) return;
-      viewsManager.saveCurrentScene(name);
+      const saved = viewsManager.saveCurrentScene(name);
+      if (saved) currentLoadedSceneId = saved.id;
       updateInspectorScenes();
       renderWorkspaceHome();
+      showCadToast(`✓ Escena "${name}" guardada con éxito`);
     }
 
     document.getElementById('btn-inspector-save-scene')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('btn-sheet-quick-add-scene')?.addEventListener('click', saveSceneQuickly);
     document.getElementById('dock-tool-cam-3d')?.addEventListener('click', saveSceneQuickly);
     document.getElementById('dock-tool-cam-map')?.addEventListener('click', saveSceneQuickly);
     document.getElementById('dock-tool-cam-illu')?.addEventListener('click', saveSceneQuickly);
@@ -3590,22 +3800,61 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     window.showCadToast = showCadToast;
 
     // =====================================================
-    // GLOBAL SHARE BUTTON FUNCTIONALITY
+    // GLOBAL SHARE BUTTON FUNCTIONALITY (Opens Dedicated Share Window)
     // =====================================================
     function triggerShareProject() {
-      const shareUrl = window.location.href;
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(shareUrl).then(() => {
-          showCadToast('Enlace del proyecto copiado al portapapeles');
-        }).catch(() => {
-          prompt('Copia el enlace de tu proyecto:', shareUrl);
-        });
+      const m = window.getActiveModelData?.();
+      let shareUrl = window.location.origin + window.location.pathname;
+      if (m && m.center) {
+        shareUrl += `?lat=${m.center.lat.toFixed(5)}&lon=${m.center.lon.toFixed(5)}&size=${m.size || 1000}&mode=${window.currentWorkspaceMode || 'result'}`;
       } else {
-        prompt('Copia el enlace de tu proyecto:', shareUrl);
+        shareUrl = window.location.href;
+      }
+      const input = document.getElementById('share-link-input');
+      if (input) input.value = shareUrl;
+      const modal = document.getElementById('modal-share-project');
+      if (modal) {
+        modal.hidden = false;
+        modal.removeAttribute('hidden');
+        modal.style.display = 'flex';
       }
     }
+    window.triggerShareProject = triggerShareProject;
     document.getElementById('btn-topbar-share')?.addEventListener('click', triggerShareProject);
-    document.getElementById('btn-inspector-share')?.addEventListener('click', triggerShareProject);
+    document.getElementById('modal-share-close')?.addEventListener('click', () => {
+      const m = document.getElementById('modal-share-project');
+      if (m) { m.hidden = true; m.setAttribute('hidden', ''); m.style.display = 'none'; }
+    });
+    document.getElementById('btn-share-done')?.addEventListener('click', () => {
+      const m = document.getElementById('modal-share-project');
+      if (m) { m.hidden = true; m.setAttribute('hidden', ''); m.style.display = 'none'; }
+    });
+    document.getElementById('btn-share-download-urbnz')?.addEventListener('click', () => {
+      if (window.triggerDownloadUrbnz) window.triggerDownloadUrbnz();
+    });
+    document.getElementById('btn-copy-share-link')?.addEventListener('click', () => {
+      const input = document.getElementById('share-link-input');
+      if (!input) return;
+      input.select();
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(input.value);
+      } else {
+        document.execCommand('copy');
+      }
+      const btn = document.getElementById('btn-copy-share-link');
+      if (btn) {
+        const orig = btn.textContent;
+        btn.textContent = '✓ Copiado';
+        btn.style.background = '#10b981';
+        btn.style.color = '#ffffff';
+        setTimeout(() => {
+          btn.textContent = orig;
+          btn.style.background = '';
+          btn.style.color = '';
+        }, 2200);
+      }
+      showCadToast('✓ Enlace del proyecto copiado al portapapeles');
+    });
 
     // =====================================================
     // MINIMALIST LANGUAGE FLAT TOGGLE (ES | EN)
@@ -3888,20 +4137,638 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       showCadToast(sheetFrameVisible ? 'Marco de lámina 90×60 activado' : 'Marco de lámina oculto');
     }
 
-    document.getElementById('btn-toggle-sheet-frame')?.addEventListener('click', toggleSheetFrameOverlay);
-    document.getElementById('btn-export-sheet-pdf')?.addEventListener('click', () => {
-      const canvas = document.querySelector('#viewer canvas, #map-canvas, #illu-canvas');
-      if (!canvas) {
-        showCadToast('No hay lienzo activo para exportar');
-        return;
+    // =====================================================
+    // INDESIGN-STYLE SHEETS & PAGES ARCHITECTURE
+    // =====================================================
+    const sheetPages = [
+      {
+        id: 'pl-1',
+        name: 'Pliego 01: Plan Maestro',
+        format: '90x60',
+        orient: 'landscape',
+        layout: '2', // 2 Vistas Encontradas (50/50)
+        viewports: [
+          { label: '01 PLANTA GENERAL 2D', sceneId: null, mode: 'mapper' },
+          { label: '02 AXONOMETRÍA ISOMÉTRICA', sceneId: null, mode: 'result' }
+        ],
+        titleProject: 'Plan Maestro Urbano',
+        titleLoc: 'Monterrey, N.L., México',
+        scale: '1000'
+      },
+      {
+        id: 'pl-2',
+        name: 'Pliego 02: Diagramación Urbana',
+        format: '90x60',
+        orient: 'landscape',
+        layout: '4', // 4 Pasos de Diagramación Urbana
+        viewports: [
+          { label: '01 EMPLAZAMIENTO & TOPOGRAFÍA', sceneId: null, step: 'topo' },
+          { label: '02 TRAZADO VIAL & CONECTIVIDAD', sceneId: null, step: 'roads' },
+          { label: '03 ZONIFICACIÓN & USOS MIXTOS', sceneId: null, step: 'zoning' },
+          { label: '04 MASA CONSTRUIDA & ESPACIO PÚBLICO', sceneId: null, step: 'massing' }
+        ],
+        titleProject: 'Secuencia de Diagramación Urbana',
+        titleLoc: 'Monterrey, N.L., México',
+        scale: '1000'
       }
-      const a = document.createElement('a');
-      a.href = canvas.toDataURL('image/png');
-      const fmt = document.getElementById('sheet-format-select')?.value || '90x60';
-      a.download = `URBNZD_Lamina_${fmt}_${Date.now()}.png`;
-      a.click();
-      showCadToast(`Lámina ${fmt} descargada en alta resolución (4K)`);
+    ];
+    let activeSheetPageIndex = 0;
+
+    function renderSheetPages() {
+      const pCont = document.getElementById('sheet-pages-pills');
+      const cCont = document.getElementById('compositor-pages-tabs');
+      if (!pCont) return;
+
+      const html = sheetPages.map((page, idx) => {
+        const isActive = idx === activeSheetPageIndex;
+        const bg = isActive ? 'background:#38bdf8; color:#000000; font-weight:700;' : 'background:rgba(255,255,255,0.06); color:#f4f4f6;';
+        return `
+          <button type="button" class="sheet-page-pill" data-page-idx="${idx}" style="font-size:10px; padding:4px 9px; border-radius:4px; border:1px solid rgba(255,255,255,0.1); cursor:pointer; ${bg}">
+            ${page.name}
+          </button>
+        `;
+      }).join('');
+
+      pCont.innerHTML = html;
+      if (cCont) cCont.innerHTML = html;
+
+      const bindPageClicks = (cont) => {
+        if (!cont) return;
+        cont.querySelectorAll('[data-page-idx]').forEach(btn => {
+          btn.addEventListener('click', () => {
+            const idx = parseInt(btn.getAttribute('data-page-idx'), 10);
+            selectSheetPage(idx);
+          });
+        });
+      };
+
+      bindPageClicks(pCont);
+      bindPageClicks(cCont);
+    }
+
+    function selectSheetPage(idx) {
+      if (idx < 0 || idx >= sheetPages.length) return;
+      activeSheetPageIndex = idx;
+      const page = sheetPages[activeSheetPageIndex];
+
+      // Sync form controls
+      const fmtSel = document.getElementById('sheet-format-select');
+      if (fmtSel) fmtSel.value = page.format;
+      
+      document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-orient') === page.orient);
+      });
+
+      const projInp = document.getElementById('sheet-title-project');
+      if (projInp) projInp.value = page.titleProject;
+
+      const locInp = document.getElementById('sheet-title-loc');
+      if (locInp) locInp.value = page.titleLoc;
+
+      const scaleSel = document.getElementById('sheet-scale-select');
+      if (scaleSel) scaleSel.value = page.scale;
+
+      // Sync layout buttons
+      document.querySelectorAll('[data-sheet-layout]').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-sheet-layout') === page.layout);
+      });
+
+      renderSheetPages();
+      renderSheetViewports();
+      if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') {
+        updateCompositorSheetView();
+      }
+    }
+
+    function renderSheetViewports() {
+      const container = document.getElementById('sheet-viewports-assign-container');
+      if (!container) return;
+      const page = sheetPages[activeSheetPageIndex];
+      const views = viewsManager.getViews();
+
+      // Ensure appropriate number of viewports for layout
+      const targetCount = parseInt(page.layout, 10) || 1;
+      const defaultLabels = {
+        '1': ['01 PLANO MAESTRO GENERAL'],
+        '2': ['01 PLANTA GENERAL 2D', '02 AXONOMETRÍA ISOMÉTRICA'],
+        '3': ['01 PLANO GENERAL', '02 AXONOMETRÍA', '03 DETALLE DE SECCIÓN'],
+        '4': ['01 EMPLAZAMIENTO & TOPOGRAFÍA', '02 TRAZADO VIAL & CONECTIVIDAD', '03 ZONIFICACIÓN & USOS MIXTOS', '04 MASA CONSTRUIDA & ESPACIO PÚBLICO']
+      };
+
+      const labels = defaultLabels[page.layout] || ['01 VISTA'];
+      while (page.viewports.length < targetCount) {
+        const i = page.viewports.length;
+        page.viewports.push({
+          label: labels[i] || `0${i + 1} VISTA`,
+          sceneId: views[i]?.id || null,
+          mode: views[i]?.mode || 'result'
+        });
+      }
+      if (page.viewports.length > targetCount) {
+        page.viewports = page.viewports.slice(0, targetCount);
+      }
+
+      container.innerHTML = `
+        <div style="font-size:10px; color:#94a3b8; font-weight:600; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <span>Asignación de Vistas (${targetCount})</span>
+          <span style="color:#38bdf8;">1: ${page.scale}</span>
+        </div>
+      ` + page.viewports.map((vp, i) => {
+        const optionsHtml = `
+          <option value="active" ${!vp.sceneId ? 'selected' : ''}>-- Vista Activa en Pantalla --</option>
+          ${views.map(v => `<option value="${v.id}" ${vp.sceneId === v.id ? 'selected' : ''}>${v.name} [${v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO'}]</option>`).join('')}
+        `;
+        return `
+          <div style="display:flex; flex-direction:column; gap:2px; padding:4px 6px; background:rgba(255,255,255,0.03); border-radius:4px; border:1px solid rgba(255,255,255,0.06);">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <span style="font-size:10px; color:#e4e4e7; font-weight:600;">${labels[i] || vp.label}</span>
+              <span style="font-size:8.5px; color:#71717a;">Cuadrante ${i + 1}</span>
+            </div>
+            <select class="rayon-select vp-assign-select" data-vp-idx="${i}" style="font-size:10.5px; height:24px; padding:2px 6px;">
+              ${optionsHtml}
+            </select>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.vp-assign-select').forEach(sel => {
+        sel.addEventListener('change', (e) => {
+          const idx = parseInt(sel.getAttribute('data-vp-idx'), 10);
+          const val = sel.value;
+          page.viewports[idx].sceneId = val === 'active' ? null : val;
+          if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') {
+            updateCompositorSheetView();
+          }
+        });
+      });
+    }
+
+    // Add new page to the project
+    document.getElementById('btn-add-sheet-page')?.addEventListener('click', () => {
+      const num = sheetPages.length + 1;
+      const newPage = {
+        id: `pl-${num}`,
+        name: `Pliego 0${num}: Detalle Urbano`,
+        format: '90x60',
+        orient: 'landscape',
+        layout: '2',
+        viewports: [
+          { label: `01 PLANTA ZONA ${num}`, sceneId: null, mode: 'mapper' },
+          { label: `02 PERSPECTIVA 3D`, sceneId: null, mode: 'result' }
+        ],
+        titleProject: 'Plan Maestro Urbano',
+        titleLoc: 'Monterrey, N.L., México',
+        scale: '500'
+      };
+      sheetPages.push(newPage);
+      renderSheetPages();
+      selectSheetPage(sheetPages.length - 1);
+      showCadToast(`✓ Nuevo pliego "Pliego 0${num}" añadido al proyecto`);
     });
+
+    // Layout selector buttons (1, 2, 3, 4)
+    document.querySelectorAll('[data-sheet-layout]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const l = btn.getAttribute('data-sheet-layout');
+        sheetPages[activeSheetPageIndex].layout = l;
+        document.querySelectorAll('[data-sheet-layout]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        renderSheetViewports();
+        if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') {
+          updateCompositorSheetView();
+        }
+      });
+    });
+
+    // Form inputs sync
+    document.getElementById('sheet-format-select')?.addEventListener('change', (e) => {
+      sheetPages[activeSheetPageIndex].format = e.target.value;
+      if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') updateCompositorSheetView();
+    });
+
+    document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        sheetPages[activeSheetPageIndex].orient = btn.getAttribute('data-orient');
+        if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') updateCompositorSheetView();
+      });
+    });
+
+    document.getElementById('sheet-title-project')?.addEventListener('input', (e) => {
+      sheetPages[activeSheetPageIndex].titleProject = e.target.value;
+      const el = document.getElementById('compositor-tb-project');
+      if (el) el.textContent = e.target.value.toUpperCase();
+    });
+
+    document.getElementById('sheet-title-loc')?.addEventListener('input', (e) => {
+      sheetPages[activeSheetPageIndex].titleLoc = e.target.value;
+      const el = document.getElementById('compositor-tb-loc');
+      if (el) el.textContent = e.target.value.toUpperCase();
+    });
+
+    document.getElementById('sheet-scale-select')?.addEventListener('change', (e) => {
+      sheetPages[activeSheetPageIndex].scale = e.target.value;
+      const el = document.getElementById('compositor-tb-scale');
+      if (el) el.textContent = `1:${e.target.value}`;
+      const badge = document.getElementById('compositor-scale-badge');
+      if (badge) badge.textContent = `Escala: 1:${e.target.value}`;
+      renderSheetViewports();
+    });
+
+    // Open/Close Interactive Sheet Compositor Modal
+    function openSheetCompositorModal() {
+      const modal = document.getElementById('modal-sheet-compositor');
+      if (!modal) return;
+      modal.hidden = false;
+      modal.removeAttribute('hidden');
+      modal.style.display = 'flex';
+      renderSheetPages();
+      updateCompositorSheetView();
+    }
+    window.openSheetCompositorModal = openSheetCompositorModal;
+
+    function closeSheetCompositorModal() {
+      const modal = document.getElementById('modal-sheet-compositor');
+      if (modal) {
+        modal.hidden = true;
+        modal.setAttribute('hidden', '');
+        modal.style.display = 'none';
+      }
+    }
+    window.closeSheetCompositorModal = closeSheetCompositorModal;
+
+    document.getElementById('btn-open-sheet-compositor')?.addEventListener('click', openSheetCompositorModal);
+    document.getElementById('btn-compositor-close')?.addEventListener('click', closeSheetCompositorModal);
+
+    function updateCompositorSheetView() {
+      const page = sheetPages[activeSheetPageIndex];
+      const grid = document.getElementById('compositor-viewports-grid');
+      const sheetEl = document.getElementById('compositor-paper-sheet');
+      const titleEl = document.getElementById('compositor-sheet-title');
+      const scaleBadge = document.getElementById('compositor-scale-badge');
+      const tbProj = document.getElementById('compositor-tb-project');
+      const tbLoc = document.getElementById('compositor-tb-loc');
+      const tbScale = document.getElementById('compositor-tb-scale');
+      const tbNum = document.getElementById('compositor-tb-sheetnum');
+
+      if (titleEl) titleEl.textContent = `PLIEGO 0${activeSheetPageIndex + 1} · ${page.format.toUpperCase()} ${page.orient === 'landscape' ? 'HORIZONTAL' : 'VERTICAL'}`;
+      if (scaleBadge) scaleBadge.textContent = `Escala: 1:${page.scale}`;
+      if (tbProj) tbProj.textContent = (page.titleProject || 'PLAN MAESTRO URBANO').toUpperCase();
+      if (tbLoc) tbLoc.textContent = (page.titleLoc || 'MONTERREY, N.L.').toUpperCase();
+      if (tbScale) tbScale.textContent = `1:${page.scale}`;
+      if (tbNum) tbNum.textContent = `PL-0${activeSheetPageIndex + 1}`;
+
+      // Adjust paper proportion
+      if (sheetEl) {
+        if (page.orient === 'portrait') {
+          sheetEl.style.width = '613px';
+          sheetEl.style.height = '920px';
+        } else {
+          sheetEl.style.width = '920px';
+          sheetEl.style.height = '613px';
+        }
+      }
+
+      if (!grid) return;
+
+      // Setup CSS grid layout
+      if (page.layout === '1') {
+        grid.style.gridTemplateColumns = '1fr';
+        grid.style.gridTemplateRows = '1fr';
+      } else if (page.layout === '2') {
+        grid.style.gridTemplateColumns = '1fr 1fr';
+        grid.style.gridTemplateRows = '1fr';
+      } else if (page.layout === '3') {
+        grid.style.gridTemplateColumns = '1.4fr 1fr';
+        grid.style.gridTemplateRows = '1fr 1fr';
+      } else if (page.layout === '4') {
+        grid.style.gridTemplateColumns = '1fr 1fr';
+        grid.style.gridTemplateRows = '1fr 1fr';
+      }
+
+      const activeCanvas = document.querySelector('#viewer canvas, #map-canvas, #illu-canvas');
+      let activeDataUrl = null;
+      if (activeCanvas) {
+        try { activeDataUrl = activeCanvas.toDataURL('image/jpeg', 0.8); } catch (e) {}
+      }
+      const views = viewsManager.getViews();
+
+      grid.innerHTML = page.viewports.map((vp, idx) => {
+        let imgSrc = null;
+        if (vp.sceneId) {
+          const v = views.find(item => item.id === vp.sceneId);
+          if (v && v.thumbnail) imgSrc = v.thumbnail;
+        }
+        if (!imgSrc && activeDataUrl) imgSrc = activeDataUrl;
+
+        // Default architectural vector diagram placeholder for process steps
+        const stepSvg = `
+          <svg viewBox="0 0 400 240" width="100%" height="100%" style="background:#f4f4f5;">
+            <g stroke="#d4d4d8" stroke-width="0.7">
+              <line x1="0" y1="40" x2="400" y2="40"/><line x1="0" y1="80" x2="400" y2="80"/>
+              <line x1="0" y1="120" x2="400" y2="120"/><line x1="0" y1="160" x2="400" y2="160"/>
+              <line x1="0" y1="200" x2="400" y2="200"/>
+              <line x1="80" y1="0" x2="80" y2="240"/><line x1="160" y1="0" x2="160" y2="240"/>
+              <line x1="240" y1="0" x2="240" y2="240"/><line x1="320" y1="0" x2="320" y2="240"/>
+            </g>
+            <path d="M 60,180 L 140,150 L 220,170 L 320,130 L 350,190 Z" fill="rgba(24,24,27,0.06)" stroke="#18181b" stroke-width="1.6"/>
+            <path d="M 140,150 L 140,110 L 220,130 L 220,170 Z" fill="rgba(24,24,27,0.12)" stroke="#18181b" stroke-width="1.6"/>
+            <path d="M 140,110 L 220,130 L 300,100 L 220,80 Z" fill="rgba(24,24,27,0.22)" stroke="#18181b" stroke-width="1.6"/>
+            <text x="200" y="215" text-anchor="middle" font-family="'JetBrains Mono', monospace" font-size="9" fill="#71717a" letter-spacing="0.1em">DIAGRAMA ANALÍTICO URBANO</text>
+          </svg>
+        `;
+
+        const contentHtml = imgSrc 
+          ? `<img src="${imgSrc}" style="width:100%; height:100%; object-fit:cover; display:block;" alt="">`
+          : stepSvg;
+
+        return `
+          <div style="position:relative; background:#ffffff; border:1px solid #18181b; border-radius:2px; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 4px 12px rgba(0,0,0,0.05);">
+            <div style="background:#18181b; color:#ffffff; padding:4px 8px; font-size:8.5px; font-weight:700; letter-spacing:0.06em; text-transform:uppercase; display:flex; justify-content:space-between; align-items:center;">
+              <span>${vp.label}</span>
+              <span style="font-size:7.5px; color:#38bdf8; font-weight:600;">ESC 1:${page.scale}</span>
+            </div>
+            <div style="flex:1; position:relative; overflow:hidden; background:#f4f4f5; display:flex; align-items:center; justify-content:center;">
+              ${contentHtml}
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // Export Complete Composite Sheet at 4K Resolution
+    function exportCompositeSheet4K() {
+      const page = sheetPages[activeSheetPageIndex];
+      const isPortrait = page.orient === 'portrait';
+      const W = isPortrait ? 2560 : 3840;
+      const H = isPortrait ? 3840 : 2560;
+
+      const c = document.createElement('canvas');
+      c.width = W;
+      c.height = H;
+      const ctx = c.getContext('2d');
+
+      // 1. Draw Paper background
+      ctx.fillStyle = '#fcfcfc';
+      ctx.fillRect(0, 0, W, H);
+
+      // 2. Technical Border & Margins
+      const margin = 50;
+      ctx.strokeStyle = '#18181b';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(margin, margin, W - margin * 2, H - margin * 2);
+
+      // Technical Crop Marks at Corners
+      ctx.lineWidth = 3;
+      const markLen = 30;
+      // TL
+      ctx.beginPath(); ctx.moveTo(20, 20); ctx.lineTo(20 + markLen, 20); ctx.moveTo(20, 20); ctx.lineTo(20, 20 + markLen); ctx.stroke();
+      // TR
+      ctx.beginPath(); ctx.moveTo(W - 20, 20); ctx.lineTo(W - 20 - markLen, 20); ctx.moveTo(W - 20, 20); ctx.lineTo(W - 20, 20 + markLen); ctx.stroke();
+      // BL
+      ctx.beginPath(); ctx.moveTo(20, H - 20); ctx.lineTo(20 + markLen, H - 20); ctx.moveTo(20, H - 20); ctx.lineTo(20, H - 20 - markLen); ctx.stroke();
+      // BR
+      ctx.beginPath(); ctx.moveTo(W - 20, H - 20); ctx.lineTo(W - 20 - markLen, H - 20); ctx.moveTo(W - 20, H - 20); ctx.lineTo(W - 20, H - 20 - markLen); ctx.stroke();
+
+      // 3. Title Block & Footer Coordinates
+      const footerH = 220;
+      const contentH = H - margin * 2 - footerH - 40;
+      const contentW = W - margin * 2 - 40;
+      const contentX = margin + 20;
+      const contentY = margin + 20;
+
+      // 4. Draw Viewports
+      const layout = page.layout;
+      const views = viewsManager.getViews();
+      const activeCanvas = document.querySelector('#viewer canvas, #map-canvas, #illu-canvas');
+
+      const drawVpBox = (x, y, w, h, vp, idx) => {
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(x, y, w, h);
+        ctx.strokeStyle = '#18181b';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(x, y, w, h);
+
+        // Header bar
+        const barH = 44;
+        ctx.fillStyle = '#18181b';
+        ctx.fillRect(x, y, w, barH);
+
+        ctx.fillStyle = '#ffffff';
+        ctx.font = 'bold 20px "JetBrains Mono", sans-serif';
+        ctx.textAlign = 'left';
+        ctx.fillText(vp.label, x + 16, y + 28);
+
+        ctx.fillStyle = '#38bdf8';
+        ctx.font = '600 16px "JetBrains Mono", sans-serif';
+        ctx.textAlign = 'right';
+        ctx.fillText(`ESC 1:${page.scale}`, x + w - 16, y + 28);
+
+        // Image content
+        let src = null;
+        if (vp.sceneId) {
+          const v = views.find(item => item.id === vp.sceneId);
+          if (v && v.thumbnail) src = v.thumbnail;
+        }
+        if (!src && activeCanvas) {
+          try {
+            src = activeCanvas.toDataURL('image/jpeg', 0.85);
+          } catch (e) {}
+        }
+
+        if (src) {
+          const img = new Image();
+          img.onload = () => {
+            ctx.drawImage(img, x + 2, y + barH + 2, w - 4, h - barH - 4);
+          };
+          img.src = src;
+        } else {
+          // Architectural placeholder pattern
+          ctx.fillStyle = '#71717a';
+          ctx.font = '16px "JetBrains Mono", monospace';
+          ctx.textAlign = 'center';
+          ctx.fillText('VISTA ARQUITECTÓNICA URBNZD', x + w / 2, y + h / 2);
+        }
+      };
+
+      if (layout === '1') {
+        drawVpBox(contentX, contentY, contentW, contentH, page.viewports[0], 0);
+      } else if (layout === '2') {
+        const halfW = (contentW - 30) / 2;
+        drawVpBox(contentX, contentY, halfW, contentH, page.viewports[0], 0);
+        drawVpBox(contentX + halfW + 30, contentY, halfW, contentH, page.viewports[1], 1);
+      } else if (layout === '3') {
+        const leftW = (contentW - 30) * 0.6;
+        const rightW = (contentW - 30) * 0.4;
+        const halfH = (contentH - 30) / 2;
+        drawVpBox(contentX, contentY, leftW, contentH, page.viewports[0], 0);
+        drawVpBox(contentX + leftW + 30, contentY, rightW, halfH, page.viewports[1], 1);
+        drawVpBox(contentX + leftW + 30, contentY + halfH + 30, rightW, halfH, page.viewports[2], 2);
+      } else if (layout === '4') {
+        const halfW = (contentW - 30) / 2;
+        const halfH = (contentH - 30) / 2;
+        drawVpBox(contentX, contentY, halfW, halfH, page.viewports[0], 0);
+        drawVpBox(contentX + halfW + 30, contentY, halfW, halfH, page.viewports[1], 1);
+        drawVpBox(contentX, contentY + halfH + 30, halfW, halfH, page.viewports[2], 2);
+        drawVpBox(contentX + halfW + 30, contentY + halfH + 30, halfW, halfH, page.viewports[3], 3);
+      }
+
+      // 5. Draw Footer (Scale, North, Title Block)
+      const footerY = H - margin - footerH;
+      ctx.strokeStyle = 'rgba(0,0,0,0.2)';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.moveTo(margin + 20, footerY);
+      ctx.lineTo(W - margin - 20, footerY);
+      ctx.stroke();
+
+      // North Arrow
+      const northX = margin + 60;
+      const northY = footerY + 80;
+      ctx.beginPath();
+      ctx.arc(northX, northY, 32, 0, Math.PI * 2);
+      ctx.strokeStyle = '#18181b';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.fillStyle = '#18181b';
+      ctx.beginPath();
+      ctx.moveTo(northX, northY - 26);
+      ctx.lineTo(northX + 10, northY + 12);
+      ctx.lineTo(northX, northY + 4);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.font = 'bold 12px "JetBrains Mono", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('NORTE', northX, northY + 52);
+
+      // Graphic Scale Bar
+      const scaleX = northX + 90;
+      const scaleY = footerY + 75;
+      ctx.fillStyle = '#18181b';
+      ctx.fillRect(scaleX, scaleY, 240, 10);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(scaleX, scaleY, 120, 10);
+      ctx.strokeStyle = '#18181b';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(scaleX, scaleY, 240, 10);
+
+      ctx.fillStyle = '#18181b';
+      ctx.font = '600 13px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.fillText('0', scaleX, scaleY + 28);
+      ctx.textAlign = 'center';
+      ctx.fillText('50m', scaleX + 120, scaleY + 28);
+      ctx.textAlign = 'right';
+      ctx.fillText('100m', scaleX + 240, scaleY + 28);
+
+      // Title Block (Cuadro de Rotulación)
+      const tbW = 760;
+      const tbH = 140;
+      const tbX = W - margin - 20 - tbW;
+      const tbY = footerY + 25;
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(tbX, tbY, tbW, tbH);
+      ctx.strokeStyle = '#18181b';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(tbX, tbY, tbW, tbH);
+
+      // Inner divider lines
+      ctx.beginPath();
+      ctx.moveTo(tbX + 440, tbY);
+      ctx.lineTo(tbX + 440, tbY + tbH);
+      ctx.moveTo(tbX + 570, tbY);
+      ctx.lineTo(tbX + 570, tbY + tbH);
+      ctx.stroke();
+
+      // Project info
+      ctx.textAlign = 'left';
+      ctx.fillStyle = '#71717a';
+      ctx.font = '600 13px "JetBrains Mono", sans-serif';
+      ctx.fillText('PROYECTO', tbX + 20, tbY + 32);
+
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 22px "JetBrains Mono", sans-serif';
+      ctx.fillText(page.titleProject.toUpperCase(), tbX + 20, tbY + 68);
+
+      ctx.fillStyle = '#52525b';
+      ctx.font = '15px "JetBrains Mono", sans-serif';
+      ctx.fillText(page.titleLoc.toUpperCase(), tbX + 20, tbY + 102);
+
+      // Scale box
+      ctx.textAlign = 'center';
+      ctx.fillStyle = '#71717a';
+      ctx.font = '600 13px "JetBrains Mono", sans-serif';
+      ctx.fillText('ESCALA', tbX + 505, tbY + 36);
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 20px "JetBrains Mono", sans-serif';
+      ctx.fillText(`1:${page.scale}`, tbX + 505, tbY + 76);
+
+      // Sheet number box
+      ctx.fillStyle = '#71717a';
+      ctx.font = '600 13px "JetBrains Mono", sans-serif';
+      ctx.fillText('PLIEGO', tbX + 665, tbY + 36);
+      ctx.fillStyle = '#18181b';
+      ctx.font = 'bold 24px "JetBrains Mono", sans-serif';
+      ctx.fillText(`PL-0${activeSheetPageIndex + 1}`, tbX + 665, tbY + 76);
+
+      // Author Brand Tag
+      ctx.fillStyle = '#18181b';
+      ctx.fillRect(tbX + tbW - 170, tbY + tbH - 36, 170, 36);
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px "JetBrains Mono", sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('URBNZD · by CGM Atelier', tbX + tbW - 85, tbY + tbH - 14);
+
+      // Trigger download
+      setTimeout(() => {
+        const a = document.createElement('a');
+        a.href = c.toDataURL('image/png');
+        a.download = `URBNZD_Pliego_0${activeSheetPageIndex + 1}_${page.format}_4K.png`;
+        a.click();
+        showCadToast(`✓ Lámina ${page.format} (Pliego 0${activeSheetPageIndex + 1}) descargada en resolución 4K`);
+      }, 120);
+    }
+
+    document.getElementById('btn-export-sheet-pdf')?.addEventListener('click', exportCompositeSheet4K);
+    document.getElementById('btn-compositor-download-4k')?.addEventListener('click', exportCompositeSheet4K);
+
+    // Individual Quick Exports
+    document.getElementById('btn-sheet-export-only-2d')?.addEventListener('click', () => {
+      const btn = document.querySelector('[data-mapexport="png"]') || document.getElementById('dock-tool-export-map');
+      if (btn) {
+        btn.click();
+      } else {
+        const canvas = document.querySelector('#map-canvas, #viewer canvas');
+        if (canvas) {
+          const a = document.createElement('a');
+          a.href = canvas.toDataURL('image/png');
+          a.download = `URBNZD_Cartografia_2D_${Date.now()}.png`;
+          a.click();
+          showCadToast('✓ Exportada vista individual 2D');
+        }
+      }
+    });
+
+    document.getElementById('btn-sheet-export-only-axo')?.addEventListener('click', () => {
+      const canvas = document.querySelector('#viewer canvas');
+      if (canvas) {
+        const a = document.createElement('a');
+        a.href = canvas.toDataURL('image/png');
+        a.download = `URBNZD_Axonometria_${Date.now()}.png`;
+        a.click();
+        showCadToast('✓ Exportada vista individual Axonometría 3D');
+      } else {
+        showCadToast('No hay lienzo 3D activo para exportar');
+      }
+    });
+
+    // Initialize sheets
+    renderSheetPages();
+    renderSheetViewports();
 
     // =====================================================
     // TABLES TAB: URBAN QUANTIFICATION & METRICS
@@ -4252,10 +5119,25 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       const v = views.find(item => item.id === id);
       if (!v) return;
 
+      currentLoadedSceneId = id;
+
       switchView(v.mode, true);
 
-      if (v.mode === 'result' && v.camera3D && window.applyCamera3DView) {
-        window.applyCamera3DView(v.camera3D);
+      if (v.mode === 'result') {
+        if (v.camera3D && window.applyCamera3DView) {
+          window.applyCamera3DView(v.camera3D);
+        }
+        if (v.renderMode === 'maqueta' && window.toggleMaquetaMode) {
+          window.toggleMaquetaMode(true);
+        } else if (v.renderMode === 'model' && window.toggleMaquetaMode) {
+          window.toggleMaquetaMode(false);
+        }
+        if (v.canvasBg && window.set3DCanvasBackground) {
+          window.set3DCanvasBackground(v.canvasBg);
+        }
+        if (v.sectionCut !== undefined && window.toggleSectionCut3D) {
+          window.toggleSectionCut3D(Boolean(v.sectionCut));
+        }
       }
       if (v.mode === 'mapper' && v.vectorMap && window.applyVectorMapConfig) {
         window.applyVectorMapConfig(v.vectorMap);
@@ -4263,6 +5145,10 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       if (v.mode === 'illustrator' && v.illustrate && window.applyIllustrateConfig) {
         window.applyIllustrateConfig(v.illustrate);
       }
+
+      updateInspectorScenes();
+      if (typeof renderSheetViewports === 'function') renderSheetViewports();
+      showCadToast(`✓ Escena "${v.name}" cargada en pantalla`);
     }
     window.applySavedView = applySavedView;
 
