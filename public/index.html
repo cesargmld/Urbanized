@@ -39,10 +39,12 @@
         <span class="axiom-brand-title">URBNZD</span>
       </div>
 
-      <!-- Dedicated Workspace Home Button on Topbar Left -->
-      <button type="button" class="axiom-btn-secondary" id="view-btn-home" data-switchview="workspace-home" style="font-size:11.5px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); margin-left:4px;" title="Workspace (Proyectos y Plantillas)">
+      <!-- Dedicated Workspace Selector / Home Trigger on Topbar Left -->
+      <button type="button" class="axiom-btn-secondary" id="view-btn-home" data-switchview="workspace-home" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); margin-left:4px; font-weight:500;" title="Workspace & Proyectos">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span data-i18n="nav.workspace">Workspace</span>
+        <span id="header-ws-name">Workspace: Personal</span>
+        <span class="axiom-ws-badge" id="header-ws-badge" style="font-size:9.5px; padding:1px 5px; border-radius:4px; background:rgba(255,255,255,0.08); color:#a1a1aa;">Invitado</span>
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
       </button>
 
       <!-- Search Bar in Topbar Left -->
@@ -89,11 +91,12 @@
         <span>Share</span>
       </button>
 
-      <!-- Minimalist Language Selector (Initials only) -->
-      <select class="axiom-lang-select lang-pill" id="axiom-lang-select" aria-label="Idioma" style="font-size:11px; font-weight:600; padding:3px 8px; height:26px; border-radius:9999px; min-width:44px; text-align:center; cursor:pointer;">
-        <option value="es">ES</option>
-        <option value="en">EN</option>
-      </select>
+      <!-- Minimalist Flat Language Initials Toggle: ES | EN (Plain text, subtle, zero dropdown padding) -->
+      <div class="lang-toggle-flat" id="lang-toggle-flat" role="group" aria-label="Idioma" style="display:inline-flex; align-items:center; gap:3px; margin-left:2px; font-family:var(--font-mono, 'JetBrains Mono', monospace); font-size:11px; user-select:none;">
+        <button type="button" class="lang-flat-btn active" data-lang="es" id="btn-lang-es" style="background:none; border:none; color:#ffffff; font-weight:700; font-size:11px; cursor:pointer; padding:2px 3px;">ES</button>
+        <span class="lang-flat-sep" style="opacity:0.35; font-size:10px; color:#a1a1aa;">|</span>
+        <button type="button" class="lang-flat-btn" data-lang="en" id="btn-lang-en" style="background:none; border:none; color:#71717a; font-weight:500; font-size:11px; cursor:pointer; padding:2px 3px;">EN</button>
+      </div>
     </div>
   </header>
 
@@ -109,8 +112,8 @@
       <!-- 1. LEFT SIDEBAR (Rayon Nav Fixed) -->
       <aside class="rayon-home-sidebar">
         <div class="rayon-user-dropdown" id="ws-user-menu">
-          <div class="rayon-user-avatar">C</div>
-          <span class="rayon-user-name">Cesar · URBNZD</span>
+          <div class="rayon-user-avatar">I</div>
+          <span class="rayon-user-name">Invitado · Modo Local</span>
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
 
@@ -123,13 +126,15 @@
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
             <span data-i18n="ws.templates">Templates</span>
           </button>
-          <button type="button" class="rayon-nav-item" data-wsfilter="pinned">
+          <button type="button" class="rayon-nav-item disabled" style="opacity:0.35; cursor:default;" title="Requiere sincronización de base de datos remota (Próximamente)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="12" y1="17" x2="12" y2="22"/><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.89A2 2 0 0 1 15 10.76V6h1a1 1 0 0 0 0-2H8a1 1 0 0 0 0 2h1v4.76a2 2 0 0 1-1.11 1.79l-1.78.89A2 2 0 0 0 5 15.24Z"/></svg>
             <span data-i18n="ws.pinned">Pinned Scenes</span>
+            <span class="rayon-badge-new" style="background:rgba(255,255,255,0.06); color:#71717a; font-size:9px; padding:1px 4px; border-radius:3px;">PRÓX</span>
           </button>
-          <button type="button" class="rayon-nav-item" data-wsfilter="archive">
+          <button type="button" class="rayon-nav-item disabled" style="opacity:0.35; cursor:default;" title="Requiere sincronización de base de datos remota (Próximamente)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="21 8 21 21 3 21 3 8"/><rect x="1" y="3" width="22" height="5"/><line x1="10" y1="12" x2="14" y2="12"/></svg>
             <span data-i18n="ws.archive">Archive</span>
+            <span class="rayon-badge-new" style="background:rgba(255,255,255,0.06); color:#71717a; font-size:9px; padding:1px 4px; border-radius:3px;">PRÓX</span>
           </button>
 
           <div class="rayon-nav-section-title" data-i18n="ws.resources">Recursos</div>
@@ -392,23 +397,23 @@
                 <span class="axiom-sub-header" data-i18n="setup.bldgHeader">Edificios y Equipamiento</span>
                 <div class="axiom-dot-list">
                   <button type="button" class="axiom-dot-item active" data-mapfilter="buildings">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#f4f4f6;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.bldgVolumes">Volúmenes de edificios</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="commercial">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#a8a29e;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.commercial">Comercios y oficinas</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="education">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#64748b;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.education">Escuelas y equipamiento</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="health">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#78716c;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.health">Salud y hospitales</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="residential">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#e4e4e7;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.residential">Vivienda residencial</span>
                   </button>
                 </div>
@@ -416,19 +421,19 @@
                 <span class="axiom-sub-header" style="margin-top:6px;" data-i18n="setup.infraHeader">Infraestructura Vial</span>
                 <div class="axiom-dot-list">
                   <button type="button" class="axiom-dot-item active" data-mapfilter="roads_major">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#d4d4d8;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.roadsMajor">Avenidas y vías principales</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="roads_minor">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#71717a;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.roadsMinor">Calles secundarias y peatonales</span>
                   </button>
                   <button type="button" class="axiom-dot-item" data-mapfilter="roadWidth">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.roadWidth">Calles con ancho real 3D</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="bridges">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#94a3b8;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.bridges">Puentes y pasos elevados</span>
                   </button>
                 </div>
@@ -436,27 +441,27 @@
                 <span class="axiom-sub-header" style="margin-top:6px;" data-i18n="setup.topoHeader">Topografía, Agua y Vegetación</span>
                 <div class="axiom-dot-list">
                   <button type="button" class="axiom-dot-item active" data-mapfilter="terrain">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#52525b;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.terrain">Malla de terreno 3D (DEM)</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="contours">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.contours">Curvas de nivel topográficas</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="nature">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#6ba5b8;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.nature">Cuerpos de agua y parques</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="trees">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#849684;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.trees">Árboles 3D (OSM)</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="detect">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#798e79;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.detect">Detección satelital de vegetación</span>
                   </button>
                   <button type="button" class="axiom-dot-item active" data-mapfilter="satellite">
-                    <span class="axiom-bullet"></span>
+                    <span class="axiom-bullet" style="--dot-color:#71717a;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.satellite">Textura aérea satelital</span>
                   </button>
                 </div>
@@ -618,17 +623,17 @@
 
           <div class="axiom-dot-list studio-gis-list">
             <button type="button" class="axiom-dot-item active" data-gislayer="commercial" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#f97316;"></span>
+              <span class="axiom-bullet" style="--dot-color:#a8a29e;"></span>
               <span class="axiom-dot-text">Negocios y comercios</span>
               <span class="axiom-dot-count" id="count-commercial">0</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="education" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#60a5fa;"></span>
+              <span class="axiom-bullet" style="--dot-color:#64748b;"></span>
               <span class="axiom-dot-text">Escuelas y equipamiento</span>
               <span class="axiom-dot-count" id="count-education">0</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="health" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#2dd4bf;"></span>
+              <span class="axiom-bullet" style="--dot-color:#78716c;"></span>
               <span class="axiom-dot-text">Salud y hospitales</span>
               <span class="axiom-dot-count" id="count-health">0</span>
             </button>
@@ -638,31 +643,31 @@
               <span class="axiom-dot-count" id="count-residential">0</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="roads_major" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#fbbf24;"></span>
+              <span class="axiom-bullet" style="--dot-color:#e4e4e7;"></span>
               <span class="axiom-dot-text">Vialidades principales</span>
               <span class="axiom-dot-count" id="count-roads-major">0 km</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="roads_minor" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
+              <span class="axiom-bullet" style="--dot-color:#71717a;"></span>
               <span class="axiom-dot-text">Calles secundarias</span>
               <span class="axiom-dot-count" id="count-roads-minor">0 km</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="water" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#38bdf8;"></span>
+              <span class="axiom-bullet" style="--dot-color:#6ba5b8;"></span>
               <span class="axiom-dot-text">Hidrología y cuerpos de agua</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="contours" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#d97706;"></span>
+              <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
               <span class="axiom-dot-text">Topografía y curvas de nivel</span>
               <span class="axiom-dot-count" id="count-relief">0 m</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="trees" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#4ade80;"></span>
+              <span class="axiom-bullet" style="--dot-color:#849684;"></span>
               <span class="axiom-dot-text">Arbolado y parques</span>
               <span class="axiom-dot-count" id="count-trees">0</span>
             </button>
             <button type="button" class="axiom-dot-item active" data-gislayer="terrain" aria-pressed="true">
-              <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
+              <span class="axiom-bullet" style="--dot-color:#3f3f46;"></span>
               <span class="axiom-dot-text">Superficie del terreno 3D</span>
             </button>
           </div>
@@ -733,51 +738,90 @@
           </div>
         </aside>
 
-        <!-- TAB 2: PAGES (Láminas & Vistas de Proyecto) -->
+        <!-- TAB 2: SHEETS / LÁMINAS (Láminas de Impresión Normalizadas) -->
         <aside class="axiom-drawer-card" id="studio-tab-pages" hidden>
           <div class="axiom-export-header">
             <div class="axiom-export-title-row">
-              <h2 class="axiom-export-title">Láminas & Vistas</h2>
+              <h2 class="axiom-export-title">Láminas & Formatos</h2>
               <button type="button" class="axiom-drawer-close" data-close-drawer aria-label="Cerrar panel">✕</button>
             </div>
-            <p class="export-coords">Láminas de presentación sincronizadas con el modelo</p>
+            <p class="export-coords">Configuración de planos técnicos según estándares de arquitectura</p>
           </div>
 
-          <div class="axiom-dot-list" style="margin-top:8px;">
-            <button type="button" class="axiom-dot-item active" style="justify-content:space-between;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
-                <span class="axiom-dot-text" style="font-weight:600; color:#ffffff;">01 · Modelo 3D Urbano</span>
-              </div>
-              <span class="axiom-count-pill" style="background:#0066ff; color:#fff;">ACTIVA</span>
-            </button>
-            <button type="button" class="axiom-dot-item" data-switchview="mapper" style="justify-content:space-between;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-                <span class="axiom-dot-text">02 · Cartografía 2D (QGIS)</span>
-              </div>
-              <span class="axiom-dot-count">2D</span>
-            </button>
-            <button type="button" class="axiom-dot-item" data-switchview="illustrator" style="justify-content:space-between;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a1a1aa" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/></svg>
-                <span class="axiom-dot-text">03 · Axonometría Arquitectónica</span>
-              </div>
-              <span class="axiom-dot-count">AXO</span>
-            </button>
-          </div>
-
-          <div style="margin-top:16px;">
-            <button type="button" class="rayon-share-btn" id="btn-add-page" style="width:100%; justify-content:center;">
-              + Nueva Lámina de Presentación
-            </button>
-          </div>
-
-          <div class="axiom-editor-group" style="padding:0; margin-top:16px;">
-            <span class="axiom-sub-header">Escenas Rápidas Guardadas</span>
-            <div id="pages-scenes-quick-list" style="display:flex; flex-direction:column; gap:4px; margin-top:6px;">
-              <span style="font-size:11.5px; color:#71717a;">Guarda escenas con el botón "+ Escena" del visor.</span>
+          <!-- 1. Formato Normalizado de Hoja -->
+          <div class="axiom-editor-group" style="padding:0;">
+            <span class="axiom-sub-header">Formato de Lámina</span>
+            <div class="axiom-control-row">
+              <span class="rayon-label">Medida Estándar</span>
+              <select id="sheet-format-select" class="rayon-select" style="font-size:11.5px;">
+                <option value="90x60" selected>90 × 60 cm (Estándar Oficial)</option>
+                <option value="arch-d">Arch D 24×36" (61 × 91.4 cm)</option>
+                <option value="iso-a1">ISO A1 (59.4 × 84.1 cm)</option>
+                <option value="iso-a2">ISO A2 (42.0 × 59.4 cm)</option>
+                <option value="iso-a0">ISO A0 (84.1 × 118.9 cm)</option>
+              </select>
             </div>
+
+            <div class="axiom-control-row">
+              <span class="rayon-label">Orientación</span>
+              <div class="rayon-segmented" id="sheet-orientation-seg">
+                <button type="button" class="rayon-seg-btn active" data-orient="landscape">Horizontal</button>
+                <button type="button" class="rayon-seg-btn" data-orient="portrait">Vertical</button>
+              </div>
+            </div>
+
+            <div class="axiom-control-row">
+              <span class="rayon-label">Márgenes</span>
+              <select id="sheet-margin-select" class="rayon-select" style="font-size:11.5px;">
+                <option value="standard" selected>Encuadernable (25mm / 10mm)</option>
+                <option value="technical">Técnico Fino (10mm)</option>
+                <option value="bleed">Sin Margen (Sangrado 0mm)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- 2. Cuadro de Datos y Rotulación (Title Block) -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:10px;">
+            <div class="axiom-row-between">
+              <span class="axiom-sub-header" style="margin:0;">Cuadro de Datos (Title Block)</span>
+              <label class="axiom-mini-toggle">
+                <input type="checkbox" id="sheet-titleblock-toggle" checked>
+                <span>Mostrar</span>
+              </label>
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <span class="rayon-label">Proyecto</span>
+              <input type="text" id="sheet-title-project" class="rayon-val-input" value="Plan Maestro Urbano" style="flex:1;">
+            </div>
+            <div class="axiom-control-row">
+              <span class="rayon-label">Ubicación</span>
+              <input type="text" id="sheet-title-loc" class="rayon-val-input" value="Monterrey, N.L., México" style="flex:1;">
+            </div>
+            <div class="axiom-control-row">
+              <span class="rayon-label">Escala</span>
+              <select id="sheet-scale-select" class="rayon-select" style="font-size:11.5px;">
+                <option value="500">1:500 (Detalle Urbano)</option>
+                <option value="1000" selected>1:1000 (Plano Urbano)</option>
+                <option value="2000">1:2000 (Plan Maestro)</option>
+                <option value="5000">1:5000 (Territorial)</option>
+              </select>
+            </div>
+            <div class="axiom-control-row">
+              <span class="rayon-label">Autor del Plano</span>
+              <span id="sheet-author-tag" style="font-size:11px; color:#e4e4e7; font-weight:500;">CGM Atelier</span>
+            </div>
+          </div>
+
+          <!-- 3. Botones de Acción de Lámina -->
+          <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+            <button type="button" class="rayon-secondary-btn" id="btn-toggle-sheet-frame" style="justify-content:center; padding:7px 12px; font-size:11.5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              <span>Ver Marco de Lámina (Overlay CAD)</span>
+            </button>
+            <button type="button" class="rayon-share-btn" id="btn-export-sheet-pdf" style="justify-content:center; padding:8px 12px; font-weight:600; font-size:11.5px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Descargar Lámina de Impresión (4K)</span>
+            </button>
           </div>
         </aside>
 
@@ -1236,7 +1280,7 @@
       <aside class="rayon-inspector-panel" id="studio-right-inspector">
         <!-- Header (Avatar, Profile, Share) -->
         <div class="rayon-inspector-top">
-          <div class="rayon-inspector-avatar" id="inspector-user-avatar" style="cursor:pointer;" title="Perfil y Workspace">C</div>
+          <div class="rayon-inspector-avatar" id="inspector-user-avatar" style="cursor:pointer;" title="Perfil y Workspace">I</div>
           <div style="display:flex; align-items:center; gap:8px;">
             <button type="button" class="rayon-share-btn" id="btn-inspector-share">Share</button>
           </div>
@@ -1253,11 +1297,11 @@
           </div>
           <div class="rayon-control-row">
             <span class="rayon-label">Owner</span>
-            <span id="inspector-model-owner" style="color:#f4f4f6; font-size:11.5px; font-weight:500;">Cesar</span>
+            <span id="inspector-model-owner" style="color:#f4f4f6; font-size:11.5px; font-weight:500;">Invitado</span>
           </div>
           <div class="rayon-control-row">
             <span class="rayon-label">Team</span>
-            <span id="inspector-model-team" style="color:#f4f4f6; font-size:11.5px; font-weight:500;">CGM Atelier</span>
+            <span id="inspector-model-team" style="color:#f4f4f6; font-size:11.5px; font-weight:500;">Personal</span>
           </div>
         </div>
 
@@ -1287,13 +1331,6 @@
               <button type="button" class="rayon-seg-btn" id="inspector-seg-axis-hide">Hide</button>
             </div>
           </div>
-          <div class="rayon-control-row">
-            <span class="rayon-label">Stroke scale</span>
-            <select class="rayon-select">
-              <option>1:1</option>
-              <option>1:2</option>
-            </select>
-          </div>
           <!-- Canvas Background Swatches (#FFFFFF, #1E1F24, #090A0D - NUNCA COLOR HUESO) -->
           <div class="rayon-control-row">
             <span class="rayon-label">Background</span>
@@ -1304,19 +1341,85 @@
               <span id="label-active-bg" style="font-family:var(--font-mono); font-size:11px; color:#e4e4e7; margin-left:4px;">#090A0D</span>
             </div>
           </div>
-          <div class="rayon-control-row">
-            <span class="rayon-label">Active layer</span>
-            <div style="display:flex; align-items:center; gap:6px;">
-              <span style="width:8px; height:8px; border-radius:50%; background:#38bdf8;"></span>
-              <span style="color:#f4f4f6; font-size:11.5px;">Edificación 3D</span>
-            </div>
+        </div>
+
+        <!-- Group: Modelado & Inserción 3D (Parametric Block + Real 3D File Loader) -->
+        <div class="rayon-accordion-group">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">MODELADO & INSERCIÓN 3D</span>
           </div>
-          <div class="rayon-control-row">
-            <span class="rayon-label">Unit</span>
-            <select class="rayon-select">
-              <option>Meters</option>
-              <option>Feet</option>
+
+          <!-- Añadir Bloque Paramétrico -->
+          <div style="display:flex; flex-direction:column; gap:6px; margin-top:8px;">
+            <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:4px;">
+              <div>
+                <span style="font-size:9.5px; color:#71717a; display:block;">Ancho X</span>
+                <input type="number" id="insp-block-w" value="30" min="5" max="300" step="5" class="rayon-val-input" style="width:100%; text-align:center;">
+              </div>
+              <div>
+                <span style="font-size:9.5px; color:#71717a; display:block;">Fondo Y</span>
+                <input type="number" id="insp-block-d" value="25" min="5" max="300" step="5" class="rayon-val-input" style="width:100%; text-align:center;">
+              </div>
+              <div>
+                <span style="font-size:9.5px; color:#71717a; display:block;">Pisos Z</span>
+                <input type="number" id="insp-block-levels" value="6" min="1" max="60" step="1" class="rayon-val-input" style="width:100%; text-align:center;">
+              </div>
+            </div>
+
+            <select id="insp-block-use" class="rayon-select" style="font-size:11px; margin-top:2px;">
+              <option value="residential">Residencial</option>
+              <option value="commercial">Comercial</option>
+              <option value="office">Corporativo / Oficinas</option>
+              <option value="mixed">Usos Mixtos</option>
+              <option value="equipment">Equipamiento</option>
             </select>
+
+            <button type="button" class="rayon-share-btn" id="inspector-btn-add-block" style="justify-content:center; padding:6px 10px; font-size:11px; font-weight:600; margin-top:2px;">
+              + Añadir Bloque al Modelo
+            </button>
+          </div>
+
+          <!-- Cargar Modelo 3D (.glb, .gltf, .obj) -->
+          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:8px; margin-top:8px;">
+            <input type="file" id="inspector-model-file-input" accept=".glb,.gltf,.obj" style="display:none;">
+            <button type="button" class="rayon-secondary-btn" id="inspector-btn-upload-model" style="width:100%; justify-content:center; padding:6px 10px; font-size:11px; display:inline-flex; align-items:center; gap:6px;">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              <span>Cargar Modelo (.glb, .gltf, .obj)</span>
+            </button>
+            <span id="inspector-loaded-model-name" style="display:block; font-size:10px; color:#38bdf8; text-align:center; margin-top:3px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">Sin archivo cargado</span>
+          </div>
+        </div>
+
+        <!-- Group: Cuantificador Geométrico Real -->
+        <div class="rayon-accordion-group">
+          <div style="display:flex; align-items:center; justify-content:space-between;">
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">CUANTIFICADOR GEOMÉTRICO 3D</span>
+          </div>
+          <div id="inspector-quant-grid" style="background:#18181b; padding:10px; border-radius:6px; margin-top:6px; display:flex; flex-direction:column; gap:5px; font-size:11px; font-family:var(--font-mono, monospace);">
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#71717a;">Área Desplante (COS):</span>
+              <strong id="quant-footprint" style="color:#38bdf8; font-weight:600;">750 m²</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#71717a;">M² Construidos (CUS):</span>
+              <strong id="quant-gfa" style="color:#4ade80; font-weight:600;">4,500 m²</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#71717a;">Volumen Total:</span>
+              <strong id="quant-volume" style="color:#f4f4f6; font-weight:600;">14,400 m³</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#71717a;">Área Fachada/Envolvente:</span>
+              <strong id="quant-envelope" style="color:#fbbf24; font-weight:600;">2,112 m²</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between; border-top:1px solid rgba(255,255,255,0.08); padding-top:4px; margin-top:2px;">
+              <span style="color:#71717a;">Niveles / Altura:</span>
+              <strong id="quant-height" style="color:#f4f4f6;">6 pisos · 19.2 m</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span style="color:#71717a;">Tag BIM SketchUp:</span>
+              <span id="quant-tag" style="color:#a1a1aa; font-size:10px;">02_Estructura_y_Nucleos</span>
+            </div>
           </div>
         </div>
 
@@ -1324,59 +1427,32 @@
         <div class="rayon-accordion-group">
           <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ORIENTACIÓN CÁMARA 3D</span>
           <div class="rayon-axon-grid">
-            <button type="button" class="rayon-axon-btn active" id="btn-cam-nw">Aérea NW</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-ne">Aérea NE</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-sw">Aérea SW</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-se">Aérea SE</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-top">Cenital (Top)</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-eye">Peatonal (Eye)</button>
+            <button type="button" class="rayon-axon-btn active" id="btn-cam-nw">Isometría NW</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-ne">Isometría NE</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-sw">Isometría SW</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-se">Isometría SE</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-top">Planta / Cenital</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-eye">Perspectiva Peatonal</button>
           </div>
         </div>
 
         <!-- Group: Escenas Guardadas (Scenes) -->
-        <div class="rayon-accordion-group">
+        <div class="rayon-accordion-group" style="border-bottom:none;">
           <div style="display:flex; align-items:center; justify-content:space-between;">
             <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ESCENAS GUARDADAS</span>
-            <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene" title="Guardar cámara actual">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene" title="Congelar escena actual (+ Escena)" style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:2px 6px; border-radius:4px; border:1px solid rgba(255,255,255,0.12); color:#38bdf8;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>+ Escena</span>
             </button>
           </div>
-          <div id="inspector-scenes-list" style="display:flex; flex-direction:column; gap:4px; margin-top:4px;">
+          <div id="inspector-scenes-list" style="display:flex; flex-direction:column; gap:4px; margin-top:6px;">
             <div style="display:flex; align-items:center; justify-content:space-between; padding:4px 6px; background:#18181b; border-radius:4px; font-size:11px;">
-              <span style="color:#f4f4f6;">Escena Inicial · Axono 45°</span>
+              <span style="color:#f4f4f6;">Escena 01 · Axonometría NW</span>
               <span style="color:#71717a;">3D</span>
             </div>
           </div>
         </div>
-
-        <!-- Group: Inspector de Selección -->
-        <div class="rayon-accordion-group" style="border-bottom:none;">
-          <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">INSPECTOR DE SELECCIÓN</span>
-          <div id="inspector-selection-details" style="background:#18181b; padding:8px 10px; border-radius:6px; margin-top:4px; display:flex; flex-direction:column; gap:4px; font-size:11px;">
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Elemento</span>
-              <span id="sel-elem-type" style="color:#f4f4f6; font-weight:500;">Volumetría Urbana</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Altura</span>
-              <span id="sel-elem-height" style="color:#38bdf8;">14.0 m</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Niveles</span>
-              <span id="sel-elem-levels" style="color:#f4f4f6;">4 pisos</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Desplante</span>
-              <span id="sel-elem-footprint" style="color:#4ade80;">1,102 m²</span>
-            </div>
-            <div style="display:flex; justify-content:space-between;">
-              <span style="color:#71717a;">Uso / Tag</span>
-              <span id="sel-elem-tag" style="color:#f4f4f6;">02_Estructura_y_Nucleos</span>
-            </div>
-          </div>
-        </div>
       </aside>
-    
     </div>
 
     <!-- ======================================================
@@ -1709,14 +1785,14 @@
     <!-- ======================================================
          VIEW 4: AXONOMETRÍA & MAQUETA (#illustrator)
          Rayon-Inspired Split Layout:
-         - Left Column: Categorized Icon Rail + Open Drawer (starting on Capas & Cascada)
+         - Left Column: Categorized Icon Rail + Open Drawer (starting on Capas & Despiece)
          - Right Column: Dedicated Free Canvas + Top Floating Camera Dynamic Island
          ====================================================== -->
     <div id="illustrator" class="screen-layer">
       <div class="axiom-left-system" id="illu-left-system">
         <!-- Categorized Left Icon Rail for Axonometría -->
         <nav class="axiom-left-dock" aria-label="Herramientas de Axonometría">
-          <button type="button" class="axiom-dock-icon active" data-illudrawer="layers" data-tooltip="1. Capas & Cascada Explotada">
+          <button type="button" class="axiom-dock-icon active" data-illudrawer="layers" data-tooltip="1. Capas & Axonometría Isométrica Explotada">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           </button>
           <button type="button" class="axiom-dock-icon" data-illudrawer="style" data-tooltip="2. Acabado, Hatch Punteado & Base">
@@ -1802,14 +1878,14 @@
                       <input type="checkbox" data-illutier="hydrography" checked>
                       <span>02 / HIDROGRAFÍA & AGUA</span>
                     </label>
-                    <input type="color" data-illutiercolor="hydrography" value="#06b6d4" class="tier-color-input">
+                    <input type="color" data-illutiercolor="hydrography" value="#6ba5b8" class="tier-color-input">
                   </div>
                   <div class="exploded-tier-item">
                     <label class="axiom-check-row" style="margin:0;">
                       <input type="checkbox" data-illutier="network" checked>
                       <span>03 / RED VIAL & INFRAESTRUCTURA</span>
                     </label>
-                    <input type="color" data-illutiercolor="network" value="#f59e0b" class="tier-color-input">
+                    <input type="color" data-illutiercolor="network" value="#d4d4d8" class="tier-color-input">
                   </div>
                   <div class="exploded-tier-item">
                     <label class="axiom-check-row" style="margin:0;">
@@ -2321,38 +2397,142 @@
     </div>
   </div>
 
-  <!-- Modal: Perfil de Usuario & Workspace -->
+  <!-- Modal: Autenticación, Perfil de Usuario & Workspaces -->
   <div id="modal-user-workspace" class="axiom-modal-overlay" hidden>
-    <div class="axiom-modal-dialog" style="max-width:440px; background:#121215; border:1px solid rgba(255,255,255,0.12); border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,0.85); padding:20px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+    <div class="axiom-modal-dialog" style="max-width:440px; background:#121215; border:1px solid rgba(255,255,255,0.12); border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,0.85); padding:24px;">
+      
+      <!-- Modal Header -->
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:18px;">
         <div style="display:flex; align-items:center; gap:10px;">
-          <div id="modal-avatar-preview" style="width:36px; height:36px; border-radius:50%; background:#27272a; border:1px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#ffffff;">C</div>
+          <div id="modal-avatar-preview" style="width:36px; height:36px; border-radius:50%; background:#27272a; border:1px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#ffffff;">I</div>
           <div>
-            <h3 style="font-size:14px; font-weight:600; color:#ffffff; margin:0;">Perfil & Workspace</h3>
-            <span style="font-size:11px; color:#71717a;">URBNZD Studio Environment</span>
+            <h3 id="modal-auth-title" style="font-size:14px; font-weight:600; color:#ffffff; margin:0;">Acceso a URBNZD Studio</h3>
+            <span id="modal-auth-sub" style="font-size:11px; color:#71717a;">Modo Arquitectura & GIS</span>
           </div>
         </div>
-        <button type="button" class="axiom-modal-close-btn" id="modal-user-close" aria-label="Cerrar" style="background:transparent; border:none; color:#71717a; cursor:pointer; font-size:14px;">✕</button>
+        <button type="button" class="axiom-modal-close-btn" id="modal-user-close" aria-label="Cerrar" style="background:transparent; border:none; color:#71717a; cursor:pointer; font-size:14px; padding:4px;">✕</button>
       </div>
 
-      <div style="display:flex; flex-direction:column; gap:12px; font-size:12px;">
-        <div>
-          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Nombre del Usuario</label>
-          <input type="text" id="input-profile-name" value="Cesar" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 10px; color:#ffffff; font-size:12px;">
+      <!-- VIEW A: GUEST AUTH FORM (TABS LOGIN / REGISTER) -->
+      <div id="auth-guest-view">
+        <!-- Auth Mode Toggle -->
+        <div class="rayon-segmented" style="margin-bottom:16px;">
+          <button type="button" class="rayon-seg-btn active" id="tab-btn-login" style="flex:1;">Iniciar Sesión</button>
+          <button type="button" class="rayon-seg-btn" id="tab-btn-register" style="flex:1;">Crear Cuenta</button>
         </div>
-        <div>
-          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Estudio de Arquitectura / Organización</label>
-          <input type="text" id="input-profile-studio" value="CGM Atelier" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 10px; color:#ffffff; font-size:12px;">
+
+        <!-- Form: Login -->
+        <form id="form-auth-login" onsubmit="return false;" style="display:flex; flex-direction:column; gap:12px;">
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Correo Electrónico o Usuario</label>
+            <input type="text" id="auth-login-email" placeholder="usuario@estudio.com" autocomplete="username" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Contraseña</label>
+            <input type="password" id="auth-login-pass" placeholder="••••••••" autocomplete="current-password" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
+          </div>
+          <button type="button" class="rayon-share-btn" id="btn-auth-login-submit" style="width:100%; justify-content:center; padding:9px 12px; font-weight:600; font-size:12px; margin-top:4px;">
+            Iniciar Sesión
+          </button>
+          <div style="text-align:center; margin-top:4px;">
+            <button type="button" id="btn-continue-guest" style="background:none; border:none; color:#71717a; font-size:11px; cursor:pointer; text-decoration:underline;">Continuar como Invitado (Modo local)</button>
+          </div>
+        </form>
+
+        <!-- Form: Register (Hidden by default) -->
+        <form id="form-auth-register" onsubmit="return false;" style="display:none; flex-direction:column; gap:12px;">
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Nombre Completo / Arquitecto</label>
+            <input type="text" id="auth-reg-name" placeholder="Ej. Cesar González" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Correo Electrónico</label>
+            <input type="email" id="auth-reg-email" placeholder="cesar@cgmatelier.com" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Contraseña</label>
+            <input type="password" id="auth-reg-pass" placeholder="Mínimo 6 caracteres" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
+          </div>
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Nombre de tu Primer Workspace / Estudio</label>
+            <input type="text" id="auth-reg-ws" placeholder="Ej. CGM Atelier o Taller Urbano" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px 10px; color:#ffffff; font-size:12px; outline:none;">
+          </div>
+          <button type="button" class="rayon-share-btn" id="btn-auth-reg-submit" style="width:100%; justify-content:center; padding:9px 12px; font-weight:600; font-size:12px; margin-top:4px;">
+            Crear Cuenta y Entrar
+          </button>
+        </form>
+      </div>
+
+      <!-- VIEW B: AUTHENTICATED PROFILE & WORKSPACE MANAGER -->
+      <div id="auth-user-view" style="display:none; flex-direction:column; gap:14px; font-size:12px;">
+        <div style="background:#18181b; padding:12px; border-radius:8px; border:1px solid rgba(255,255,255,0.06); display:flex; flex-direction:column; gap:8px;">
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:3px; font-weight:500;">Usuario Activo</label>
+            <input type="text" id="input-profile-name" value="" style="width:100%; background:#111215; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:6px 10px; color:#ffffff; font-size:12px;">
+          </div>
+          <div>
+            <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:3px; font-weight:500;">Correo Electrónico</label>
+            <input type="email" id="input-profile-email" value="" style="width:100%; background:#111215; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:6px 10px; color:#ffffff; font-size:12px;">
+          </div>
         </div>
-        <div>
-          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Correo Electrónico</label>
-          <input type="email" id="input-profile-email" value="cesar@cgmatelier.com" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 10px; color:#ffffff; font-size:12px;">
+
+        <!-- Workspaces Management Section -->
+        <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
+          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:6px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;">Tus Espacios de Trabajo (Workspaces)</label>
+          <div style="display:flex; gap:6px; margin-bottom:10px;">
+            <select id="select-active-workspace" class="rayon-select" style="flex:1; font-size:12px; height:32px;">
+              <option value="Personal">Personal</option>
+            </select>
+            <button type="button" class="rayon-secondary-btn" id="btn-select-workspace" style="padding:6px 12px; font-size:11px;">Activar</button>
+          </div>
+
+          <!-- Add New Workspace -->
+          <div style="display:flex; gap:6px;">
+            <input type="text" id="input-new-workspace-name" placeholder="Nuevo workspace (ej. CGM Atelier)..." style="flex:1; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:6px 10px; color:#ffffff; font-size:11.5px; outline:none;">
+            <button type="button" class="rayon-secondary-btn" id="btn-add-new-workspace" style="padding:6px 12px; font-size:11px; font-weight:600;">+ Crear</button>
+          </div>
         </div>
-        <div style="display:flex; gap:8px; margin-top:8px;">
+
+        <!-- Action Footer -->
+        <div style="display:flex; gap:8px; margin-top:8px; border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
           <button type="button" class="rayon-share-btn" id="btn-save-profile" style="flex:1; justify-content:center; padding:8px 12px; font-weight:600;">Guardar Cambios</button>
-          <button type="button" class="rayon-secondary-btn" id="btn-switch-account" style="padding:8px 12px; font-size:11px;">Cambiar Cuenta</button>
+          <button type="button" class="rayon-secondary-btn" id="btn-logout" style="padding:8px 12px; font-size:11px; color:#ef4444; border-color:rgba(239,68,68,0.3);">Cerrar Sesión</button>
         </div>
       </div>
+
+    </div>
+  </div>
+
+  <!-- Floating Spatial Pin / Architectural Note Popover -->
+  <div id="pin-comment-popover" style="position:fixed; top:80px; right:320px; width:300px; background:#121215; border:1px solid rgba(255,255,255,0.16); border-radius:10px; box-shadow:0 16px 40px rgba(0,0,0,0.75); padding:14px; z-index:9999; display:none; flex-direction:column; gap:10px; backdrop-filter:blur(16px);">
+    <div style="display:flex; align-items:center; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.08); padding-bottom:8px;">
+      <div style="display:flex; align-items:center; gap:6px;">
+        <span id="popover-pin-badge" style="background:#38bdf8; color:#090a0d; font-weight:700; font-size:10px; padding:2px 6px; border-radius:4px; font-family:var(--font-mono, monospace);">P01</span>
+        <strong id="popover-pin-title" style="font-size:12px; color:#ffffff;">Nota Espacial</strong>
+      </div>
+      <button type="button" id="popover-pin-close" style="background:none; border:none; color:#71717a; cursor:pointer; font-size:13px; padding:2px;">✕</button>
+    </div>
+
+    <div>
+      <span style="display:block; font-size:10px; color:#71717a; font-family:var(--font-mono, monospace); margin-bottom:4px;" id="popover-pin-coords">Coordenada: X: 0m, Y: 0m</span>
+      <textarea id="popover-pin-textarea" rows="3" placeholder="Escribir nota de diseño, nivelación o coordinación..." style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; color:#ffffff; font-size:11.5px; padding:8px; resize:vertical; font-family:inherit; outline:none; box-sizing:border-box;"></textarea>
+    </div>
+
+    <!-- Quick Team Mention Tags (@) -->
+    <div>
+      <span style="font-size:10px; color:#a1a1aa; display:block; margin-bottom:4px;">Etiquetar (@):</span>
+      <div style="display:flex; flex-wrap:wrap; gap:4px;">
+        <button type="button" class="pin-tag-pill" data-mention="@Cesar" style="background:#27272a; border:1px solid rgba(255,255,255,0.1); color:#d4d4d8; font-size:10px; padding:2px 6px; border-radius:4px; cursor:pointer;">@Cesar</button>
+        <button type="button" class="pin-tag-pill" data-mention="@Arquitectura" style="background:#27272a; border:1px solid rgba(255,255,255,0.1); color:#d4d4d8; font-size:10px; padding:2px 6px; border-radius:4px; cursor:pointer;">@Arquitectura</button>
+        <button type="button" class="pin-tag-pill" data-mention="@Estructuras" style="background:#27272a; border:1px solid rgba(255,255,255,0.1); color:#d4d4d8; font-size:10px; padding:2px 6px; border-radius:4px; cursor:pointer;">@Estructuras</button>
+        <button type="button" class="pin-tag-pill" data-mention="@Paisaje" style="background:#27272a; border:1px solid rgba(255,255,255,0.1); color:#d4d4d8; font-size:10px; padding:2px 6px; border-radius:4px; cursor:pointer;">@Paisaje</button>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div style="display:flex; gap:6px; margin-top:2px;">
+      <button type="button" class="rayon-share-btn" id="popover-pin-save" style="flex:1; justify-content:center; padding:6px 10px; font-size:11px; font-weight:600;">Guardar</button>
+      <button type="button" class="rayon-secondary-btn" id="popover-pin-delete" style="padding:6px 10px; font-size:11px; color:#ef4444; border-color:rgba(239,68,68,0.3);">Eliminar</button>
     </div>
   </div>
 
@@ -2876,68 +3056,255 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       switchView('workspace-home', true);
     });
     // =====================================================
-    // USER PROFILE & WORKSPACE ENVIRONMENT
+    // USER AUTHENTICATION & WORKSPACE MANAGEMENT
+    // Default state: Guest / Iniciar Sesión (Zero forced default user)
     // =====================================================
+    let authState = {
+      isLoggedIn: false,
+      name: 'Invitado',
+      email: '',
+      activeWorkspace: 'Personal',
+      workspaces: ['Personal']
+    };
+
     function loadUserProfile() {
       try {
-        const raw = localStorage.getItem('urbnzd_user_profile');
-        const p = raw ? JSON.parse(raw) : { name: 'Cesar', studio: 'CGM Atelier', email: 'cesar@cgmatelier.com' };
-        applyUserProfile(p);
+        const raw = localStorage.getItem('urbnzd_auth');
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (parsed && typeof parsed === 'object') {
+            authState = { ...authState, ...parsed };
+          }
+        }
       } catch (e) {
-        applyUserProfile({ name: 'Cesar', studio: 'CGM Atelier', email: 'cesar@cgmatelier.com' });
+        console.warn('Auth state load error:', e);
       }
+      applyUserProfile();
     }
 
-    function applyUserProfile(p) {
-      const initial = (p.name || 'C').charAt(0).toUpperCase();
+    function saveAuthState() {
+      try {
+        localStorage.setItem('urbnzd_auth', JSON.stringify(authState));
+      } catch (e) {}
+      applyUserProfile();
+    }
+
+    function applyUserProfile() {
+      const isLogged = Boolean(authState.isLoggedIn);
+      const guestView = document.getElementById('auth-guest-view');
+      const userView = document.getElementById('auth-user-view');
+      const titleEl = document.getElementById('modal-auth-title');
+      const subEl = document.getElementById('modal-auth-sub');
+
+      if (guestView && userView) {
+        guestView.style.display = isLogged ? 'none' : 'block';
+        userView.style.display = isLogged ? 'flex' : 'none';
+      }
+
+      if (titleEl) {
+        titleEl.textContent = isLogged ? 'Perfil & Workspaces' : 'Acceso a URBNZD Studio';
+      }
+      if (subEl) {
+        subEl.textContent = isLogged ? `${authState.activeWorkspace} · Activo` : 'Modo Arquitectura & GIS';
+      }
+
+      // Avatars
+      const initial = isLogged ? (authState.name || 'U').charAt(0).toUpperCase() : 'I';
       document.querySelectorAll('.rayon-user-avatar, .rayon-inspector-avatar, #modal-avatar-preview').forEach(el => {
         el.textContent = initial;
       });
+
+      // Header Workspace label & badge
+      const headerWsName = document.getElementById('header-ws-name');
+      const headerWsBadge = document.getElementById('header-ws-badge');
+      if (headerWsName) {
+        headerWsName.textContent = isLogged ? authState.activeWorkspace : 'Workspace: Personal';
+      }
+      if (headerWsBadge) {
+        headerWsBadge.textContent = isLogged ? authState.name.split(' ')[0] : 'Invitado';
+        headerWsBadge.style.color = isLogged ? '#38bdf8' : '#a1a1aa';
+      }
+
+      // Workspace Sidebar user row
       document.querySelectorAll('.rayon-user-name').forEach(el => {
-        el.textContent = `${p.name} · ${p.studio || 'URBNZD'}`;
+        el.textContent = isLogged ? `${authState.name} · ${authState.activeWorkspace}` : 'Invitado · Modo Local';
       });
+
+      // Right inspector owner & team
       const ownerEl = document.getElementById('inspector-model-owner');
       const teamEl = document.getElementById('inspector-model-team');
-      if (ownerEl) ownerEl.textContent = p.name;
-      if (teamEl) teamEl.textContent = p.studio;
+      if (ownerEl) ownerEl.textContent = isLogged ? authState.name : 'Invitado';
+      if (teamEl) teamEl.textContent = isLogged ? authState.activeWorkspace : 'Personal';
+
+      // Inputs in profile view
       const inpName = document.getElementById('input-profile-name');
-      const inpStudio = document.getElementById('input-profile-studio');
       const inpEmail = document.getElementById('input-profile-email');
-      if (inpName) inpName.value = p.name;
-      if (inpStudio) inpStudio.value = p.studio;
-      if (inpEmail) inpEmail.value = p.email;
+      if (inpName) inpName.value = authState.name || '';
+      if (inpEmail) inpEmail.value = authState.email || '';
+
+      // Populate workspace select dropdown
+      const selWs = document.getElementById('select-active-workspace');
+      if (selWs) {
+        selWs.innerHTML = authState.workspaces.map(ws => `<option value="${ws}" ${ws === authState.activeWorkspace ? 'selected' : ''}>${ws}</option>`).join('');
+      }
     }
 
     function openUserProfileModal() {
       const m = document.getElementById('modal-user-workspace');
-      if (m) m.hidden = false;
+      if (m) {
+        m.hidden = false;
+        applyUserProfile();
+      }
     }
+
+    // Modal tabs toggle (Iniciar Sesión vs Crear Cuenta)
+    document.getElementById('tab-btn-login')?.addEventListener('click', () => {
+      document.getElementById('tab-btn-login')?.classList.add('active');
+      document.getElementById('tab-btn-register')?.classList.remove('active');
+      const fLog = document.getElementById('form-auth-login');
+      const fReg = document.getElementById('form-auth-register');
+      if (fLog) fLog.style.display = 'flex';
+      if (fReg) fReg.style.display = 'none';
+    });
+    document.getElementById('tab-btn-register')?.addEventListener('click', () => {
+      document.getElementById('tab-btn-register')?.classList.add('active');
+      document.getElementById('tab-btn-login')?.classList.remove('active');
+      const fLog = document.getElementById('form-auth-login');
+      const fReg = document.getElementById('form-auth-register');
+      if (fLog) fLog.style.display = 'none';
+      if (fReg) fReg.style.display = 'flex';
+    });
+
+    // Iniciar Sesión submit
+    document.getElementById('btn-auth-login-submit')?.addEventListener('click', () => {
+      const email = document.getElementById('auth-login-email')?.value.trim() || 'usuario@estudio.com';
+      const name = email.includes('@') ? email.split('@')[0] : email;
+      const capitalized = name.charAt(0).toUpperCase() + name.slice(1);
+      authState.isLoggedIn = true;
+      authState.name = capitalized;
+      authState.email = email;
+      if (!authState.workspaces.includes('CGM Atelier')) {
+        authState.workspaces.push('CGM Atelier');
+      }
+      authState.activeWorkspace = 'CGM Atelier';
+      saveAuthState();
+      showCadToast(`Sesión iniciada como ${authState.name} · Workspace: ${authState.activeWorkspace}`);
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+
+    // Crear Cuenta submit
+    document.getElementById('btn-auth-reg-submit')?.addEventListener('click', () => {
+      const name = document.getElementById('auth-reg-name')?.value.trim() || 'Nuevo Arquitecto';
+      const email = document.getElementById('auth-reg-email')?.value.trim() || 'arqui@estudio.com';
+      const ws = document.getElementById('auth-reg-ws')?.value.trim() || 'Estudio Principal';
+      authState.isLoggedIn = true;
+      authState.name = name;
+      authState.email = email;
+      if (!authState.workspaces.includes(ws)) {
+        authState.workspaces.push(ws);
+      }
+      authState.activeWorkspace = ws;
+      saveAuthState();
+      showCadToast(`Cuenta creada. Bienvenido, ${authState.name} · ${ws}`);
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+
+    // Continuar como Invitado
+    document.getElementById('btn-continue-guest')?.addEventListener('click', () => {
+      authState.isLoggedIn = false;
+      authState.name = 'Invitado';
+      authState.email = '';
+      authState.activeWorkspace = 'Personal';
+      saveAuthState();
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+
+    // Activar Workspace seleccionado
+    document.getElementById('btn-select-workspace')?.addEventListener('click', () => {
+      const sel = document.getElementById('select-active-workspace');
+      if (sel && sel.value) {
+        authState.activeWorkspace = sel.value;
+        saveAuthState();
+        showCadToast(`Workspace activo cambiado a: ${sel.value}`);
+      }
+    });
+
+    // Crear Nuevo Workspace
+    document.getElementById('btn-add-new-workspace')?.addEventListener('click', () => {
+      const inp = document.getElementById('input-new-workspace-name');
+      const wsName = inp?.value.trim();
+      if (!wsName) return;
+      if (!authState.workspaces.includes(wsName)) {
+        authState.workspaces.push(wsName);
+      }
+      authState.activeWorkspace = wsName;
+      if (inp) inp.value = '';
+      saveAuthState();
+      showCadToast(`Nuevo workspace "${wsName}" creado y activado`);
+    });
+
+    // Guardar Cambios de Perfil
+    document.getElementById('btn-save-profile')?.addEventListener('click', () => {
+      const inpName = document.getElementById('input-profile-name');
+      const inpEmail = document.getElementById('input-profile-email');
+      if (inpName && inpName.value.trim()) authState.name = inpName.value.trim();
+      if (inpEmail) authState.email = inpEmail.value.trim();
+      saveAuthState();
+      showCadToast('Perfil actualizado correctamente');
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+
+    // Cerrar Sesión (Cerrar y volver a Invitado)
+    document.getElementById('btn-logout')?.addEventListener('click', () => {
+      authState.isLoggedIn = false;
+      authState.name = 'Invitado';
+      authState.email = '';
+      authState.activeWorkspace = 'Personal';
+      saveAuthState();
+      showCadToast('Sesión cerrada. Has regresado al modo Invitado.');
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
 
     document.getElementById('ws-user-menu')?.addEventListener('click', openUserProfileModal);
     document.getElementById('inspector-user-avatar')?.addEventListener('click', openUserProfileModal);
+    document.getElementById('header-ws-badge')?.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openUserProfileModal();
+    });
     document.getElementById('modal-user-close')?.addEventListener('click', () => {
       const m = document.getElementById('modal-user-workspace');
       if (m) m.hidden = true;
     });
-    document.getElementById('btn-save-profile')?.addEventListener('click', () => {
-      const name = document.getElementById('input-profile-name')?.value.trim() || 'Cesar';
-      const studio = document.getElementById('input-profile-studio')?.value.trim() || 'CGM Atelier';
-      const email = document.getElementById('input-profile-email')?.value.trim() || 'cesar@cgmatelier.com';
-      const profile = { name, studio, email };
-      localStorage.setItem('urbnzd_user_profile', JSON.stringify(profile));
-      applyUserProfile(profile);
-      const m = document.getElementById('modal-user-workspace');
-      if (m) m.hidden = true;
+
+    // Inspector Display, Grid & Axis Controls
+    document.getElementById('inspector-seg-default')?.addEventListener('click', () => {
+      if (window.set3DWireframeMode) window.set3DWireframeMode(false);
+      showCadToast('Modo de sombreado sólido activado');
     });
-    document.getElementById('btn-switch-account')?.addEventListener('click', () => {
-      const newName = prompt('Ingresa el nombre del nuevo usuario o arquitecto invitado:', 'Invitado');
-      if (!newName) return;
-      const newStudio = prompt('Nombre del estudio:', 'Estudio');
-      const profile = { name: newName, studio: newStudio || 'URBNZD', email: '' };
-      localStorage.setItem('urbnzd_user_profile', JSON.stringify(profile));
-      applyUserProfile(profile);
-      const m = document.getElementById('modal-user-workspace');
-      if (m) m.hidden = true;
+    document.getElementById('inspector-seg-wireframe')?.addEventListener('click', () => {
+      if (window.set3DWireframeMode) window.set3DWireframeMode(true);
+      showCadToast('Modo alámbrico (Wireframe) activado');
+    });
+    document.getElementById('inspector-seg-grid-show')?.addEventListener('click', () => {
+      if (window.set3DGridHelper) window.set3DGridHelper(true);
+      showCadToast('Retícula 3D visible');
+    });
+    document.getElementById('inspector-seg-grid-hide')?.addEventListener('click', () => {
+      if (window.set3DGridHelper) window.set3DGridHelper(false);
+      showCadToast('Retícula 3D oculta');
+    });
+    document.getElementById('inspector-seg-axis-show')?.addEventListener('click', () => {
+      if (window.set3DAxesHelper) window.set3DAxesHelper(true);
+      showCadToast('Ejes coordenados XYZ visibles');
+    });
+    document.getElementById('inspector-seg-axis-hide')?.addEventListener('click', () => {
+      if (window.set3DAxesHelper) window.set3DAxesHelper(false);
+      showCadToast('Ejes coordenados XYZ ocultos');
     });
 
     loadUserProfile();
@@ -3051,26 +3418,304 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     updateInspectorScenes();
 
     // =====================================================
-    // BLOCKS TAB: CONCEPTUAL MODELING & PROJECT LOADER
+    // SLEEK CAD TOAST NOTIFICATION SYSTEM
     // =====================================================
+    function showCadToast(msg, duration = 2800) {
+      let toast = document.getElementById('cad-toast-notify');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'cad-toast-notify';
+        toast.style.cssText = `
+          position: fixed;
+          bottom: 24px;
+          left: 50%;
+          transform: translateX(-50%) translateY(10px);
+          background: rgba(18, 19, 22, 0.94);
+          color: #f4f4f6;
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          backdrop-filter: blur(12px);
+          padding: 8px 18px;
+          border-radius: 9999px;
+          font-size: 11.5px;
+          font-weight: 500;
+          font-family: var(--font-sans, 'Inter', sans-serif);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+          z-index: 99999;
+          pointer-events: none;
+          opacity: 0;
+          transition: opacity 0.2s ease, transform 0.2s ease;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        `;
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = `<span style="width:6px; height:6px; border-radius:50%; background:#38bdf8;"></span><span>${msg}</span>`;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateX(-50%) translateY(0)';
+      clearTimeout(toast._timer);
+      toast._timer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(10px)';
+      }, duration);
+    }
+    window.showCadToast = showCadToast;
+
+    // =====================================================
+    // GLOBAL SHARE BUTTON FUNCTIONALITY
+    // =====================================================
+    function triggerShareProject() {
+      const shareUrl = window.location.href;
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(shareUrl).then(() => {
+          showCadToast('Enlace del proyecto copiado al portapapeles');
+        }).catch(() => {
+          prompt('Copia el enlace de tu proyecto:', shareUrl);
+        });
+      } else {
+        prompt('Copia el enlace de tu proyecto:', shareUrl);
+      }
+    }
+    document.getElementById('btn-topbar-share')?.addEventListener('click', triggerShareProject);
+    document.getElementById('btn-inspector-share')?.addEventListener('click', triggerShareProject);
+
+    // =====================================================
+    // MINIMALIST LANGUAGE FLAT TOGGLE (ES | EN)
+    // =====================================================
+    function switchFlatLanguage(targetLang) {
+      document.querySelectorAll('.lang-flat-btn').forEach(b => {
+        b.classList.toggle('active', b.getAttribute('data-lang') === targetLang);
+      });
+      if (window.applyLang) window.applyLang(targetLang);
+      showCadToast(targetLang === 'es' ? 'Idioma: Español' : 'Language: English');
+    }
+    document.getElementById('btn-lang-es')?.addEventListener('click', () => switchFlatLanguage('es'));
+    document.getElementById('btn-lang-en')?.addEventListener('click', () => switchFlatLanguage('en'));
+
+    // =====================================================
+    // 3D MODELING & PARAMETRIC BLOCKS (INSPECTOR & DOCK)
+    // =====================================================
+    function spawnParametricBlock(w, d, levels, use) {
+      if (window.addConceptualMassBlock) {
+        window.addConceptualMassBlock({ width: w, depth: d, levels, use });
+      }
+      // Calculate real geometric metrics
+      const fp = Math.round(w * d);
+      const gfa = Math.round(fp * levels);
+      const height = (levels * 3.2).toFixed(1);
+      const vol = Math.round(fp * (levels * 3.2));
+      const env = Math.round(2 * (w + d) * (levels * 3.2) + fp);
+
+      const elFp = document.getElementById('quant-footprint');
+      const elGfa = document.getElementById('quant-gfa');
+      const elVol = document.getElementById('quant-volume');
+      const elEnv = document.getElementById('quant-envelope');
+      const elH = document.getElementById('quant-height');
+      if (elFp) elFp.textContent = `${fp.toLocaleString()} m²`;
+      if (elGfa) elGfa.textContent = `${gfa.toLocaleString()} m²`;
+      if (elVol) elVol.textContent = `${vol.toLocaleString()} m³`;
+      if (elEnv) elEnv.textContent = `${env.toLocaleString()} m²`;
+      if (elH) elH.textContent = `${levels} pisos · ${height} m`;
+      showCadToast(`Bloque de ${w}×${d} m (${levels} niveles) añadido al modelo`);
+    }
+
+    document.getElementById('inspector-btn-add-block')?.addEventListener('click', () => {
+      const w = parseFloat(document.getElementById('insp-block-w')?.value) || 30;
+      const d = parseFloat(document.getElementById('insp-block-d')?.value) || 25;
+      const levels = parseInt(document.getElementById('insp-block-levels')?.value) || 6;
+      const use = document.getElementById('insp-block-use')?.value || 'residential';
+      spawnParametricBlock(w, d, levels, use);
+    });
+
     document.getElementById('btn-add-conceptual-block')?.addEventListener('click', () => {
       const w = parseFloat(document.getElementById('block-dim-w')?.value) || 30;
       const d = parseFloat(document.getElementById('block-dim-d')?.value) || 25;
       const levels = parseInt(document.getElementById('block-dim-levels')?.value) || 6;
       const use = document.getElementById('block-use-select')?.value || 'mixed';
-      if (window.addConceptualMassBlock) {
-        window.addConceptualMassBlock({ width: w, depth: d, levels, use });
-      }
+      spawnParametricBlock(w, d, levels, use);
     });
 
+    // =====================================================
+    // 3D FILE LOADER (.glb, .gltf, .obj)
+    // =====================================================
+    async function handle3DFileUpload(file) {
+      if (!file) return;
+      showCadToast(`Cargando modelo "${file.name}"...`);
+      try {
+        if (window.loadExternal3DModel) {
+          const metrics = await window.loadExternal3DModel(file);
+          const nameEl = document.getElementById('inspector-loaded-model-name');
+          const feasName = document.getElementById('feas-file-name');
+          if (nameEl) nameEl.textContent = file.name;
+          if (feasName) feasName.textContent = file.name;
+          showCadToast(`Modelo "${file.name}" cargado y cuantificado con éxito`);
+        }
+      } catch (err) {
+        console.error('Error cargando modelo 3D:', err);
+        showCadToast('Error al importar el archivo 3D');
+      }
+    }
+
+    document.getElementById('inspector-btn-upload-model')?.addEventListener('click', () => {
+      document.getElementById('inspector-model-file-input')?.click();
+    });
+    document.getElementById('inspector-model-file-input')?.addEventListener('change', (e) => {
+      handle3DFileUpload(e.target.files?.[0]);
+    });
     document.getElementById('feas-btn-upload-skp')?.addEventListener('click', () => {
       document.getElementById('feas-file-input')?.click();
     });
     document.getElementById('feas-file-input')?.addEventListener('change', (e) => {
-      const f = e.target.files?.[0];
-      if (!f) return;
-      const nameEl = document.getElementById('feas-file-name');
-      if (nameEl) nameEl.textContent = f.name;
+      handle3DFileUpload(e.target.files?.[0]);
+    });
+
+    // =====================================================
+    // SPATIAL PINS & ARCHITECTURAL COMMENT POPOVER
+    // =====================================================
+    let activePopoverPin = null;
+
+    function openPinCommentPopover(pin) {
+      activePopoverPin = pin;
+      const popover = document.getElementById('pin-comment-popover');
+      if (!popover) return;
+      const badge = document.getElementById('popover-pin-badge');
+      const title = document.getElementById('popover-pin-title');
+      const coords = document.getElementById('popover-pin-coords');
+      const text = document.getElementById('popover-pin-textarea');
+
+      if (badge) badge.textContent = pin.numLabel || pin.label;
+      if (title) title.textContent = `Nota Espacial ${pin.numLabel || ''}`;
+      if (coords) coords.textContent = `X: ${pin.x.toFixed(1)}m · Y: ${pin.y.toFixed(1)}m · Z: ${pin.z.toFixed(1)}m`;
+      if (text) {
+        text.value = pin.comment || '';
+        text.focus();
+      }
+      popover.style.display = 'flex';
+    }
+    window.openPinCommentPopover = openPinCommentPopover;
+
+    document.getElementById('popover-pin-close')?.addEventListener('click', () => {
+      const p = document.getElementById('pin-comment-popover');
+      if (p) p.style.display = 'none';
+    });
+
+    document.getElementById('popover-pin-save')?.addEventListener('click', () => {
+      if (!activePopoverPin) return;
+      const text = document.getElementById('popover-pin-textarea')?.value.trim() || '';
+      activePopoverPin.comment = text;
+      showCadToast(`Nota guardada para ${activePopoverPin.numLabel || 'pin'}`);
+      const p = document.getElementById('pin-comment-popover');
+      if (p) p.style.display = 'none';
+    });
+
+    document.getElementById('popover-pin-delete')?.addEventListener('click', () => {
+      if (!activePopoverPin) return;
+      try {
+        const { pinStore } = window.UrbanizedStores || {};
+        if (pinStore) pinStore.removePin(activePopoverPin.id);
+      } catch (e) {}
+      showCadToast(`Nota ${activePopoverPin.numLabel || ''} eliminada`);
+      const p = document.getElementById('pin-comment-popover');
+      if (p) p.style.display = 'none';
+    });
+
+    document.querySelectorAll('.pin-tag-pill').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const mention = btn.getAttribute('data-mention');
+        const txt = document.getElementById('popover-pin-textarea');
+        if (txt && mention) {
+          txt.value = (txt.value ? txt.value + ' ' : '') + mention + ' ';
+          txt.focus();
+        }
+      });
+    });
+
+    // Global Pin Visibility Toggle
+    let pinsGloballyVisible = true;
+    function toggleGlobalPins() {
+      pinsGloballyVisible = !pinsGloballyVisible;
+      const pinGroups = document.querySelectorAll('.pin-group-layer, .leaflet-marker-pane');
+      pinGroups.forEach(el => {
+        el.style.visibility = pinsGloballyVisible ? 'visible' : 'hidden';
+      });
+      showCadToast(pinsGloballyVisible ? 'Pines espaciales: Visibles' : 'Pines espaciales: Ocultos');
+    }
+    window.toggleGlobalPins = toggleGlobalPins;
+
+    // =====================================================
+    // LÁMINAS / SHEETS LAYOUT SYSTEM (90x60, Arch D, A1, A2)
+    // =====================================================
+    let sheetFrameVisible = false;
+
+    function toggleSheetFrameOverlay() {
+      sheetFrameVisible = !sheetFrameVisible;
+      let frameEl = document.getElementById('sheet-frame-cad-overlay');
+      if (!frameEl) {
+        frameEl = document.createElement('div');
+        frameEl.id = 'sheet-frame-cad-overlay';
+        frameEl.style.cssText = `
+          position: fixed;
+          top: 60px;
+          bottom: 24px;
+          left: 56px;
+          right: 310px;
+          border: 2px solid rgba(255, 255, 255, 0.45);
+          outline: 12px solid rgba(0, 0, 0, 0.35);
+          pointer-events: none;
+          z-index: 1000;
+          display: flex;
+          flex-direction: column;
+          justify-content: space-between;
+          padding: 16px;
+          box-sizing: border-box;
+        `;
+        // Title block in bottom right corner of frame
+        const tb = document.createElement('div');
+        tb.id = 'sheet-frame-title-block';
+        tb.style.cssText = `
+          align-self: flex-end;
+          background: rgba(18, 19, 22, 0.92);
+          border: 1px solid rgba(255, 255, 255, 0.22);
+          padding: 8px 14px;
+          border-radius: 4px;
+          color: #f4f4f6;
+          font-family: var(--font-mono, monospace);
+          font-size: 10px;
+          display: flex;
+          flex-direction: column;
+          gap: 3px;
+        `;
+        tb.innerHTML = `
+          <strong id="overlay-tb-proj" style="font-size:11px; color:#ffffff;">Plan Maestro Urbano</strong>
+          <span id="overlay-tb-loc" style="color:#a1a1aa;">Monterrey, N.L., México</span>
+          <div style="display:flex; justify-content:space-between; gap:12px; border-top:1px solid rgba(255,255,255,0.1); margin-top:3px; padding-top:3px;">
+            <span>Escala: <b id="overlay-tb-scale">1:1000</b></span>
+            <span style="color:#38bdf8;">URBNZD · by CGM Atelier</span>
+          </div>
+        `;
+        frameEl.appendChild(document.createElement('div')); // top spacer
+        frameEl.appendChild(tb);
+        document.body.appendChild(frameEl);
+      }
+      frameEl.style.display = sheetFrameVisible ? 'flex' : 'none';
+      const btn = document.getElementById('btn-toggle-sheet-frame');
+      if (btn) btn.style.background = sheetFrameVisible ? 'rgba(56, 189, 248, 0.15)' : '';
+      showCadToast(sheetFrameVisible ? 'Marco de lámina 90×60 activado' : 'Marco de lámina oculto');
+    }
+
+    document.getElementById('btn-toggle-sheet-frame')?.addEventListener('click', toggleSheetFrameOverlay);
+    document.getElementById('btn-export-sheet-pdf')?.addEventListener('click', () => {
+      const canvas = document.querySelector('#viewer canvas, #map-canvas, #illu-canvas');
+      if (!canvas) {
+        showCadToast('No hay lienzo activo para exportar');
+        return;
+      }
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      const fmt = document.getElementById('sheet-format-select')?.value || '90x60';
+      a.download = `URBNZD_Lamina_${fmt}_${Date.now()}.png`;
+      a.click();
+      showCadToast(`Lámina ${fmt} descargada en alta resolución (4K)`);
     });
 
     // =====================================================
@@ -3196,10 +3841,10 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
           cardsHtml += `
             <div class="rayon-model-card" data-ws-scene="${s.id}">
               <div class="rayon-card-thumb">
-                <span class="rayon-tag-template" style="background:#8b5cf6;">Scene</span>
+                <span class="rayon-tag-template" style="background:#27272a; color:#f4f4f6; border:1px solid rgba(255,255,255,0.15);">Escena</span>
                 <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
                   <rect width="100%" height="100%" fill="#18181b"/>
-                  <path d="M 60,120 L 150,70 L 240,120 L 150,165 Z" fill="#27272a" stroke="#8b5cf6" stroke-width="1.4"/>
+                  <path d="M 60,120 L 150,70 L 240,120 L 150,165 Z" fill="#27272a" stroke="#ffffff" stroke-width="1.2"/>
                   <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">${s.name}</text>
                 </svg>
               </div>

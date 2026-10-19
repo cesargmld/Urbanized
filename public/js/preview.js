@@ -150,11 +150,25 @@ function init(container) {
 
 function meshGeometry(bodies) {
   let count = 0;
-  for (const b of bodies) count += triangulate(b.faces).length;
+  for (const b of (bodies || [])) {
+    if (b && b.faces && Array.isArray(b.faces)) {
+      count += triangulate(b.faces).length;
+    }
+  }
   const pos = new Float32Array(count * 3);
   let k = 0;
-  for (const b of bodies)
-    for (const i of triangulate(b.faces)) { const p = b.verts[i]; pos[k++] = p[0]; pos[k++] = p[1]; pos[k++] = p[2]; }
+  for (const b of (bodies || [])) {
+    if (b && b.faces && b.verts && Array.isArray(b.faces)) {
+      for (const i of triangulate(b.faces)) {
+        const p = b.verts[i];
+        if (p) {
+          pos[k++] = p[0];
+          pos[k++] = p[1];
+          pos[k++] = p[2];
+        }
+      }
+    }
+  }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
   g.computeVertexNormals();
@@ -163,13 +177,17 @@ function meshGeometry(bodies) {
 
 function edgeGeometry(bodies) {
   const pos = [];
-  for (const b of bodies)
-    for (const { v, vis } of b.faces)
+  for (const b of (bodies || [])) {
+    if (!b || !b.faces || !b.verts || !Array.isArray(b.faces)) continue;
+    for (const { v, vis } of b.faces) {
+      if (!v || !Array.isArray(v)) continue;
       v.forEach((a, i) => {
-        if (!vis[i]) return;
+        if (vis && !vis[i]) return;
         const p = b.verts[a], q = b.verts[v[(i + 1) % v.length]];
-        pos.push(p[0], p[1], p[2], q[0], q[1], q[2]);
+        if (p && q) pos.push(p[0], p[1], p[2], q[0], q[1], q[2]);
       });
+    }
+  }
   const g = new THREE.BufferGeometry();
   g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
   return g;
@@ -1464,10 +1482,10 @@ export function addConceptualMassBlock({ width = 30, depth = 25, levels = 6, use
 
   const colorMap = {
     residential: 0xf4f4f6,
-    commercial: 0xf97316,
-    office: 0x38bdf8,
-    mixed: 0xa855f7,
-    equipment: 0x60a5fa
+    commercial: 0xa8a29e,
+    office: 0x94a3b8,
+    mixed: 0xd4d4d8,
+    equipment: 0x78716c
   };
   const mat = new THREE.MeshStandardMaterial({
     color: colorMap[use] || 0xf4f4f6,
@@ -1511,3 +1529,139 @@ export function addConceptualMassBlock({ width = 30, depth = 25, levels = 6, use
   return mesh;
 }
 window.addConceptualMassBlock = addConceptualMassBlock;
+
+let current3DGridHelper = null;
+let current3DAxesHelper = null;
+
+export function set3DWireframeMode(enabled) {
+  if (!ctx || !ctx.group) return;
+  ctx.group.traverse((obj) => {
+    if (obj.isMesh && obj.material) {
+      if (Array.isArray(obj.material)) {
+        obj.material.forEach((m) => { m.wireframe = enabled; });
+      } else {
+        obj.material.wireframe = enabled;
+      }
+    }
+  });
+}
+window.set3DWireframeMode = set3DWireframeMode;
+
+export function set3DGridHelper(enabled) {
+  if (!ctx || !ctx.scene) return;
+  if (enabled) {
+    if (!current3DGridHelper) {
+      const size = ctx.modelSize || 1000;
+      current3DGridHelper = new THREE.GridHelper(size, 20, 0x38bdf8, 0x27272a);
+      current3DGridHelper.rotation.x = Math.PI / 2;
+      current3DGridHelper.position.z = ctx.zMid || 0;
+      ctx.scene.add(current3DGridHelper);
+    }
+    current3DGridHelper.visible = true;
+  } else if (current3DGridHelper) {
+    current3DGridHelper.visible = false;
+  }
+}
+window.set3DGridHelper = set3DGridHelper;
+
+export function set3DAxesHelper(enabled) {
+  if (!ctx || !ctx.scene) return;
+  if (enabled) {
+    if (!current3DAxesHelper) {
+      const size = (ctx.modelSize || 1000) * 0.25;
+      current3DAxesHelper = new THREE.AxesHelper(size);
+      current3DAxesHelper.position.z = ctx.zMid || 0;
+      ctx.scene.add(current3DAxesHelper);
+    }
+    current3DAxesHelper.visible = true;
+  } else if (current3DAxesHelper) {
+    current3DAxesHelper.visible = false;
+  }
+}
+window.set3DAxesHelper = set3DAxesHelper;
+
+export async function loadExternal3DModel(file) {
+  if (!ctx || !ctx.scene || !ctx.group) return null;
+  if (!conceptualBlocksGroup) {
+    conceptualBlocksGroup = new THREE.Group();
+    ctx.group.add(conceptualBlocksGroup);
+  }
+
+  const ext = file.name.split('.').pop().toLowerCase();
+  
+  if (ext === 'glb' || ext === 'gltf') {
+    const { GLTFLoader } = await import('three/addons/loaders/GLTFLoader.js');
+    const loader = new GLTFLoader();
+    const url = URL.createObjectURL(file);
+    return new Promise((resolve, reject) => {
+      loader.load(url, (gltf) => {
+        URL.revokeObjectURL(url);
+        const obj = gltf.scene;
+        const bbox = new THREE.Box3().setFromObject(obj);
+        const size = new THREE.Vector3();
+        bbox.getSize(size);
+        const center = new THREE.Vector3();
+        bbox.getCenter(center);
+        
+        obj.position.x = -center.x;
+        obj.position.y = -center.y;
+        obj.position.z = -bbox.min.z;
+        
+        obj.traverse((child) => {
+          if (child.isMesh) {
+            child.castShadow = true;
+            child.receiveShadow = true;
+          }
+        });
+        
+        conceptualBlocksGroup.add(obj);
+        
+        const footprint = Math.round(size.x * size.y);
+        const height = size.z.toFixed(1);
+        const levels = Math.max(1, Math.round(size.z / 3.2));
+        const gfa = Math.round(footprint * levels);
+        const volume = Math.round(footprint * size.z);
+        const envelope = Math.round(2 * (size.x + size.y) * size.z + footprint);
+        
+        const metrics = { footprint, height, levels, gfa, volume, envelope, name: file.name };
+        window.updateQuantificationUI?.(metrics);
+        resolve(metrics);
+      }, undefined, reject);
+    });
+  } else if (ext === 'obj') {
+    const { OBJLoader } = await import('three/addons/loaders/OBJLoader.js');
+    const loader = new OBJLoader();
+    const text = await file.text();
+    const obj = loader.parse(text);
+    const bbox = new THREE.Box3().setFromObject(obj);
+    const size = new THREE.Vector3();
+    bbox.getSize(size);
+    const center = new THREE.Vector3();
+    bbox.getCenter(center);
+    
+    obj.position.x = -center.x;
+    obj.position.y = -center.y;
+    obj.position.z = -bbox.min.z;
+    
+    obj.traverse((child) => {
+      if (child.isMesh) {
+        child.material = new THREE.MeshStandardMaterial({ color: 0xe4e4e7, roughness: 0.6 });
+        child.castShadow = true;
+        child.receiveShadow = true;
+      }
+    });
+    
+    conceptualBlocksGroup.add(obj);
+    const footprint = Math.round(size.x * size.y);
+    const height = size.z.toFixed(1);
+    const levels = Math.max(1, Math.round(size.z / 3.2));
+    const gfa = Math.round(footprint * levels);
+    const volume = Math.round(footprint * size.z);
+    const envelope = Math.round(2 * (size.x + size.y) * size.z + footprint);
+    
+    const metrics = { footprint, height, levels, gfa, volume, envelope, name: file.name };
+    window.updateQuantificationUI?.(metrics);
+    return metrics;
+  }
+}
+window.loadExternal3DModel = loadExternal3DModel;

@@ -45,16 +45,18 @@ class PinStore {
     return [...this.pins];
   }
 
-  addPin({ x, y, z = 0, lat, lon, color, type, label }) {
+  addPin({ x, y, z = 0, lat, lon, color, type, label, comment, mentions }) {
     const id = 'pin_' + Math.random().toString(36).substr(2, 9);
     const chosenType = type || this.activeType;
     const chosenColor = color || this.activeColor || PIN_TYPES[chosenType]?.defaultColor || '#f97316';
-    const typeObj = PIN_TYPES[chosenType] || PIN_TYPES.hito;
-    const countOfType = this.pins.filter((p) => p.type === chosenType).length + 1;
-    const defaultLabel = `${typeObj.label.split(' / ')[0]} 0${countOfType}`;
+    const count = this.pins.length + 1;
+    const numLabel = count < 10 ? `P0${count}` : `P${count}`;
+    const defaultLabel = label || numLabel;
 
     const newPin = {
       id,
+      number: count,
+      numLabel,
       x: Number(x) || 0,
       y: Number(y) || 0,
       z: Number(z) || 0,
@@ -62,13 +64,18 @@ class PinStore {
       lon: Number(lon) || 0,
       color: chosenColor,
       type: chosenType,
-      label: label || defaultLabel,
+      label: defaultLabel,
+      comment: comment || '',
+      mentions: mentions || [],
       visible: true,
       createdAt: Date.now()
     };
 
     this.pins.push(newPin);
     this.notify();
+    if (window.openPinCommentPopover) {
+      window.openPinCommentPopover(newPin);
+    }
     return newPin;
   }
 

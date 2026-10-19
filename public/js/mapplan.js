@@ -25,9 +25,9 @@ export const GIS_LANDUSE_LABELS = {
 export const MAP_PRESETS = {
   classic: {
     colors: {
-      bg: '#f4f1ea', building: '#d8d0c2', outline: '#6e675f', road: '#ffffff', path: '#ebe3d3', rail: '#77736c',
-      water: '#a9cbe3', green: '#cfe0b8', tree: '#9cc17f', contour: '#c2b295', shadow: '#2b2924',
-      depthLow: '#eef0e2', depthHigh: '#c8ab84', grid: '#b9b2a6', text: '#222222',
+      bg: '#ffffff', building: '#e4e4e7', outline: '#52525b', road: '#ffffff', path: '#f4f4f6', rail: '#71717a',
+      water: '#a9cbe3', green: '#cfe0b8', tree: '#849684', contour: '#a1a1aa', shadow: '#18181b',
+      depthLow: '#f8fafc', depthHigh: '#cbd5e1', grid: '#d4d4d8', text: '#18181b',
     },
     layers: { buildings: true, roads: true, rail: true, water: true, green: true, trees: true, contours: false, site: true, byType: false, byHeight: false, satellite: false, flora: false, fauna: false },
     shadows: { on: true, azimuth: 315, altitude: 35, strength: 0.22 },

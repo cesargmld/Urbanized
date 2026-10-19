@@ -1205,9 +1205,20 @@ export async function applyLang(next = lang) {
     document.querySelectorAll('.lang-select, .lang-pill').forEach((sel) => {
       sel.value = lang;
     });
+
+    // Synchronize flat language toggle buttons
+    document.querySelectorAll('.lang-flat-btn').forEach((btn) => {
+      const isActive = btn.getAttribute('data-lang') === lang;
+      btn.classList.toggle('active', isActive);
+      btn.style.color = isActive ? '#ffffff' : '#71717a';
+      btn.style.fontWeight = isActive ? '700' : '500';
+    });
   }
 
   listeners.forEach((fn) => {
     try { fn(lang); } catch (e) { console.warn('i18n listener error', e); }
   });
+}
+if (typeof window !== 'undefined') {
+  window.applyLang = applyLang;
 }

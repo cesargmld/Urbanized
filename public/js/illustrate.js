@@ -3,7 +3,7 @@ import { pinStore } from './pins.js?v=1.0';
 
 // Urbanized — Axonometría & Maqueta Arquitectónica
 // Proyección axonométrica/isométrica/perspectiva con sombreado solar dinámico,
-// Hatch Punteado (stipple/dots) real en Canvas y SVG, Axonometría Explotada (Cascada QGIS) con placas traslúcidas,
+// Hatch Punteado (stipple/dots) real en Canvas y SVG, Axonometría Isométrica Explotada (Despiece Axonométrico) con placas traslúcidas,
 // base de maqueta (yeso, balsa, estrato geológico), multimapas temáticos, norte técnico CAD y escala gráfica.
 
 export const VIEWS = {
@@ -233,7 +233,7 @@ export function createIllustrator(canvas, model) {
     colors: {},
     classColors: {},
     layers: { terrain: true, buildings: true, trees: true, roads: true, nature: true, contours: false },
-    exploded: false, // Superposición en Cascada / Axonometría Despiezada QGIS
+    exploded: false, // Superposición en Axonometría Isométrica Explotada / Despiece Axonométrico
     explodeOffset: 180, // Desplazamiento vertical base entre niveles
     explodedTiers: {
       contours: true,
@@ -308,7 +308,7 @@ export function createIllustrator(canvas, model) {
     return v.map((x) => x / n);
   }
 
-  // Normaliza nombres de niveles en cascada (water <-> hydrography, roads <-> network)
+  // Normaliza nombres de niveles en despiece axonométrico (water <-> hydrography, roads <-> network)
   function isTierVisible(tierKey) {
     if (!state.exploded) return true;
     const t = state.explodedTiers || {};
@@ -369,7 +369,7 @@ export function createIllustrator(canvas, model) {
     const st = palette();
     const darkTheme = isDarkHex(st.bg);
 
-    // 0. Placas Arquitectónicas Traslúcidas para Axonometría Explotada (Cascada QGIS)
+    // 0. Placas Arquitectónicas Traslúcidas para Axonometría Isométrica Explotada (Despiece)
     const activeTiers = [
       { key: 'contours', z: tierOffsets.contours, label: '01 / TOPOGRAFÍA & CURVAS', accent: '#64748b' },
       { key: 'hydrography', z: tierOffsets.hydrography, label: '02 / HIDROGRAFÍA', accent: '#06b6d4' },
@@ -518,7 +518,7 @@ export function createIllustrator(canvas, model) {
     }
 
     // 4. Naturaleza, Agua y Zonas Verdes
-    // 4A. Agua (Tier 1: Hydrography en Cascada)
+    // 4A. Agua (Tier 1: Hydrography en Despiece)
     if (showTier('hydrography') && state.layers.nature) {
       const off = tierOffsets.hydrography;
       const waterColor = isExp ? (state.tierColors.hydrography || '#06b6d4') : 'water';
@@ -528,7 +528,7 @@ export function createIllustrator(canvas, model) {
       }
     }
 
-    // 4B. Zonas Verdes y Parques (Tier 4: Green Areas en Cascada)
+    // 4B. Zonas Verdes y Parques (Tier 4: Green Areas en Despiece)
     if (showTier('green') && state.layers.nature) {
       const off = tierOffsets.green;
       for (const ring of model.areas?.GREEN ?? []) {
@@ -553,7 +553,7 @@ export function createIllustrator(canvas, model) {
       }
     }
 
-    // 5. Red Vial (Tier 2: Network en Cascada)
+    // 5. Red Vial (Tier 2: Network en Despiece)
     if (showTier('network') && state.layers.roads) {
       const off = tierOffsets.network;
       const netColor = isExp ? (state.tierColors.network || '#f59e0b') : null;
@@ -643,7 +643,7 @@ export function createIllustrator(canvas, model) {
       }
     }
 
-    // 8. Edificios 3D con tipologías, alturas y Edificio Héroe / Proyecto (Tier 3: Urban Areas en Cascada)
+    // 8. Edificios 3D con tipologías, alturas y Edificio Héroe / Proyecto (Tier 3: Morfología Urbana en Despiece)
     if (showTier('buildings') && state.layers.buildings) {
       const off = tierOffsets.buildings;
       const bColor = isExp ? (state.tierColors.buildings || '#ffffff') : null;
@@ -729,7 +729,7 @@ export function createIllustrator(canvas, model) {
       }
     }
 
-    // 11. Guías Verticales en Esquinas para Cascada Explotada
+    // 11. Guías Verticales en Esquinas para Axonometría Isométrica Explotada
     if (isExp && state.explodedGuides && activeTiers.length > 1) {
       const zMin = activeTiers[0].z;
       const zMax = activeTiers[activeTiers.length - 1].z + 18;
@@ -967,7 +967,7 @@ export function createIllustrator(canvas, model) {
     return { items: out, cam, st };
   }
 
-  /* --- Opciones Arquitectónicas: Norte CAD, Escala de Precisión, Retícula y Callouts de Cascada --- */
+  /* --- Opciones Arquitectónicas: Norte CAD, Escala de Precisión, Retícula y Callouts de Despiece Axonométrico --- */
   function drawOverlays(ctx, width, height, cam) {
     const st = palette();
     const darkBg = isDarkHex(st.bg);
@@ -1224,7 +1224,7 @@ export function createIllustrator(canvas, model) {
       ctx.restore();
     }
 
-    // 4. Callouts Técnicos de Capas en Cascada (Exploded Axonometry) con Contraste Adaptativo
+    // 4. Callouts Técnicos de Capas en Axonometría Isométrica Explotada (Despiece Axonométrico) con Contraste Adaptativo
     if (state.exploded && state.explodedCornerLabels) {
       ctx.save();
       const half = (model.size || 1000) / 2;
