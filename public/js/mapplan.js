@@ -39,15 +39,28 @@ export const MAP_PRESETS = {
   figure: {
     colors: {
       bg: '#ffffff', building: '#111114', outline: '#111114', road: '#ffffff', path: '#ffffff', rail: '#9a9a9a',
-      water: '#e4e4e7', green: '#f4f4f5', tree: '#d4d4d8', contour: '#d4d4d8', shadow: '#000000',
+      water: '#e4e4e7', green: '#ffffff', tree: '#ffffff', contour: '#ffffff', shadow: '#000000',
       depthLow: '#ffffff', depthHigh: '#bdbdbd', grid: '#d4d4d8', text: '#111114',
     },
-    layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: true, byType: false, byHeight: false, satellite: false, flora: false, fauna: false },
+    layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: false, byType: false, byHeight: false, satellite: false, flora: false, fauna: false },
     shadows: { on: false, azimuth: 315, altitude: 35, strength: 0.2 },
     relief: { hillshade: false, hillshadeStrength: 0.4, depth: false, depthStrength: 0.6 },
-    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: true, pins: true, contourLabels: false, legend: false, studioStamp: true },
+    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: false, pins: false, contourLabels: false, legend: false, studioStamp: true },
     hatchMode: 'solid',
-    outlineWidth: 0,
+    outlineWidth: 0.08,
+  },
+  figure_invert: {
+    colors: {
+      bg: '#090a0d', building: '#ffffff', outline: '#ffffff', road: '#090a0d', path: '#090a0d', rail: '#555b68',
+      water: '#162b42', green: '#090a0d', tree: '#090a0d', contour: '#090a0d', shadow: '#000000',
+      depthLow: '#090a0d', depthHigh: '#22262f', grid: '#27272a', text: '#ffffff',
+    },
+    layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: false, byType: false, byHeight: false, satellite: false, flora: false, fauna: false },
+    shadows: { on: false, azimuth: 315, altitude: 35, strength: 0.2 },
+    relief: { hillshade: false, hillshadeStrength: 0.4, depth: false, depthStrength: 0.6 },
+    overlays: { scalebar: true, north: true, grid: false, isochrones: false, labels: false, pins: false, contourLabels: false, legend: false, studioStamp: true },
+    hatchMode: 'solid',
+    outlineWidth: 0.08,
   },
   gis: {
     colors: {
@@ -217,8 +230,9 @@ export function mapSVG(model, o) {
   const groups = [];
   const layerSnippets = {};
   const gl = (id, attrs, body) => (body ? `<g id="${id}" ${attrs}>${body}</g>` : '');
-  const lines = (layer) => (model.lines[layer] ?? []).map((pts) => ring(pts, false)).join('');
-  const areas = (layer) => (model.areas[layer] ?? []).map((pts) => ring(pts)).join('');
+  const getLayerPoints = (item) => (Array.isArray(item) ? item : (item?.pts || []));
+  const lines = (layer) => (model.lines?.[layer] ?? []).map((item) => ring(getLayerPoints(item), false)).join('');
+  const areas = (layer) => ((model.areas?.[layer] || model.polygons?.[layer]) ?? []).map((item) => ring(getLayerPoints(item))).join('');
 
   // Configuración de Tramas / Hatches Vectoriales Reales (<pattern>)
   const hatchMode = o.hatchMode || (o.preset === 'stipple' ? 'dots' : 'solid');
@@ -264,7 +278,7 @@ export function mapSVG(model, o) {
     }
     if (mode === 'diag') return 'url(#arch-hatch-diag)';
     if (mode === 'cross') return 'url(#arch-hatch-cross)';
-    if (mode === 'none') return 'none';
+    if (mode === 'transparent') return 'none';
     return fallbackColor;
   };
 
@@ -284,7 +298,7 @@ export function mapSVG(model, o) {
 
   // 1. Relieve
   layerSnippets.relief = (() => {
-    if (model.grid.maxH <= 0.5) return '';
+    if (!model.grid || (model.grid.maxH ?? 0) <= 0.5) return '';
     const parts = [];
     if (o.relief.depth)
       parts.push(gl('RELIEF_DEPTH', `opacity="${o.relief.depthStrength}"`, `<image href="${reliefRaster(model.grid, 'depth', { low: c.depthLow, high: c.depthHigh })}" x="0" y="0" width="${size}" height="${size}" preserveAspectRatio="none"/>`));

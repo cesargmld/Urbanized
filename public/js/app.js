@@ -329,8 +329,34 @@ function renderLoadingProgress(pct) {
   currentLoadingPct = Math.min(100, Math.max(0, pct));
   const fill = $('#axiom-laser-fill');
   const pctEl = $('#loading-pct');
+  const badge = $('#loading-pct-badge');
   if (fill) fill.style.width = `${currentLoadingPct}%`;
   if (pctEl) pctEl.textContent = `${Math.round(currentLoadingPct)}%`;
+  if (badge) badge.textContent = `${Math.round(currentLoadingPct)}%`;
+
+  const sOsm = $('#load-src-osm');
+  const sDem = $('#load-src-dem');
+  const sRoads = $('#load-src-roads');
+  const sWater = $('#load-src-water');
+  if (sOsm) {
+    if (currentLoadingPct > 35) { sOsm.style.color = '#4ade80'; sOsm.textContent = '✓ Cargado'; }
+    else { sOsm.style.color = '#38bdf8'; sOsm.textContent = 'Descargando...'; }
+  }
+  if (sDem) {
+    if (currentLoadingPct > 65) { sDem.style.color = '#4ade80'; sDem.textContent = '✓ Cargado'; }
+    else if (currentLoadingPct > 35) { sDem.style.color = '#38bdf8'; sDem.textContent = 'Malla DEM...'; }
+    else { sDem.style.color = '#71717a'; sDem.textContent = 'En espera'; }
+  }
+  if (sRoads) {
+    if (currentLoadingPct > 82) { sRoads.style.color = '#4ade80'; sRoads.textContent = '✓ Cargado'; }
+    else if (currentLoadingPct > 65) { sRoads.style.color = '#38bdf8'; sRoads.textContent = 'Trazando ejes...'; }
+    else { sRoads.style.color = '#71717a'; sRoads.textContent = 'En espera'; }
+  }
+  if (sWater) {
+    if (currentLoadingPct >= 96) { sWater.style.color = '#4ade80'; sWater.textContent = '✓ Listo'; }
+    else if (currentLoadingPct > 82) { sWater.style.color = '#38bdf8'; sWater.textContent = 'Sincronizando...'; }
+    else { sWater.style.color = '#71717a'; sWater.textContent = 'En espera'; }
+  }
 }
 
 function updateLoadingModal(stepKey) {
@@ -869,12 +895,19 @@ async function showSection(sec) {
   if (secState.url) URL.revokeObjectURL(secState.url);
   secState.url = URL.createObjectURL(SECTION_FORMATS.svg.make(sec));
 
-  // Keep legacy detached modal hidden to preserve unified workspace workflow
-  const readyPill = $('#section-ready-pill');
-  if (readyPill) readyPill.hidden = true;
-
+  // Show topographic section analysis modal immediately
   const modal = $('#section-modal');
-  if (modal) modal.hidden = true;
+  if (modal) {
+    modal.hidden = false;
+    modal.removeAttribute('hidden');
+    modal.style.display = 'flex';
+  }
+
+  const readyPill = $('#section-ready-pill');
+  if (readyPill) {
+    readyPill.hidden = false;
+    readyPill.removeAttribute('hidden');
+  }
 
   const metaDrawer = $('#sec-meta-drawer');
   if (metaDrawer) {
@@ -1827,7 +1860,10 @@ document.querySelectorAll('.dl[data-section]').forEach((btn) =>
 
 function setMode(next) {
   mode = next;
-  document.querySelectorAll('[data-mode]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.mode === next)));
+  document.querySelectorAll('[data-mode]').forEach((b) => {
+    b.setAttribute('aria-pressed', String(b.dataset.mode === next));
+    b.classList.toggle('active', b.dataset.mode === next);
+  });
   const modelTools = $('#model-tools');
   if (modelTools) modelTools.hidden = next !== 'model';
   const sectionTools = $('#section-tools');
@@ -2143,7 +2179,10 @@ function openIllustrator() {
   if (soilBadge && model.ecosystem?.soil) {
     soilBadge.textContent = model.ecosystem.soil;
   }
-  requestAnimationFrame(() => illu.render());
+    illu.render();
+    if (typeof requestAnimationFrame !== 'undefined') {
+      requestAnimationFrame(() => illu.render());
+    }
 }
 window.openIllustratorStudio = openIllustrator;
 
@@ -2548,22 +2587,41 @@ function renderMap(refit = false) {
   if (!model || !mapMod || !mapBox) return;
   if (mapQueued && !refit) return;
   mapQueued = true;
-  requestAnimationFrame(() => {
+  const doRender = () => {
+    if (!mapQueued && !refit) return;
     mapQueued = false;
-    const svg = mapMod.mapSVG(model, mapOpts);
-    if (mapUrl) URL.revokeObjectURL(mapUrl);
-    mapUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
-    const img = mapBox.querySelector('img');
-    if (!img) return;
-    img.onload = () => {
-      // размер листа изменился (масштаб, поля сетки) — вписываем заново, иначе сохраняем вид
-      const sz = `${img.naturalWidth}x${img.naturalHeight}`;
-      if (refit || sz !== mapSize || !flatState.get(mapBox)) fitFlat(mapBox);
-      mapSize = sz;
-    };
-    img.src = mapUrl;
-  });
+    try {
+      const svg = mapMod.mapSVG(model, mapOpts);
+      if (mapUrl) URL.revokeObjectURL(mapUrl);
+      mapUrl = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
+      const img = mapBox.querySelector('img');
+      if (!img) return;
+      img.onload = () => {
+        // размер листа изменился (масштаб, поля сетки) — вписываем заново, иначе сохраняем вид
+        const sz = `${img.naturalWidth}x${img.naturalHeight}`;
+        if (refit || sz !== mapSize || !flatState.get(mapBox)) fitFlat(mapBox);
+        mapSize = sz;
+      };
+      img.src = mapUrl;
+    } catch (err) {
+      console.error('Error in renderMap SVG generation:', err);
+    }
+  };
+  if (typeof requestAnimationFrame !== 'undefined') {
+    requestAnimationFrame(doRender);
+    setTimeout(() => { if (mapQueued) doRender(); }, 40);
+  } else {
+    doRender();
+  }
 }
+window.debugMapStatus = () => ({
+  model: Boolean(model),
+  mapMod: Boolean(mapMod),
+  mapBox: Boolean(mapBox),
+  mapOpts: Boolean(mapOpts),
+  mapQueued,
+  mapSize
+});
 
 function syncMapControls() {
   if (!mapOpts) return;
@@ -2790,6 +2848,25 @@ document.querySelectorAll('[data-mappreset]').forEach((b) => b.addEventListener(
   syncMapControls();
   renderMap();
 }));
+
+window.setMapPreset = async (presetName) => {
+  await loadMapMod();
+  if (!mapMod) return;
+  const scale = mapOpts?.scale ?? null, overlays = mapOpts?.overlays;
+  mapOpts = mapMod.presetOptions(presetName);
+  mapOpts.scale = scale;
+  if (overlays) mapOpts.overlays = { ...overlays, ...mapOpts.overlays };
+  syncMapControls();
+  renderMap();
+  const sel = $('#inspector-map-preset-select');
+  if (sel) sel.value = presetName.startsWith('figure') ? 'figure' : presetName;
+};
+
+window.setMapPen = (penVal) => {
+  if (!mapOpts) return;
+  mapOpts.outlineWidth = penVal;
+  renderMap();
+};
 $('#map-hatch-mode')?.addEventListener('change', (e) => {
   if (mapOpts) {
     mapOpts.hatchMode = e.target.value;

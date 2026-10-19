@@ -1,15 +1,15 @@
 [
   {
-    "id": "usr_cgm_master",
-    "name": "Cesar González",
-    "email": "cesar@cgmatelier.com",
+    "id": "usr_demo_master",
+    "name": "Estudio Urbano",
+    "email": "demo@estudio.com",
     "salt": "fdcc6e364836fa26609c1c422d133707",
     "hash": "f44e107aaa0f8634b3f5d3997f51a844a7a7b1690b83def04b31d2aab9a6013c6efb8bc7aa5cdc70aa7ec50fa3d36bd45cfba3f0167f57cf6a96de4391820a3f",
     "workspaces": [
-      "CGM Atelier",
-      "Estudio Principal"
+      "Taller Principal",
+      "Estudio Urbano"
     ],
-    "activeWorkspace": "CGM Atelier",
+    "activeWorkspace": "Taller Principal",
     "createdAt": "2026-10-19T04:44:17.733Z"
   },
   {

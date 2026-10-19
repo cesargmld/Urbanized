@@ -43,7 +43,7 @@ function linesOf(model) {
   const out = Object.entries(model.lines ?? {}).map(([layer, lines]) => ({ layer, items: (lines || []).map((pts) => ({ pts: Array.isArray(pts) ? pts : (pts?.pts || []), closed: false })) }));
   for (const [layer, rings] of Object.entries(model.areas ?? {})) out.push({ layer, items: (rings || []).map((pts) => ({ pts, closed: true })) });
   for (const { layer, polys } of model.roadAreas ?? []) out.push({ layer, items: polys.flatMap((rings) => rings.map((pts) => ({ pts, closed: true }))) });
-  if (model.contours.length) out.push({ layer: LAYERS.CONTOURS, items: model.contours.map((c) => ({ pts: c.pts, closed: c.closed })) });
+  if (model.contours?.length) out.push({ layer: LAYERS.CONTOURS, items: model.contours.map((c) => ({ pts: c.pts, closed: c.closed })) });
   if (model.site?.length > 2) out.push({ layer: LAYERS.SITE, items: [{ pts: model.site, closed: true }] });
   return out;
 }
