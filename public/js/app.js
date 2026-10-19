@@ -1203,23 +1203,37 @@ document.querySelectorAll('.bio-subtab').forEach((tab) => {
   });
 });
 
-// Studio Toolbar: Render Mode Buttons (Urbano GIS | Maqueta 3D Monocromática)
+// Studio Toolbar: Render Mode Buttons (Urbano GIS | Maqueta 3D Monocromática | Nolli B/N)
 $('#btn-render-model')?.addEventListener('click', () => {
   $('#btn-render-maqueta')?.classList.remove('active');
+  $('#btn-render-nolli-3d')?.classList.remove('active');
   $('#btn-render-model')?.classList.add('active');
   $('#btn-render-model .axiom-island-dot, #btn-render-model .axiom-dot')?.classList.add('active');
-  $('#btn-render-maqueta .axiom-island-dot, #btn-render-maqueta .axiom-dot')?.classList.remove('active');
+  $('#btn-render-maqueta .axiom-island-dot, #btn-render-maqueta .axiom-dot, #btn-render-nolli-3d .axiom-island-dot')?.classList.remove('active');
   selectView('model');
+  if (window.set3DNolliMode) window.set3DNolliMode(false);
   toggleMaquetaMode(false);
 });
 
 $('#btn-render-maqueta')?.addEventListener('click', () => {
   $('#btn-render-model')?.classList.remove('active');
+  $('#btn-render-nolli-3d')?.classList.remove('active');
   $('#btn-render-maqueta')?.classList.add('active');
   $('#btn-render-maqueta .axiom-island-dot, #btn-render-maqueta .axiom-dot')?.classList.add('active');
-  $('#btn-render-model .axiom-island-dot, #btn-render-model .axiom-dot')?.classList.remove('active');
+  $('#btn-render-model .axiom-island-dot, #btn-render-model .axiom-dot, #btn-render-nolli-3d .axiom-island-dot')?.classList.remove('active');
   selectView('model');
+  if (window.set3DNolliMode) window.set3DNolliMode(false);
   toggleMaquetaMode(true);
+});
+
+$('#btn-render-nolli-3d')?.addEventListener('click', () => {
+  $('#btn-render-model')?.classList.remove('active');
+  $('#btn-render-maqueta')?.classList.remove('active');
+  $('#btn-render-nolli-3d')?.classList.add('active');
+  $('#btn-render-nolli-3d .axiom-island-dot')?.classList.add('active');
+  $('#btn-render-model .axiom-island-dot, #btn-render-model .axiom-dot, #btn-render-maqueta .axiom-island-dot, #btn-render-maqueta .axiom-dot')?.classList.remove('active');
+  selectView('model');
+  if (window.set3DNolliMode) window.set3DNolliMode(true, false);
 });
 
 // Studio Toolbar: Camera Orbit 3D, Isométrica 45° & Cenital
@@ -2179,12 +2193,112 @@ function openIllustrator() {
   if (soilBadge && model.ecosystem?.soil) {
     soilBadge.textContent = model.ecosystem.soil;
   }
-    illu.render();
-    if (typeof requestAnimationFrame !== 'undefined') {
-      requestAnimationFrame(() => illu.render());
-    }
+  renderIlluLayerStackControls();
+  illu.render();
+  if (typeof requestAnimationFrame !== 'undefined') {
+    requestAnimationFrame(() => illu.render());
+  }
 }
 window.openIllustratorStudio = openIllustrator;
+
+const ILLU_LAYERS_INFO = [
+  { key: 'buildings', name: 'Edificios 3D', icon: '🏛️' },
+  { key: 'trees', name: 'Arbolado Urbano', icon: '🌳' },
+  { key: 'roads', name: 'Red Vial y Puentes', icon: '🛣️' },
+  { key: 'nature', name: 'Agua y Áreas Verdes', icon: '💧' },
+  { key: 'contours', name: 'Curvas de Nivel Topográficas', icon: '🏔️' }
+];
+let illuLayerOrder = ['buildings', 'trees', 'roads', 'nature', 'contours'];
+
+function renderIlluLayerStackControls() {
+  const container = document.getElementById('illu-layer-stack');
+  if (!container || !illu) return;
+
+  container.innerHTML = illuLayerOrder.map((key, idx) => {
+    const info = ILLU_LAYERS_INFO.find((l) => l.key === key) || { key, name: key, icon: '' };
+    const isVisible = illu.state?.layers?.[key] !== false;
+
+    return `
+      <div class="axiom-layer-item" data-illukey="${key}" draggable="true">
+        <div class="axiom-layer-head">
+          <span class="layer-drag-handle" title="Arrastrar para sobreponer capa">⠿</span>
+          <label class="axiom-layer-left">
+            <input type="checkbox" class="layer-vis-cb" ${isVisible ? 'checked' : ''}>
+            <span class="axiom-layer-icon">${info.icon}</span>
+            <span class="axiom-layer-name">${info.name}</span>
+          </label>
+          <div class="axiom-layer-actions">
+            <button type="button" class="layer-reorder-btn btn-layer-up" ${idx === 0 ? 'disabled' : ''} title="Subir nivel visual">▲</button>
+            <button type="button" class="layer-reorder-btn btn-layer-down" ${idx === illuLayerOrder.length - 1 ? 'disabled' : ''} title="Bajar nivel visual">▼</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  let draggedIdx = null;
+  container.querySelectorAll('.axiom-layer-item').forEach((itemEl, idx) => {
+    const key = itemEl.getAttribute('data-illukey');
+    const cb = itemEl.querySelector('.layer-vis-cb');
+    const btnUp = itemEl.querySelector('.btn-layer-up');
+    const btnDown = itemEl.querySelector('.btn-layer-down');
+
+    cb?.addEventListener('change', () => {
+      illu.setLayer(key, cb.checked);
+      document.querySelectorAll(`[data-illlayer="${key}"]`).forEach(c => c.checked = cb.checked);
+      if (window.showCadToast) window.showCadToast(`Capa ${key} ${cb.checked ? 'visible' : 'oculta'}`);
+    });
+
+    itemEl.addEventListener('dragstart', (e) => {
+      draggedIdx = idx;
+      itemEl.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(idx));
+    });
+    itemEl.addEventListener('dragend', () => {
+      itemEl.classList.remove('dragging');
+      container.querySelectorAll('.axiom-layer-item').forEach(el => el.classList.remove('drag-over'));
+    });
+    itemEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      itemEl.classList.add('drag-over');
+    });
+    itemEl.addEventListener('dragleave', () => {
+      itemEl.classList.remove('drag-over');
+    });
+    itemEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      itemEl.classList.remove('drag-over');
+      if (draggedIdx === null || draggedIdx === idx) return;
+      const moved = illuLayerOrder.splice(draggedIdx, 1)[0];
+      illuLayerOrder.splice(idx, 0, moved);
+      renderIlluLayerStackControls();
+      illu.render();
+      if (window.showCadToast) window.showCadToast('✓ Capa axonométrica sobrepuesta');
+    });
+
+    btnUp?.addEventListener('click', () => {
+      if (idx > 0) {
+        const temp = illuLayerOrder[idx];
+        illuLayerOrder[idx] = illuLayerOrder[idx - 1];
+        illuLayerOrder[idx - 1] = temp;
+        renderIlluLayerStackControls();
+        illu.render();
+      }
+    });
+
+    btnDown?.addEventListener('click', () => {
+      if (idx < illuLayerOrder.length - 1) {
+        const temp = illuLayerOrder[idx];
+        illuLayerOrder[idx] = illuLayerOrder[idx + 1];
+        illuLayerOrder[idx + 1] = temp;
+        renderIlluLayerStackControls();
+        illu.render();
+      }
+    });
+  });
+}
 
 // палитры редактора: основные цвета и, при раскраске по типам, цвета классов
 const SWATCHES = ['bg', 'terrain', 'building', 'water', 'green', 'tree', 'road', 'roadMajor', 'bridge'];
@@ -2711,8 +2825,9 @@ function renderLayerStackControls() {
     const curHatch = mapOpts.layerHatches[key] || 'none';
 
     return `
-      <div class="axiom-layer-item" data-layerkey="${key}">
+      <div class="axiom-layer-item" data-layerkey="${key}" draggable="true">
         <div class="axiom-layer-head">
+          <span class="layer-drag-handle" title="Arrastrar para reordenar capa">⠿</span>
           <label class="axiom-layer-left">
             <input type="checkbox" class="layer-vis-cb" ${isVisible ? 'checked' : ''}>
             <span class="axiom-layer-icon">${info.icon}</span>
@@ -2739,6 +2854,8 @@ function renderLayerStackControls() {
     `;
   }).join('');
 
+  let draggedLayerIdx = null;
+
   container.querySelectorAll('.axiom-layer-item').forEach((itemEl, idx) => {
     const key = itemEl.getAttribute('data-layerkey');
     const visCb = itemEl.querySelector('.layer-vis-cb');
@@ -2747,6 +2864,36 @@ function renderLayerStackControls() {
     const hatchSel = itemEl.querySelector('.layer-hatch-select');
     const btnUp = itemEl.querySelector('.btn-layer-up');
     const btnDown = itemEl.querySelector('.btn-layer-down');
+
+    // Drag and Drop Layer Reordering
+    itemEl.addEventListener('dragstart', (e) => {
+      draggedLayerIdx = idx;
+      itemEl.classList.add('dragging');
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/plain', String(idx));
+    });
+    itemEl.addEventListener('dragend', () => {
+      itemEl.classList.remove('dragging');
+      container.querySelectorAll('.axiom-layer-item').forEach(el => el.classList.remove('drag-over'));
+    });
+    itemEl.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = 'move';
+      itemEl.classList.add('drag-over');
+    });
+    itemEl.addEventListener('dragleave', () => {
+      itemEl.classList.remove('drag-over');
+    });
+    itemEl.addEventListener('drop', (e) => {
+      e.preventDefault();
+      itemEl.classList.remove('drag-over');
+      if (draggedLayerIdx === null || draggedLayerIdx === idx) return;
+      const movedItem = mapOpts.layerOrder.splice(draggedLayerIdx, 1)[0];
+      mapOpts.layerOrder.splice(idx, 0, movedItem);
+      renderLayerStackControls();
+      renderMap();
+      if (window.showCadToast) window.showCadToast('✓ Capa reordenada');
+    });
 
     hatchSel?.addEventListener('change', () => {
       if (!mapOpts.layerHatches) mapOpts.layerHatches = {};
@@ -2964,47 +3111,41 @@ $('#illu-scale-style')?.addEventListener('change', (e) => {
   }
 });
 
-// Interconexión Cartografía 2D -> Terreno Modelo 3D
-async function applyCartographyAs3DBase() {
+// Interconexión Cartografía 2D -> Axonometría Arquitectónica
+async function projectCartographyToAxonometry() {
   if (!model) return;
-  await loadMapMod();
-  const cleanOpts = structuredClone(mapOpts);
-  cleanOpts.overlays = {
-    ...cleanOpts.overlays,
-    grid: false,
-    frame: false,
-    scalebar: false,
-    north: false,
-    title: false,
-    cartoLegend: false
-  };
-  const svg = mapMod.mapSVG(model, cleanOpts);
-  const blob = await mapMod.mapPNG(svg, 2048);
-  const url = URL.createObjectURL(blob);
-  try {
-    const img = await new Promise((resolve, reject) => {
-      const i = new Image();
-      i.onload = () => resolve(i);
-      i.onerror = reject;
-      i.src = url;
+  if (!illu) openIllustrator();
+  if (illu && illu.setState) {
+    const tierColors = {};
+    if (mapOpts.colors?.water) tierColors.water = mapOpts.colors.water;
+    if (mapOpts.colors?.green) tierColors.green = mapOpts.colors.green;
+    if (mapOpts.colors?.roads) tierColors.roads = mapOpts.colors.roads;
+    if (mapOpts.colors?.buildings) tierColors.buildings = mapOpts.colors.buildings;
+
+    illu.setState({
+      hatchMode: mapOpts.hatchMode || 'none',
+      stippleInk: mapOpts.colors?.buildings || '#1e3a8a',
+      tierColors: {
+        ...(illu.getState?.()?.tierColors || {}),
+        ...tierColors
+      },
+      layers: {
+        terrain: mapOpts.layers?.relief ?? true,
+        buildings: mapOpts.layers?.buildings ?? true,
+        trees: mapOpts.layers?.trees ?? true,
+        roads: mapOpts.layers?.roads ?? true,
+        nature: mapOpts.layers?.green ?? true,
+        contours: mapOpts.layers?.contours ?? false
+      }
     });
-    const canvas = document.createElement('canvas');
-    canvas.width = canvas.height = 2048;
-    const c = canvas.getContext('2d');
-    c.drawImage(img, 0, 0, 2048, 2048);
-    model._origImagery ??= model.imagery;
-    model.imagery = { canvas };
-    const { showModel } = await import('./preview.js?v=6.0');
-    showModel($('#viewer'), model, { keepCamera: true });
-    updateSatelliteTexture({ enabled: true, saturation: 100, contrast: 100, brightness: 100, invert: 0 });
-    syncSatelliteDrawer();
-    if (window.switchWorkspaceView) window.switchWorkspaceView('result');
-  } finally {
-    URL.revokeObjectURL(url);
+    illu.render();
   }
+  if (window.switchView) window.switchView('illustrator', true);
+  if (window.showCadToast) window.showCadToast('✓ Estilos y capas de Cartografía 2D proyectados a Axonometría');
 }
-$('#btn-apply-carto-to-3d')?.addEventListener('click', applyCartographyAs3DBase);
-$('#btn-island-apply-carto')?.addEventListener('click', applyCartographyAs3DBase);
+$('#btn-apply-carto-to-3d')?.addEventListener('click', projectCartographyToAxonometry);
+$('#btn-island-apply-carto')?.addEventListener('click', projectCartographyToAxonometry);
+$('#btn-inspector-apply-carto-3d')?.addEventListener('click', projectCartographyToAxonometry);
 
 // Exponer datos y estados del modelo activo para vistas guardadas e interconexión
 window.hasActiveModel = () => Boolean(model);

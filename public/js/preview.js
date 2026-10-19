@@ -209,6 +209,8 @@ function lineGeometry(lines, lift) {
 }
 
 let chunkModeActive = false;
+let nolliModeActive = false;
+let nolliInverted = false;
 
 function buildTerrainSkirtGeometry(grid, size, baseZ, isCircle = false) {
   const half = size / 2;
@@ -470,10 +472,17 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   Object.values(layerGroups).forEach((g) => group.add(g));
 
   const isMaqueta = chunkModeActive;
+  const isNolli = nolliModeActive;
 
   // Lighting & Background setup
   ctx.sun = ctx.sun || scene.children.find((c) => c.isDirectionalLight);
-  if (isMaqueta) {
+  if (isNolli) {
+    scene.background = new THREE.Color(nolliInverted ? 0x090a0d : 0xffffff);
+    if (ctx.sun) {
+      ctx.sun.position.set(0, 0, 2.5 * s);
+      ctx.sun.intensity = 1.0;
+    }
+  } else if (isMaqueta) {
     scene.background = new THREE.Color(0x090a0d);
     if (ctx.sun) {
       ctx.sun.position.set(-0.9 * s, -1.1 * s, 1.8 * s);
@@ -502,7 +511,14 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   if (model.terrain) {
     const geo = meshGeometry([model.terrain]);
     let mat;
-    if (isMaqueta) {
+    if (isNolli) {
+      mat = new THREE.MeshBasicMaterial({
+        color: nolliInverted ? 0x090a0d : 0xffffff,
+        polygonOffset: true,
+        polygonOffsetFactor: 2,
+        polygonOffsetUnits: 2
+      });
+    } else if (isMaqueta) {
       // Monochrome architectural plaster scale model
       mat = new THREE.MeshStandardMaterial({
         color: 0xe4e4e8,
@@ -532,7 +548,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     layerGroups.terrain.add(ctx.terrainMesh);
 
     // Apply live satellite filter if imagery is available
-    if (!isMaqueta && model.imagery) {
+    if (!isNolli && !isMaqueta && model.imagery) {
       updateSatelliteTexture();
     }
 
@@ -542,7 +558,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       const baseZ = minH - s * 0.055;
       const skirtGeo = buildTerrainSkirtGeometry(model.grid, s, baseZ, model.shape === 'circle');
       const skirtMat = new THREE.MeshStandardMaterial({
-        color: isMaqueta ? 0x1c1d22 : 0x14151a,
+        color: isNolli ? (nolliInverted ? 0x090a0d : 0xffffff) : (isMaqueta ? 0x1c1d22 : 0x14151a),
         roughness: 0.94,
         metalness: 0.02,
         side: THREE.DoubleSide
@@ -552,7 +568,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       layerGroups.skirt.add(skirtMesh);
       const skirtEdges = new THREE.LineSegments(
         new THREE.EdgesGeometry(skirtGeo, 30),
-        new THREE.LineBasicMaterial({ color: isMaqueta ? 0x3f3f46 : 0x27272a, transparent: true, opacity: 0.55 })
+        new THREE.LineBasicMaterial({ color: isNolli ? (nolliInverted ? 0x27272a : 0xd4d4d8) : (isMaqueta ? 0x3f3f46 : 0x27272a), transparent: true, opacity: 0.55 })
       );
       layerGroups.skirt.add(skirtEdges);
     }
@@ -587,8 +603,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     other_buildings: 0xd4d4d8
   };
 
-  const edgeColor = isMaqueta ? 0x27272a : 0x18181b;
-  const edgeOp = isMaqueta ? 0.38 : (studioState.buildings.edgeOpacity || 0.45);
+  const edgeColor = isNolli ? (nolliInverted ? 0xffffff : 0x000000) : (isMaqueta ? 0x27272a : 0x18181b);
+  const edgeOp = isNolli ? 1.0 : (isMaqueta ? 0.38 : (studioState.buildings.edgeOpacity || 0.45));
   const finish = studioState.buildings.finish || 'white';
 
   for (const [catKey, bList] of Object.entries(categorized)) {
@@ -606,12 +622,22 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       bldgColor = 0xfafafa;
     }
 
-    const mat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 })
-      : new THREE.MeshStandardMaterial({ color: bldgColor, roughness: 0.88, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    let mat;
+    if (isNolli) {
+      mat = new THREE.MeshBasicMaterial({
+        color: nolliInverted ? 0xffffff : 0x111114,
+        polygonOffset: true,
+        polygonOffsetFactor: 1,
+        polygonOffsetUnits: 1
+      });
+    } else if (isMaqueta) {
+      mat = new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    } else {
+      mat = new THREE.MeshStandardMaterial({ color: bldgColor, roughness: 0.88, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    }
     const bMesh = new THREE.Mesh(geo, mat);
-    bMesh.castShadow = true;
-    bMesh.receiveShadow = true;
+    bMesh.castShadow = !isNolli;
+    bMesh.receiveShadow = !isNolli;
     targetGroup.add(bMesh);
     ctx.buildingMeshes.push(bMesh);
     targetGroup.add(new THREE.LineSegments(edges, new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: edgeOp })));
@@ -624,7 +650,10 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     targetGroup.add(new THREE.LineSegments(lineGeometry(items, 0.9), new THREE.LineBasicMaterial({ color, transparent: true, opacity })));
   };
 
-  if (isMaqueta) {
+  if (isNolli) {
+    addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), nolliInverted ? 0x27272a : 0xe4e4e7, 0.4);
+    addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR', 'PATHS']), nolliInverted ? 0x1e2024 : 0xf4f4f5, 0.3);
+  } else if (isMaqueta) {
     addLinesTo(layerGroups.roads_major, road(['ROADS_MAJOR']), 0x52525b, 0.85);
     addLinesTo(layerGroups.roads_minor, road(['ROADS_MINOR', 'PATHS']), 0x71717a, 0.6);
     addLinesTo(layerGroups.roads_major, road(['RAILWAYS']), 0x3f3f46, 0.8);
@@ -645,11 +674,13 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
 
   // 4. Water (Hydrology)
   if (model.water?.length) {
-    const waterColor = isMaqueta ? 0xd4d4d8 : 0x38bdf8;
-    const waterOp = isMaqueta ? 0.9 : 0.92;
-    const waterMat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: waterColor, roughness: 0.35, metalness: 0.05, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })
-      : new THREE.MeshLambertMaterial({ color: waterColor, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 });
+    const waterColor = isNolli ? (nolliInverted ? 0x090a0d : 0xffffff) : (isMaqueta ? 0xd4d4d8 : 0x38bdf8);
+    const waterOp = isNolli ? 1.0 : (isMaqueta ? 0.9 : 0.92);
+    const waterMat = isNolli
+      ? new THREE.MeshBasicMaterial({ color: waterColor, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })
+      : (isMaqueta
+          ? new THREE.MeshStandardMaterial({ color: waterColor, roughness: 0.35, metalness: 0.05, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 })
+          : new THREE.MeshLambertMaterial({ color: waterColor, transparent: true, opacity: waterOp, polygonOffset: true, polygonOffsetFactor: -4, polygonOffsetUnits: -4 }));
     layerGroups.water.add(new THREE.Mesh(meshGeometry(model.water), waterMat));
   }
 
@@ -663,14 +694,16 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     return { verts: ring, faces };
   });
   if (greens.length) {
-    const greenMat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: 0xdadadd, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })
-      : new THREE.MeshLambertMaterial({ color: 0x4ade80, transparent: true, opacity: 0.45, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 });
+    const greenMat = isNolli
+      ? new THREE.MeshBasicMaterial({ color: nolliInverted ? 0x090a0d : 0xffffff, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })
+      : (isMaqueta
+          ? new THREE.MeshStandardMaterial({ color: 0xdadadd, roughness: 0.95, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 })
+          : new THREE.MeshLambertMaterial({ color: 0x4ade80, transparent: true, opacity: 0.45, polygonOffset: true, polygonOffsetFactor: -3, polygonOffsetUnits: -3 }));
     layerGroups.green.add(new THREE.Mesh(meshGeometry(greens), greenMat));
   }
 
   // 6. Contours (Topography) & Elevation Labels (Moodboard Image 1)
-  if (model.contours?.length) {
+  if (model.contours?.length && !isNolli) {
     const cColor = studioState.contours.color ? parseInt(studioState.contours.color.replace('#', '0x'), 16) : (isMaqueta ? 0x71717a : 0xffffff);
     // Add contour line segments with +0.5m elevation lift so they float cleanly over satellite texture
     const pos = [];
@@ -704,8 +737,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     }
   }
 
-  // 7. Trees
-  if (model.trees?.length) {
+  // 7. Trees (hidden in Nolli mode for pure architectural full/empty contrast)
+  if (model.trees?.length && !isNolli) {
     const unit = meshGeometry([UNIT_TREE]);
     const treeMat = isMaqueta
       ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
@@ -733,15 +766,13 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   render3DPins();
   renderFeasibilityVolume();
 
-  // Camera placement
+  // Camera placement: Centered in middle viewport at true 45° architectural isometric angle
   if (!keepCamera) {
     camera.fov = 35;
     controls.target.set(0, 0, zMid);
-    if (isMaqueta) {
-      camera.position.set(s * 0.82, -s * 0.82, s * 0.76 + zMid);
-    } else {
-      camera.position.set(s * 0.62, -s * 0.95, s * 0.72 + zMid);
-    }
+    const isoDist = s * 1.55;
+    const cos45 = Math.SQRT1_2; // 0.707106...
+    camera.position.set(isoDist * cos45, -isoDist * cos45, s * 1.05 + zMid);
     camera.near = Math.max(1, s / 1000);
     camera.far = s * 40;
     camera.updateProjectionMatrix();
@@ -751,6 +782,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   document.getElementById('view-btn-studio')?.classList.remove('disabled');
   document.getElementById('view-btn-mapper')?.classList.remove('disabled');
   document.getElementById('view-btn-illu')?.classList.remove('disabled');
+  document.getElementById('view-btn-comp')?.classList.remove('disabled');
 }
 
 export function setLayerVisibility(key, visible) {
@@ -1725,9 +1757,24 @@ export function setSectionCutAxis(axis) {
   else if (axis === 'z') sectionPlane.normal.set(0, 0, -1);
 }
 
+export function set3DNolliMode(enabled, inverted = false) {
+  nolliModeActive = Boolean(enabled);
+  nolliInverted = Boolean(inverted);
+  if (nolliModeActive) {
+    chunkModeActive = false;
+    setCameraView('top');
+  }
+  if (!ctx || !ctx.lastModel) return;
+  showModel(null, ctx.lastModel, { keepCamera: true, chunkMode: false });
+}
+export const is3DNolliActive = () => nolliModeActive;
+
 window.toggleSectionCut3D = toggleSectionCut3D;
 window.setSectionCutPosition = setSectionCutPosition;
 window.setSectionCutAxis = setSectionCutAxis;
 window.isSectionCutActive = () => isSectionActive;
 window.toggleMaquetaMode = toggleMaquetaMode;
 window.isMaquetaModeActive = isMaquetaModeActive;
+window.set3DNolliMode = set3DNolliMode;
+window.is3DNolliActive = is3DNolliActive;
+

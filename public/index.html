@@ -39,12 +39,10 @@
         <span class="axiom-brand-title">URBNZD</span>
       </div>
 
-      <!-- Dedicated Workspace Selector / Home Trigger on Topbar Left -->
-      <button type="button" class="axiom-btn-secondary" id="view-btn-home" data-switchview="workspace-home" style="font-size:11px; padding:4px 10px; display:inline-flex; align-items:center; gap:6px; border-radius:8px; border:1px solid rgba(255,255,255,0.12); margin-left:4px; font-weight:500;" title="Workspace & Proyectos">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-        <span id="header-ws-name">Workspace: Personal</span>
-        <span class="axiom-ws-badge" id="header-ws-badge" style="font-size:9.5px; padding:1px 5px; border-radius:4px; background:rgba(255,255,255,0.08); color:#a1a1aa;">Invitado</span>
-        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      <!-- Minimal Clean Workspace Trigger Pill [ 🏢 | E | Estudio ] -->
+      <button type="button" class="axiom-btn-secondary" id="view-btn-home" data-switchview="workspace-home" style="font-size:11px; padding:3px 9px; display:inline-flex; align-items:center; gap:6px; border-radius:9999px; border:1px solid rgba(255,255,255,0.12); margin-left:4px; font-weight:500;" title="Proyectos y Workspace">
+        <span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700; font-size:10px;">E</span>
+        <span id="header-ws-name" style="color:#f4f4f6;">Estudio</span>
       </button>
 
       <!-- Search Bar in Topbar Left -->
@@ -55,20 +53,39 @@
       </div>
     </div>
 
-    <!-- Center Mode Switcher Capsule (Strictly the 4 core creative production modes) -->
+    <!-- Center Mode Switcher Capsule: Map --- [3D Model | 2D Cartography | Axonometry] --- Composition -->
     <div class="axiom-topbar-center">
       <nav class="axiom-view-nav" role="tablist">
+        <!-- Cluster 1: Territorial Map -->
         <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
           <span data-i18n="nav.map">Mapa</span>
         </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result">
-          <span data-i18n="nav.studio">Modelo 3D</span>
-        </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper">
-          <span data-i18n="nav.vector">Cartografía 2D</span>
-        </button>
-        <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator">
-          <span data-i18n="nav.illu">Axonometría</span>
+
+        <span class="axiom-nav-cluster-sep"></span>
+
+        <!-- Cluster 2: Production Studios (3D Model | 2D Cartography | Axonometry) -->
+        <div class="axiom-nav-subgroup">
+          <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+            <span data-i18n="nav.studio">Modelo 3D</span>
+          </button>
+          <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
+            <span data-i18n="nav.vector">Cartografía 2D</span>
+          </button>
+          <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+            <span data-i18n="nav.illu">Axonometría</span>
+          </button>
+        </div>
+
+        <span class="axiom-nav-cluster-sep"></span>
+
+        <!-- Cluster 3: Technical Sheet Composition -->
+        <button type="button" class="axiom-view-btn disabled" id="view-btn-comp" data-view="composition">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+          <span data-i18n="nav.composition">Composición</span>
         </button>
       </nav>
     </div>
@@ -151,10 +168,20 @@
         <header class="rayon-home-header">
           <div class="rayon-breadcrumb-title">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-            <h1 data-i18n="ws.projectsTitle">Proyectos Urbanos</h1>
+            <h1 data-i18n="ws.projectsTitle">Proyectos</h1>
           </div>
 
           <div class="rayon-header-actions">
+            <!-- View Mode Switcher: Grid vs List -->
+            <div class="rayon-segmented" id="ws-view-mode-seg" style="display:inline-flex;">
+              <button type="button" class="rayon-seg-btn active" id="ws-btn-view-grid" title="Vista Cuadrícula">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+              </button>
+              <button type="button" class="rayon-seg-btn" id="ws-btn-view-list" title="Vista Lista">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              </button>
+            </div>
+
             <div class="rayon-search-box">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
               <input type="text" id="ws-search-input" placeholder="Buscar proyectos o zonas..." data-i18n-ph="ws.searchPh">
@@ -292,6 +319,21 @@
             <p style="margin: 0; font-size: 13px;" id="ws-empty-msg">No hay proyectos en esta sección.</p>
           </div>
         </div>
+
+        <!-- Architectural List View Container for Projects -->
+        <div class="rayon-cards-list" id="ws-cards-list" style="display:none;">
+          <div class="rayon-list-header">
+            <span data-i18n="ws.colThumb">Miniatura</span>
+            <span data-i18n="ws.colName">Proyecto</span>
+            <span data-i18n="ws.colLoc">Ubicación</span>
+            <span data-i18n="ws.colData">Edificios / Relieve</span>
+            <span data-i18n="ws.colDate">Modificado</span>
+            <span style="text-align:right;" data-i18n="ws.colActions">Acciones</span>
+          </div>
+          <div id="ws-dynamic-list-rows"></div>
+        </div>
+
+        <input type="file" id="ws-input-change-thumb" accept="image/*" style="display:none;">
       </section>
 
       <!-- 3. RIGHT SIDEBAR (Clean Architectural Project Info) -->
@@ -299,7 +341,7 @@
         <div class="rayon-info-card" style="background:#141518; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:16px;">
           <div class="rayon-info-header" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <strong style="color:#ffffff; font-size:12.5px;" data-i18n="ws.projects">Proyectos Urbanos</strong>
+            <strong style="color:#ffffff; font-size:12.5px;" data-i18n="ws.projects">Proyectos</strong>
           </div>
           <p class="rayon-info-text" style="color:#a1a1aa; font-size:11.5px; line-height:1.5; margin:0 0 12px 0;">
             Modelado paramétrico 3D de ciudades, cartografía analítica QGIS y axonometría arquitectónica con exportación nativa a SketchUp (.skp) y D5 Render.
@@ -1314,11 +1356,11 @@
             </button>
           </div>
 
-          <!-- Cápsula 3: Pliego InDesign (Compositor Global) -->
-          <div class="axiom-island-capsule" id="capsule-compositor-3d" role="group" aria-label="Pliego InDesign" style="border:1px solid rgba(56,189,248,0.25); background:rgba(56,189,248,0.06);">
-            <button type="button" class="axiom-island-btn btn-open-sheet-compositor-global" title="Componer lámina editorial con varias vistas">
+          <!-- Cápsula 3: Composición de Pliegos -->
+          <div class="axiom-island-capsule" id="capsule-compositor-3d" role="group" aria-label="Composición" style="border:1px solid rgba(56,189,248,0.25); background:rgba(56,189,248,0.06);">
+            <button type="button" class="axiom-island-btn btn-open-sheet-compositor-global" data-switchview="composition" title="Componer lámina editorial técnica con varias vistas">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-              <span style="color:#38bdf8; font-weight:600;" data-i18n="nav.compositor">⊞ Pliego InDesign</span>
+              <span style="color:#38bdf8; font-weight:600;" data-i18n="nav.compositor">⊞ Composición</span>
             </button>
           </div>
         </div>
@@ -1587,7 +1629,7 @@
             </div>
 
             <button type="button" class="axiom-cta-btn" id="btn-apply-carto-to-3d" style="margin-top:8px;">
-              <span>Aplicar Cartografía como Base 3D / Axono</span>
+              <span>⟳ Proyectar a Axonometría</span>
             </button>
           </aside>
 
@@ -1813,16 +1855,16 @@
             <button type="button" class="axiom-island-btn" id="btn-island-fit-map" title="Centrar y encuadrar plano completo">
               <span>Centrar Plano</span>
             </button>
-            <button type="button" class="axiom-island-btn" id="btn-island-apply-carto" title="Usar esta cartografía como textura base en Modelo 3D y Axonometría">
-              <span style="color:#38bdf8;" data-i18n="inspector.applyCarto3d">⟳ Aplicar a 3D</span>
+            <button type="button" class="axiom-island-btn" id="btn-island-apply-carto" title="Proyectar estilos de cartografía 2D a Axonometría">
+              <span style="color:#38bdf8;" data-i18n="inspector.applyCarto3d">⟳ Proyectar a Axonometría</span>
             </button>
           </div>
 
-          <!-- Cápsula 3: Pliego InDesign (Compositor Global) -->
-          <div class="axiom-island-capsule" role="group" aria-label="Pliego InDesign" style="border:1px solid rgba(56,189,248,0.25); background:rgba(56,189,248,0.06);">
-            <button type="button" class="axiom-island-btn btn-open-sheet-compositor-global" title="Componer lámina editorial con varias vistas">
+          <!-- Cápsula 3: Pliego Composición -->
+          <div class="axiom-island-capsule" role="group" aria-label="Pliego Composición" style="border:1px solid rgba(56,189,248,0.25); background:rgba(56,189,248,0.06);">
+            <button type="button" class="axiom-island-btn btn-open-sheet-compositor-global" data-switchview="composition" title="Componer lámina editorial con varias vistas">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-              <span style="color:#38bdf8; font-weight:600;" data-i18n="nav.compositor">⊞ Pliego InDesign</span>
+              <span style="color:#38bdf8; font-weight:600;" data-i18n="nav.compositor">⊞ Composición</span>
             </button>
           </div>
         </div>
@@ -1895,7 +1937,7 @@
           </div>
           <div style="margin-top:6px;">
             <button type="button" class="rayon-secondary-btn" id="btn-inspector-apply-carto-3d" style="width:100%; justify-content:center; padding:5px 8px; font-size:10.5px; color:#38bdf8; border-color:rgba(56,189,248,0.25);" data-i18n="inspector.applyCarto3d">
-              ⟳ Proyectar Base a Modelo 3D
+              ⟳ Proyectar a Axonometría
             </button>
           </div>
         </div>
@@ -1998,14 +2040,20 @@
               <p class="export-coords">Controla las capas visibles, mapas temáticos y la axonometría despiezada en 5 niveles</p>
             </div>
 
-            <!-- Capas Visibles -->
+            <!-- Pila de Capas Axonométricas con Drag & Drop -->
             <div class="axiom-editor-group" style="padding:0;">
-              <span class="axiom-sub-header" data-i18n="illu.visibleLayers">Capas Visibles</span>
-              <label class="axiom-check-row"><span data-i18n="illu.layerBuildings">Edificios 3D</span><input type="checkbox" data-illlayer="buildings" checked></label>
-              <label class="axiom-check-row"><span data-i18n="illu.layerTrees">Arbolado</span><input type="checkbox" data-illlayer="trees" checked></label>
-              <label class="axiom-check-row"><span data-i18n="illu.layerRoads">Red vial y puentes</span><input type="checkbox" data-illlayer="roads" checked></label>
-              <label class="axiom-check-row"><span data-i18n="illu.layerNature">Agua y áreas verdes</span><input type="checkbox" data-illlayer="nature" checked></label>
-              <label class="axiom-check-row"><span data-i18n="illu.layerContours">Curvas de nivel</span><input type="checkbox" data-illlayer="contours" checked></label>
+              <span class="axiom-sub-header" data-i18n="illu.visibleLayers">Pila de Capas Axonométricas</span>
+              <p class="export-coords" style="margin:2px 0 6px;">Arrastra para sobreponer y ordenar capas visuales en la axonometría.</p>
+              <div id="illu-layer-stack" class="axiom-layer-stack" style="margin-bottom:8px;"></div>
+              
+              <!-- Checkboxes de respaldo sincronizados -->
+              <div style="display:none;" aria-hidden="true">
+                <input type="checkbox" data-illlayer="buildings" checked>
+                <input type="checkbox" data-illlayer="trees" checked>
+                <input type="checkbox" data-illlayer="roads" checked>
+                <input type="checkbox" data-illlayer="nature" checked>
+                <input type="checkbox" data-illlayer="contours" checked>
+              </div>
             </div>
 
             <!-- Multimapas Temáticos -->
@@ -2342,11 +2390,11 @@
             </button>
           </div>
 
-          <!-- Cápsula 3: Pliego InDesign (Compositor Global) -->
-          <div class="axiom-island-capsule" role="group" aria-label="Pliego InDesign" style="border:1px solid rgba(56,189,248,0.25); background:rgba(56,189,248,0.06);">
-            <button type="button" class="axiom-island-btn btn-open-sheet-compositor-global" title="Componer lámina editorial con varias vistas">
+          <!-- Cápsula 3: Composición de Pliegos -->
+          <div class="axiom-island-capsule" role="group" aria-label="Composición" style="border:1px solid rgba(56,189,248,0.25); background:rgba(56,189,248,0.06);">
+            <button type="button" class="axiom-island-btn btn-open-sheet-compositor-global" data-switchview="composition" title="Componer lámina editorial técnica con varias vistas">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-              <span style="color:#38bdf8; font-weight:600;" data-i18n="nav.compositor">⊞ Pliego InDesign</span>
+              <span style="color:#38bdf8; font-weight:600;" data-i18n="nav.compositor">⊞ Composición</span>
             </button>
           </div>
         </div>
@@ -2443,12 +2491,312 @@
           </div>
         </div>
 
-        <!-- Grupo 4: Pliego InDesign Global Shortcut -->
+        <!-- Grupo 4: Pliego Composición Global Shortcut -->
         <div class="rayon-accordion-group" style="border-bottom:none; margin-top:auto; padding-top:12px;">
-          <button type="button" class="axiom-cta-btn btn-open-sheet-compositor-global" style="width:100%; justify-content:center; font-size:11px; padding:8px 12px; gap:6px;">
+          <button type="button" class="axiom-cta-btn btn-open-sheet-compositor-global" data-switchview="composition" style="width:100%; justify-content:center; font-size:11px; padding:8px 12px; gap:6px;">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-            <span data-i18n="nav.compositor">⊞ Abrir Pliego InDesign</span>
+            <span data-i18n="nav.compositor">⊞ Ir a Composición</span>
           </button>
+        </div>
+      </aside>
+    </div>
+
+    <!-- ======================================================
+         VIEW 5: COMPOSICIÓN / PLIEGOS TÉCNICOS (#composition)
+         Architectural Drafting Sheet Layout Studio (Native Rayon 3-Column Studio)
+         ====================================================== -->
+    <div id="composition" class="screen-layer rayon-studio-layout" style="display:none;">
+      <!-- 1. LEFT RAIL (44px) -->
+      <nav class="rayon-rail-left" id="comp-left-rail" aria-label="Herramientas de Composición">
+        <button type="button" class="rayon-rail-btn active" data-comp-tab="format" data-tooltip="1. Formato & Diagramación de Pliego">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+        </button>
+        <button type="button" class="rayon-rail-btn" data-comp-tab="titleblock" data-tooltip="2. Rotulación & Cuadro de Datos">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </button>
+        <button type="button" class="rayon-rail-btn" data-comp-tab="scenes" data-tooltip="3. Escenas del Proyecto & Vistas">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 19 21 12 17 5 21 12 2"/></svg>
+        </button>
+        <div style="flex:1;"></div>
+        <button type="button" class="rayon-rail-btn" data-comp-tab="export" data-tooltip="Exportar Pliego (4K / PDF)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        </button>
+      </nav>
+
+      <!-- 2. LEFT DRAWER (280px) -->
+      <div class="rayon-left-drawer" id="comp-left-drawer">
+        <!-- TAB 1: FORMATO & DIAGRAMACIÓN (Active by default) -->
+        <aside class="axiom-drawer-card" id="comp-tab-format">
+          <div class="axiom-export-header">
+            <div class="axiom-export-title-row">
+              <h2 class="axiom-export-title">Formato & Diagramación</h2>
+              <button type="button" class="axiom-drawer-close" data-close-compdrawer aria-label="Cerrar panel">✕</button>
+            </div>
+            <p class="export-coords">Configura las dimensiones del papel y distribuye las vistas en el pliego</p>
+          </div>
+
+          <!-- Pliegos del Proyecto (Pages) -->
+          <div class="axiom-editor-group" style="padding:0;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <span class="axiom-sub-header" style="margin:0;">Pliegos del Proyecto</span>
+              <button type="button" class="axiom-subtle-btn" id="comp-btn-add-page" style="font-size:10.5px; padding:2px 8px; flex:none;">+ Añadir Pliego</button>
+            </div>
+            <div id="comp-pages-list" style="display:flex; flex-direction:column; gap:4px;"></div>
+          </div>
+
+          <!-- Formato y Orientación -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <span class="axiom-sub-header">Dimensiones del Papel</span>
+            <div class="axiom-control-row">
+              <span class="rayon-label">Formato Estándar</span>
+              <select id="comp-format-select" class="rayon-select" style="font-size:11.5px;">
+                <option value="90x60" selected>90 × 60 cm (Pliego Oficial)</option>
+                <option value="A1">A1 (84.1 × 59.4 cm)</option>
+                <option value="A2">A2 (59.4 × 42.0 cm)</option>
+                <option value="tabloid">Tabloide / Doble Carta (11 × 17 in)</option>
+                <option value="letter">Carta Oficial (8.5 × 11 in)</option>
+              </select>
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <span class="rayon-label">Orientación</span>
+              <div class="rayon-segmented" id="comp-orientation-seg">
+                <button type="button" class="rayon-seg-btn active" data-orient="landscape">Horizontal</button>
+                <button type="button" class="rayon-seg-btn" data-orient="portrait">Vertical</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Diagramación / Layout de Vistas -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <span class="axiom-sub-header">Diagramación de Pliego</span>
+            <div class="axiom-preset-grid" style="grid-template-columns: repeat(2, 1fr); gap:6px;">
+              <button type="button" class="axiom-subtle-btn active" data-comp-layout="1" id="comp-btn-layout-1">
+                1 Vista (Plano Completo)
+              </button>
+              <button type="button" class="axiom-subtle-btn" data-comp-layout="2" id="comp-btn-layout-2">
+                2 Vistas (50 / 50)
+              </button>
+              <button type="button" class="axiom-subtle-btn" data-comp-layout="3" id="comp-btn-layout-3">
+                3 Vistas (Tríptico)
+              </button>
+              <button type="button" class="axiom-subtle-btn" data-comp-layout="4" id="comp-btn-layout-4">
+                4 Pasos (Proceso Urbano)
+              </button>
+            </div>
+          </div>
+
+          <!-- Asignación de Vistas por Cuadrante -->
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <span class="axiom-sub-header">Asignación de Vistas</span>
+            <div id="comp-viewports-assign-container" style="display:flex; flex-direction:column; gap:6px;"></div>
+          </div>
+        </aside>
+
+        <!-- TAB 2: ROTULACIÓN & PIE DE PLANO -->
+        <aside class="axiom-drawer-card" id="comp-tab-titleblock" hidden>
+          <div class="axiom-export-header">
+            <div class="axiom-export-title-row">
+              <h2 class="axiom-export-title">Rotulación & Datos</h2>
+              <button type="button" class="axiom-drawer-close" data-close-compdrawer aria-label="Cerrar panel">✕</button>
+            </div>
+            <p class="export-coords">Datos del pie de plano oficial, escala gráfica y flecha de norte CAD</p>
+          </div>
+
+          <div class="axiom-editor-group" style="padding:0;">
+            <label class="axiom-check-row"><span>Mostrar Pie de Plano Oficial</span><input type="checkbox" id="comp-titleblock-toggle" checked></label>
+            <label class="axiom-check-row"><span>Escala Gráfica CAD</span><input type="checkbox" id="comp-scalebar-toggle" checked></label>
+            <label class="axiom-check-row"><span>Flecha de Norte Arquitectónico</span><input type="checkbox" id="comp-north-toggle" checked></label>
+          </div>
+
+          <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
+            <span class="axiom-sub-header">Datos del Proyecto</span>
+            <div class="axiom-control-row">
+              <span class="rayon-label">Proyecto</span>
+              <input type="text" id="comp-title-project" class="rayon-val-input" value="Plan Maestro Urbano">
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <span class="rayon-label">Ubicación</span>
+              <input type="text" id="comp-title-loc" class="rayon-val-input" value="Monterrey, N.L., México">
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <span class="rayon-label">Escala</span>
+              <select id="comp-scale-select" class="rayon-select" style="font-size:11.5px;">
+                <option value="500">1:500 (Detalle Urbano)</option>
+                <option value="1000" selected>1:1000 (Plano Maestro)</option>
+                <option value="2000">1:2000 (Sector / Polígono)</option>
+                <option value="5000">1:5000 (Territorio General)</option>
+              </select>
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <span class="rayon-label">Pliego No.</span>
+              <input type="text" id="comp-title-sheetnum" class="rayon-val-input" value="PL-01">
+            </div>
+            <div class="axiom-control-row" style="margin-top:6px;">
+              <span class="rayon-label">Autor / Estudio</span>
+              <input type="text" id="comp-title-author" class="rayon-val-input" value="CGM Atelier">
+            </div>
+          </div>
+        </aside>
+
+        <!-- TAB 3: ESCENAS DEL PROYECTO -->
+        <aside class="axiom-drawer-card" id="comp-tab-scenes" hidden>
+          <div class="axiom-export-header">
+            <div class="axiom-export-title-row">
+              <h2 class="axiom-export-title">Escenas Capturadas</h2>
+              <button type="button" class="axiom-drawer-close" data-close-compdrawer aria-label="Cerrar panel">✕</button>
+            </div>
+            <p class="export-coords">Vistas guardadas disponibles para insertar en los cuadrantes del pliego</p>
+          </div>
+
+          <button type="button" class="rayon-share-btn" id="comp-btn-quick-capture" style="width:100%; justify-content:center; margin-bottom:8px; font-size:11.5px;">
+            + Capturar Escena Actual
+          </button>
+          <div id="comp-scenes-available-list" style="display:flex; flex-direction:column; gap:6px;"></div>
+        </aside>
+      </div>
+
+      <!-- 3. CENTER VIEWPORT: Virtual Drafting Table Canvas Area -->
+      <main class="studio-viewport" id="comp-viewport" style="position:relative; display:flex; flex-direction:column; overflow:hidden;">
+        <!-- Top Floating Dynamic Island for Composición -->
+        <div class="axiom-studio-island" id="comp-island" aria-label="Controles de pliego">
+          <div class="axiom-island-capsule" role="group" aria-label="Pliego">
+            <span style="font-size:11px; font-weight:700; color:#ffffff; padding:0 6px;" id="comp-island-sheet-name">PLIEGO 01</span>
+            <span style="color:#52525b; font-size:10px;">|</span>
+            <span style="font-size:10.5px; color:#38bdf8; padding:0 4px;" id="comp-island-format">90 × 60 cm</span>
+          </div>
+
+          <div class="axiom-island-capsule" role="group" aria-label="Layout">
+            <button type="button" class="axiom-island-btn active" data-comp-island-layout="1" title="1 Vista">1 Vista</button>
+            <button type="button" class="axiom-island-btn" data-comp-island-layout="2" title="2 Vistas">2 Vistas</button>
+            <button type="button" class="axiom-island-btn" data-comp-island-layout="3" title="3 Vistas">3 Vistas</button>
+            <button type="button" class="axiom-island-btn" data-comp-island-layout="4" title="4 Vistas">4 Vistas</button>
+          </div>
+
+          <button type="button" class="axiom-island-btn" id="comp-btn-zoom-fit" title="Ajustar al área de trabajo">
+            <span>⛶ Ajustar Zoom</span>
+          </button>
+        </div>
+
+        <!-- Scrollable / Centered Virtual Drafting Table Area -->
+        <div id="comp-canvas-scroll-container" style="flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:32px; background:radial-gradient(circle at center, #14161f 0%, #08090c 100%); position:relative;">
+          <!-- Architectural Paper Sheet (Normalized Aspect Ratio) -->
+          <div id="compositor-paper-sheet" style="position:relative; width:920px; height:613px; background:#fbfbfb; color:#18181b; box-shadow:0 30px 90px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.15); border-radius:3px; display:flex; flex-direction:column; padding:18px; box-sizing:border-box;">
+            <!-- Technical 10mm Border Line -->
+            <div style="position:absolute; inset:8px; border:1px solid rgba(0,0,0,0.22); pointer-events:none;"></div>
+            <!-- CAD Corner Crop Marks -->
+            <div style="position:absolute; top:4px; left:4px; width:12px; height:12px; border-top:1.5px solid #000; border-left:1.5px solid #000; pointer-events:none;"></div>
+            <div style="position:absolute; top:4px; right:4px; width:12px; height:12px; border-top:1.5px solid #000; border-right:1.5px solid #000; pointer-events:none;"></div>
+            <div style="position:absolute; bottom:4px; left:4px; width:12px; height:12px; border-bottom:1.5px solid #000; border-left:1.5px solid #000; pointer-events:none;"></div>
+            <div style="position:absolute; bottom:4px; right:4px; width:12px; height:12px; border-bottom:1.5px solid #000; border-right:1.5px solid #000; pointer-events:none;"></div>
+
+            <!-- Viewports Container (Dynamic Grid) -->
+            <div id="compositor-viewports-grid" style="flex:1; display:grid; gap:12px; position:relative; z-index:2; margin-bottom:10px;">
+              <!-- Viewports rendered dynamically based on layout -->
+            </div>
+
+            <!-- Sheet Footer: Graphic Scale, North Arrow & Architectural Title Block -->
+            <div id="comp-sheet-footer" style="height:56px; display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid rgba(0,0,0,0.18); padding-top:6px; position:relative; z-index:2;">
+              <!-- Left: Graphic Scale Bar and North Symbol -->
+              <div style="display:flex; align-items:center; gap:20px;">
+                <div id="comp-sheet-north" style="display:flex; flex-direction:column; align-items:center; gap:1px;">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <circle cx="12" cy="12" r="10" stroke="#18181b" stroke-width="1.2"/>
+                    <polygon points="12,4 15,12 12,10" fill="#18181b"/>
+                    <polygon points="12,4 9,12 12,10" fill="none" stroke="#18181b" stroke-width="0.8"/>
+                  </svg>
+                  <span style="font-size:8px; font-weight:700; color:#18181b; letter-spacing:0.1em;">NORTE</span>
+                </div>
+                <div id="comp-sheet-scalebar">
+                  <div style="display:flex; align-items:center; width:140px; height:4px; background:#18181b;">
+                    <div style="width:50%; height:100%; background:#fff; border:1px solid #18181b; box-sizing:border-box;"></div>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; width:140px; font-size:7.5px; font-weight:600; color:#18181b; margin-top:2px; font-family:monospace;">
+                    <span>0</span><span>50</span><span>100m</span>
+                  </div>
+                </div>
+                <div style="font-size:8.5px; color:#52525b; line-height:1.2;">
+                  <div>PROYECCIÓN UTM WGS84</div>
+                  <div>COTA Z EN METROS</div>
+                </div>
+              </div>
+
+              <!-- Right: Professional Title Block -->
+              <div id="comp-sheet-titleblock" style="display:flex; border:1px solid #18181b; background:#ffffff; font-size:9px; color:#18181b; text-transform:uppercase;">
+                <div style="padding:4px 10px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center;">
+                  <span style="font-size:7px; color:#71717a; letter-spacing:0.05em;">PROYECTO</span>
+                  <strong id="compositor-tb-project" style="font-size:9.5px; font-weight:700;">PLAN MAESTRO URBANO</strong>
+                  <span id="compositor-tb-loc" style="font-size:7.5px; color:#52525b;">MONTERREY, N.L.</span>
+                </div>
+                <div style="padding:4px 8px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+                  <span style="font-size:7px; color:#71717a;">ESCALA</span>
+                  <strong id="compositor-tb-scale" style="font-size:9px; font-weight:700;">1:1000</strong>
+                </div>
+                <div style="padding:4px 8px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center; text-align:center;">
+                  <span style="font-size:7px; color:#71717a;">PLIEGO</span>
+                  <strong id="compositor-tb-sheetnum" style="font-size:9px; font-weight:700;">PL-01</strong>
+                </div>
+                <div style="padding:4px 12px; background:#18181b; color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center;">
+                  <span style="font-size:6.5px; color:#a1a1aa; letter-spacing:0.12em;">AUTOR</span>
+                  <span style="font-size:9px; font-weight:700; letter-spacing:0.06em;">URBNZD</span>
+                  <span style="font-size:6px; color:#38bdf8;">by CGM Atelier</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Status Bar / Measurement Pill -->
+        <div class="rayon-canvas-measure-pill">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+          <span id="comp-measure-text">Pliego 01 · 90 × 60 cm · Escala 1:1000</span>
+        </div>
+      </main>
+
+      <!-- 4. RIGHT INSPECTOR (300px) -->
+      <aside class="rayon-inspector-panel" id="comp-right-inspector">
+        <div class="rayon-inspector-top" style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-bottom:1px solid rgba(255,255,255,0.08);">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="rayon-inspector-avatar">C</div>
+            <span style="font-size:11.5px; font-weight:600; color:#f4f4f6;">Inspector de Composición</span>
+          </div>
+          <span id="compositor-scale-badge" style="font-size:10px; color:#38bdf8; background:rgba(56,189,248,0.1); border:1px solid rgba(56,189,248,0.2); padding:1px 6px; border-radius:4px; font-weight:500;">1:1000</span>
+        </div>
+
+        <!-- Group: Papel y Acabado -->
+        <div class="rayon-accordion-group">
+          <div class="rayon-accordion-header">
+            <span style="font-size:12px; font-weight:600; color:#f4f4f6;">⌄ Papel & Acabado</span>
+          </div>
+          <div class="rayon-control-row">
+            <span class="rayon-label">Tono de Papel</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <button type="button" class="rayon-color-swatch-btn active" data-paper-bg="#FBFBFB" title="Blanco Puro Técnico" style="width:20px; height:20px; border-radius:4px; background:#fbfbfb; border:2px solid #0066ff; cursor:pointer; padding:0;"></button>
+              <button type="button" class="rayon-color-swatch-btn" data-paper-bg="#F6F4EB" title="Crema Arquitectónico" style="width:20px; height:20px; border-radius:4px; background:#f6f4eb; border:1px solid rgba(255,255,255,0.2); cursor:pointer; padding:0;"></button>
+              <button type="button" class="rayon-color-swatch-btn" data-paper-bg="#18181B" title="Gris Carbón Dark" style="width:20px; height:20px; border-radius:4px; background:#18181b; border:1px solid rgba(255,255,255,0.2); cursor:pointer; padding:0;"></button>
+            </div>
+          </div>
+          <div class="rayon-control-row">
+            <span class="rayon-label">Resolución DPI</span>
+            <div class="rayon-segmented" id="comp-dpi-seg">
+              <button type="button" class="rayon-seg-btn active" data-dpi="150">150</button>
+              <button type="button" class="rayon-seg-btn" data-dpi="300">300 (Print)</button>
+              <button type="button" class="rayon-seg-btn" data-dpi="600">600 (Ultra)</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Group: Exportar Pliego Oficial -->
+        <div class="rayon-accordion-group" style="border-bottom:none;">
+          <div class="rayon-accordion-header">
+            <span style="font-size:12px; font-weight:600; color:#f4f4f6;">⌄ Entrega & Exportación</span>
+          </div>
+          <button type="button" class="rayon-share-btn" id="btn-compositor-download-4k" style="width:100%; justify-content:center; padding:9px 16px; font-size:11.5px; font-weight:600; display:flex; align-items:center; gap:6px; margin-top:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Descargar Pliego (4K)</span>
+          </button>
+          <p class="export-coords" style="margin-top:8px; line-height:1.4;">
+            Genera un archivo ultra-HD listo para imprenta a escala arquitectónica oficial.
+          </p>
         </div>
       </aside>
     </div>
@@ -2668,107 +3016,6 @@
         <button type="button" class="axiom-btn-danger" id="modal-hub-btn-reset" data-i18n="modal.hubReset">Ir a Workspace</button>
         <button type="button" class="axiom-btn-secondary" id="modal-hub-btn-views" data-i18n="modal.hubViews">Escenas Guardadas</button>
         <button type="button" class="axiom-btn-primary" id="modal-hub-btn-continue" data-i18n="modal.hubContinue">Continuar</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ========================================================
-       INDESIGN-STYLE SHEET COMPOSITOR MODAL
-       Full-Screen Virtual Drafting Table & Sheet Layout
-       ======================================================== -->
-  <div class="modal-backdrop" id="modal-sheet-compositor" hidden style="position:fixed; inset:0; z-index:9998; background:rgba(6,7,10,0.92); backdrop-filter:blur(24px); -webkit-backdrop-filter:blur(24px); display:none; flex-direction:column;">
-    <!-- Top Compositor Header Bar -->
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 24px; border-bottom:1px solid rgba(255,255,255,0.08); background:rgba(18,19,26,0.85); flex-shrink:0;">
-      <div style="display:flex; align-items:center; gap:16px;">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-          <strong id="compositor-sheet-title" style="font-size:13px; font-weight:700; color:#ffffff; letter-spacing:0.04em;">PLIEGO 01 · 90 × 60 cm</strong>
-        </div>
-        <span style="color:#52525b; font-size:12px;">|</span>
-        <div id="compositor-pages-tabs" style="display:flex; gap:6px;">
-          <!-- Tabs de Pliegos rápidos en el header -->
-        </div>
-      </div>
-
-      <div style="display:flex; align-items:center; gap:10px;">
-        <span id="compositor-scale-badge" style="font-size:11px; color:#a1a1aa; background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:6px; border:1px solid rgba(255,255,255,0.08);">Escala: 1:1000</span>
-        <button type="button" class="rayon-share-btn" id="btn-compositor-download-4k" style="padding:6px 16px; font-size:11.5px; font-weight:600; display:flex; align-items:center; gap:6px;">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span>Descargar Pliego (4K)</span>
-        </button>
-        <button type="button" id="btn-compositor-close" class="rayon-secondary-btn" style="padding:6px 14px; font-size:11.5px;">✕ Cerrar</button>
-      </div>
-    </div>
-
-    <!-- Virtual Drafting Table Canvas Area (Scrollable / Centered Artboard) -->
-    <div style="flex:1; overflow:auto; display:flex; align-items:center; justify-content:center; padding:32px; background:radial-gradient(circle at center, #14161f 0%, #08090c 100%); position:relative;">
-      <!-- Architectural Paper Sheet (Normalized Aspect Ratio) -->
-      <div id="compositor-paper-sheet" style="position:relative; width:920px; height:613px; background:#fbfbfb; color:#18181b; box-shadow:0 30px 90px rgba(0,0,0,0.85), 0 0 0 1px rgba(255,255,255,0.15); border-radius:3px; display:flex; flex-direction:column; padding:18px; box-sizing:border-box;">
-        
-        <!-- Technical 10mm Border Line -->
-        <div style="position:absolute; inset:8px; border:1px solid rgba(0,0,0,0.22); pointer-events:none;"></div>
-        <!-- CAD Corner Crop Marks -->
-        <div style="position:absolute; top:4px; left:4px; width:12px; height:12px; border-top:1.5px solid #000; border-left:1.5px solid #000; pointer-events:none;"></div>
-        <div style="position:absolute; top:4px; right:4px; width:12px; height:12px; border-top:1.5px solid #000; border-right:1.5px solid #000; pointer-events:none;"></div>
-        <div style="position:absolute; bottom:4px; left:4px; width:12px; height:12px; border-bottom:1.5px solid #000; border-left:1.5px solid #000; pointer-events:none;"></div>
-        <div style="position:absolute; bottom:4px; right:4px; width:12px; height:12px; border-bottom:1.5px solid #000; border-right:1.5px solid #000; pointer-events:none;"></div>
-
-        <!-- Viewports Container (Dynamic Grid) -->
-        <div id="compositor-viewports-grid" style="flex:1; display:grid; gap:12px; position:relative; z-index:2; margin-bottom:10px;">
-          <!-- Viewports rendered dynamically based on layout -->
-        </div>
-
-        <!-- Sheet Footer: Graphic Scale, North Arrow & Architectural Title Block -->
-        <div style="height:56px; display:flex; justify-content:space-between; align-items:flex-end; border-top:1px solid rgba(0,0,0,0.18); padding-top:6px; position:relative; z-index:2;">
-          <!-- Left: Graphic Scale Bar and North Symbol -->
-          <div style="display:flex; align-items:center; gap:20px;">
-            <!-- North Arrow -->
-            <div style="display:flex; flex-direction:column; align-items:center; gap:1px;">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
-                <circle cx="12" cy="12" r="10" stroke="#18181b" stroke-width="1.2"/>
-                <polygon points="12,4 15,12 12,10" fill="#18181b"/>
-                <polygon points="12,4 9,12 12,10" fill="none" stroke="#18181b" stroke-width="0.8"/>
-              </svg>
-              <span style="font-size:8px; font-weight:700; color:#18181b; letter-spacing:0.1em;">NORTE</span>
-            </div>
-            <!-- Graphic Scale Bar -->
-            <div>
-              <div style="display:flex; align-items:center; width:140px; height:4px; background:#18181b;">
-                <div style="width:50%; height:100%; background:#fff; border:1px solid #18181b; box-sizing:border-box;"></div>
-              </div>
-              <div style="display:flex; justify-content:space-between; width:140px; font-size:7.5px; font-weight:600; color:#18181b; margin-top:2px; font-family:monospace;">
-                <span>0</span><span>50</span><span>100m</span>
-              </div>
-            </div>
-            <div style="font-size:8.5px; color:#52525b; line-height:1.2;">
-              <div>PROYECCIÓN UTM WGS84</div>
-              <div>COTA Z EN METROS</div>
-            </div>
-          </div>
-
-          <!-- Right: Professional Title Block (Rotulación Oficial) -->
-          <div style="display:flex; border:1px solid #18181b; background:#ffffff; font-size:9px; color:#18181b; text-transform:uppercase;">
-            <div style="padding:4px 10px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center;">
-              <span style="font-size:7px; color:#71717a; letter-spacing:0.05em;">PROYECTO</span>
-              <strong id="compositor-tb-project" style="font-size:9.5px; font-weight:700;">PLAN MAESTRO URBANO</strong>
-              <span id="compositor-tb-loc" style="font-size:7.5px; color:#52525b;">MONTERREY, N.L.</span>
-            </div>
-            <div style="padding:4px 8px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center; text-align:center;">
-              <span style="font-size:7px; color:#71717a;">ESCALA</span>
-              <strong id="compositor-tb-scale" style="font-size:9px; font-weight:700;">1:1000</strong>
-            </div>
-            <div style="padding:4px 8px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center; text-align:center;">
-              <span style="font-size:7px; color:#71717a;">PLIEGO</span>
-              <strong id="compositor-tb-sheetnum" style="font-size:9px; font-weight:700;">PL-01</strong>
-            </div>
-            <div style="padding:4px 12px; background:#18181b; color:#ffffff; display:flex; flex-direction:column; justify-content:center; align-items:center;">
-              <span style="font-size:6.5px; color:#a1a1aa; letter-spacing:0.12em;">AUTOR</span>
-              <span style="font-size:9px; font-weight:700; letter-spacing:0.06em;">URBNZD</span>
-              <span style="font-size:6px; color:#38bdf8;">by CGM Atelier</span>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   </div>
@@ -3342,7 +3589,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       document.querySelectorAll('.screen-layer').forEach(s => {
         const isActive = (s.id === viewName);
         s.classList.toggle('active', isActive);
-        if (s.id === 'result' || s.id === 'mapper' || s.id === 'illustrator' || s.id === 'workspace-home') {
+        if (s.id === 'result' || s.id === 'mapper' || s.id === 'illustrator' || s.id === 'workspace-home' || s.id === 'composition') {
           s.style.display = isActive ? 'flex' : 'none';
         } else {
           s.style.display = isActive ? 'block' : 'none';
@@ -3392,6 +3639,11 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       }
       if (viewName === 'illustrator' && window.openIllustratorStudio) {
         window.openIllustratorStudio();
+        setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+      }
+      if (viewName === 'composition') {
+        renderSheetPages();
+        updateCompositorSheetView();
         setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
       }
     }
@@ -3862,29 +4114,47 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     function applyWorkspaceFilter(filter) {
       const titleEl = document.querySelector('.rayon-breadcrumb-title h1');
       const cards = document.querySelectorAll('#ws-cards-grid .rayon-model-card');
+      const listRows = document.querySelectorAll('#ws-cards-list .rayon-list-row');
+      const isEn = window.currentLang === 'en';
+
       if (filter === 'templates') {
-        if (titleEl) titleEl.textContent = 'Plantillas de Paisaje Urbano';
+        if (titleEl) titleEl.textContent = isEn ? 'Urban Landscape Templates' : 'Plantillas de Paisaje Urbano';
         cards.forEach(c => {
           const isTemplate = c.getAttribute('data-cardtype') === 'template';
           c.style.display = isTemplate ? '' : 'none';
         });
+        listRows.forEach(r => {
+          const isTemplate = r.getAttribute('data-cardtype') === 'template';
+          r.style.display = isTemplate ? '' : 'none';
+        });
       } else if (filter === 'pinned') {
-        if (titleEl) titleEl.textContent = 'Escenas Fijadas';
+        if (titleEl) titleEl.textContent = isEn ? 'Pinned Scenes' : 'Escenas Fijadas';
         cards.forEach(c => {
           const isScene = c.hasAttribute('data-ws-scene');
           c.style.display = isScene ? '' : 'none';
         });
+        listRows.forEach(r => {
+          const isScene = r.hasAttribute('data-ws-scene');
+          r.style.display = isScene ? '' : 'none';
+        });
       } else if (filter === 'archive') {
-        if (titleEl) titleEl.textContent = 'Archivo de Proyectos';
+        if (titleEl) titleEl.textContent = isEn ? 'Project Archive' : 'Archivo de Proyectos';
         cards.forEach(c => {
           c.style.display = 'none';
         });
+        listRows.forEach(r => {
+          r.style.display = 'none';
+        });
       } else {
         // 'all' or 'projects'
-        if (titleEl) titleEl.textContent = 'Proyectos Urbanos';
+        if (titleEl) titleEl.textContent = isEn ? 'Projects' : 'Proyectos';
         cards.forEach(c => {
           const isTemplate = c.getAttribute('data-cardtype') === 'template';
           c.style.display = isTemplate ? 'none' : '';
+        });
+        listRows.forEach(r => {
+          const isTemplate = r.getAttribute('data-cardtype') === 'template';
+          r.style.display = isTemplate ? 'none' : '';
         });
       }
     }
@@ -3993,14 +4263,15 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     document.getElementById('btn-quick-save-scene-map')?.addEventListener('click', saveSceneQuickly);
     document.getElementById('btn-quick-save-scene-illu')?.addEventListener('click', saveSceneQuickly);
 
-    // Global InDesign Sheet Compositor Opener Buttons (Available across All Views)
+    // Global Composición Opener Buttons (Available across All Views)
     document.querySelectorAll('.btn-open-sheet-compositor-global').forEach(b => {
-      b.addEventListener('click', openSheetCompositorModal);
+      b.addEventListener('click', () => switchView('composition'));
     });
 
     // 2D Inspector Interactive Controls
     document.getElementById('inspector-map-preset-select')?.addEventListener('change', (e) => {
       const preset = e.target.value;
+      if (window.setMapPreset) window.setMapPreset(preset);
       const btn = document.querySelector(`[data-mappreset="${preset}"]`);
       if (btn) btn.click();
       const rowNolli = document.getElementById('row-inspector-nolli-invert');
@@ -4010,8 +4281,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     document.getElementById('btn-nolli-normal')?.addEventListener('click', () => {
       document.getElementById('btn-nolli-normal')?.classList.add('active');
       document.getElementById('btn-nolli-invert')?.classList.remove('active');
-      const btn = document.querySelector('[data-mappreset="figure"]');
-      if (btn) btn.click();
+      if (window.setMapPreset) window.setMapPreset('figure');
       showCadToast('Plano Nolli Clásico (Negro sobre Blanco)');
     });
 
@@ -4019,16 +4289,12 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       document.getElementById('btn-nolli-invert')?.classList.add('active');
       document.getElementById('btn-nolli-normal')?.classList.remove('active');
       if (window.setMapPreset) window.setMapPreset('figure_invert');
-      else {
-        const btn = document.querySelector('[data-mappreset="figure"]');
-        if (btn) btn.click();
-      }
       showCadToast('Plano Nolli Invertido (Blanco sobre Negro)');
     });
 
     document.getElementById('btn-inspector-apply-carto-3d')?.addEventListener('click', () => {
       document.getElementById('btn-island-apply-carto')?.click();
-      showCadToast('Cartografía proyectada como textura base al Modelo 3D');
+      showCadToast('✓ Cartografía proyectada a Axonometría');
     });
 
     document.getElementById('btn-island-fit-map')?.addEventListener('click', () => {
@@ -4118,9 +4384,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       document.querySelectorAll('#btn-render-model, #btn-render-maqueta, #btn-render-nolli-3d').forEach(b => b.classList.remove('active'));
       document.getElementById('btn-render-nolli-3d')?.classList.add('active');
       document.getElementById('cam-top')?.click();
-      const whiteBtn = document.querySelector('.rayon-color-swatch-btn[data-canvas-bg="#FFFFFF"]');
-      if (whiteBtn) whiteBtn.click();
-      if (window.toggleMaquetaMode) window.toggleMaquetaMode(true);
+      if (window.set3DNolliMode) window.set3DNolliMode(true, false);
       showCadToast('Plano Nolli B/N Cenital 3D activado');
     });
 
@@ -4551,7 +4815,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     function renderSheetPages() {
       const pCont = document.getElementById('sheet-pages-pills');
       const cCont = document.getElementById('compositor-pages-tabs');
-      if (!pCont) return;
+      const compPagesCont = document.getElementById('comp-pages-list');
 
       const html = sheetPages.map((page, idx) => {
         const isActive = idx === activeSheetPageIndex;
@@ -4563,8 +4827,43 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         `;
       }).join('');
 
-      pCont.innerHTML = html;
+      if (pCont) pCont.innerHTML = html;
       if (cCont) cCont.innerHTML = html;
+
+      if (compPagesCont) {
+        compPagesCont.innerHTML = sheetPages.map((page, idx) => {
+          const isActive = idx === activeSheetPageIndex;
+          const bg = isActive ? 'background:rgba(56,189,248,0.12); border-color:#38bdf8; color:#ffffff;' : 'background:rgba(255,255,255,0.03); border-color:rgba(255,255,255,0.08); color:#f4f4f6;';
+          return `
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:6px 10px; border-radius:6px; border:1px solid; cursor:pointer; gap:8px; ${bg}" data-comp-page="${idx}">
+              <div style="display:flex; flex-direction:column; overflow:hidden;">
+                <span style="font-size:11px; font-weight:700; color:${isActive ? '#38bdf8' : '#f4f4f6'};">${page.name}</span>
+                <span style="font-size:9.5px; color:#71717a;">${page.format.toUpperCase()} · ${page.orient === 'landscape' ? 'Horizontal' : 'Vertical'} · ${page.layout} ${page.layout === '1' ? 'Vista' : 'Vistas'}</span>
+              </div>
+              ${sheetPages.length > 1 ? `<button type="button" class="axiom-subtle-btn" data-comp-del-page="${idx}" title="Eliminar pliego" style="padding:2px 6px; font-size:10px; color:#ef4444; flex:none;">✕</button>` : ''}
+            </div>
+          `;
+        }).join('');
+
+        compPagesCont.querySelectorAll('[data-comp-page]').forEach(card => {
+          card.onclick = (e) => {
+            if (e.target.closest('[data-comp-del-page]')) return;
+            const idx = parseInt(card.getAttribute('data-comp-page'), 10);
+            selectSheetPage(idx);
+          };
+        });
+
+        compPagesCont.querySelectorAll('[data-comp-del-page]').forEach(btn => {
+          btn.onclick = (e) => {
+            e.stopPropagation();
+            const idx = parseInt(btn.getAttribute('data-comp-del-page'), 10);
+            if (sheetPages.length <= 1) return;
+            sheetPages.splice(idx, 1);
+            if (activeSheetPageIndex >= sheetPages.length) activeSheetPageIndex = sheetPages.length - 1;
+            selectSheetPage(activeSheetPageIndex);
+          };
+        });
+      }
 
       const bindPageClicks = (cont) => {
         if (!cont) return;
@@ -4585,38 +4884,54 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       activeSheetPageIndex = idx;
       const page = sheetPages[activeSheetPageIndex];
 
-      // Sync form controls
+      // Sync form controls (both old modal & native Composición screen)
       const fmtSel = document.getElementById('sheet-format-select');
       if (fmtSel) fmtSel.value = page.format;
+      const compFmtSel = document.getElementById('comp-format-select');
+      if (compFmtSel) compFmtSel.value = page.format;
       
-      document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn').forEach(btn => {
+      document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn, #comp-orientation-seg .rayon-seg-btn').forEach(btn => {
         btn.classList.toggle('active', btn.getAttribute('data-orient') === page.orient);
       });
 
       const projInp = document.getElementById('sheet-title-project');
       if (projInp) projInp.value = page.titleProject;
+      const compProjInp = document.getElementById('comp-title-project');
+      if (compProjInp) compProjInp.value = page.titleProject;
 
       const locInp = document.getElementById('sheet-title-loc');
       if (locInp) locInp.value = page.titleLoc;
+      const compLocInp = document.getElementById('comp-title-loc');
+      if (compLocInp) compLocInp.value = page.titleLoc;
 
       const scaleSel = document.getElementById('sheet-scale-select');
       if (scaleSel) scaleSel.value = page.scale;
+      const compScaleSel = document.getElementById('comp-scale-select');
+      if (compScaleSel) compScaleSel.value = page.scale;
+
+      const compSheetNum = document.getElementById('comp-title-sheetnum');
+      if (compSheetNum) compSheetNum.value = page.sheetNum || `PL-0${idx + 1}`;
+
+      const compAuthor = document.getElementById('comp-title-author');
+      if (compAuthor) compAuthor.value = page.author || 'CGM Atelier';
 
       // Sync layout buttons
-      document.querySelectorAll('[data-sheet-layout]').forEach(b => {
-        b.classList.toggle('active', b.getAttribute('data-sheet-layout') === page.layout);
+      document.querySelectorAll('[data-sheet-layout], [data-comp-layout], [data-comp-island-layout]').forEach(b => {
+        const l = b.getAttribute('data-sheet-layout') || b.getAttribute('data-comp-layout') || b.getAttribute('data-comp-island-layout');
+        b.classList.toggle('active', l === page.layout);
       });
 
       renderSheetPages();
       renderSheetViewports();
-      if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') {
-        updateCompositorSheetView();
-      }
+      updateCompositorSheetView();
     }
 
     function renderSheetViewports() {
-      const container = document.getElementById('sheet-viewports-assign-container');
-      if (!container) return;
+      const containers = [
+        document.getElementById('comp-viewports-assign-container'),
+        document.getElementById('sheet-viewports-assign-container')
+      ].filter(Boolean);
+      if (!containers.length) return;
       const page = sheetPages[activeSheetPageIndex];
       const views = viewsManager.getViews();
 
@@ -4626,7 +4941,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         '1': ['01 PLANO MAESTRO GENERAL'],
         '2': ['01 PLANTA GENERAL 2D', '02 AXONOMETRÍA ISOMÉTRICA'],
         '3': ['01 PLANO GENERAL', '02 AXONOMETRÍA', '03 DETALLE DE SECCIÓN'],
-        '4': ['01 EMPLAZAMIENTO & TOPOGRAFÍA', '02 TRAZADO VIAL & CONECTIVIDAD', '03 ZONIFICACIÓN & USOS MIXTOS', '04 MASA CONSTRUIDA & ESPACIO PÚBLICO']
+        '4': ['01 EMPLAZAMIENTO & TOPO', '02 TRAZADO VIAL', '03 USOS MIXTOS', '04 MASA CONSTRUIDA']
       };
 
       const labels = defaultLabels[page.layout] || ['01 VISTA'];
@@ -4642,37 +4957,37 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         page.viewports = page.viewports.slice(0, targetCount);
       }
 
-      container.innerHTML = `
-        <div style="font-size:10px; color:#94a3b8; font-weight:600; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between;">
-          <span>Asignación de Vistas (${targetCount})</span>
-          <span style="color:#38bdf8;">1: ${page.scale}</span>
-        </div>
-      ` + page.viewports.map((vp, i) => {
-        const optionsHtml = `
-          <option value="active" ${!vp.sceneId ? 'selected' : ''}>-- Vista Activa en Pantalla --</option>
-          ${views.map(v => `<option value="${v.id}" ${vp.sceneId === v.id ? 'selected' : ''}>${v.name} [${v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO'}]</option>`).join('')}
-        `;
-        return `
-          <div style="display:flex; flex-direction:column; gap:2px; padding:4px 6px; background:rgba(255,255,255,0.03); border-radius:4px; border:1px solid rgba(255,255,255,0.06);">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <span style="font-size:10px; color:#e4e4e7; font-weight:600;">${labels[i] || vp.label}</span>
-              <span style="font-size:8.5px; color:#71717a;">Cuadrante ${i + 1}</span>
-            </div>
-            <select class="rayon-select vp-assign-select" data-vp-idx="${i}" style="font-size:10.5px; height:24px; padding:2px 6px;">
-              ${optionsHtml}
-            </select>
+      containers.forEach(container => {
+        container.innerHTML = `
+          <div style="font-size:10px; color:#94a3b8; font-weight:600; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between;">
+            <span>Asignación de Vistas (${targetCount})</span>
+            <span style="color:#38bdf8;">1: ${page.scale}</span>
           </div>
-        `;
-      }).join('');
+        ` + page.viewports.map((vp, i) => {
+          const optionsHtml = `
+            <option value="active" ${!vp.sceneId ? 'selected' : ''}>-- Vista Activa en Pantalla --</option>
+            ${views.map(v => `<option value="${v.id}" ${vp.sceneId === v.id ? 'selected' : ''}>${v.name} [${v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO'}]</option>`).join('')}
+          `;
+          return `
+            <div style="display:flex; flex-direction:column; gap:2px; padding:4px 6px; background:rgba(255,255,255,0.03); border-radius:4px; border:1px solid rgba(255,255,255,0.06);">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-size:10px; color:#e4e4e7; font-weight:600;">${labels[i] || vp.label}</span>
+                <span style="font-size:8.5px; color:#71717a;">Cuadrante ${i + 1}</span>
+              </div>
+              <select class="rayon-select vp-assign-select" data-vp-idx="${i}" style="font-size:10.5px; height:24px; padding:2px 6px;">
+                ${optionsHtml}
+              </select>
+            </div>
+          `;
+        }).join('');
 
-      container.querySelectorAll('.vp-assign-select').forEach(sel => {
-        sel.addEventListener('change', (e) => {
-          const idx = parseInt(sel.getAttribute('data-vp-idx'), 10);
-          const val = sel.value;
-          page.viewports[idx].sceneId = val === 'active' ? null : val;
-          if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') {
+        container.querySelectorAll('.vp-assign-select').forEach(sel => {
+          sel.addEventListener('change', (e) => {
+            const idx = parseInt(sel.getAttribute('data-vp-idx'), 10);
+            const val = sel.value;
+            page.viewports[idx].sceneId = val === 'active' ? null : val;
             updateCompositorSheetView();
-          }
+          });
         });
       });
     }
@@ -4700,36 +5015,82 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       showCadToast(`✓ Nuevo pliego "Pliego 0${num}" añadido al proyecto`);
     });
 
+    document.getElementById('comp-btn-add-page')?.addEventListener('click', () => {
+      const num = sheetPages.length + 1;
+      const newPage = {
+        id: `pl-${num}`,
+        name: `Pliego 0${num}: Detalle Urbano`,
+        format: '90x60',
+        orient: 'landscape',
+        layout: '2',
+        viewports: [
+          { label: `01 PLANTA ZONA ${num}`, sceneId: null, mode: 'mapper' },
+          { label: `02 PERSPECTIVA 3D`, sceneId: null, mode: 'result' }
+        ],
+        titleProject: 'Plan Maestro Urbano',
+        titleLoc: 'Monterrey, N.L., México',
+        scale: '1000',
+        sheetNum: `PL-0${num}`,
+        author: 'CGM Atelier'
+      };
+      sheetPages.push(newPage);
+      renderSheetPages();
+      selectSheetPage(sheetPages.length - 1);
+      showCadToast(`✓ Nuevo pliego "Pliego 0${num}" añadido al proyecto`);
+    });
+
     // Layout selector buttons (1, 2, 3, 4)
-    document.querySelectorAll('[data-sheet-layout]').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const l = btn.getAttribute('data-sheet-layout');
-        sheetPages[activeSheetPageIndex].layout = l;
-        document.querySelectorAll('[data-sheet-layout]').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        renderSheetViewports();
-        if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') {
-          updateCompositorSheetView();
-        }
+    function setSheetLayout(l) {
+      sheetPages[activeSheetPageIndex].layout = String(l);
+      document.querySelectorAll('[data-sheet-layout], [data-comp-layout], [data-comp-island-layout]').forEach(b => {
+        const bl = b.getAttribute('data-sheet-layout') || b.getAttribute('data-comp-layout') || b.getAttribute('data-comp-island-layout');
+        b.classList.toggle('active', bl === String(l));
       });
+      renderSheetViewports();
+      updateCompositorSheetView();
+    }
+
+    document.querySelectorAll('[data-sheet-layout]').forEach(btn => {
+      btn.addEventListener('click', () => setSheetLayout(btn.getAttribute('data-sheet-layout')));
+    });
+    document.querySelectorAll('[data-comp-layout]').forEach(btn => {
+      btn.addEventListener('click', () => setSheetLayout(btn.getAttribute('data-comp-layout')));
+    });
+    document.querySelectorAll('[data-comp-island-layout]').forEach(btn => {
+      btn.addEventListener('click', () => setSheetLayout(btn.getAttribute('data-comp-island-layout')));
     });
 
     // Form inputs sync
     document.getElementById('sheet-format-select')?.addEventListener('change', (e) => {
       sheetPages[activeSheetPageIndex].format = e.target.value;
-      if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') updateCompositorSheetView();
+      const compFmt = document.getElementById('comp-format-select');
+      if (compFmt) compFmt.value = e.target.value;
+      updateCompositorSheetView();
+    });
+    document.getElementById('comp-format-select')?.addEventListener('change', (e) => {
+      sheetPages[activeSheetPageIndex].format = e.target.value;
+      const oldFmt = document.getElementById('sheet-format-select');
+      if (oldFmt) oldFmt.value = e.target.value;
+      updateCompositorSheetView();
     });
 
-    document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn').forEach(btn => {
+    document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn, #comp-orientation-seg .rayon-seg-btn').forEach(btn => {
       btn.addEventListener('click', () => {
-        document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        sheetPages[activeSheetPageIndex].orient = btn.getAttribute('data-orient');
-        if (document.getElementById('modal-sheet-compositor')?.style.display === 'flex') updateCompositorSheetView();
+        const orient = btn.getAttribute('data-orient');
+        sheetPages[activeSheetPageIndex].orient = orient;
+        document.querySelectorAll('#sheet-orientation-seg .rayon-seg-btn, #comp-orientation-seg .rayon-seg-btn').forEach(b => {
+          b.classList.toggle('active', b.getAttribute('data-orient') === orient);
+        });
+        updateCompositorSheetView();
       });
     });
 
     document.getElementById('sheet-title-project')?.addEventListener('input', (e) => {
+      sheetPages[activeSheetPageIndex].titleProject = e.target.value;
+      const el = document.getElementById('compositor-tb-project');
+      if (el) el.textContent = e.target.value.toUpperCase();
+    });
+    document.getElementById('comp-title-project')?.addEventListener('input', (e) => {
       sheetPages[activeSheetPageIndex].titleProject = e.target.value;
       const el = document.getElementById('compositor-tb-project');
       if (el) el.textContent = e.target.value.toUpperCase();
@@ -4740,67 +5101,216 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       const el = document.getElementById('compositor-tb-loc');
       if (el) el.textContent = e.target.value.toUpperCase();
     });
+    document.getElementById('comp-title-loc')?.addEventListener('input', (e) => {
+      sheetPages[activeSheetPageIndex].titleLoc = e.target.value;
+      const el = document.getElementById('compositor-tb-loc');
+      if (el) el.textContent = e.target.value.toUpperCase();
+    });
 
     document.getElementById('sheet-scale-select')?.addEventListener('change', (e) => {
       sheetPages[activeSheetPageIndex].scale = e.target.value;
       const el = document.getElementById('compositor-tb-scale');
       if (el) el.textContent = `1:${e.target.value}`;
-      const badge = document.getElementById('compositor-scale-badge');
-      if (badge) badge.textContent = `Escala: 1:${e.target.value}`;
+      document.querySelectorAll('#compositor-scale-badge').forEach(badge => badge.textContent = `Escala: 1:${e.target.value}`);
       renderSheetViewports();
+      updateCompositorSheetView();
+    });
+    document.getElementById('comp-scale-select')?.addEventListener('change', (e) => {
+      sheetPages[activeSheetPageIndex].scale = e.target.value;
+      const el = document.getElementById('compositor-tb-scale');
+      if (el) el.textContent = `1:${e.target.value}`;
+      document.querySelectorAll('#compositor-scale-badge').forEach(badge => badge.textContent = `Escala: 1:${e.target.value}`);
+      renderSheetViewports();
+      updateCompositorSheetView();
     });
 
-    // Open/Close Interactive Sheet Compositor Modal
-    function openSheetCompositorModal() {
-      const modal = document.getElementById('modal-sheet-compositor');
-      if (!modal) return;
-      modal.hidden = false;
-      modal.removeAttribute('hidden');
-      modal.style.display = 'flex';
-      renderSheetPages();
-      updateCompositorSheetView();
-    }
-    window.openSheetCompositorModal = openSheetCompositorModal;
+    document.getElementById('comp-title-sheetnum')?.addEventListener('input', (e) => {
+      sheetPages[activeSheetPageIndex].sheetNum = e.target.value;
+      const el = document.getElementById('compositor-tb-sheetnum');
+      if (el) el.textContent = e.target.value.toUpperCase();
+    });
 
-    function closeSheetCompositorModal() {
-      const modal = document.getElementById('modal-sheet-compositor');
-      if (modal) {
-        modal.hidden = true;
-        modal.setAttribute('hidden', '');
-        modal.style.display = 'none';
+    document.getElementById('comp-title-author')?.addEventListener('input', (e) => {
+      sheetPages[activeSheetPageIndex].author = e.target.value;
+    });
+
+    document.getElementById('comp-titleblock-toggle')?.addEventListener('change', (e) => {
+      const el = document.getElementById('comp-sheet-titleblock');
+      if (el) el.style.display = e.target.checked ? 'flex' : 'none';
+    });
+    document.getElementById('comp-scalebar-toggle')?.addEventListener('change', (e) => {
+      const el = document.getElementById('comp-sheet-scalebar');
+      if (el) el.style.display = e.target.checked ? 'block' : 'none';
+    });
+    document.getElementById('comp-north-toggle')?.addEventListener('change', (e) => {
+      const el = document.getElementById('comp-sheet-north');
+      if (el) el.style.display = e.target.checked ? 'flex' : 'none';
+    });
+
+    // Composición Studio Left Rail Navigation
+    document.querySelectorAll('#comp-left-rail [data-comp-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.getAttribute('data-comp-tab');
+        if (tab === 'export') {
+          exportCompositeSheet4K();
+          return;
+        }
+        document.querySelectorAll('#comp-left-rail [data-comp-tab]').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+
+        const tabFormat = document.getElementById('comp-tab-format');
+        const tabTitle = document.getElementById('comp-tab-titleblock');
+        const tabScenes = document.getElementById('comp-tab-scenes');
+
+        if (tabFormat) tabFormat.hidden = (tab !== 'format');
+        if (tabTitle) tabTitle.hidden = (tab !== 'titleblock');
+        if (tabScenes) tabScenes.hidden = (tab !== 'scenes');
+
+        if (tab === 'scenes') renderCompScenesDrawer();
+      });
+    });
+
+    document.querySelectorAll('[data-close-compdrawer]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const drawer = document.getElementById('comp-left-drawer');
+        if (drawer) {
+          drawer.style.display = drawer.style.display === 'none' ? '' : 'none';
+        }
+      });
+    });
+
+    // Zoom fit button
+    document.getElementById('comp-btn-zoom-fit')?.addEventListener('click', () => {
+      const container = document.getElementById('comp-canvas-scroll-container');
+      const sheet = document.getElementById('compositor-paper-sheet');
+      if (container && sheet) {
+        container.scrollTo({
+          left: (sheet.offsetLeft || 0) - 20,
+          top: (sheet.offsetTop || 0) - 20,
+          behavior: 'smooth'
+        });
+        showCadToast('⛶ Pliego centrado y ajustado al lienzo');
       }
-    }
-    window.closeSheetCompositorModal = closeSheetCompositorModal;
+    });
 
-    document.getElementById('btn-open-sheet-compositor')?.addEventListener('click', openSheetCompositorModal);
-    document.getElementById('btn-compositor-close')?.addEventListener('click', closeSheetCompositorModal);
+    // Paper tone swatches
+    document.querySelectorAll('[data-paper-bg]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('[data-paper-bg]').forEach(b => {
+          b.classList.remove('active');
+          b.style.border = '1px solid rgba(255,255,255,0.2)';
+        });
+        btn.classList.add('active');
+        btn.style.border = '2px solid #0066ff';
+        const bg = btn.getAttribute('data-paper-bg');
+        const sheetEl = document.getElementById('compositor-paper-sheet');
+        if (sheetEl) {
+          sheetEl.style.background = bg;
+          sheetEl.style.color = (bg === '#18181B') ? '#f4f4f6' : '#18181b';
+        }
+      });
+    });
+
+    // DPI segmented buttons
+    document.querySelectorAll('#comp-dpi-seg .rayon-seg-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#comp-dpi-seg .rayon-seg-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    function renderCompScenesDrawer() {
+      const container = document.getElementById('comp-scenes-available-list');
+      if (!container) return;
+      const views = viewsManager.getViews();
+      if (!views.length) {
+        container.innerHTML = `<span style="color:#71717a; font-size:11px; padding:4px;">No hay escenas capturadas aún. Haz clic arriba en "+ Capturar Escena Actual".</span>`;
+        return;
+      }
+      container.innerHTML = views.map(v => {
+        const thumbHtml = v.thumbnail 
+          ? `<img src="${v.thumbnail}" style="width:48px; height:34px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,255,255,0.1);" alt="">`
+          : `<div style="width:48px; height:34px; background:#27272a; border-radius:3px; display:flex; align-items:center; justify-content:center; color:#71717a; font-size:10px;">${v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO'}</div>`;
+        return `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:6px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:4px; gap:8px;">
+            <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+              ${thumbHtml}
+              <div style="overflow:hidden;">
+                <div style="font-size:11px; font-weight:600; color:#e4e4e7; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">${v.name}</div>
+                <div style="font-size:9.5px; color:#71717a;">${v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'Axo'} · ${new Date(v.createdAt).toLocaleDateString()}</div>
+              </div>
+            </div>
+            <button type="button" class="axiom-subtle-btn" data-insert-scene-comp="${v.id}" style="font-size:10px; padding:3px 8px; flex:none;">+ Insertar</button>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('[data-insert-scene-comp]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const id = btn.getAttribute('data-insert-scene-comp');
+          const page = sheetPages[activeSheetPageIndex];
+          if (page.viewports.length > 0) {
+            page.viewports[0].sceneId = id;
+            renderSheetViewports();
+            updateCompositorSheetView();
+            showCadToast(`✓ Escena asignada al Cuadrante 1 del pliego`);
+          }
+        });
+      });
+    }
+
+    document.getElementById('comp-btn-quick-capture')?.addEventListener('click', () => {
+      viewsManager.saveCurrentScene(`Escena Pliego ${viewsManager.getViews().length + 1}`);
+      renderCompScenesDrawer();
+      updateInspectorScenes();
+      showCadToast('✓ Escena capturada y disponible para el pliego');
+    });
 
     function updateCompositorSheetView() {
       const page = sheetPages[activeSheetPageIndex];
       const grid = document.getElementById('compositor-viewports-grid');
       const sheetEl = document.getElementById('compositor-paper-sheet');
       const titleEl = document.getElementById('compositor-sheet-title');
-      const scaleBadge = document.getElementById('compositor-scale-badge');
       const tbProj = document.getElementById('compositor-tb-project');
       const tbLoc = document.getElementById('compositor-tb-loc');
       const tbScale = document.getElementById('compositor-tb-scale');
       const tbNum = document.getElementById('compositor-tb-sheetnum');
 
+      // Top Island & Measure status sync
+      const islandName = document.getElementById('comp-island-sheet-name');
+      if (islandName) islandName.textContent = (page.name || `PLIEGO 0${activeSheetPageIndex + 1}`).toUpperCase();
+      const islandFmt = document.getElementById('comp-island-format');
+      if (islandFmt) islandFmt.textContent = `${page.format.toUpperCase()} · ${page.orient === 'landscape' ? 'Horizontal' : 'Vertical'}`;
+      const compMeasure = document.getElementById('comp-measure-text');
+      if (compMeasure) compMeasure.textContent = `${page.name} · ${page.format.toUpperCase()} · Escala 1:${page.scale}`;
+
       if (titleEl) titleEl.textContent = `PLIEGO 0${activeSheetPageIndex + 1} · ${page.format.toUpperCase()} ${page.orient === 'landscape' ? 'HORIZONTAL' : 'VERTICAL'}`;
-      if (scaleBadge) scaleBadge.textContent = `Escala: 1:${page.scale}`;
+      document.querySelectorAll('#compositor-scale-badge').forEach(badge => badge.textContent = `Escala: 1:${page.scale}`);
       if (tbProj) tbProj.textContent = (page.titleProject || 'PLAN MAESTRO URBANO').toUpperCase();
       if (tbLoc) tbLoc.textContent = (page.titleLoc || 'MONTERREY, N.L.').toUpperCase();
       if (tbScale) tbScale.textContent = `1:${page.scale}`;
-      if (tbNum) tbNum.textContent = `PL-0${activeSheetPageIndex + 1}`;
+      if (tbNum) tbNum.textContent = page.sheetNum || `PL-0${activeSheetPageIndex + 1}`;
 
       // Adjust paper proportion
       if (sheetEl) {
+        const formatAspects = {
+          '90x60': 90 / 60,
+          'A1': 841 / 594,
+          'A2': 594 / 420,
+          'tabloid': 17 / 11,
+          'letter': 11 / 8.5
+        };
+        const aspect = formatAspects[page.format] || 1.5;
         if (page.orient === 'portrait') {
-          sheetEl.style.width = '613px';
-          sheetEl.style.height = '920px';
+          const h = 880;
+          const w = Math.round(h / aspect);
+          sheetEl.style.width = `${w}px`;
+          sheetEl.style.height = `${h}px`;
         } else {
-          sheetEl.style.width = '920px';
-          sheetEl.style.height = '613px';
+          const w = 920;
+          const h = Math.round(w / aspect);
+          sheetEl.style.width = `${w}px`;
+          sheetEl.style.height = `${h}px`;
         }
       }
 
@@ -5228,15 +5738,25 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     // =====================================================
     // =====================================================
     // WORKSPACE HOME RENDERER (Rayon SaaS Dark Hub)
+    // =====================================================
+    // WORKSPACE HOME RENDERER (Rayon SaaS Dark Hub)
     // media_1792357674705_ebefd8f8.png
     // =====================================================
+    let currentEditingThumbTarget = null;
+    let wsViewMode = 'grid';
+
     function renderWorkspaceHome() {
-      const dynamicContainer = document.getElementById('ws-dynamic-projects');
-      if (dynamicContainer) {
+      const dynamicGrid = document.getElementById('ws-dynamic-projects');
+      const dynamicList = document.getElementById('ws-dynamic-list-rows');
+      const activeModel = window.getActiveModelData?.();
+      const scenes = viewsManager.getViews();
+      const projects = viewsManager.getRecentProjects();
+      const templates = viewsManager.getTemplates();
+
+      // 1. Render Dynamic Grid Cards
+      if (dynamicGrid) {
         let cardsHtml = '';
 
-        // 1. If active model is in memory, show Active Model card
-        const activeModel = window.getActiveModelData?.();
         if (activeModel) {
           const lat = activeModel.center?.lat || 19.4326;
           const lon = activeModel.center?.lon || -99.1332;
@@ -5255,47 +5775,296 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
               <div class="rayon-card-meta">
                 <strong class="rayon-card-title">${lat.toFixed(3)}, ${lon.toFixed(3)}</strong>
                 <span class="rayon-card-sub">Active in session · ${bldgCount} buildings</span>
+                <div class="rayon-card-actions">
+                  <button type="button" class="rayon-card-act-btn primary" data-ws-action="open-active">⯈ Abrir</button>
+                </div>
               </div>
             </div>
           `;
         }
 
-        // 2. Saved Scenes
-        const scenes = viewsManager.getViews();
         scenes.forEach(s => {
           const modeLabel = s.mode === 'result' ? '3D Model' : s.mode === 'mapper' ? 'Cartografía 2D' : 'Axonometría';
+          const thumbHtml = s.thumbnail 
+            ? `<img src="${s.thumbnail}" style="width:100%; height:100%; object-fit:cover;" alt="">`
+            : `
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#18181b"/>
+                <path d="M 60,120 L 150,70 L 240,120 L 150,165 Z" fill="#27272a" stroke="#ffffff" stroke-width="1.2"/>
+                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">${s.name}</text>
+              </svg>
+            `;
           cardsHtml += `
             <div class="rayon-model-card" data-ws-scene="${s.id}">
               <div class="rayon-card-thumb">
                 <span class="rayon-tag-template" style="background:#27272a; color:#f4f4f6; border:1px solid rgba(255,255,255,0.15);">Escena</span>
-                <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
-                  <rect width="100%" height="100%" fill="#18181b"/>
-                  <path d="M 60,120 L 150,70 L 240,120 L 150,165 Z" fill="#27272a" stroke="#ffffff" stroke-width="1.2"/>
-                  <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">${s.name}</text>
-                </svg>
+                ${thumbHtml}
               </div>
               <div class="rayon-card-meta">
                 <strong class="rayon-card-title">${s.name}</strong>
-                <span class="rayon-card-sub">${modeLabel} · Saved scene</span>
+                <span class="rayon-card-sub">${modeLabel} · Escena guardada</span>
+                <div class="rayon-card-actions">
+                  <button type="button" class="rayon-card-act-btn primary" data-ws-scene="${s.id}">⯈ Abrir</button>
+                  <button type="button" class="rayon-card-act-btn" data-act="rename-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Renombrar">✎ Renombrar</button>
+                  <button type="button" class="rayon-card-act-btn" data-act="thumb-scene" data-id="${s.id}" title="Cambiar imagen">🖼 Imagen</button>
+                  <button type="button" class="rayon-card-act-btn del" data-act="del-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Eliminar">🗑</button>
+                </div>
               </div>
             </div>
           `;
         });
 
-        dynamicContainer.innerHTML = cardsHtml;
-
-        // Wire dynamic clicks
-        dynamicContainer.querySelectorAll('[data-ws-action="open-active"]').forEach(card => {
-          card.addEventListener('click', () => switchView('result', true));
+        projects.forEach(p => {
+          const thumbHtml = p.thumbnail
+            ? `<img src="${p.thumbnail}" style="width:100%; height:100%; object-fit:cover;" alt="">`
+            : `
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#121316"/>
+                <circle cx="150" cy="90" r="50" fill="none" stroke="#3b82f6" stroke-width="1.2" stroke-dasharray="4 3"/>
+                <rect x="120" y="60" width="60" height="60" fill="rgba(59,130,246,0.15)" stroke="#3b82f6" stroke-width="1.4"/>
+                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">${p.name}</text>
+              </svg>
+            `;
+          cardsHtml += `
+            <div class="rayon-model-card" data-ws-proj="${p.id}" data-cardtype="project">
+              <div class="rayon-card-thumb">
+                <span class="rayon-tag-template" style="background:#3b82f6; color:#ffffff;">.urbnz</span>
+                ${thumbHtml}
+              </div>
+              <div class="rayon-card-meta">
+                <strong class="rayon-card-title">${p.name}</strong>
+                <span class="rayon-card-sub">${Number(p.lat).toFixed(3)}, ${Number(p.lon).toFixed(3)} · ${p.buildings || 0} edif</span>
+                <div class="rayon-card-actions">
+                  <button type="button" class="rayon-card-act-btn primary" data-ws-proj="${p.id}">⯈ Abrir</button>
+                  <button type="button" class="rayon-card-act-btn" data-act="rename-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Renombrar">✎ Renombrar</button>
+                  <button type="button" class="rayon-card-act-btn" data-act="thumb-proj" data-id="${p.id}" title="Cambiar imagen">🖼 Imagen</button>
+                  <button type="button" class="rayon-card-act-btn del" data-act="del-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Eliminar">🗑</button>
+                </div>
+              </div>
+            </div>
+          `;
         });
 
-        dynamicContainer.querySelectorAll('[data-ws-scene]').forEach(card => {
-          card.addEventListener('click', () => {
-            const id = card.getAttribute('data-ws-scene');
-            applySavedView(id);
-          });
-        });
+        dynamicGrid.innerHTML = cardsHtml;
       }
+
+      // 2. Render Dynamic List Rows
+      if (dynamicList) {
+        let listHtml = `
+          <div class="rayon-list-row" data-action="start-from-scratch" data-cardtype="new" style="border-left: 2px dashed rgba(255,255,255,0.25); cursor:pointer;">
+            <div class="rayon-list-thumb" style="background:#18181b;">
+              <span style="font-size:15px; color:#ffffff; font-weight:700;">+</span>
+            </div>
+            <div>
+              <div class="rayon-list-title">Lienzo en Blanco (Nuevo Proyecto)</div>
+              <div class="rayon-list-meta" style="color:#a1a1aa;">Explora cualquier coordenada mundial desde el mapa</div>
+            </div>
+            <div class="rayon-list-meta">Territorial Global</div>
+            <div class="rayon-list-meta">Nuevo polígono</div>
+            <div class="rayon-list-meta">Lienzo vacío</div>
+            <div class="rayon-list-actions">
+              <button type="button" class="rayon-list-act-btn primary" data-action="start-from-scratch">+ Crear</button>
+            </div>
+          </div>
+        `;
+
+        if (activeModel) {
+          const lat = activeModel.center?.lat || 19.4326;
+          const lon = activeModel.center?.lon || -99.1332;
+          const bldgCount = activeModel.buildings?.length || 0;
+          listHtml += `
+            <div class="rayon-list-row" data-ws-action="open-active">
+              <div class="rayon-list-thumb">
+                <span style="font-size:10px; color:#38bdf8; font-weight:700;">ACTIVO</span>
+              </div>
+              <div>
+                <div class="rayon-list-title">Modelo Activo en Sesión</div>
+                <div class="rayon-list-meta" style="color:#0ea5e9;">Cargado actualmente en memoria</div>
+              </div>
+              <div class="rayon-list-meta">${lat.toFixed(3)}, ${lon.toFixed(3)}</div>
+              <div class="rayon-list-meta">${bldgCount} edificios · 3D</div>
+              <div class="rayon-list-meta">En sesión activa</div>
+              <div class="rayon-list-actions">
+                <button type="button" class="rayon-list-act-btn primary" data-ws-action="open-active">⯈ Abrir</button>
+              </div>
+            </div>
+          `;
+        }
+
+        scenes.forEach(s => {
+          const modeLabel = s.mode === 'result' ? '3D' : s.mode === 'mapper' ? '2D' : 'Axo';
+          const thumbHtml = s.thumbnail
+            ? `<img src="${s.thumbnail}" alt="">`
+            : `<span style="font-size:10px; color:#a1a1aa; font-weight:600;">${modeLabel}</span>`;
+          listHtml += `
+            <div class="rayon-list-row" data-ws-scene="${s.id}">
+              <div class="rayon-list-thumb">
+                ${thumbHtml}
+              </div>
+              <div>
+                <div class="rayon-list-title">${s.name}</div>
+                <div class="rayon-list-meta">Escena · ${modeLabel}</div>
+              </div>
+              <div class="rayon-list-meta">${s.modelId ? 'Proyecto territorial' : 'Lienzo urbano'}</div>
+              <div class="rayon-list-meta">Escena guardada</div>
+              <div class="rayon-list-meta">${new Date(s.createdAt).toLocaleDateString()}</div>
+              <div class="rayon-list-actions">
+                <button type="button" class="rayon-list-act-btn primary" data-ws-scene="${s.id}">⯈ Abrir</button>
+                <button type="button" class="rayon-list-act-btn" data-act="rename-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Renombrar">✎</button>
+                <button type="button" class="rayon-list-act-btn" data-act="thumb-scene" data-id="${s.id}" title="Cambiar imagen">🖼</button>
+                <button type="button" class="rayon-list-act-btn del" data-act="del-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Eliminar">🗑</button>
+              </div>
+            </div>
+          `;
+        });
+
+        projects.forEach(p => {
+          const thumbHtml = p.thumbnail
+            ? `<img src="${p.thumbnail}" alt="">`
+            : `<span style="font-size:10px; color:#3b82f6; font-weight:700;">.URBNZ</span>`;
+          listHtml += `
+            <div class="rayon-list-row" data-ws-proj="${p.id}" data-cardtype="project">
+              <div class="rayon-list-thumb">
+                ${thumbHtml}
+              </div>
+              <div>
+                <div class="rayon-list-title">${p.name}</div>
+                <div class="rayon-list-meta">Proyecto URBNZD</div>
+              </div>
+              <div class="rayon-list-meta">${Number(p.lat).toFixed(3)}, ${Number(p.lon).toFixed(3)}</div>
+              <div class="rayon-list-meta">${p.buildings || 0} edif · ${p.relief || 0} m</div>
+              <div class="rayon-list-meta">${new Date(p.updatedAt).toLocaleDateString()}</div>
+              <div class="rayon-list-actions">
+                <button type="button" class="rayon-list-act-btn primary" data-ws-proj="${p.id}">⯈ Abrir</button>
+                <button type="button" class="rayon-list-act-btn" data-act="rename-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Renombrar">✎</button>
+                <button type="button" class="rayon-list-act-btn" data-act="thumb-proj" data-id="${p.id}" title="Cambiar imagen">🖼</button>
+                <button type="button" class="rayon-list-act-btn del" data-act="del-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Eliminar">🗑</button>
+              </div>
+            </div>
+          `;
+        });
+
+        templates.forEach(t => {
+          listHtml += `
+            <div class="rayon-list-row" data-tpl="${t.id}" data-cardtype="template" style="display:none;">
+              <div class="rayon-list-thumb" style="background:#18181b;">
+                <span style="font-size:9.5px; color:#f4f4f6; font-weight:700;">TPL</span>
+              </div>
+              <div>
+                <div class="rayon-list-title">${t.title}</div>
+                <div class="rayon-list-meta">${t.tag}</div>
+              </div>
+              <div class="rayon-list-meta">${t.city}</div>
+              <div class="rayon-list-meta">${t.size} m · Cuadrado</div>
+              <div class="rayon-list-meta">Plantilla Oficial</div>
+              <div class="rayon-list-actions">
+                <button type="button" class="rayon-list-act-btn primary" data-tpl="${t.id}">⯈ Cargar</button>
+              </div>
+            </div>
+          `;
+        });
+
+        dynamicList.innerHTML = listHtml;
+      }
+
+      // 3. Wire Click Handlers across Grid & List
+      document.querySelectorAll('[data-ws-action="open-active"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          switchView('result', true);
+        };
+      });
+
+      document.querySelectorAll('#ws-cards-grid [data-ws-scene], #ws-cards-list [data-ws-scene]').forEach(el => {
+        el.onclick = (e) => {
+          if (e.target.closest('[data-act]')) return;
+          const id = el.getAttribute('data-ws-scene');
+          applySavedView(id);
+        };
+      });
+
+      document.querySelectorAll('[data-tpl]').forEach(el => {
+        el.onclick = (e) => {
+          const tplKey = el.getAttribute('data-tpl');
+          const tpl = viewsManager.getTemplates().find(t => t.id === tplKey);
+          if (tpl) {
+            switchView('app', true);
+            if (window.flyToTemplateLocation) window.flyToTemplateLocation(tpl.lat, tpl.lon, tpl.size);
+          }
+        };
+      });
+
+      document.querySelectorAll('[data-act="rename-scene"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const currentName = decodeURIComponent(btn.getAttribute('data-name') || '');
+          const newName = prompt('Introduce el nuevo nombre de la escena:', currentName);
+          if (newName && newName.trim()) {
+            viewsManager.renameView(id, newName.trim());
+            renderWorkspaceHome();
+            updateInspectorScenes();
+            showCadToast('✓ Nombre de escena actualizado');
+          }
+        };
+      });
+
+      document.querySelectorAll('[data-act="rename-proj"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const currentName = decodeURIComponent(btn.getAttribute('data-name') || '');
+          const newName = prompt('Introduce el nuevo nombre del proyecto:', currentName);
+          if (newName && newName.trim()) {
+            viewsManager.renameRecentProject(id, newName.trim());
+            renderWorkspaceHome();
+            showCadToast('✓ Nombre de proyecto actualizado');
+          }
+        };
+      });
+
+      document.querySelectorAll('[data-act="thumb-scene"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          currentEditingThumbTarget = { type: 'scene', id: btn.getAttribute('data-id') };
+          document.getElementById('ws-input-change-thumb')?.click();
+        };
+      });
+
+      document.querySelectorAll('[data-act="thumb-proj"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          currentEditingThumbTarget = { type: 'project', id: btn.getAttribute('data-id') };
+          document.getElementById('ws-input-change-thumb')?.click();
+        };
+      });
+
+      document.querySelectorAll('[data-act="del-scene"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const name = decodeURIComponent(btn.getAttribute('data-name') || 'esta escena');
+          if (confirm(`¿Eliminar la escena "${name}" del espacio de trabajo?`)) {
+            viewsManager.deleteView(id);
+            renderWorkspaceHome();
+            updateInspectorScenes();
+            showCadToast('✓ Escena eliminada');
+          }
+        };
+      });
+
+      document.querySelectorAll('[data-act="del-proj"]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-id');
+          const name = decodeURIComponent(btn.getAttribute('data-name') || 'este proyecto');
+          if (confirm(`¿Eliminar el proyecto "${name}" del espacio de trabajo?`)) {
+            viewsManager.removeRecentProject(id);
+            renderWorkspaceHome();
+            showCadToast('✓ Proyecto eliminado');
+          }
+        };
+      });
 
       // Wire static template cards once
       document.querySelectorAll('#ws-cards-grid [data-action="load-starter"], #ws-cards-grid [data-action="start-from-scratch"]').forEach(card => {
@@ -5309,40 +6078,80 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         };
       });
 
-      document.querySelectorAll('#ws-cards-grid [data-tpl]').forEach(card => {
-        card.onclick = () => {
-          const tplKey = card.getAttribute('data-tpl');
-          const tpl = viewsManager.getTemplates().find(t => t.id === tplKey);
-          if (tpl) {
-            switchView('app', true);
-            if (window.flyToTemplateLocation) window.flyToTemplateLocation(tpl.lat, tpl.lon, tpl.size);
-          }
-        };
-      });
-
-      // Filter search input
-      const searchInput = document.getElementById('ws-search-input');
-      if (searchInput && !searchInput.dataset.bound) {
-        searchInput.dataset.bound = 'true';
-        searchInput.addEventListener('input', (e) => {
-          const q = e.target.value.toLowerCase().trim();
-          document.querySelectorAll('#ws-cards-grid .rayon-model-card').forEach(card => {
-            const text = card.textContent.toLowerCase();
-            card.style.display = (!q || text.includes(q)) ? '' : 'none';
-          });
-        });
-      }
-
       // Apply active sidebar filter
       const activeFilterBtn = document.querySelector('.rayon-home-nav [data-wsfilter].active');
       applyWorkspaceFilter(activeFilterBtn?.getAttribute('data-wsfilter') || 'all');
     }
     window.renderWorkspaceHome = renderWorkspaceHome;
 
+    // View mode switcher: Grid vs List
+    document.getElementById('ws-btn-view-grid')?.addEventListener('click', () => {
+      wsViewMode = 'grid';
+      document.getElementById('ws-btn-view-grid')?.classList.add('active');
+      document.getElementById('ws-btn-view-list')?.classList.remove('active');
+      const grid = document.getElementById('ws-cards-grid');
+      const list = document.getElementById('ws-cards-list');
+      if (grid) grid.style.display = 'grid';
+      if (list) list.style.display = 'none';
+      const activeFilter = document.querySelector('.rayon-home-nav [data-wsfilter].active')?.getAttribute('data-wsfilter') || 'all';
+      applyWorkspaceFilter(activeFilter);
+    });
+
+    document.getElementById('ws-btn-view-list')?.addEventListener('click', () => {
+      wsViewMode = 'list';
+      document.getElementById('ws-btn-view-list')?.classList.add('active');
+      document.getElementById('ws-btn-view-grid')?.classList.remove('active');
+      const grid = document.getElementById('ws-cards-grid');
+      const list = document.getElementById('ws-cards-list');
+      if (grid) grid.style.display = 'none';
+      if (list) list.style.display = 'flex';
+      const activeFilter = document.querySelector('.rayon-home-nav [data-wsfilter].active')?.getAttribute('data-wsfilter') || 'all';
+      applyWorkspaceFilter(activeFilter);
+    });
+
+    // Thumbnail file picker listener
+    document.getElementById('ws-input-change-thumb')?.addEventListener('change', (e) => {
+      const file = e.target.files?.[0];
+      if (!file || !currentEditingThumbTarget) return;
+      const reader = new FileReader();
+      reader.onload = (evt) => {
+        const dataUrl = evt.target?.result;
+        if (dataUrl) {
+          if (currentEditingThumbTarget.type === 'scene') {
+            viewsManager.updateViewThumbnail(currentEditingThumbTarget.id, dataUrl);
+            updateInspectorScenes();
+          } else if (currentEditingThumbTarget.type === 'project') {
+            viewsManager.updateProjectThumbnail(currentEditingThumbTarget.id, dataUrl);
+          }
+          renderWorkspaceHome();
+          showCadToast('✓ Miniatura de previsualización actualizada');
+        }
+      };
+      reader.readAsDataURL(file);
+      e.target.value = '';
+    });
+
+    // Search filter input listener
+    const searchInput = document.getElementById('ws-search-input');
+    if (searchInput) {
+      searchInput.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase().trim();
+        document.querySelectorAll('#ws-cards-grid .rayon-model-card').forEach(card => {
+          const text = card.textContent.toLowerCase();
+          card.style.display = (!q || text.includes(q)) ? '' : 'none';
+        });
+        document.querySelectorAll('#ws-cards-list .rayon-list-row').forEach(row => {
+          const text = row.textContent.toLowerCase();
+          row.style.display = (!q || text.includes(q)) ? '' : 'none';
+        });
+      });
+    }
+
     document.getElementById('ws-btn-new-model')?.addEventListener('click', () => switchView('app', true));
     document.getElementById('ws-btn-import-urbnz')?.addEventListener('click', () => {
       document.getElementById('input-open-urbnz')?.click();
     });
+
 
     // =====================================================
     // NATIVE .URBNZ PROJECT SAVE & LOAD

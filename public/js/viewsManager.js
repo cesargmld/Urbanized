@@ -121,6 +121,30 @@ class ViewsManager {
     this.saveRecentProjects();
   }
 
+  renameRecentProject(id, newName) {
+    const p = this.recentProjects.find((item) => item.id === id);
+    if (p && newName?.trim()) {
+      p.name = newName.trim();
+      this.saveRecentProjects();
+    }
+  }
+
+  updateProjectThumbnail(id, thumbUrl) {
+    const p = this.recentProjects.find((item) => item.id === id);
+    if (p && thumbUrl) {
+      p.thumbnail = thumbUrl;
+      this.saveRecentProjects();
+    }
+  }
+
+  updateViewThumbnail(id, thumbUrl) {
+    const v = this.views.find((item) => item.id === id);
+    if (v && thumbUrl) {
+      v.thumbnail = thumbUrl;
+      this.saveToStorage();
+    }
+  }
+
   getRecentProjects() {
     return [...this.recentProjects];
   }
