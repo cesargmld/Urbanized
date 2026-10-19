@@ -4559,6 +4559,9 @@ input[type="range"]::-webkit-slider-thumb,
   display: contents !important;
 }
 
+/* --- RAYON 4-COLUMN STUDIO ARCHITECTURE --- */
+/* Column 1: Left Rail (44px) */
+.rayon-left-rail,
 #result .axiom-left-dock,
 #mapper .axiom-left-dock,
 #illustrator .axiom-left-dock {
@@ -4570,6 +4573,7 @@ input[type="range"]::-webkit-slider-thumb,
   height: 100% !important;
   background: #0c0c0e !important;
   border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: none !important;
   border-radius: 0 !important;
   box-shadow: none !important;
   display: flex !important;
@@ -4582,6 +4586,7 @@ input[type="range"]::-webkit-slider-thumb,
   pointer-events: auto !important;
 }
 
+.rayon-rail-btn,
 #result .axiom-dock-icon,
 #mapper .axiom-dock-icon,
 #illustrator .axiom-dock-icon {
@@ -4598,6 +4603,7 @@ input[type="range"]::-webkit-slider-thumb,
   transition: background 0.15s ease, color 0.15s ease !important;
 }
 
+.rayon-rail-btn:hover,
 #result .axiom-dock-icon:hover,
 #mapper .axiom-dock-icon:hover,
 #illustrator .axiom-dock-icon:hover {
@@ -4605,6 +4611,7 @@ input[type="range"]::-webkit-slider-thumb,
   color: #ffffff !important;
 }
 
+.rayon-rail-btn.active,
 #result .axiom-dock-icon.active,
 #mapper .axiom-dock-icon.active,
 #illustrator .axiom-dock-icon.active {
@@ -4612,16 +4619,42 @@ input[type="range"]::-webkit-slider-thumb,
   color: #38bdf8 !important;
 }
 
-#result .axiom-dock-icon.active::before,
-#mapper .axiom-dock-icon.active::before,
-#illustrator .axiom-dock-icon.active::before {
+/* Column 2: Left Drawer (280px) opens IMMEDIATELY adjacent to Rail on the LEFT */
+.rayon-left-drawer,
+#result .axiom-left-drawer,
+#mapper .axiom-left-drawer,
+#illustrator .axiom-left-drawer {
+  order: 2 !important;
+  width: 280px !important;
+  min-width: 280px !important;
+  max-width: 280px !important;
+  flex-shrink: 0 !important;
+  height: 100% !important;
+  background: #111114 !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-left: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow-y: auto !important;
+  z-index: 450 !important;
+  pointer-events: auto !important;
+  padding: 0 !important;
+}
+
+.rayon-left-drawer[hidden],
+#result .axiom-left-drawer[hidden],
+#mapper .axiom-left-drawer[hidden],
+#illustrator .axiom-left-drawer[hidden] {
   display: none !important;
 }
 
+/* Column 3: Center Viewport / Canvas (takes all remaining width) */
 #result .viewer-wrap,
 #mapper .editor-stage,
 #illustrator .editor-stage {
-  order: 2 !important;
+  order: 3 !important;
   flex: 1 1 0% !important;
   min-width: 0 !important;
   width: auto !important;
@@ -4634,30 +4667,27 @@ input[type="range"]::-webkit-slider-thumb,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: #090a0d !important;
+  background: #090a0d;
   overflow: hidden !important;
 }
 
-#result .axiom-left-drawer,
-#mapper .axiom-left-drawer,
-#illustrator .axiom-left-drawer {
-  order: 3 !important;
-  width: 320px !important;
-  min-width: 320px !important;
-  max-width: 320px !important;
-  flex-shrink: 0 !important;
+/* Column 4: Permanent Right Inspector (300px) on the RIGHT */
+.rayon-inspector-panel {
+  order: 4 !important;
+  width: 300px !important;
+  min-width: 300px !important;
+  max-width: 300px !important;
   height: 100% !important;
-  background: #111114 !important;
+  background: #121214 !important;
   border-left: 1px solid rgba(255, 255, 255, 0.08) !important;
   border-right: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
   display: flex !important;
   flex-direction: column !important;
   overflow-y: auto !important;
-  z-index: 500 !important;
-  pointer-events: auto !important;
-  padding: 0 !important;
+  z-index: 400 !important;
+  flex-shrink: 0 !important;
+  padding: 14px 16px !important;
+  gap: 14px !important;
 }
 
 #result .axiom-left-drawer[hidden],
@@ -5740,3 +5770,117 @@ input[type="range"]::-webkit-slider-thumb,
 
 
 
+
+/* ========================================================
+   RAYON AESTHETIC LOADER (media_1792369520403_bd7d918c.png)
+   ======================================================== */
+.rayon-loader-modal {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 3000 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #090a0d !important;
+  pointer-events: auto !important;
+  animation: axiomModalFadeIn 0.25s ease !important;
+}
+.rayon-loader-modal[hidden] {
+  display: none !important;
+}
+.rayon-loader-card {
+  position: relative !important;
+  width: 420px !important;
+  max-width: 90vw !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+.rayon-loader-glyph-wrap {
+  margin-bottom: 24px !important;
+}
+.rayon-loader-svg {
+  display: block !important;
+}
+.rayon-loader-tip-wrap {
+  margin-bottom: 24px !important;
+  min-height: 48px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 16px !important;
+}
+.rayon-loader-tip {
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  line-height: 1.5 !important;
+  color: #a1a1aa !important;
+  margin: 0 !important;
+  font-weight: 400 !important;
+}
+.rayon-loader-bar-track {
+  width: 100% !important;
+  max-width: 320px !important;
+  height: 3px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-radius: 3px !important;
+  overflow: hidden !important;
+  margin-bottom: 16px !important;
+  position: relative !important;
+}
+.rayon-loader-bar-fill {
+  height: 100% !important;
+  background: #0066ff !important;
+  border-radius: 3px !important;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.rayon-loader-status {
+  font-family: 'Inter', -apple-system, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #f4f4f6 !important;
+  letter-spacing: -0.01em !important;
+}
+
+/* ========================================================
+   SEAMLESS INTEGRATED OVERLAYS (NO CONTRASTING BOXES)
+   ======================================================== */
+.map-north,
+.map-scalebar,
+.rayon-canvas-measure-pill,
+#map-north-box,
+#map-scalebar-box {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Swatches for canvas backgrounds */
+.rayon-color-swatch-btn {
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+.rayon-color-swatch-btn:hover {
+  transform: scale(1.1);
+}
+.rayon-color-swatch-btn.active {
+  box-shadow: 0 0 0 2px #0066ff !important;
+}
+
+/* Sticky Workspace Home Sidebar */
+.rayon-home-sidebar {
+  flex-shrink: 0 !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+  position: sticky !important;
+  top: 0 !important;
+}
+.rayon-home-main {
+  flex: 1 1 0% !important;
+  height: 100% !important;
+  overflow-y: auto !important;
+}

@@ -69,7 +69,35 @@ function init(container) {
     if (!ctx || !ctx.lastModel) return;
     const isPlacingPin = pinStore.isPlacing();
     const isPlacingLot = feasibilityStore.isPlacingLot;
-    if (!isPlacingPin && !isPlacingLot) return;
+    if (!isPlacingPin && !isPlacingLot) {
+      // Raycast to select element for Inspector de Selección
+      const rect = renderer.domElement.getBoundingClientRect();
+      const mouse = new THREE.Vector2(
+        ((e.clientX - rect.left) / rect.width) * 2 - 1,
+        -((e.clientY - rect.top) / rect.height) * 2 + 1
+      );
+      const raycaster = new THREE.Raycaster();
+      raycaster.setFromCamera(mouse, camera);
+      const targets = [];
+      if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
+      if (conceptualBlocksGroup?.children?.length) targets.push(...conceptualBlocksGroup.children);
+      const hits = raycaster.intersectObjects(targets, true);
+      if (hits.length > 0) {
+        const hitObj = hits[0].object;
+        const u = hitObj.userData || {};
+        const selType = document.getElementById('sel-elem-type');
+        const selH = document.getElementById('sel-elem-height');
+        const selL = document.getElementById('sel-elem-levels');
+        const selF = document.getElementById('sel-elem-footprint');
+        const selT = document.getElementById('sel-elem-tag');
+        if (selType) selType.textContent = u.type || 'Edificación Urbana';
+        if (selH) selH.textContent = u.height || '18.0 m';
+        if (selL) selL.textContent = u.levels || '5 pisos';
+        if (selF) selF.textContent = u.footprint || '850 m²';
+        if (selT) selT.textContent = u.tag || '02_Estructura_y_Nucleos';
+      }
+      return;
+    }
 
     const rect = renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(
@@ -163,47 +191,71 @@ function lineGeometry(lines, lift) {
 
 let chunkModeActive = false;
 
-function buildTerrainSkirtGeometry(grid, size, baseZ) {
+function buildTerrainSkirtGeometry(grid, size, baseZ, isCircle = false) {
   const half = size / 2;
-  const n = grid.n;
-  const step = size / n;
   const pos = [];
 
-  // Edge 1: South (y = -half, x from -half to +half)
-  for (let i = 0; i < n; i++) {
-    const x1 = -half + i * step, x2 = -half + (i + 1) * step;
-    const y = -half;
-    const z1 = grid.heightAt(x1, y), z2 = grid.heightAt(x2, y);
-    pos.push(x1, y, z1, x2, y, z2, x1, y, baseZ);
-    pos.push(x2, y, z2, x2, y, baseZ, x1, y, baseZ);
+  if (isCircle) {
+    const segments = 96;
+    const radius = half;
+    for (let i = 0; i < segments; i++) {
+      const theta1 = (i / segments) * Math.PI * 2;
+      const theta2 = ((i + 1) / segments) * Math.PI * 2;
+      const x1 = Math.cos(theta1) * radius, y1 = Math.sin(theta1) * radius;
+      const x2 = Math.cos(theta2) * radius, y2 = Math.sin(theta2) * radius;
+      const z1 = grid.heightAt ? grid.heightAt(x1, y1) : 0;
+      const z2 = grid.heightAt ? grid.heightAt(x2, y2) : 0;
+
+      // Vertical curtain wall
+      pos.push(x1, y1, z1, x2, y2, z2, x1, y1, baseZ);
+      pos.push(x2, y2, z2, x2, y2, baseZ, x1, y1, baseZ);
+
+      // Bottom cap triangular fan (solid closed base)
+      pos.push(0, 0, baseZ, x2, y2, baseZ, x1, y1, baseZ);
+    }
+  } else {
+    const n = grid.n || 64;
+    const step = size / n;
+
+    // Edge 1: South (y = -half, x from -half to +half)
+    for (let i = 0; i < n; i++) {
+      const x1 = -half + i * step, x2 = -half + (i + 1) * step;
+      const y = -half;
+      const z1 = grid.heightAt ? grid.heightAt(x1, y) : 0, z2 = grid.heightAt ? grid.heightAt(x2, y) : 0;
+      pos.push(x1, y, z1, x2, y, z2, x1, y, baseZ);
+      pos.push(x2, y, z2, x2, y, baseZ, x1, y, baseZ);
+    }
+    // Edge 2: North (y = +half, x from -half to +half)
+    for (let i = 0; i < n; i++) {
+      const x1 = -half + i * step, x2 = -half + (i + 1) * step;
+      const y = half;
+      const z1 = grid.heightAt ? grid.heightAt(x1, y) : 0, z2 = grid.heightAt ? grid.heightAt(x2, y) : 0;
+      pos.push(x1, y, z1, x1, y, baseZ, x2, y, z2);
+      pos.push(x2, y, z2, x1, y, baseZ, x2, y, baseZ);
+    }
+    // Edge 3: West (x = -half, y from -half to +half)
+    for (let j = 0; j < n; j++) {
+      const y1 = -half + j * step, y2 = -half + (j + 1) * step;
+      const x = -half;
+      const z1 = grid.heightAt ? grid.heightAt(x, y1) : 0, z2 = grid.heightAt ? grid.heightAt(x, y2) : 0;
+      pos.push(x, y1, z1, x, y1, baseZ, x, y2, z2);
+      pos.push(x, y2, z2, x, y1, baseZ, x, y2, baseZ);
+    }
+    // Edge 4: East (x = +half, y from -half to +half)
+    for (let j = 0; j < n; j++) {
+      const y1 = -half + j * step, y2 = -half + (j + 1) * step;
+      const x = half;
+      const z1 = grid.heightAt ? grid.heightAt(x, y1) : 0, z2 = grid.heightAt ? grid.heightAt(x, y2) : 0;
+      pos.push(x, y1, z1, x, y2, z2, x, y1, baseZ);
+      pos.push(x, y2, z2, x, y2, baseZ, x, y1, baseZ);
+    }
+
+    // Bottom slab cap (both winding directions to guarantee solid hermetic fill)
+    pos.push(-half, -half, baseZ, half, -half, baseZ, -half, half, baseZ);
+    pos.push(half, -half, baseZ, half, half, baseZ, -half, half, baseZ);
+    pos.push(-half, -half, baseZ, -half, half, baseZ, half, -half, baseZ);
+    pos.push(half, -half, baseZ, -half, half, baseZ, half, half, baseZ);
   }
-  // Edge 2: North (y = +half, x from -half to +half)
-  for (let i = 0; i < n; i++) {
-    const x1 = -half + i * step, x2 = -half + (i + 1) * step;
-    const y = half;
-    const z1 = grid.heightAt(x1, y), z2 = grid.heightAt(x2, y);
-    pos.push(x1, y, z1, x1, y, baseZ, x2, y, z2);
-    pos.push(x2, y, z2, x1, y, baseZ, x2, y, baseZ);
-  }
-  // Edge 3: West (x = -half, y from -half to +half)
-  for (let j = 0; j < n; j++) {
-    const y1 = -half + j * step, y2 = -half + (j + 1) * step;
-    const x = -half;
-    const z1 = grid.heightAt(x, y1), z2 = grid.heightAt(x, y2);
-    pos.push(x, y1, z1, x, y1, baseZ, x, y2, z2);
-    pos.push(x, y2, z2, x, y1, baseZ, x, y2, baseZ);
-  }
-  // Edge 4: East (x = +half, y from -half to +half)
-  for (let j = 0; j < n; j++) {
-    const y1 = -half + j * step, y2 = -half + (j + 1) * step;
-    const x = half;
-    const z1 = grid.heightAt(x, y1), z2 = grid.heightAt(x, y2);
-    pos.push(x, y1, z1, x, y2, z2, x, y1, baseZ);
-    pos.push(x, y2, z2, x, y2, baseZ, x, y1, baseZ);
-  }
-  // Bottom slab cap at baseZ
-  pos.push(-half, -half, baseZ, half, -half, baseZ, -half, half, baseZ);
-  pos.push(half, -half, baseZ, half, half, baseZ, -half, half, baseZ);
 
   const geo = new THREE.BufferGeometry();
   geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
@@ -469,7 +521,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     if (model.grid) {
       const minH = model.grid?.minH ?? 0;
       const baseZ = minH - s * 0.055;
-      const skirtGeo = buildTerrainSkirtGeometry(model.grid, s, baseZ);
+      const skirtGeo = buildTerrainSkirtGeometry(model.grid, s, baseZ, model.shape === 'circle');
       const skirtMat = new THREE.MeshStandardMaterial({
         color: isMaqueta ? 0x1c1d22 : 0x14151a,
         roughness: 0.94,
@@ -547,7 +599,7 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
   }
 
   // 3. Roads, Railways & Paths
-  const road = (layers) => layers.flatMap((l) => (model.lines[l] ?? []).map((pts) => ({ pts, closed: false })));
+  const road = (layers) => layers.flatMap((l) => (model.lines?.[l] ?? []).map((pts) => ({ pts, closed: false })));
   const addLinesTo = (targetGroup, items, color, opacity) => {
     if (!items.length) return;
     targetGroup.add(new THREE.LineSegments(lineGeometry(items, 0.9), new THREE.LineBasicMaterial({ color, transparent: true, opacity })));
@@ -677,6 +729,9 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     controls.update();
     triggerResize();
   }
+  document.getElementById('view-btn-studio')?.classList.remove('disabled');
+  document.getElementById('view-btn-mapper')?.classList.remove('disabled');
+  document.getElementById('view-btn-illu')?.classList.remove('disabled');
 }
 
 export function setLayerVisibility(key, visible) {
@@ -1381,3 +1436,78 @@ export function setProjectModelStyle({ color = '#1e3a8a', texture = 'solid' } = 
 }
 window.setProjectModelStyle = setProjectModelStyle;
 
+
+// --- Dynamic Background & Conceptual Massing Helpers ---
+let conceptualBlocksGroup = null;
+
+export function set3DCanvasBackground(hexColor) {
+  if (!ctx || !ctx.scene) return;
+  const col = new THREE.Color(hexColor);
+  ctx.scene.background = col;
+  const isLight = hexColor.toUpperCase() === '#FFFFFF';
+  if (ctx.sun) {
+    ctx.sun.intensity = isLight ? 2.5 : 2.0;
+  }
+}
+window.set3DCanvasBackground = set3DCanvasBackground;
+
+export function addConceptualMassBlock({ width = 30, depth = 25, levels = 6, use = 'residential' } = {}) {
+  if (!ctx || !ctx.scene || !ctx.group) return;
+  if (!conceptualBlocksGroup) {
+    conceptualBlocksGroup = new THREE.Group();
+    ctx.group.add(conceptualBlocksGroup);
+  }
+
+  const height = levels * 3.2; // 3.2m per floor
+  const geo = new THREE.BoxGeometry(width, depth, height);
+  geo.translate(0, 0, height / 2);
+
+  const colorMap = {
+    residential: 0xf4f4f6,
+    commercial: 0xf97316,
+    office: 0x38bdf8,
+    mixed: 0xa855f7,
+    equipment: 0x60a5fa
+  };
+  const mat = new THREE.MeshStandardMaterial({
+    color: colorMap[use] || 0xf4f4f6,
+    roughness: 0.65,
+    metalness: 0.08
+  });
+
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.castShadow = true;
+  mesh.receiveShadow = true;
+  mesh.userData = {
+    type: `Bloque ${use.charAt(0).toUpperCase() + use.slice(1)}`,
+    height: `${height.toFixed(1)} m`,
+    levels: `${levels} pisos`,
+    footprint: `${(width * depth).toFixed(0)} m²`,
+    tag: '02_Estructura_y_Nucleos'
+  };
+
+  const edges = new THREE.LineSegments(
+    new THREE.EdgesGeometry(geo, 15),
+    new THREE.LineBasicMaterial({ color: 0x18181b, transparent: true, opacity: 0.7 })
+  );
+  mesh.add(edges);
+
+  const offsetCount = conceptualBlocksGroup.children.length;
+  mesh.position.set((offsetCount - 1) * (width + 15), 0, 0);
+
+  conceptualBlocksGroup.add(mesh);
+
+  const selType = document.getElementById('sel-elem-type');
+  const selH = document.getElementById('sel-elem-height');
+  const selL = document.getElementById('sel-elem-levels');
+  const selF = document.getElementById('sel-elem-footprint');
+  const selT = document.getElementById('sel-elem-tag');
+  if (selType) selType.textContent = mesh.userData.type;
+  if (selH) selH.textContent = mesh.userData.height;
+  if (selL) selL.textContent = mesh.userData.levels;
+  if (selF) selF.textContent = mesh.userData.footprint;
+  if (selT) selT.textContent = mesh.userData.tag;
+
+  return mesh;
+}
+window.addConceptualMassBlock = addConceptualMassBlock;

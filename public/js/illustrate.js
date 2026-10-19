@@ -1043,14 +1043,7 @@ export function createIllustrator(canvas, model) {
 
       const nx = width - 54, ny = 58;
 
-      // Disco base protector de lectura
-      ctx.beginPath();
-      ctx.arc(nx, ny, 28, 0, Math.PI * 2);
-      ctx.fillStyle = cardBg;
-      ctx.fill();
-      ctx.strokeStyle = cardBorder;
-      ctx.lineWidth = 1.0;
-      ctx.stroke();
+      // Seamless transparent north indicator without contrasting box (CGM Atelier standard)
 
       ctx.translate(nx, ny);
       ctx.rotate(northAngle);
@@ -1163,12 +1156,7 @@ export function createIllustrator(canvas, model) {
       const boxW = actualPixels + 34;
       const boxH = 40;
 
-      roundRect(ctx, boxX, boxY, boxW, boxH, 8);
-      ctx.fillStyle = cardBg;
-      ctx.fill();
-      ctx.strokeStyle = cardBorder;
-      ctx.lineWidth = 1.0;
-      ctx.stroke();
+      // Seamless transparent graphic scale line without contrasting box
 
       const sx = boxX + 16;
       const sy = boxY + 29;

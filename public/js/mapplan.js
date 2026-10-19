@@ -77,7 +77,7 @@ export const MAP_PRESETS = {
   },
   relief: {
     colors: {
-      bg: '#fbfaf6', building: '#ffffff', outline: '#4d4a45', road: '#fffdf8', path: '#f3eadb', rail: '#6d6a64',
+      bg: '#ffffff', building: '#ffffff', outline: '#4d4a45', road: '#ffffff', path: '#f1f5f9', rail: '#6d6a64',
       water: '#9fc4df', green: '#c7dcae', tree: '#8db872', contour: '#8c7250', shadow: '#2a2622',
       depthLow: '#dfeacb', depthHigh: '#c49668', grid: '#b0a898', text: '#2b2b2b',
     },
