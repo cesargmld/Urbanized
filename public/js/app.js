@@ -148,7 +148,20 @@ q.addEventListener('input', () => {
   if (coords) {
     results.innerHTML = '';
     const li = document.createElement('li');
-    li.textContent = t('search.goto', { lat: coords[1], lon: coords[2] });
+    li.className = 'search-preview-item';
+    li.innerHTML = `
+      <div class="search-item-icon">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="22" y1="12" x2="18" y2="12"/><line x1="6" y1="12" x2="2" y2="12"/><line x1="12" y1="6" x2="12" y2="2"/><line x1="12" y1="22" x2="12" y2="18"/></svg>
+      </div>
+      <div class="search-item-info">
+        <div class="search-item-title">${t('search.goto', { lat: coords[1], lon: coords[2] })}</div>
+        <div class="search-item-subtitle">Coordenadas geográficas directas</div>
+        <div class="search-item-meta">
+          <span class="search-badge-type">GPS</span>
+          <span class="search-badge-coords">${coords[1]}, ${coords[2]}</span>
+        </div>
+      </div>
+    `;
     li.onclick = () => goTo(Number(coords[1]), Number(coords[2]), `Coord ${coords[1]}, ${coords[2]}`);
     results.append(li);
     results.hidden = false;
@@ -160,17 +173,37 @@ q.addEventListener('input', () => {
     searchAbort = new AbortController();
     try {
       const url = `/api/search?q=${encodeURIComponent(text)}&lang=${lang}`;
-    let list;
-    try {
-      list = await (await fetch(url, { signal: searchAbort.signal })).json();
-    } catch {
-      const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=${lang}&q=${encodeURIComponent(text)}`;
-      list = await (await fetch(fallbackUrl, { signal: searchAbort.signal })).json();
-    }
+      let list;
+      try {
+        list = await (await fetch(url, { signal: searchAbort.signal })).json();
+      } catch {
+        const fallbackUrl = `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=6&accept-language=${lang}&q=${encodeURIComponent(text)}`;
+        list = await (await fetch(fallbackUrl, { signal: searchAbort.signal })).json();
+      }
       results.innerHTML = '';
       for (const r of list) {
         const li = document.createElement('li');
-        li.textContent = r.display_name;
+        li.className = 'search-preview-item';
+        const parts = (r.display_name || '').split(',').map((s) => s.trim());
+        const mainTitle = parts[0] || 'Ubicación';
+        const subtitle = parts.slice(1, 4).join(', ');
+        const placeType = r.type ? r.type.replace(/_/g, ' ') : (r.class || 'Lugar');
+        const latVal = Number(r.lat).toFixed(4);
+        const lonVal = Number(r.lon).toFixed(4);
+
+        li.innerHTML = `
+          <div class="search-item-icon">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div class="search-item-info">
+            <div class="search-item-title">${mainTitle}</div>
+            <div class="search-item-subtitle">${subtitle || parts.slice(1).join(', ')}</div>
+            <div class="search-item-meta">
+              <span class="search-badge-type">${placeType}</span>
+              <span class="search-badge-coords">${latVal}°, ${lonVal}°</span>
+            </div>
+          </div>
+        `;
         li.onclick = () => goTo(Number(r.lat), Number(r.lon), r.display_name);
         results.append(li);
       }
@@ -836,12 +869,12 @@ async function showSection(sec) {
   if (secState.url) URL.revokeObjectURL(secState.url);
   secState.url = URL.createObjectURL(SECTION_FORMATS.svg.make(sec));
 
-  // Populate focused section modal and non-intrusive trigger pill
+  // Keep legacy detached modal hidden to preserve unified workspace workflow
   const readyPill = $('#section-ready-pill');
-  if (readyPill) readyPill.hidden = false;
+  if (readyPill) readyPill.hidden = true;
 
   const modal = $('#section-modal');
-  if (modal) modal.hidden = false;
+  if (modal) modal.hidden = true;
 
   const metaDrawer = $('#sec-meta-drawer');
   if (metaDrawer) {

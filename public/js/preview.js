@@ -38,6 +38,7 @@ function init(container) {
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.localClippingEnabled = true;
   container.appendChild(renderer.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x0c0c0e);
@@ -1683,3 +1684,41 @@ export async function loadExternal3DModel(file) {
   }
 }
 window.loadExternal3DModel = loadExternal3DModel;
+
+// URBNZD Real-time 3D Section Plane Cut Engine
+const sectionPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+let isSectionActive = false;
+let sectionPlaneHelper = null;
+
+export function toggleSectionCut3D(forceState) {
+  isSectionActive = typeof forceState === 'boolean' ? forceState : !isSectionActive;
+  if (!ctx || !ctx.renderer) return isSectionActive;
+  
+  if (isSectionActive) {
+    ctx.renderer.clippingPlanes = [sectionPlane];
+    if (!sectionPlaneHelper && ctx.scene) {
+      sectionPlaneHelper = new THREE.PlaneHelper(sectionPlane, 1400, 0x38bdf8);
+      ctx.scene.add(sectionPlaneHelper);
+    }
+    if (sectionPlaneHelper) sectionPlaneHelper.visible = true;
+  } else {
+    ctx.renderer.clippingPlanes = [];
+    if (sectionPlaneHelper) sectionPlaneHelper.visible = false;
+  }
+  return isSectionActive;
+}
+
+export function setSectionCutPosition(constantVal) {
+  sectionPlane.constant = Number(constantVal) || 0;
+}
+
+export function setSectionCutAxis(axis) {
+  if (axis === 'x') sectionPlane.normal.set(-1, 0, 0);
+  else if (axis === 'y') sectionPlane.normal.set(0, -1, 0);
+  else if (axis === 'z') sectionPlane.normal.set(0, 0, -1);
+}
+
+window.toggleSectionCut3D = toggleSectionCut3D;
+window.setSectionCutPosition = setSectionCutPosition;
+window.setSectionCutAxis = setSectionCutAxis;
+window.isSectionCutActive = () => isSectionActive;

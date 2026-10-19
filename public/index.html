@@ -728,8 +728,8 @@
             </button>
           </div>
 
-          <!-- Puente a Cartografía 2D y Axonometría -->
-          <div class="axiom-workflow-bridge" style="margin-top:10px; padding-top:8px; border-top:1px solid rgba(255,255,255,0.08); display:flex; flex-direction:column; gap:6px;">
+          <!-- Puente a Cartografía 2D y Axonometría (Sticky Bottom) -->
+          <div class="drawer-sticky-bottom">
             <span class="axiom-sub-header" style="margin:0;">Continuar Edición</span>
             <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
               <button type="button" class="axiom-subtle-btn" data-switchview="mapper" style="font-size:11px; padding:7px 8px;">Cartografía 2D →</button>
@@ -812,8 +812,8 @@
             </div>
           </div>
 
-          <!-- 3. Botones de Acción de Lámina -->
-          <div style="display:flex; flex-direction:column; gap:8px; margin-top:14px;">
+          <!-- 3. Botones de Acción de Lámina (Sticky Bottom) -->
+          <div class="drawer-sticky-bottom">
             <button type="button" class="rayon-secondary-btn" id="btn-toggle-sheet-frame" style="justify-content:center; padding:7px 12px; font-size:11.5px;">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
               <span>Ver Marco de Lámina (Overlay CAD)</span>
@@ -1050,9 +1050,6 @@
               </div>
               <input type="range" min="1" max="40" step="1" value="4" id="feas-levels" class="axiom-range">
             </div>
-            <button type="button" class="axiom-cta-btn" id="btn-export-tables-csv" style="margin-top:8px;">
-              <span>📥 Exportar Cuantificación a CSV (Excel)</span>
-            </button>
           </div>
 
           <!-- Parser IA de Normativa -->
@@ -1068,6 +1065,13 @@
               <span>Extraer Parámetros con Gemini</span>
             </button>
             <p class="export-coords" id="feas-parse-status" style="margin-top:4px; font-size:11px;"></p>
+          </div>
+
+          <!-- Sticky Export Action -->
+          <div class="drawer-sticky-bottom">
+            <button type="button" class="axiom-cta-btn" id="btn-export-tables-csv">
+              <span>📥 Exportar Cuantificación a CSV (Excel)</span>
+            </button>
           </div>
         </aside>
 
@@ -1091,8 +1095,8 @@
             </div>
           </div>
 
-          <div style="margin-top:12px; display:flex; flex-direction:column; gap:6px;">
-            <textarea id="studio-comment-text" rows="3" placeholder="Escribir nota técnica sobre este modelo..." style="width:100%; background:#18181b; color:#ffffff; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px; font-size:11.5px; font-family:inherit; resize:vertical;"></textarea>
+          <div class="drawer-sticky-bottom">
+            <textarea id="studio-comment-text" rows="2" placeholder="Escribir nota técnica sobre este modelo..." style="width:100%; background:#18181b; color:#ffffff; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:8px; font-size:11.5px; font-family:inherit; resize:vertical;"></textarea>
             <button type="button" class="rayon-share-btn" id="btn-studio-post-comment" style="justify-content:center;">
               Publicar Nota
             </button>
@@ -1214,29 +1218,37 @@
       </div>
 
       <div class="viewer-wrap" id="result-viewer-wrap">
-        <!-- Floating Dynamic Island Inside 3D Free Space -->
-        <div class="axiom-map-island" id="studio-top-bar" aria-label="Controles de vista 3D">
-          <div class="axiom-island-capsule" id="capsule-render" role="group">
-            <button type="button" class="axiom-island-btn active" id="btn-render-model" data-render="model">
+        <!-- Floating Dynamic Island Inside 3D Free Space (Divided into 3 distinct functional capsules) -->
+        <div class="axiom-map-island" id="studio-top-bar" aria-label="Controles de vista 3D" style="display:flex; flex-direction:row; gap:8px; align-items:center;">
+          <!-- Cápsula 1: Modo de Visualización (Viz) -->
+          <div class="axiom-island-capsule" id="capsule-render" role="group" aria-label="Modo de visualización" style="border:1px solid rgba(255,255,255,0.12);">
+            <button type="button" class="axiom-island-btn active" id="btn-render-model" data-render="model" title="Render con texturas y colores GIS">
               <span class="axiom-island-dot active"></span>
               <span data-i18n="cam.modelGis">Urbano GIS</span>
             </button>
-            <button type="button" class="axiom-island-btn" id="btn-render-maqueta" data-render="maqueta">
+            <button type="button" class="axiom-island-btn" id="btn-render-maqueta" data-render="maqueta" title="Modo maqueta arquitectónica blanca">
               <span class="axiom-island-dot"></span>
               <span data-i18n="cam.modelMaqueta">Maqueta 3D</span>
             </button>
-            <span class="axiom-island-sep"></span>
-            <button type="button" class="axiom-island-btn active" id="cam-persp">
+          </div>
+
+          <!-- Cápsula 2: Navegación & Perspectiva de Cámara (Nav) -->
+          <div class="axiom-island-capsule" id="capsule-nav" role="group" aria-label="Cámara y perspectiva" style="border:1px solid rgba(255,255,255,0.12);">
+            <button type="button" class="axiom-island-btn active" id="cam-persp" title="Órbita 3D libre con perspectiva">
               <span data-i18n="cam.persp">Órbita 3D</span>
             </button>
-            <button type="button" class="axiom-island-btn" id="cam-iso45">
+            <button type="button" class="axiom-island-btn" id="cam-iso45" title="Cámara isométrica a 45°">
               <span data-i18n="cam.iso45">Isométrica 45°</span>
             </button>
-            <button type="button" class="axiom-island-btn" id="cam-top">
+            <button type="button" class="axiom-island-btn" id="cam-top" title="Vista cenital ortogonal / Planta">
               <span data-i18n="cam.top">Planta Cenital</span>
             </button>
-            <span class="axiom-island-sep"></span>
-            <button type="button" class="axiom-island-btn" id="btn-quick-save-scene-3d" title="Guardar esta vista/escena">
+          </div>
+
+          <!-- Cápsula 3: Captura de Escena -->
+          <div class="axiom-island-capsule" id="capsule-scene" role="group" aria-label="Guardar escena" style="border:1px solid rgba(56,189,248,0.3); background:rgba(18,20,28,0.92);">
+            <button type="button" class="axiom-island-btn" id="btn-quick-save-scene-3d" title="Congelar esta escena (cámara, capas y estilo)" style="color:#38bdf8; font-weight:600; display:inline-flex; align-items:center; gap:5px;">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>+ Escena</span>
             </button>
           </div>
@@ -3013,6 +3025,37 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         }
         btn.classList.add('active');
       });
+    });
+
+    // URBNZD 3D Dock Tools Handlers
+    document.getElementById('dock-tool-section-3d')?.addEventListener('click', () => {
+      if (window.toggleSectionCut3D) {
+        const active = window.toggleSectionCut3D();
+        const notice = document.getElementById('axiom-notice-msg');
+        if (notice) {
+          notice.textContent = active ? 'Plano de Corte 3D activado: seccionando terreno y volumetrías en tiempo real.' : 'Plano de Corte 3D desactivado.';
+          const box = document.getElementById('axiom-map-notice');
+          if (box) { box.hidden = false; setTimeout(() => { box.hidden = true; }, 3200); }
+        }
+      }
+    });
+
+    document.getElementById('dock-tool-dim-3d')?.addEventListener('click', () => {
+      const notice = document.getElementById('axiom-notice-msg');
+      if (notice) {
+        notice.textContent = 'Herramienta de Medición 3D activa. Haz clic en dos vértices del modelo para medir distancia.';
+        const box = document.getElementById('axiom-map-notice');
+        if (box) { box.hidden = false; setTimeout(() => { box.hidden = true; }, 3500); }
+      }
+    });
+
+    document.getElementById('dock-tool-level-3d')?.addEventListener('click', () => {
+      const notice = document.getElementById('axiom-notice-msg');
+      if (notice) {
+        notice.textContent = 'Cota de Nivel Z activa. Haz clic sobre cualquier punto del relieve o cubierta para leer su elevación.';
+        const box = document.getElementById('axiom-map-notice');
+        if (box) { box.hidden = false; setTimeout(() => { box.hidden = true; }, 3500); }
+      }
     });
 
     // Rayon Segmented Controls
