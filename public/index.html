@@ -71,7 +71,7 @@
       </nav>
     </div>
 
-    <!-- Right Controls: .urbnz Project Save/Load, Scenes & Language -->
+    <!-- Right Controls: .urbnz Project Save/Load, Share & Language (Simplified) -->
     <div class="axiom-topbar-right">
       <button type="button" class="axiom-btn-secondary" id="btn-save-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:9999px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -83,12 +83,14 @@
       </button>
       <input type="file" id="input-open-urbnz" accept=".urbnz,.json" style="display:none;">
 
-      <button type="button" class="axiom-btn-secondary" id="btn-open-views" style="font-size:11px; padding:5px 11px; display:inline-flex; align-items:center; gap:6px; border-radius:9999px;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
-        <span><span data-i18n="nav.views">Escenas</span> (<span id="views-count-badge">0</span>)</span>
+      <!-- Global Header Share Button -->
+      <button type="button" class="rayon-share-btn" id="btn-topbar-share" style="padding:4px 12px; font-size:11px; border-radius:9999px; display:inline-flex; align-items:center; gap:5px;">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        <span>Share</span>
       </button>
 
-      <select class="axiom-lang-select lang-pill" aria-label="Idioma">
+      <!-- Minimalist Language Selector (Initials only) -->
+      <select class="axiom-lang-select lang-pill" id="axiom-lang-select" aria-label="Idioma" style="font-size:11px; font-weight:600; padding:3px 8px; height:26px; border-radius:9999px; min-width:44px; text-align:center; cursor:pointer;">
         <option value="es">ES</option>
         <option value="en">EN</option>
       </select>
@@ -172,118 +174,141 @@
 
         <div class="rayon-cards-grid" id="ws-cards-grid">
           <!-- Card 0: Empezar de 0 / Lienzo en blanco (Hero Action) -->
-          <div class="rayon-model-card" data-cardtype="new" data-action="start-from-scratch" style="border: 1px dashed rgba(56, 189, 248, 0.35);">
-            <div class="rayon-card-thumb" style="background: radial-gradient(circle at center, rgba(14, 165, 233, 0.12), transparent 70%), #141416;">
-              <span class="rayon-tag-template" style="background:#0284c7;">Empezar de 0</span>
+          <div class="rayon-model-card" data-cardtype="new" data-action="start-from-scratch" style="border: 1px dashed rgba(255, 255, 255, 0.22); background:#121316;">
+            <div class="rayon-card-thumb" style="background: radial-gradient(circle at center, rgba(255, 255, 255, 0.05), transparent 70%), #141518;">
+              <span class="rayon-tag-template" style="background:#27272a; color:#f4f4f6; border:1px solid rgba(255,255,255,0.12);">Nuevo Modelo</span>
               <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
-                <g stroke="rgba(255,255,255,0.06)" stroke-width="0.8">
+                <g stroke="rgba(255,255,255,0.05)" stroke-width="0.8">
                   <line x1="0" y1="45" x2="300" y2="45"/><line x1="0" y1="90" x2="300" y2="90"/><line x1="0" y1="135" x2="300" y2="135"/>
                   <line x1="75" y1="0" x2="75" y2="180"/><line x1="150" y1="0" x2="150" y2="180"/><line x1="225" y1="0" x2="225" y2="180"/>
                 </g>
-                <circle cx="150" cy="80" r="32" fill="rgba(14, 165, 233, 0.15)" stroke="#38bdf8" stroke-width="1.6" stroke-dasharray="4 3"/>
-                <line x1="150" y1="66" x2="150" y2="94" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/>
-                <line x1="136" y1="80" x2="164" y2="80" stroke="#ffffff" stroke-width="2.4" stroke-linecap="round"/>
-                <text x="150" y="145" text-anchor="middle" fill="#f4f4f6" font-family="'Inter', sans-serif" font-size="12" font-weight="600">Explorar mapa mundial</text>
+                <circle cx="150" cy="80" r="30" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-dasharray="3 3" opacity="0.6"/>
+                <line x1="150" y1="68" x2="150" y2="92" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                <line x1="138" y1="80" x2="162" y2="80" stroke="#ffffff" stroke-width="2" stroke-linecap="round"/>
+                <text x="150" y="142" text-anchor="middle" fill="#d4d4d8" font-family="'Inter', sans-serif" font-size="12" font-weight="500">Lienzo en blanco mundial</text>
               </svg>
             </div>
             <div class="rayon-card-meta">
               <strong class="rayon-card-title">Lienzo en Blanco</strong>
-              <span class="rayon-card-sub">Selecciona cualquier ciudad o coordenada desde el mapa</span>
+              <span class="rayon-card-sub">Explora cualquier polígono o coordenada territorial desde el mapa</span>
             </div>
           </div>
 
-          <!-- Template 1: Monterrey (San Pedro Garza García & Sierra Madre) -->
-          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_mty_valle">
-            <div class="rayon-card-thumb">
-              <span class="rayon-tag-template">Template</span>
+          <!-- Template 1: Monterrey · Centro & Río Santa Catarina (Macroplaza, Alameda, Río) -->
+          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_mty_centro" style="background:#121316; display:none;">
+            <div class="rayon-card-thumb" style="background:#141518;">
+              <span class="rayon-tag-template" style="background:#27272a; color:#e4e4e7; border:1px solid rgba(255,255,255,0.1);">Template</span>
               <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
-                <rect width="100%" height="100%" fill="#18181b"/>
-                <path d="M 30,135 Q 120,40 200,110 T 280,75" fill="none" stroke="#22c55e" stroke-width="2"/>
-                <path d="M 30,150 Q 120,65 200,125 T 280,95" fill="none" stroke="rgba(34,197,94,0.4)" stroke-width="1.4"/>
-                <rect x="135" y="45" width="28" height="75" fill="rgba(34, 197, 94, 0.25)" stroke="#4ade80" stroke-width="1.2"/>
-                <rect x="170" y="65" width="22" height="55" fill="rgba(34, 197, 94, 0.2)" stroke="#4ade80" stroke-width="1"/>
-                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">San Pedro & Sierra Madre</text>
-              </svg>
-            </div>
-            <div class="rayon-card-meta">
-              <strong class="rayon-card-title">Monterrey · San Pedro Garza García</strong>
-              <span class="rayon-card-sub">Topografía de montaña, Valle Oriente y rascacielos · MTY</span>
-            </div>
-          </div>
-
-          <!-- Template 2: Barcelona (Eixample Cerdà & Sagrada Família) -->
-          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_bcn_eixample">
-            <div class="rayon-card-thumb">
-              <span class="rayon-tag-template">Template</span>
-              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
-                <rect width="100%" height="100%" fill="#18181b"/>
-                <g stroke="#38bdf8" stroke-width="1.4" fill="rgba(56, 189, 248, 0.15)">
-                  <rect x="65" y="25" width="46" height="46" rx="10"/>
-                  <rect x="125" y="25" width="46" height="46" rx="10"/>
-                  <rect x="185" y="25" width="46" height="46" rx="10"/>
-                  <rect x="65" y="85" width="46" height="46" rx="10"/>
-                  <rect x="125" y="85" width="46" height="46" rx="10"/>
-                  <rect x="185" y="85" width="46" height="46" rx="10"/>
+                <rect width="100%" height="100%" fill="#111215"/>
+                <!-- CAD grid -->
+                <g stroke="rgba(255,255,255,0.04)" stroke-width="0.8">
+                  <line x1="0" y1="60" x2="300" y2="60"/><line x1="0" y1="120" x2="300" y2="120"/>
+                  <line x1="100" y1="0" x2="100" y2="180"/><line x1="200" y1="0" x2="200" y2="180"/>
                 </g>
-                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">Eixample Cerdà</text>
+                <!-- Sinuous River Valley Contours -->
+                <path d="M 10,145 Q 110,65 190,120 T 290,90" fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="1.6"/>
+                <path d="M 10,158 Q 110,78 190,132 T 290,102" fill="none" stroke="rgba(255,255,255,0.22)" stroke-width="1.2" stroke-dasharray="3 3"/>
+                <!-- Alameda Grid (Square Blocks) -->
+                <rect x="45" y="45" width="28" height="28" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                <rect x="80" y="45" width="28" height="28" fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+                <!-- Macroplaza Axis & Urban Masses -->
+                <rect x="150" y="30" width="16" height="70" fill="rgba(255,255,255,0.12)" stroke="#ffffff" stroke-width="1.2"/>
+                <rect x="175" y="40" width="24" height="45" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
+                <text x="14" y="164" fill="#f4f4f6" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" letter-spacing="0.04em">MTY · CENTRO & RÍO SANTA CATARINA</text>
               </svg>
             </div>
             <div class="rayon-card-meta">
-              <strong class="rayon-card-title">Barcelona · Eixample Cerdà</strong>
-              <span class="rayon-card-sub">Cuadrícula octogonal y urbanismo de Ildefonso Cerdà · BCN</span>
+              <strong class="rayon-card-title">Monterrey · Centro & Río Santa Catarina</strong>
+              <span class="rayon-card-sub">Topografía de valle, Alameda, Macroplaza y cauce fluvial · 1.2 km</span>
             </div>
           </div>
 
-          <!-- Template 3: Nueva York (Lower Manhattan & Hudson Yards) -->
-          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_nyc_midtown">
-            <div class="rayon-card-thumb">
-              <span class="rayon-tag-template">Template</span>
+          <!-- Template 2: Nueva York · High Line & Hudson River Park -->
+          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_nyc_highline" style="background:#121316; display:none;">
+            <div class="rayon-card-thumb" style="background:#141518;">
+              <span class="rayon-tag-template" style="background:#27272a; color:#e4e4e7; border:1px solid rgba(255,255,255,0.1);">Template</span>
               <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
-                <rect width="100%" height="100%" fill="#18181b"/>
-                <g fill="rgba(168, 85, 247, 0.25)" stroke="#c084fc" stroke-width="1.2">
-                  <rect x="80" y="25" width="28" height="100"/>
-                  <rect x="118" y="45" width="24" height="80"/>
-                  <rect x="150" y="15" width="34" height="110"/>
-                  <rect x="194" y="55" width="24" height="70"/>
+                <rect width="100%" height="100%" fill="#111215"/>
+                <!-- Hudson River Edge -->
+                <path d="M 50,0 L 50,180" stroke="rgba(255,255,255,0.25)" stroke-width="1.2"/>
+                <!-- Hudson Piers -->
+                <line x1="15" y1="50" x2="50" y2="50" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
+                <line x1="15" y1="100" x2="50" y2="100" stroke="rgba(255,255,255,0.3)" stroke-width="3"/>
+                <!-- Manhattan Grid Blocks -->
+                <g fill="rgba(255,255,255,0.05)" stroke="rgba(255,255,255,0.28)" stroke-width="1">
+                  <rect x="110" y="30" width="70" height="26"/>
+                  <rect x="110" y="70" width="70" height="26"/>
+                  <rect x="110" y="110" width="70" height="26"/>
+                  <rect x="200" y="30" width="60" height="66"/>
+                  <rect x="200" y="110" width="60" height="40"/>
                 </g>
-                <text x="14" y="162" fill="#ffffff" font-family="'Inter', sans-serif" font-size="13" font-weight="700">Lower Manhattan</text>
+                <!-- High Line Elevated Linear Spine -->
+                <path d="M 85,180 L 85,95 Q 85,60 100,50 L 175,50" fill="none" stroke="#ffffff" stroke-width="2.2"/>
+                <text x="14" y="164" fill="#f4f4f6" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" letter-spacing="0.04em">NYC · HIGH LINE & HUDSON RIVER</text>
               </svg>
             </div>
             <div class="rayon-card-meta">
-              <strong class="rayon-card-title">Nueva York · Lower Manhattan</strong>
-              <span class="rayon-card-sub">Cañón urbano de alta densidad, frente fluvial y torres · NYC</span>
+              <strong class="rayon-card-title">Nueva York · High Line & Hudson River Park</strong>
+              <span class="rayon-card-sub">Paisaje de infraestructura lineal y frente fluvial · 1.0 km</span>
             </div>
           </div>
 
-          <!-- Dynamic Container for Active Model & Saved Scenes -->
+          <!-- Template 3: París · Parc de la Villette & Canal de l'Ourcq -->
+          <div class="rayon-model-card" data-cardtype="template" data-tpl="tpl_paris_villette" style="background:#121316; display:none;">
+            <div class="rayon-card-thumb" style="background:#141518;">
+              <span class="rayon-tag-template" style="background:#27272a; color:#e4e4e7; border:1px solid rgba(255,255,255,0.1);">Template</span>
+              <svg viewBox="0 0 300 180" class="rayon-thumb-svg" width="100%" height="100%">
+                <rect width="100%" height="100%" fill="#111215"/>
+                <!-- Canal de l'Ourcq Horizontal Water Axis -->
+                <rect x="0" y="75" width="300" height="22" fill="rgba(255,255,255,0.06)" stroke="rgba(255,255,255,0.25)" stroke-width="1"/>
+                <!-- Bernard Tschumi Folies Coordinate Points (120m Grid) -->
+                <g fill="#ffffff" stroke="#ffffff" stroke-width="0.8">
+                  <rect x="55" y="35" width="6" height="6"/><rect x="125" y="35" width="6" height="6"/><rect x="195" y="35" width="6" height="6"/><rect x="265" y="35" width="6" height="6"/>
+                  <rect x="55" y="125" width="6" height="6"/><rect x="125" y="125" width="6" height="6"/><rect x="195" y="125" width="6" height="6"/><rect x="265" y="125" width="6" height="6"/>
+                </g>
+                <!-- Cinematic Curved Gallery Axis -->
+                <path d="M 40,160 Q 150,110 260,25" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.8" stroke-dasharray="4 3"/>
+                <!-- Grande Halle & Science Hall Massing -->
+                <rect x="135" y="110" width="55" height="30" fill="rgba(255,255,255,0.1)" stroke="#ffffff" stroke-width="1"/>
+                <text x="14" y="164" fill="#f4f4f6" font-family="'JetBrains Mono', monospace" font-size="11" font-weight="600" letter-spacing="0.04em">PARIS · PARC DE LA VILLETTE</text>
+              </svg>
+            </div>
+            <div class="rayon-card-meta">
+              <strong class="rayon-card-title">París · Parc de la Villette & Canal de l'Ourcq</strong>
+              <span class="rayon-card-sub">Deconstructivismo y paisaje de Bernard Tschumi con Folies · 1.0 km</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Container for Active Model & User Saved Projects -->
           <div id="ws-dynamic-projects" style="display:contents;"></div>
+
+          <!-- Empty State Container for Pinned / Archive / No projects -->
+          <div id="ws-empty-state" style="display:none; grid-column: 1 / -1; padding: 48px 24px; text-align: center; color: #71717a;">
+            <p style="margin: 0; font-size: 13px;" id="ws-empty-msg">No hay proyectos en esta sección.</p>
+          </div>
         </div>
       </section>
 
-      <!-- 3. RIGHT SIDEBAR (Rayon Info & Pro) -->
+      <!-- 3. RIGHT SIDEBAR (Clean Architectural Project Info) -->
       <aside class="rayon-home-right">
-        <div class="rayon-info-card">
-          <div class="rayon-info-header">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-            <strong data-i18n="ws.myModels">My models</strong>
+        <div class="rayon-info-card" style="background:#141518; border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:16px;">
+          <div class="rayon-info-header" style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <strong style="color:#ffffff; font-size:12.5px;" data-i18n="ws.projects">Proyectos Urbanos</strong>
           </div>
-          <p class="rayon-info-text">
-            This space is just for you. Create 3D urban models, analytical QGIS cartography, and exploded axonometries. Save native .urbnz project files.
+          <p class="rayon-info-text" style="color:#a1a1aa; font-size:11.5px; line-height:1.5; margin:0 0 12px 0;">
+            Modelado paramétrico 3D de ciudades, cartografía analítica QGIS y axonometría arquitectónica con exportación nativa a SketchUp (.skp) y D5 Render.
           </p>
-        </div>
-
-        <div class="rayon-pro-card">
-          <div class="rayon-pro-top">
-            <span class="rayon-pro-badge">PRO</span>
-            <button type="button" class="rayon-pro-close" aria-label="Close">×</button>
+          <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:12px; display:flex; flex-direction:column; gap:6px; font-size:11px; color:#71717a;">
+            <div style="display:flex; justify-content:space-between;">
+              <span>Formato de proyecto:</span>
+              <strong style="color:#e4e4e7;">.urbnz</strong>
+            </div>
+            <div style="display:flex; justify-content:space-between;">
+              <span>Compatibilidad BIM:</span>
+              <strong style="color:#e4e4e7;">SketchUp · Rhino · CAD</strong>
+            </div>
           </div>
-          <h3 class="rayon-pro-title">Design without limits</h3>
-          <p class="rayon-pro-text">
-            Export native SketchUp (.skp) with structured layers, real dotted hatches, and custom urban templates.
-          </p>
-          <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="rayon-pro-btn" id="ws-btn-cgm-credit">
-            <span>CGM Atelier Pro</span>
-          </a>
         </div>
       </aside>
     </div>
@@ -1178,43 +1203,25 @@
         <div class="flat" id="view-sat" hidden><img alt="" draggable="false"></div>
         <span class="viewer-hint" id="viewer-hint">Arrastra para orbitar · Rueda para zoom · Shift+arrastrar para desplazar</span>
 
-        <!-- Rayon Floating Tool Dock (media_1792357791582_b8127947.png) -->
-        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Rayon">
-          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-3d" title="Seleccionar (V)">
+        <!-- URBNZD Functional 3D Tool Dock -->
+        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas 3D">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-3d" title="Seleccionar / Inspeccionar (V)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-wall-3d" title="Muro / Polígono (W)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-polyline-3d" title="Polilínea (P)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 8 7 16 17 20 5"/><circle cx="4" cy="19" r="1.5"/><circle cx="8" cy="7" r="1.5"/><circle cx="16" cy="17" r="1.5"/><circle cx="20" cy="5" r="1.5"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-line-3d" title="Línea (L)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-3d" title="Cota / Dimensión (D)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-3d" title="Medir Distancia 3D (D)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-text-3d" title="Texto (T)">
-            <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:13px;">T</span>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-level-3d" title="Cota de Nivel Z (Z)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 12 12 22 22 12"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-arrow-3d" title="Flecha (A)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-arc-3d" title="Arco (C)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 A 16 16 0 0 1 20 4"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-3d" title="Hatch Punteado / Trama (H)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="17" r="1.5" fill="currentColor"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-block-3d" title="Componente / Bloque (B)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-section-3d" title="Plano de Sección / Corte (X)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
           </button>
           <button type="button" class="rayon-tool-btn" id="dock-tool-cam-3d" title="Guardar Escena (S)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-comment-3d" title="Anotaciones (M)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-export-3d" title="Capturar Imagen Render (E)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
         </div>
 
@@ -1227,16 +1234,10 @@
 
       <!-- 4. PERMANENT RIGHT INSPECTOR (300px) - Rayon style with swatches and camera -->
       <aside class="rayon-inspector-panel" id="studio-right-inspector">
-        <!-- Header (Avatar 'C', History, Play, Share) -->
+        <!-- Header (Avatar, Profile, Share) -->
         <div class="rayon-inspector-top">
-          <div class="rayon-inspector-avatar">C</div>
+          <div class="rayon-inspector-avatar" id="inspector-user-avatar" style="cursor:pointer;" title="Perfil y Workspace">C</div>
           <div style="display:flex; align-items:center; gap:8px;">
-            <button type="button" class="rayon-icon-btn" title="Historial / Versiones">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            </button>
-            <button type="button" class="rayon-icon-btn" title="Presentación">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="5 3 19 12 5 21 5 3"/></svg>
-            </button>
             <button type="button" class="rayon-share-btn" id="btn-inspector-share">Share</button>
           </div>
         </div>
@@ -1252,11 +1253,11 @@
           </div>
           <div class="rayon-control-row">
             <span class="rayon-label">Owner</span>
-            <span style="color:#f4f4f6; font-size:11.5px; font-weight:500;">Cesar</span>
+            <span id="inspector-model-owner" style="color:#f4f4f6; font-size:11.5px; font-weight:500;">Cesar</span>
           </div>
           <div class="rayon-control-row">
             <span class="rayon-label">Team</span>
-            <span style="color:#f4f4f6; font-size:11.5px; font-weight:500;">CGM Atelier</span>
+            <span id="inspector-model-team" style="color:#f4f4f6; font-size:11.5px; font-weight:500;">CGM Atelier</span>
           </div>
         </div>
 
@@ -1319,21 +1320,17 @@
           </div>
         </div>
 
-        <!-- Group: Axonometric View (3x2 Camera Grid) -->
+        <!-- Group: Orientación Cámara 3D -->
         <div class="rayon-accordion-group">
-          <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">AXONOMETRIC VIEW</span>
+          <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ORIENTACIÓN CÁMARA 3D</span>
           <div class="rayon-axon-grid">
-            <button type="button" class="rayon-axon-btn active" id="btn-cam-nw">NW Iso</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-ne">NE Iso</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-sw">SW Iso</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-se">SE Iso</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-top">Top</button>
-            <button type="button" class="rayon-axon-btn" id="btn-cam-eye">Eye Level</button>
+            <button type="button" class="rayon-axon-btn active" id="btn-cam-nw">Aérea NW</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-ne">Aérea NE</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-sw">Aérea SW</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-se">Aérea SE</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-top">Cenital (Top)</button>
+            <button type="button" class="rayon-axon-btn" id="btn-cam-eye">Peatonal (Eye)</button>
           </div>
-          <label style="display:flex; align-items:center; justify-content:space-between; margin-top:6px; cursor:pointer; font-size:11.5px; color:#e4e4e7;">
-            <span>Perspective projection</span>
-            <input type="checkbox" id="chk-axon-persp" style="accent-color:#0ea5e9;">
-          </label>
         </div>
 
         <!-- Group: Escenas Guardadas (Scenes) -->
@@ -1378,11 +1375,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Subtle attribution link -->
-        <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="urbnzd-cgm-credit" style="margin-top:auto; padding-top:12px; font-size:10.5px; color:#52525b; text-decoration:none; text-align:center;">
-          made by cgm atelier
-        </a>
       </aside>
     
     </div>
@@ -1684,43 +1676,25 @@
 
         <div class="flat" id="map-flat"><img alt="" draggable="false"></div>
 
-        <!-- Rayon Floating Tool Dock in Cartografía 2D -->
-        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Rayon">
-          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-map" title="Seleccionar (V)">
+        <!-- URBNZD Functional 2D Tool Dock -->
+        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas 2D">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-map" title="Seleccionar y Desplazar (V)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-wall-map" title="Muro / Polígono (W)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-polyline-map" title="Polilínea (P)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 8 7 16 17 20 5"/><circle cx="4" cy="19" r="1.5"/><circle cx="8" cy="7" r="1.5"/><circle cx="16" cy="17" r="1.5"/><circle cx="20" cy="5" r="1.5"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-line-map" title="Línea (L)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-map" title="Cota / Dimensión (D)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-map" title="Cota de Escala / Regla (D)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-text-map" title="Texto (T)">
-            <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:13px;">T</span>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-arrow-map" title="Flecha (A)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-arc-map" title="Arco (C)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 A 16 16 0 0 1 20 4"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-map" title="Hatch Punteado / Trama (H)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-map" title="Trama / Hatch Punteado (H)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="17" r="1.5" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-block-map" title="Componente / Bloque (B)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-frame-map" title="Marco de Lámina / Pie de Plano (L)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><rect x="6" y="6" width="12" height="12"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-map" title="Guardar Escena (S)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-map" title="Guardar Escena 2D (S)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-comment-map" title="Anotaciones (M)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-export-map" title="Descargar Plano PDF / PNG (E)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
         </div>
 
@@ -1759,13 +1733,13 @@
           </button>
         </nav>
 
-        <!-- Collapsible Left Drawer for Axonometría (Starts OPEN on Tab 1: Capas & Cascada) -->
+        <!-- Collapsible Left Drawer for Axonometría (Starts OPEN on Tab 1: Capas & Axonometría Explotada) -->
         <div class="axiom-left-drawer" id="illu-left-drawer">
-          <!-- TAB 1: CAPAS VISIBLES & CASCADA EXPLOTADA -->
+          <!-- TAB 1: CAPAS VISIBLES & AXONOMETRÍA EXPLOTADA -->
           <aside class="axiom-drawer-card" id="illu-drawer-layers">
             <div class="axiom-export-header">
               <div class="axiom-export-title-row">
-                <h2 class="axiom-export-title">Capas & Cascada Explotada</h2>
+                <h2 class="axiom-export-title">Capas & Axonometría Explotada</h2>
                 <button type="button" class="axiom-drawer-close" data-close-illudrawer aria-label="Ocultar panel">
                   <svg viewBox="0 0 24 24" width="13" height="13" stroke="currentColor" stroke-width="2.2" fill="none"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                 </button>
@@ -1795,10 +1769,10 @@
               <label class="axiom-check-row"><span data-i18n="illu.pins">Hitos y pines 3D</span><input type="checkbox" id="illu-pins-toggle" checked></label>
             </div>
 
-            <!-- Superposición de Capas QGIS Despiezada (Cascada Explotada) -->
+            <!-- Axonometría Explotada Despiezada -->
             <div class="axiom-editor-group" style="padding:0; margin-top:8px;">
               <div class="axiom-row-between">
-                <span class="axiom-sub-header" style="margin:0;" data-i18n="illu.exploded">Axonometría Explotada (Cascada)</span>
+                <span class="axiom-sub-header" style="margin:0;" data-i18n="illu.exploded">Axonometría Explotada Despiezada</span>
                 <label class="axiom-mini-toggle">
                   <input type="checkbox" id="illu-exploded-switch">
                   <span>Activar</span>
@@ -2109,8 +2083,8 @@
             <button type="button" class="axiom-island-btn" id="illu-persp-pill" title="Alternar proyección con perspectiva">
               <span data-i18n="illu.perspectiveShort">Perspectiva</span>
             </button>
-            <button type="button" class="axiom-island-btn" id="illu-exploded-pill" title="Activar/Desactivar Axonometría en Cascada">
-              <span>Cascada 5N</span>
+            <button type="button" class="axiom-island-btn" id="illu-exploded-pill" title="Activar/Desactivar Axonometría Explotada Despiezada">
+              <span>Axono Explotada</span>
             </button>
             <span class="axiom-island-sep"></span>
             <button type="button" class="axiom-island-btn" id="btn-quick-save-scene-illu" title="Guardar esta escena axonométrica">
@@ -2121,50 +2095,32 @@
 
         <canvas id="illu-canvas"></canvas>
 
-        <!-- Rayon Floating Tool Dock in Axonometría -->
-        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Rayon">
-          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-illu" title="Seleccionar (V)">
+        <!-- URBNZD Functional Axonometría Tool Dock -->
+        <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas Axonometría">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-illu" title="Seleccionar y Desplazar (V)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-wall-illu" title="Muro / Polígono (W)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-explode-illu" title="Axonometría Explotada Despiezada (X)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 12 12 17 22 12"/><polyline points="2 17 12 22 22 17"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-polyline-illu" title="Polilínea (P)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 19 8 7 16 17 20 5"/><circle cx="4" cy="19" r="1.5"/><circle cx="8" cy="7" r="1.5"/><circle cx="16" cy="17" r="1.5"/><circle cx="20" cy="5" r="1.5"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-shadow-illu" title="Sombra Arrojada Axonométrica (L)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-line-illu" title="Línea (L)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="20" x2="20" y2="4"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-illu" title="Cota / Dimensión (D)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-text-illu" title="Texto (T)">
-            <span style="font-family:'Inter',sans-serif; font-weight:700; font-size:13px;">T</span>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-arrow-illu" title="Flecha (A)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="19" x2="19" y2="5"/><polyline points="9 5 19 5 19 15"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-arc-illu" title="Arco (C)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20 A 16 16 0 0 1 20 4"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-illu" title="Hatch Punteado / Trama (H)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-hatch-illu" title="Hatch Isométrico Punteado (H)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="7" cy="7" r="1.5" fill="currentColor"/><circle cx="17" cy="7" r="1.5" fill="currentColor"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/><circle cx="7" cy="17" r="1.5" fill="currentColor"/><circle cx="17" cy="17" r="1.5" fill="currentColor"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-block-illu" title="Componente / Bloque (B)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
-          </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-illu" title="Guardar Escena (S)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-cam-illu" title="Guardar Escena Axo (S)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-comment-illu" title="Anotaciones (M)">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-export-illu" title="Exportar Vector SVG / PNG (E)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
         </div>
 
         <!-- Rayon Measurement Pill in Axonometría -->
         <div class="rayon-canvas-measure-pill">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21"/><line x1="21" y1="21" x2="3" y2="3"/></svg>
-          <span id="canvas-measure-text-illu">1.0 × 1.0 km · Cascada 5N</span>
+          <span id="canvas-measure-text-illu">1.0 × 1.0 km · Axono Explotada</span>
         </div>
       </div>
     </div>
@@ -2227,29 +2183,34 @@
        ======================================================== -->
   <div class="rayon-loader-modal" id="axiom-loading-modal" hidden>
     <div class="rayon-loader-card">
-      <!-- Architectural Geometric Monogram (Letter 'U' on CAD grid) -->
+      <!-- URBNZD Architectural Imagotype (Precision CAD Reticle & Coordinate Datum) -->
       <div class="rayon-loader-glyph-wrap">
         <svg viewBox="0 0 160 160" class="rayon-loader-svg" width="140" height="140">
-          <g stroke="rgba(255, 255, 255, 0.08)" stroke-width="0.8">
+          <!-- CAD drafting grid -->
+          <g stroke="rgba(255, 255, 255, 0.07)" stroke-width="0.8">
             <line x1="20" y1="20" x2="140" y2="20"/><line x1="20" y1="50" x2="140" y2="50"/><line x1="20" y1="80" x2="140" y2="80"/><line x1="20" y1="110" x2="140" y2="110"/><line x1="20" y1="140" x2="140" y2="140"/>
             <line x1="20" y1="20" x2="20" y2="140"/><line x1="50" y1="20" x2="50" y2="140"/><line x1="80" y1="20" x2="80" y2="140"/><line x1="110" y1="20" x2="110" y2="140"/><line x1="140" y1="20" x2="140" y2="140"/>
           </g>
-          <!-- 'U' Block Monogram -->
-          <path d="M 32,32 L 64,32 L 64,96 C 64,105 71,112 80,112 C 89,112 96,105 96,96 L 96,32 L 128,32 L 128,96 C 128,122 107,136 80,136 C 53,136 32,122 32,96 Z" fill="#e4e4e7" stroke="#ffffff" stroke-width="1.2"/>
-          <line x1="64" y1="64" x2="32" y2="64" stroke="#71717a" stroke-width="1" stroke-dasharray="2 2"/>
-          <line x1="96" y1="64" x2="128" y2="64" stroke="#71717a" stroke-width="1" stroke-dasharray="2 2"/>
-          <!-- Speech Bubble Callout -->
-          <g transform="translate(44, 62)">
-            <rect x="0" y="0" width="18" height="14" rx="3" fill="#18181b" stroke="#3f3f46" stroke-width="0.8"/>
-            <polygon points="4,14 8,14 4,18" fill="#18181b"/>
-            <line x1="4" y1="5" x2="14" y2="5" stroke="#a1a1aa" stroke-width="1.2"/>
-            <line x1="4" y1="9" x2="11" y2="9" stroke="#a1a1aa" stroke-width="1.2"/>
-          </g>
-          <!-- Blue Badge 'U' -->
-          <g transform="translate(88, 86)">
-            <rect x="0" y="0" width="28" height="28" rx="8" fill="#0066ff"/>
-            <text x="14" y="19" text-anchor="middle" fill="#ffffff" font-family="'Inter', sans-serif" font-size="14" font-weight="800">U</text>
-          </g>
+          <!-- Outer Compass Reticle Circle -->
+          <circle cx="80" cy="80" r="54" fill="none" stroke="#ffffff" stroke-width="1.8"/>
+          <!-- Inner Dashed Concentric Radius -->
+          <circle cx="80" cy="80" r="38" fill="rgba(255, 255, 255, 0.03)" stroke="rgba(255, 255, 255, 0.35)" stroke-width="1" stroke-dasharray="3 3"/>
+          <!-- Cardinal & Ordinal Axis Crosshairs -->
+          <line x1="14" y1="80" x2="146" y2="80" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 3" opacity="0.65"/>
+          <line x1="80" y1="14" x2="80" y2="146" stroke="#ffffff" stroke-width="1" stroke-dasharray="3 3" opacity="0.65"/>
+          <!-- Cardinal Ticks -->
+          <line x1="80" y1="22" x2="80" y2="29" stroke="#ffffff" stroke-width="2"/>
+          <line x1="80" y1="131" x2="80" y2="138" stroke="#ffffff" stroke-width="2"/>
+          <line x1="22" y1="80" x2="29" y2="80" stroke="#ffffff" stroke-width="2"/>
+          <line x1="131" y1="80" x2="138" y2="80" stroke="#ffffff" stroke-width="2"/>
+          <!-- Isometric Urban Volume Core -->
+          <path d="M 80,52 L 104,66 L 80,80 L 56,66 Z" fill="rgba(255,255,255,0.22)" stroke="#ffffff" stroke-width="1.4"/>
+          <path d="M 56,66 L 80,80 L 80,102 L 56,88 Z" fill="rgba(255,255,255,0.08)" stroke="#ffffff" stroke-width="1.4"/>
+          <path d="M 80,80 L 104,66 L 104,88 L 80,102 Z" fill="rgba(255,255,255,0.14)" stroke="#ffffff" stroke-width="1.4"/>
+          <!-- Central Pulsing Coordinate Datum Point -->
+          <circle cx="80" cy="80" r="3" fill="#38bdf8"/>
+          <!-- URBNZD Brand Wordmark below glyph -->
+          <text x="80" y="122" text-anchor="middle" fill="#ffffff" font-family="'JetBrains Mono', monospace" font-size="9" font-weight="700" letter-spacing="0.22em">URBNZD</text>
         </svg>
       </div>
 
@@ -2344,7 +2305,7 @@
       </div>
       <div class="axiom-modal-body">
         <div style="display:flex; align-items:center; justify-content:space-between; gap:10px;">
-          <input type="text" id="input-new-view-name" placeholder="Nombre de escena (ej. Planta Nolli 1:2000, Axono Cascada...)" class="axiom-lang-select" style="flex:1; height:34px; padding:0 12px; font-size:12px; text-align:left;">
+          <input type="text" id="input-new-view-name" placeholder="Nombre de escena (ej. Planta Nolli 1:2000, Axono Explotada...)" class="axiom-lang-select" style="flex:1; height:34px; padding:0 12px; font-size:12px; text-align:left;">
           <button type="button" class="axiom-btn-primary" id="btn-save-current-view" data-i18n="modal.viewsSaveCurrent">+ Guardar Escena</button>
         </div>
         <div id="saved-views-container" class="axiom-views-list" style="margin-top:8px;"></div>
@@ -2356,6 +2317,41 @@
         <button type="button" class="axiom-btn-secondary" id="btn-import-views-json">Importar (.json)</button>
         <input type="file" id="input-import-views-file" accept=".json,.urbnz" style="display:none;">
         <button type="button" class="axiom-btn-primary" id="modal-views-close-btn">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Perfil de Usuario & Workspace -->
+  <div id="modal-user-workspace" class="axiom-modal-overlay" hidden>
+    <div class="axiom-modal-dialog" style="max-width:440px; background:#121215; border:1px solid rgba(255,255,255,0.12); border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,0.85); padding:20px;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:16px;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div id="modal-avatar-preview" style="width:36px; height:36px; border-radius:50%; background:#27272a; border:1px solid rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; color:#ffffff;">C</div>
+          <div>
+            <h3 style="font-size:14px; font-weight:600; color:#ffffff; margin:0;">Perfil & Workspace</h3>
+            <span style="font-size:11px; color:#71717a;">URBNZD Studio Environment</span>
+          </div>
+        </div>
+        <button type="button" class="axiom-modal-close-btn" id="modal-user-close" aria-label="Cerrar" style="background:transparent; border:none; color:#71717a; cursor:pointer; font-size:14px;">✕</button>
+      </div>
+
+      <div style="display:flex; flex-direction:column; gap:12px; font-size:12px;">
+        <div>
+          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Nombre del Usuario</label>
+          <input type="text" id="input-profile-name" value="Cesar" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 10px; color:#ffffff; font-size:12px;">
+        </div>
+        <div>
+          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Estudio de Arquitectura / Organización</label>
+          <input type="text" id="input-profile-studio" value="CGM Atelier" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 10px; color:#ffffff; font-size:12px;">
+        </div>
+        <div>
+          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:4px; font-weight:500;">Correo Electrónico</label>
+          <input type="email" id="input-profile-email" value="cesar@cgmatelier.com" style="width:100%; background:#18181b; border:1px solid rgba(255,255,255,0.12); border-radius:6px; padding:7px 10px; color:#ffffff; font-size:12px;">
+        </div>
+        <div style="display:flex; gap:8px; margin-top:8px;">
+          <button type="button" class="rayon-share-btn" id="btn-save-profile" style="flex:1; justify-content:center; padding:8px 12px; font-weight:600;">Guardar Cambios</button>
+          <button type="button" class="rayon-secondary-btn" id="btn-switch-account" style="padding:8px 12px; font-size:11px;">Cambiar Cuenta</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2879,9 +2875,281 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       document.getElementById('modal-project-hub').hidden = true;
       switchView('workspace-home', true);
     });
-    document.getElementById('modal-hub-btn-views')?.addEventListener('click', () => {
-      document.getElementById('modal-project-hub').hidden = true;
-      openSavedViewsModal();
+    // =====================================================
+    // USER PROFILE & WORKSPACE ENVIRONMENT
+    // =====================================================
+    function loadUserProfile() {
+      try {
+        const raw = localStorage.getItem('urbnzd_user_profile');
+        const p = raw ? JSON.parse(raw) : { name: 'Cesar', studio: 'CGM Atelier', email: 'cesar@cgmatelier.com' };
+        applyUserProfile(p);
+      } catch (e) {
+        applyUserProfile({ name: 'Cesar', studio: 'CGM Atelier', email: 'cesar@cgmatelier.com' });
+      }
+    }
+
+    function applyUserProfile(p) {
+      const initial = (p.name || 'C').charAt(0).toUpperCase();
+      document.querySelectorAll('.rayon-user-avatar, .rayon-inspector-avatar, #modal-avatar-preview').forEach(el => {
+        el.textContent = initial;
+      });
+      document.querySelectorAll('.rayon-user-name').forEach(el => {
+        el.textContent = `${p.name} · ${p.studio || 'URBNZD'}`;
+      });
+      const ownerEl = document.getElementById('inspector-model-owner');
+      const teamEl = document.getElementById('inspector-model-team');
+      if (ownerEl) ownerEl.textContent = p.name;
+      if (teamEl) teamEl.textContent = p.studio;
+      const inpName = document.getElementById('input-profile-name');
+      const inpStudio = document.getElementById('input-profile-studio');
+      const inpEmail = document.getElementById('input-profile-email');
+      if (inpName) inpName.value = p.name;
+      if (inpStudio) inpStudio.value = p.studio;
+      if (inpEmail) inpEmail.value = p.email;
+    }
+
+    function openUserProfileModal() {
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = false;
+    }
+
+    document.getElementById('ws-user-menu')?.addEventListener('click', openUserProfileModal);
+    document.getElementById('inspector-user-avatar')?.addEventListener('click', openUserProfileModal);
+    document.getElementById('modal-user-close')?.addEventListener('click', () => {
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+    document.getElementById('btn-save-profile')?.addEventListener('click', () => {
+      const name = document.getElementById('input-profile-name')?.value.trim() || 'Cesar';
+      const studio = document.getElementById('input-profile-studio')?.value.trim() || 'CGM Atelier';
+      const email = document.getElementById('input-profile-email')?.value.trim() || 'cesar@cgmatelier.com';
+      const profile = { name, studio, email };
+      localStorage.setItem('urbnzd_user_profile', JSON.stringify(profile));
+      applyUserProfile(profile);
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+    document.getElementById('btn-switch-account')?.addEventListener('click', () => {
+      const newName = prompt('Ingresa el nombre del nuevo usuario o arquitecto invitado:', 'Invitado');
+      if (!newName) return;
+      const newStudio = prompt('Nombre del estudio:', 'Estudio');
+      const profile = { name: newName, studio: newStudio || 'URBNZD', email: '' };
+      localStorage.setItem('urbnzd_user_profile', JSON.stringify(profile));
+      applyUserProfile(profile);
+      const m = document.getElementById('modal-user-workspace');
+      if (m) m.hidden = true;
+    });
+
+    loadUserProfile();
+
+    // =====================================================
+    // WORKSPACE SIDEBAR FILTERS (Proyectos, Plantillas, Pinned)
+    // =====================================================
+    document.querySelectorAll('.rayon-home-nav [data-wsfilter]').forEach(navBtn => {
+      navBtn.addEventListener('click', () => {
+        document.querySelectorAll('.rayon-home-nav [data-wsfilter]').forEach(b => b.classList.remove('active'));
+        navBtn.classList.add('active');
+        const filter = navBtn.getAttribute('data-wsfilter');
+        applyWorkspaceFilter(filter);
+      });
+    });
+
+    function applyWorkspaceFilter(filter) {
+      const titleEl = document.querySelector('.rayon-breadcrumb-title h1');
+      const cards = document.querySelectorAll('#ws-cards-grid .rayon-model-card');
+      if (filter === 'templates') {
+        if (titleEl) titleEl.textContent = 'Plantillas de Paisaje Urbano';
+        cards.forEach(c => {
+          const isTemplate = c.getAttribute('data-cardtype') === 'template';
+          c.style.display = isTemplate ? '' : 'none';
+        });
+      } else if (filter === 'pinned') {
+        if (titleEl) titleEl.textContent = 'Escenas Fijadas';
+        cards.forEach(c => {
+          const isScene = c.hasAttribute('data-ws-scene');
+          c.style.display = isScene ? '' : 'none';
+        });
+      } else if (filter === 'archive') {
+        if (titleEl) titleEl.textContent = 'Archivo de Proyectos';
+        cards.forEach(c => {
+          c.style.display = 'none';
+        });
+      } else {
+        // 'all' or 'projects'
+        if (titleEl) titleEl.textContent = 'Proyectos Urbanos';
+        cards.forEach(c => {
+          const isTemplate = c.getAttribute('data-cardtype') === 'template';
+          c.style.display = isTemplate ? 'none' : '';
+        });
+      }
+    }
+
+    // =====================================================
+    // RIGHT INSPECTOR SCENES PANEL & QUICK SCENE FREEZE
+    // =====================================================
+    function updateInspectorScenes() {
+      const container = document.getElementById('inspector-scenes-list');
+      if (!container) return;
+      const views = viewsManager.getViews();
+      if (!views || views.length === 0) {
+        container.innerHTML = '<span style="color:#71717a; font-size:11px; padding:4px;">No hay escenas guardadas</span>';
+        return;
+      }
+      container.innerHTML = views.map(v => {
+        const modeTag = v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO';
+        return `
+          <div style="display:flex; align-items:center; justify-content:space-between; padding:5px 8px; background:#18181b; border-radius:4px; font-size:11px; cursor:pointer;" data-scene-id="${v.id}" class="scene-item-row">
+            <span style="color:#f4f4f6; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; max-width:160px;" title="${v.name}">${v.name}</span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="color:#38bdf8; font-size:9.5px; font-weight:600; background:rgba(56,189,248,0.1); padding:1px 4px; border-radius:3px;">${modeTag}</span>
+              <button type="button" class="scene-del-btn" data-del-scene="${v.id}" style="background:none; border:none; color:#71717a; cursor:pointer; font-size:11px; padding:0 2px;" title="Eliminar">✕</button>
+            </div>
+          </div>
+        `;
+      }).join('');
+
+      container.querySelectorAll('.scene-item-row').forEach(row => {
+        row.addEventListener('click', (e) => {
+          if (e.target.closest('[data-del-scene]')) return;
+          const id = row.getAttribute('data-scene-id');
+          applySavedView(id);
+        });
+      });
+
+      container.querySelectorAll('[data-del-scene]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-del-scene');
+          viewsManager.deleteView(id);
+          updateInspectorScenes();
+        });
+      });
+    }
+
+    function saveSceneQuickly() {
+      const currentMode = window.currentWorkspaceMode || 'result';
+      const modeTag = currentMode === 'result' ? '3D' : currentMode === 'mapper' ? '2D' : 'Axono';
+      const defaultName = `Escena ${viewsManager.getViews().length + 1} · ${modeTag}`;
+      const name = prompt('Nombre para congelar esta escena (cámara, capas y estilo):', defaultName);
+      if (!name) return;
+      viewsManager.saveCurrentScene(name);
+      updateInspectorScenes();
+      renderWorkspaceHome();
+    }
+
+    document.getElementById('btn-inspector-save-scene')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('dock-tool-cam-3d')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('dock-tool-cam-map')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('dock-tool-cam-illu')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('btn-quick-save-scene-3d')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('btn-quick-save-scene-map')?.addEventListener('click', saveSceneQuickly);
+    document.getElementById('btn-quick-save-scene-illu')?.addEventListener('click', saveSceneQuickly);
+
+    viewsManager.subscribe(() => {
+      updateInspectorScenes();
+    });
+    updateInspectorScenes();
+
+    // =====================================================
+    // BLOCKS TAB: CONCEPTUAL MODELING & PROJECT LOADER
+    // =====================================================
+    document.getElementById('btn-add-conceptual-block')?.addEventListener('click', () => {
+      const w = parseFloat(document.getElementById('block-dim-w')?.value) || 30;
+      const d = parseFloat(document.getElementById('block-dim-d')?.value) || 25;
+      const levels = parseInt(document.getElementById('block-dim-levels')?.value) || 6;
+      const use = document.getElementById('block-use-select')?.value || 'mixed';
+      if (window.addConceptualMassBlock) {
+        window.addConceptualMassBlock({ width: w, depth: d, levels, use });
+      }
+    });
+
+    document.getElementById('feas-btn-upload-skp')?.addEventListener('click', () => {
+      document.getElementById('feas-file-input')?.click();
+    });
+    document.getElementById('feas-file-input')?.addEventListener('change', (e) => {
+      const f = e.target.files?.[0];
+      if (!f) return;
+      const nameEl = document.getElementById('feas-file-name');
+      if (nameEl) nameEl.textContent = f.name;
+    });
+
+    // =====================================================
+    // TABLES TAB: URBAN QUANTIFICATION & METRICS
+    // =====================================================
+    function updateUrbanQuantification() {
+      const m = window.getActiveModelData?.();
+      const siteArea = m ? ((m.size || 1000) * (m.size || 1000)) : 1000000;
+      const bldgCount = m?.buildings?.length || 45;
+      const fpApprox = Math.round(bldgCount * 380);
+      const avgLevels = parseInt(document.getElementById('feas-levels')?.value) || 4;
+      const gfaApprox = fpApprox * avgLevels;
+      const greenApprox = Math.round(siteArea * 0.22);
+      const roadKm = m?.stats?.roadsKm || (m?.roads ? (m.roads.length * 0.08).toFixed(1) : '2.4');
+
+      const elLot = document.getElementById('feas-out-lot');
+      const elFp = document.getElementById('feas-out-footprint');
+      const elGfa = document.getElementById('feas-out-gfa');
+      const elH = document.getElementById('feas-out-height');
+      const elGreen = document.getElementById('table-val-green');
+      const elRoads = document.getElementById('table-val-roads');
+      if (elLot) elLot.textContent = (Math.round(siteArea * 0.4)).toLocaleString();
+      if (elFp) elFp.textContent = fpApprox.toLocaleString();
+      if (elGfa) elGfa.textContent = gfaApprox.toLocaleString();
+      if (elH) elH.textContent = `${(avgLevels * 3.5).toFixed(1)} m · ${avgLevels}N`;
+      if (elGreen) elGreen.textContent = greenApprox.toLocaleString();
+      if (elRoads) elRoads.textContent = roadKm;
+    }
+    window.updateUrbanQuantification = updateUrbanQuantification;
+
+    document.getElementById('feas-cos')?.addEventListener('input', (e) => {
+      const v = document.getElementById('feas-val-cos');
+      if (v) v.textContent = `${e.target.value}%`;
+    });
+    document.getElementById('feas-cus')?.addEventListener('input', (e) => {
+      const v = document.getElementById('feas-val-cus');
+      if (v) v.textContent = parseFloat(e.target.value).toFixed(2);
+    });
+    document.getElementById('feas-levels')?.addEventListener('input', (e) => {
+      const v = document.getElementById('feas-val-levels');
+      if (v) v.textContent = `${e.target.value} niveles`;
+      updateUrbanQuantification();
+    });
+
+    // =====================================================
+    // FUNCTIONAL TOOL DOCK BUTTON ACTIONS
+    // =====================================================
+    document.getElementById('dock-tool-export-3d')?.addEventListener('click', () => {
+      const canvas = document.querySelector('#viewer canvas');
+      if (!canvas) return;
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `URBNZD_3D_Render_${Date.now()}.png`;
+      a.click();
+    });
+
+    document.getElementById('dock-tool-export-map')?.addEventListener('click', () => {
+      const btn = document.getElementById('btn-map-export-png') || document.getElementById('btn-export-carto-urbnz');
+      if (btn) btn.click();
+    });
+    document.getElementById('dock-tool-frame-map')?.addEventListener('click', () => {
+      const chk = document.getElementById('map-border-toggle');
+      if (chk) {
+        chk.checked = !chk.checked;
+        chk.dispatchEvent(new Event('change'));
+      }
+    });
+
+    document.getElementById('dock-tool-export-illu')?.addEventListener('click', () => {
+      const canvas = document.getElementById('illu-canvas');
+      if (!canvas) return;
+      const a = document.createElement('a');
+      a.href = canvas.toDataURL('image/png');
+      a.download = `URBNZD_Axonometria_${Date.now()}.png`;
+      a.click();
+    });
+    document.getElementById('dock-tool-explode-illu')?.addEventListener('click', () => {
+      const pill = document.getElementById('illu-exploded-pill') || document.getElementById('illu-exploded-switch');
+      if (pill) pill.click();
     });
 
     // =====================================================
@@ -2993,6 +3261,10 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
           });
         });
       }
+
+      // Apply active sidebar filter
+      const activeFilterBtn = document.querySelector('.rayon-home-nav [data-wsfilter].active');
+      applyWorkspaceFilter(activeFilterBtn?.getAttribute('data-wsfilter') || 'all');
     }
     window.renderWorkspaceHome = renderWorkspaceHome;
 

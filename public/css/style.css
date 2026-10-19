@@ -5783,7 +5783,9 @@ input[type="range"]::-webkit-slider-thumb,
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  background: #090a0d !important;
+  background: rgba(10, 11, 14, 0.78) !important;
+  backdrop-filter: blur(18px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(190%) !important;
   pointer-events: auto !important;
   animation: axiomModalFadeIn 0.25s ease !important;
 }
