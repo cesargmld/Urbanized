@@ -2250,6 +2250,7 @@ function renderIlluLayerStackControls() {
     });
 
     itemEl.addEventListener('dragstart', (e) => {
+      if (e.target.closest('input, select, button')) { e.preventDefault(); return; }
       draggedIdx = idx;
       itemEl.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
@@ -2867,6 +2868,7 @@ function renderLayerStackControls() {
 
     // Drag and Drop Layer Reordering
     itemEl.addEventListener('dragstart', (e) => {
+      if (e.target.closest('input, select, button')) { e.preventDefault(); return; }
       draggedLayerIdx = idx;
       itemEl.classList.add('dragging');
       e.dataTransfer.effectAllowed = 'move';
@@ -2919,6 +2921,9 @@ function renderLayerStackControls() {
       renderMap();
     });
 
+    slider?.addEventListener('pointerdown', (e) => e.stopPropagation());
+    slider?.addEventListener('mousedown', (e) => e.stopPropagation());
+    slider?.addEventListener('dragstart', (e) => { e.preventDefault(); e.stopPropagation(); });
     slider?.addEventListener('input', () => {
       const val = Number(slider.value) / 100;
       mapOpts.layerOpacities[key] = val;

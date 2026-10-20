@@ -25,7 +25,7 @@ export const GIS_LANDUSE_LABELS = {
 export const MAP_PRESETS = {
   classic: {
     colors: {
-      bg: '#ffffff', building: '#e4e4e7', outline: '#52525b', road: '#ffffff', path: '#f4f4f6', rail: '#71717a',
+      bg: '#fafafa', building: '#e4e4e7', outline: '#3f3f46', road: '#ffffff', roadMinor: '#e4e4e7', roadMajor: '#cbd5e1', path: '#f4f4f6', rail: '#71717a',
       water: '#a9cbe3', green: '#cfe0b8', tree: '#849684', contour: '#a1a1aa', shadow: '#18181b',
       depthLow: '#f8fafc', depthHigh: '#cbd5e1', grid: '#d4d4d8', text: '#18181b',
     },
@@ -38,9 +38,9 @@ export const MAP_PRESETS = {
   },
   figure: {
     colors: {
-      bg: '#ffffff', building: '#111114', outline: '#111114', road: '#ffffff', path: '#ffffff', rail: '#9a9a9a',
-      water: '#e4e4e7', green: '#ffffff', tree: '#ffffff', contour: '#ffffff', shadow: '#000000',
-      depthLow: '#ffffff', depthHigh: '#bdbdbd', grid: '#d4d4d8', text: '#111114',
+      bg: '#ffffff', building: '#0a0a0c', outline: '#0a0a0c', road: '#ffffff', roadMinor: '#e4e4e7', roadMajor: '#d4d4d8', path: '#f4f4f5', rail: '#a1a1aa',
+      water: '#f4f4f6', green: '#ffffff', tree: '#ffffff', contour: '#e4e4e7', shadow: '#000000',
+      depthLow: '#ffffff', depthHigh: '#bdbdbd', grid: '#e4e4e7', text: '#0a0a0c',
     },
     layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: false, byType: false, byHeight: false, satellite: false, flora: false, fauna: false },
     shadows: { on: false, azimuth: 315, altitude: 35, strength: 0.2 },
@@ -51,8 +51,8 @@ export const MAP_PRESETS = {
   },
   figure_invert: {
     colors: {
-      bg: '#090a0d', building: '#ffffff', outline: '#ffffff', road: '#090a0d', path: '#090a0d', rail: '#555b68',
-      water: '#162b42', green: '#090a0d', tree: '#090a0d', contour: '#090a0d', shadow: '#000000',
+      bg: '#090a0d', building: '#ffffff', outline: '#ffffff', road: '#090a0d', roadMinor: '#1e2024', roadMajor: '#272a30', path: '#141518', rail: '#555b68',
+      water: '#0f172a', green: '#090a0d', tree: '#090a0d', contour: '#18181b', shadow: '#000000',
       depthLow: '#090a0d', depthHigh: '#22262f', grid: '#27272a', text: '#ffffff',
     },
     layers: { buildings: true, roads: true, rail: false, water: true, green: false, trees: false, contours: false, site: false, byType: false, byHeight: false, satellite: false, flora: false, fauna: false },
@@ -381,21 +381,22 @@ export function mapSVG(model, o) {
          + gl('WATERWAYS', `fill="none" stroke="${c.water}" stroke-width="${pen(0.5)}" stroke-linecap="round" stroke-linejoin="round"`, lines('WATER') && `<path d="${lines('WATER')}"/>`);
   })();
 
-  // 5. Vialidades con jerarquía cartográfica
+  // 5. Vialidades con jerarquía cartográfica (Áreas + Ejes viales)
   layerSnippets.roads = (() => {
     if (!o.layers.roads) return '';
     const parts = [];
+    const stroke = (layer, color, width, dash = '') => gl(layer, `fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"${dash}`, lines(layer) && `<path d="${lines(layer)}"/>`);
     if (model.roadAreas?.length) {
-      for (const { layer, polys } of model.roadAreas)
-        parts.push(gl(layer, `fill="${layer === 'ROADS_AREA' ? c.road : c.path}" fill-rule="evenodd"`, `<path d="${polys.map((rs) => rs.map((r) => ring(r)).join('')).join('')}"/>`));
-    } else {
-      const stroke = (layer, color, width, dash = '') => gl(layer, `fill="none" stroke="${color}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"${dash}`, lines(layer) && `<path d="${lines(layer)}"/>`);
-      parts.push(stroke('PATHS', c.path, 2.2, ` stroke-dasharray="${pen(0.8)} ${pen(0.6)}"`));
-      parts.push(stroke('ROADS_MINOR', c.road, 6.8));
-      parts.push(stroke('ROADS_MAJOR', c.road, 13.2));
+      for (const { layer, polys } of model.roadAreas) {
+        parts.push(gl(layer, `fill="${layer === 'ROADS_AREA' ? c.road : c.path}" stroke="${c.outline || '#d4d4d8'}" stroke-width="${pen(0.12)}" fill-rule="evenodd"`, `<path d="${polys.map((rs) => rs.map((r) => ring(r)).join('')).join('')}"/>`));
+      }
     }
+    // Ejes y trazos viales estructurantes siempre presentes
+    parts.push(stroke('PATHS', c.path, pen(0.2), ` stroke-dasharray="${pen(0.8)} ${pen(0.6)}"`));
+    parts.push(stroke('ROADS_MINOR', c.roadMinor || c.road, pen(0.38)));
+    parts.push(stroke('ROADS_MAJOR', c.roadMajor || c.road, pen(0.75)));
     if (model.lines.BRIDGES?.length)
-      parts.push(gl('BRIDGES', `fill="none" stroke="${c.road}" stroke-width="9" stroke-linecap="butt" stroke-linejoin="round"`, `<path d="${lines('BRIDGES')}"/>`));
+      parts.push(gl('BRIDGES', `fill="none" stroke="${c.roadMajor || c.road}" stroke-width="${pen(0.9)}" stroke-linecap="butt" stroke-linejoin="round"`, `<path d="${lines('BRIDGES')}"/>`));
     return parts.join('');
   })();
 

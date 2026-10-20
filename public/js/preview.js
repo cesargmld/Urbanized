@@ -54,20 +54,27 @@ function init(container) {
   sun.shadow.mapSize.width = 2048;
   sun.shadow.mapSize.height = 2048;
   sun.shadow.camera.near = 10;
-  sun.shadow.camera.far = 4000;
-  const d = 1400;
+  sun.shadow.camera.far = 4500;
+  const d = 1600;
   sun.shadow.camera.left = -d;
   sun.shadow.camera.right = d;
   sun.shadow.camera.top = d;
   sun.shadow.camera.bottom = -d;
-  sun.shadow.bias = -0.0004;
+  sun.shadow.bias = -0.0005;
   scene.add(sun);
+  ctx.sun = sun;
   const group = new THREE.Group();
   scene.add(group);
 
-  // Click handler for interactive 3D pin dropping and lot location placement
+  // Click handler for interactive 3D pin dropping, lot placement, and interactive CAD measurement
   renderer.domElement.addEventListener('pointerdown', (e) => {
     if (!ctx || !ctx.lastModel) return;
+
+    if (isMeasuring3D) {
+      handle3DMeasureClick(e);
+      return;
+    }
+
     const isPlacingPin = pinStore.isPlacing();
     const isPlacingLot = feasibilityStore.isPlacingLot;
     if (!isPlacingPin && !isPlacingLot) {
@@ -603,9 +610,20 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     other_buildings: 0xd4d4d8
   };
 
-  const edgeColor = isNolli ? (nolliInverted ? 0xffffff : 0x000000) : (isMaqueta ? 0x27272a : 0x18181b);
-  const edgeOp = isNolli ? 1.0 : (isMaqueta ? 0.38 : (studioState.buildings.edgeOpacity || 0.45));
-  const finish = studioState.buildings.finish || 'white';
+  let edgeColor = isNolli ? (nolliInverted ? 0xffffff : 0x000000) : (isMaqueta ? 0x27272a : 0x18181b);
+  let edgeOp = isNolli ? 1.0 : (isMaqueta ? 0.38 : (studioState.buildings.edgeOpacity || 0.45));
+  const finish = studioState.buildings.finish || 'mono';
+
+  if (finish === 'blueprint') {
+    edgeColor = 0x00f0ff;
+    edgeOp = 0.95;
+  } else if (finish === 'hatch') {
+    edgeColor = 0x18181b;
+    edgeOp = 0.9;
+  } else if (finish === 'mono') {
+    edgeColor = 0x27272a;
+    edgeOp = 0.75;
+  }
 
   for (const [catKey, bList] of Object.entries(categorized)) {
     if (!bList.length) continue;
@@ -613,13 +631,15 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     const edges = edgeGeometry(bList);
     const targetGroup = layerGroups[catKey] || layerGroups.other_buildings;
 
-    let bldgColor = 0xfcfcfd; // Architectural white chalk
+    let bldgColor = 0xf5f5f7; // Monocromo arquitectónico por defecto
     if (finish === 'gis') {
       bldgColor = gisColors[catKey] || 0xf4f4f6;
-    } else if (finish === 'mono') {
-      bldgColor = 0x27272a;
+    } else if (finish === 'blueprint') {
+      bldgColor = 0x0b253e; // Azul técnico Blueprint
+    } else if (finish === 'hatch') {
+      bldgColor = 0xfcfcfd;
     } else {
-      bldgColor = 0xfafafa;
+      bldgColor = 0xf4f4f7;
     }
 
     let mat;
@@ -632,6 +652,8 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
       });
     } else if (isMaqueta) {
       mat = new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.85, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
+    } else if (finish === 'blueprint') {
+      mat = new THREE.MeshStandardMaterial({ color: bldgColor, roughness: 0.5, metalness: 0.25, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
     } else {
       mat = new THREE.MeshStandardMaterial({ color: bldgColor, roughness: 0.88, metalness: 0.02, polygonOffset: true, polygonOffsetFactor: 1, polygonOffsetUnits: 1 });
     }
@@ -1135,10 +1157,15 @@ export function setContourOptions(opts) {
 }
 
 export function setBuildingFinish(finish) {
+  if (finish === 'stipple' || finish === 'hatch') finish = 'hatch';
+  else if (finish === 'white' || finish === 'mono') finish = 'mono';
+  else if (finish === 'blueprint') finish = 'blueprint';
+  else if (finish === 'gis') finish = 'gis';
   if (finish) studioState.buildings.finish = finish;
   if (!ctx || !ctx.lastModel) return;
   showModel(null, ctx.lastModel, { keepCamera: true, chunkMode: chunkModeActive });
 }
+window.setBuildingFinish = setBuildingFinish;
 
 export function render3DPins() {
   if (!ctx || !ctx.layerGroups?.pins) return;
@@ -1556,7 +1583,10 @@ export function addConceptualMassBlock({ width = 30, depth = 25, levels = 6, use
   mesh.add(edges);
 
   const offsetCount = conceptualBlocksGroup.children.length;
-  mesh.position.set((offsetCount - 1) * (width + 15), 0, 0);
+  const posX = (offsetCount % 3 - 1) * (width + 20);
+  const posY = Math.floor(offsetCount / 3) * (depth + 20);
+  const groundZ = ctx.lastModel?.grid?.heightAt ? ctx.lastModel.grid.heightAt(posX, posY) : (ctx.zMid || 0);
+  mesh.position.set(posX, posY, groundZ);
 
   conceptualBlocksGroup.add(mesh);
 
@@ -1724,6 +1754,126 @@ export async function loadExternal3DModel(file) {
 }
 window.loadExternal3DModel = loadExternal3DModel;
 
+// ========================================================
+// 3D SOLAR ASOLEAMIENTO ENGINE
+// ========================================================
+export function set3DSun(azimuthDeg, elevationDeg) {
+  if (!ctx || !ctx.sun) return;
+  const az = Number(azimuthDeg) ?? 315;
+  const el = Number(elevationDeg) ?? 45;
+  const azRad = (az * Math.PI) / 180;
+  const elRad = (el * Math.PI) / 180;
+  const s = ctx.modelSize || 1200;
+  const dist = s * 1.8;
+  const x = dist * Math.cos(elRad) * Math.sin(azRad);
+  const y = -dist * Math.cos(elRad) * Math.cos(azRad);
+  const z = dist * Math.sin(elRad);
+  ctx.sun.position.set(x, y, z);
+  const targetZ = ctx.zMid || 0;
+  ctx.sun.target.position.set(0, 0, targetZ);
+  ctx.sun.target.updateMatrixWorld();
+  ctx.sun.shadow.camera.updateProjectionMatrix();
+  if (ctx.renderer && ctx.scene && ctx.camera) {
+    ctx.renderer.render(ctx.scene, ctx.camera);
+  }
+}
+window.set3DSun = set3DSun;
+
+// ========================================================
+// 3D CAD INTERACTIVE MEASUREMENT RULER
+// ========================================================
+let isMeasuring3D = false;
+let measurePointA = null;
+let measureLineMesh = null;
+let measureMarkerA = null;
+
+export function setMeasuring3DMode(enabled) {
+  isMeasuring3D = Boolean(enabled);
+  if (!isMeasuring3D) {
+    clearMeasure3D();
+  }
+}
+window.setMeasuring3DMode = setMeasuring3DMode;
+
+export function clearMeasure3D() {
+  measurePointA = null;
+  if (measureLineMesh && ctx?.scene) {
+    ctx.scene.remove(measureLineMesh);
+    measureLineMesh.geometry?.dispose();
+    measureLineMesh.material?.dispose();
+    measureLineMesh = null;
+  }
+  if (measureMarkerA && ctx?.scene) {
+    ctx.scene.remove(measureMarkerA);
+    measureMarkerA.geometry?.dispose();
+    measureMarkerA.material?.dispose();
+    measureMarkerA = null;
+  }
+  const badge = document.getElementById('studio-measure-badge');
+  if (badge) badge.remove();
+}
+window.clearMeasure3D = clearMeasure3D;
+
+function handle3DMeasureClick(e) {
+  if (!ctx || !ctx.renderer || !ctx.camera) return;
+  const rect = ctx.renderer.domElement.getBoundingClientRect();
+  const mouse = new THREE.Vector2(
+    ((e.clientX - rect.left) / rect.width) * 2 - 1,
+    -((e.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, ctx.camera);
+  const targets = [];
+  if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
+  if (ctx.terrainMesh) targets.push(ctx.terrainMesh);
+  if (conceptualBlocksGroup?.children?.length) targets.push(...conceptualBlocksGroup.children);
+
+  const hits = raycaster.intersectObjects(targets, true);
+  if (!hits.length) return;
+  const hitPt = hits[0].point;
+
+  if (!measurePointA) {
+    // First point
+    measurePointA = hitPt.clone();
+    clearMeasure3D();
+    measurePointA = hitPt.clone();
+    const markerGeo = new THREE.SphereGeometry(Math.max(2, (ctx.modelSize || 1000) * 0.007), 16, 16);
+    const markerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    measureMarkerA = new THREE.Mesh(markerGeo, markerMat);
+    measureMarkerA.position.copy(hitPt);
+    ctx.scene.add(measureMarkerA);
+
+    window.showCadToast?.(`Punto A fijado en X:${hitPt.x.toFixed(1)}, Y:${hitPt.y.toFixed(1)}, Z:${hitPt.z.toFixed(1)}. Haz clic en Punto B.`);
+  } else {
+    // Second point: complete dimension
+    const ptB = hitPt.clone();
+    const d = measurePointA.distanceTo(ptB);
+    const dxy = Math.sqrt(Math.pow(ptB.x - measurePointA.x, 2) + Math.pow(ptB.y - measurePointA.y, 2));
+    const dz = ptB.z - measurePointA.z;
+
+    const lineGeo = new THREE.BufferGeometry().setFromPoints([measurePointA, ptB]);
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2, depthTest: false });
+    measureLineMesh = new THREE.Line(lineGeo, lineMat);
+    measureLineMesh.renderOrder = 999;
+    ctx.scene.add(measureLineMesh);
+
+    // Add floating badge
+    let badge = document.getElementById('studio-measure-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'studio-measure-badge';
+      badge.className = 'studio-measure-badge';
+      document.getElementById('result-viewer-wrap')?.appendChild(badge);
+    }
+    badge.textContent = `📏 ${d.toFixed(2)} m (Δxy: ${dxy.toFixed(1)} m · Δz: ${Math.abs(dz).toFixed(1)} m)`;
+    badge.style.left = `${e.clientX - rect.left + 12}px`;
+    badge.style.top = `${e.clientY - rect.top - 20}px`;
+
+    window.showCadToast?.(`Cota 3D: ${d.toFixed(2)} m · ΔH: ${Math.abs(dz).toFixed(1)} m`);
+    measurePointA = null; // Ready for next measurement
+  }
+}
+
 // URBNZD Real-time 3D Section Plane Cut Engine
 const sectionPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
 let isSectionActive = false;
@@ -1749,12 +1899,26 @@ export function toggleSectionCut3D(forceState) {
 
 export function setSectionCutPosition(constantVal) {
   sectionPlane.constant = Number(constantVal) || 0;
+  if (ctx?.renderer && ctx?.scene && ctx?.camera) {
+    ctx.renderer.render(ctx.scene, ctx.camera);
+  }
 }
 
 export function setSectionCutAxis(axis) {
   if (axis === 'x') sectionPlane.normal.set(-1, 0, 0);
   else if (axis === 'y') sectionPlane.normal.set(0, -1, 0);
   else if (axis === 'z') sectionPlane.normal.set(0, 0, -1);
+  if (ctx?.renderer && ctx?.scene && ctx?.camera) {
+    ctx.renderer.render(ctx.scene, ctx.camera);
+  }
+}
+
+export function invertSectionCut() {
+  sectionPlane.normal.negate();
+  sectionPlane.constant = -sectionPlane.constant;
+  if (ctx?.renderer && ctx?.scene && ctx?.camera) {
+    ctx.renderer.render(ctx.scene, ctx.camera);
+  }
 }
 
 export function set3DNolliMode(enabled, inverted = false) {
@@ -1772,6 +1936,7 @@ export const is3DNolliActive = () => nolliModeActive;
 window.toggleSectionCut3D = toggleSectionCut3D;
 window.setSectionCutPosition = setSectionCutPosition;
 window.setSectionCutAxis = setSectionCutAxis;
+window.invertSectionCut = invertSectionCut;
 window.isSectionCutActive = () => isSectionActive;
 window.toggleMaquetaMode = toggleMaquetaMode;
 window.isMaquetaModeActive = isMaquetaModeActive;
