@@ -72,7 +72,10 @@ async function fetchDirectOSM(frame, signal) {
   const maxLat = (frame.north + margin).toFixed(6);
   const url = `https://api.openstreetmap.org/api/0.6/map?bbox=${minLon},${minLat},${maxLon},${maxLat}`;
 
-  const res = await fetch(url, { signal: AbortSignal.any ? AbortSignal.any([signal, AbortSignal.timeout(22000)]) : signal });
+  const fetchSignal = signal
+    ? (AbortSignal.any ? AbortSignal.any([signal, AbortSignal.timeout(22000)]) : signal)
+    : (AbortSignal.timeout ? AbortSignal.timeout(22000) : undefined);
+  const res = await fetch(url, { signal: fetchSignal });
   if (!res.ok) throw new Error(`OSM Direct API ${res.status}`);
   const text = await res.text();
   const doc = new DOMParser().parseFromString(text, 'application/xml');

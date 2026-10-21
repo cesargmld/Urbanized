@@ -254,15 +254,6 @@ function renderQuota(remaining, current) {
 const panel = $('#panel'), status = $('#status'), buildBtn = $('#build');
 let model = null, building = null;
 
-buildBtn?.addEventListener('click', (e) => {
-  e.preventDefault();
-  if (panel.requestSubmit) {
-    panel.requestSubmit();
-  } else {
-    panel.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-  }
-});
-
 const terrainToggle = panel.elements?.terrain, contoursToggle = panel.elements?.contours;
 if (terrainToggle && contoursToggle) {
   terrainToggle.addEventListener('change', () => {

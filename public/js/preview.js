@@ -62,7 +62,6 @@ function init(container) {
   sun.shadow.camera.bottom = -d;
   sun.shadow.bias = -0.0005;
   scene.add(sun);
-  ctx.sun = sun;
   const group = new THREE.Group();
   scene.add(group);
 
@@ -153,7 +152,7 @@ function init(container) {
   new ResizeObserver(resize).observe(container);
   resize();
   renderer.setAnimationLoop(() => { controls.update(); renderer.render(scene, camera); });
-  return { renderer, scene, camera, controls, group };
+  return { renderer, scene, camera, controls, group, sun };
 }
 
 function meshGeometry(bodies) {
