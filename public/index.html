@@ -29,14 +29,8 @@
        ======================================================== -->
   <header class="axiom-topbar">
     <div class="axiom-topbar-left">
-      <div class="axiom-brand" id="axiom-brand-btn" role="button" tabindex="0" data-switchview="workspace-home" style="cursor:pointer;" title="Inicio URBNZD">
-        <svg class="axiom-logo" width="22" height="22" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
-          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
-          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
-          <circle cx="12" cy="12" r="1.5" fill="#ffffff" />
-        </svg>
-        <span class="axiom-brand-title">URBNZD</span>
+      <div class="axiom-brand" id="axiom-brand-btn" role="button" tabindex="0" data-switchview="workspace-home" style="cursor:pointer;" title="URBNZD">
+        <img src="assets/urbnzd-logo.png" alt="URBNZD" class="axiom-header-logo" />
       </div>
 
       <!-- Minimal Clean Workspace Trigger Pill [ 🏢 | E | Estudio ] -->
@@ -373,7 +367,7 @@
 
         <!-- Inner Target (Building / Central Footprint) -->
         <div class="frame-inner-target">
-          <div class="frame-inner-box"></div>
+          <div class="frame-inner-poly"></div>
           <span class="frame-inner-label">ÁREA DE PROYECTO</span>
         </div>
 
@@ -409,17 +403,14 @@
       <div class="axiom-map-island" id="map-axiom-bar" aria-label="Controles de mapa" style="display:flex; flex-direction:row; gap:8px; align-items:center;">
         <!-- Cápsula 1: Capa Base (Satélite | Vectorial) -->
         <div class="axiom-island-capsule" role="group" aria-label="Capa base">
-          <button type="button" class="axiom-island-btn active" id="map-btn-bwnoise" data-base="bwnoise" title="Architectural Noisy B&W High-Contrast Satellite">
-            <span class="axiom-island-dot active"></span>
-            <span>B&W Noise</span>
+          <button type="button" class="axiom-island-btn active" id="map-btn-monochrome" data-base="monochrome" title="Monochrome High-Contrast Satellite">
+            <span>MONOCHROME</span>
           </button>
           <button type="button" class="axiom-island-btn" id="map-btn-sat" data-base="sat" title="Color Satellite Imagery">
-            <span class="axiom-island-dot"></span>
-            <span>Satellite</span>
+            <span>SATELLITE</span>
           </button>
           <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Dark Technical CAD Map">
-            <span class="axiom-island-dot"></span>
-            <span>Dark Map</span>
+            <span>DARK MAP</span>
           </button>
         </div>
 
@@ -617,16 +608,12 @@
               <input id="sec-buf" type="range" min="10" max="150" step="5" value="40" class="axiom-range">
             </div>
 
-            <div class="axiom-dot-list">
-              <label class="axiom-check-row">
-                <span data-i18n="sec.cutBldgs">Cortar edificios y proyectar perfil</span>
-                <input type="checkbox" id="sec-buildings" checked>
-              </label>
-              <label class="axiom-check-row">
-                <span data-i18n="sec.cutTrees">Incluir vegetación en el perfil</span>
-                <input type="checkbox" id="sec-trees" checked>
-              </label>
+            <div class="axiom-seg" role="group" style="margin-top:8px; margin-bottom:10px;">
+              <button type="button" class="axiom-seg-item active" id="btn-sec-bldgs" aria-pressed="true">EDIFICIOS</button>
+              <button type="button" class="axiom-seg-item active" id="btn-sec-trees" aria-pressed="true">VEGETACIÓN</button>
             </div>
+            <input type="checkbox" id="sec-buildings" checked hidden>
+            <input type="checkbox" id="sec-trees" checked hidden>
 
             <div class="axiom-btn-pair">
               <button class="axiom-subtle-btn" id="sec-clear" type="button" data-i18n="section.clear">Borrar línea</button>
@@ -2916,13 +2903,7 @@
     <div class="rayon-loader-card">
       <!-- URBNZD Official Header Logo (Clean Reticle & Brand Datum) -->
       <div class="rayon-loader-glyph-wrap" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:18px;">
-        <svg class="axiom-logo" width="46" height="46" viewBox="0 0 24 24" fill="none">
-          <circle cx="12" cy="12" r="9" stroke="#ffffff" stroke-width="1.8" />
-          <line x1="12" y1="3" x2="12" y2="21" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
-          <line x1="3" y1="12" x2="21" y2="12" stroke="#ffffff" stroke-width="0.9" stroke-opacity="0.4" stroke-dasharray="2 2" />
-          <circle cx="12" cy="12" r="1.5" fill="#38bdf8" />
-        </svg>
-        <span class="axiom-brand-title" style="font-size:16px; font-weight:700; letter-spacing:0.22em; color:#ffffff;">URBNZD</span>
+        <img src="assets/urbnzd-logo.png" alt="URBNZD" class="axiom-loader-logo" />
       </div>
 
       <!-- Real-Time Architectural Data Sources & Layer Stream -->
