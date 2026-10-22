@@ -1375,10 +1375,10 @@ const known = (code) => LANGS.some((l) => l.code === code);
 const saved = (() => {
   try { return localStorage.getItem('ue:lang'); } catch { return null; }
 })();
-export let lang = known(saved) ? saved : 'es';
+export let lang = known(saved) ? saved : 'en';
 
 export function t(key, vars = {}) {
-  let s = DICT[lang]?.[key] ?? DICT.es?.[key] ?? DICT.en?.[key] ?? key;
+  let s = DICT[lang]?.[key] ?? DICT.en?.[key] ?? DICT.es?.[key] ?? key;
   for (const [k, v] of Object.entries(vars)) {
     s = s.replaceAll(`{${k}}`, v);
   }
@@ -1389,7 +1389,7 @@ const listeners = new Set();
 export const onLangChange = (fn) => listeners.add(fn);
 
 export async function applyLang(next = lang) {
-  if (!known(next)) next = 'es';
+  if (!known(next)) next = 'en';
   lang = next;
   try { if (typeof localStorage !== 'undefined') localStorage.setItem('ue:lang', lang); } catch { /* private mode */ }
 

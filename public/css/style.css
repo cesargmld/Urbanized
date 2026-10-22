@@ -22,6 +22,15 @@
   --r-lg: 18px;
   --r-xl: 22px;
   --r-full: 9999px;
+
+  /* CGM Organic Architectural Palette */
+  --accent-pine: #31321e;
+  --accent-sage: #96a189;
+  --accent-macaroon: #d1d3be;
+  --accent-misty: #eff8f6;
+  --accent: #96a189;
+  --accent-subtle: rgba(150, 161, 137, 0.16);
+  --accent-border: rgba(150, 161, 137, 0.35);
 }
 
 *, *::before, *::after {
@@ -6455,4 +6464,413 @@ input[type="range"]::-webkit-slider-thumb,
 .comp-picker-type {
   font-size: 9.5px;
   color: #38bdf8;
+}
+
+
+/* ========================================================
+   OBSIDIAN TECH MINIMALISM — ARCHITECTURAL HUD DESIGN SYSTEM
+   Inspired by Teenage Engineering, Leica & Obsidian UI
+   ======================================================== */
+
+/* 1. Translucent Topbar Header */
+.axiom-topbar {
+  background: rgba(10, 12, 16, 0.82) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+/* 2. Sleek Flat Language Initials Toggle */
+.lang-toggle-flat {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+  padding: 3px 8px !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-family: var(--font-mono) !important;
+  font-size: 10.5px !important;
+  user-select: none !important;
+}
+.lang-flat-btn {
+  background: none !important;
+  border: none !important;
+  color: #71717a !important;
+  font-weight: 500 !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+  padding: 1px 4px !important;
+  transition: all 0.15s ease !important;
+}
+.lang-flat-btn:hover {
+  color: #ffffff !important;
+}
+.lang-flat-btn.active {
+  color: var(--accent-misty) !important;
+  font-weight: 700 !important;
+}
+.lang-flat-sep {
+  opacity: 0.3 !important;
+  font-size: 10px !important;
+  color: #a1a1aa !important;
+}
+
+/* 3. Floating CAD Leaflet Zoom Controls (Image 4 Style) */
+.leaflet-control-zoom {
+  position: absolute !important;
+  right: 20px !important;
+  top: 72px !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 12px !important;
+  background: rgba(12, 14, 18, 0.85) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.6) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  flex-direction: column !important;
+  margin: 0 !important;
+}
+.leaflet-control-zoom a {
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  background: transparent !important;
+  color: #eff8f6 !important;
+  border: none !important;
+  font-family: var(--font-sans) !important;
+  font-size: 18px !important;
+  font-weight: 300 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: all 0.16s ease !important;
+}
+.leaflet-control-zoom-in {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.leaflet-control-zoom a:hover {
+  background: rgba(150, 161, 137, 0.22) !important;
+  color: #ffffff !important;
+}
+
+/* 4. Section Guidance HUD Overlay on Map */
+.axiom-section-guidance {
+  position: absolute;
+  top: 72px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  animation: axiomNoticeIn 0.25s ease;
+}
+.axiom-section-guidance[hidden] {
+  display: none !important;
+}
+.axiom-guidance-inner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 18px;
+  border-radius: 9999px;
+  background: rgba(12, 14, 18, 0.90);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(150, 161, 137, 0.35);
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.65);
+}
+.axiom-guidance-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: 9999px;
+  background: var(--accent-pine);
+  color: var(--accent-sage);
+  border: 1px solid rgba(150, 161, 137, 0.3);
+}
+.axiom-guidance-text {
+  font-size: 11.5px;
+  font-weight: 500;
+  color: var(--accent-misty);
+  letter-spacing: -0.01em;
+}
+
+/* 5. Setup Card Modernization */
+.axiom-setup-card {
+  border-radius: 22px !important;
+  background: rgba(12, 14, 18, 0.88) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  padding: 20px 20px !important;
+}
+.mode-seg {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  padding: 3px !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  gap: 3px !important;
+}
+.mode-seg .axiom-seg-item {
+  border-radius: 9999px !important;
+  font-size: 11.5px !important;
+  padding: 8px 14px !important;
+  font-weight: 500 !important;
+  color: #a1a1aa !important;
+  transition: all 0.18s ease !important;
+}
+.mode-seg .axiom-seg-item.active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: var(--accent-misty) !important;
+  font-weight: 600 !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* 6. Tactile Bar Thumb Range Inputs (Images 1 & 2) */
+input[type="range"].axiom-range {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 5px;
+  background: rgba(255, 255, 255, 0.10);
+  border-radius: 9999px;
+  outline: none;
+  cursor: pointer;
+  margin: 10px 0 12px;
+}
+input[type="range"].axiom-range::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 5px;
+  height: 18px;
+  border-radius: 2px;
+  background: var(--accent-misty);
+  box-shadow: 0 0 10px rgba(239, 248, 246, 0.7);
+  cursor: ew-resize;
+  transition: all 0.15s ease;
+}
+input[type="range"].axiom-range:hover::-webkit-slider-thumb {
+  background: #ffffff;
+  height: 22px;
+  width: 6px;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 1);
+}
+
+/* 7. Primary Action CTA Button (Image 5 Style) */
+.axiom-cta-btn.generate {
+  border-radius: 9999px !important;
+  background: var(--accent-misty) !important;
+  color: #0b0c10 !important;
+  font-size: 12.5px !important;
+  font-weight: 700 !important;
+  height: 44px !important;
+  box-shadow: 0 6px 20px rgba(239, 248, 246, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.axiom-cta-btn.generate:hover:not(:disabled) {
+  background: #ffffff !important;
+  color: #000000 !important;
+  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(255, 255, 255, 0.28) !important;
+}
+.axiom-cta-btn.generate:disabled {
+  opacity: 0.35 !important;
+  cursor: not-allowed !important;
+  box-shadow: none !important;
+  transform: none !important;
+}
+
+/* 8. Topographic Section HUD Modal Window */
+.axiom-hud-window {
+  width: 980px !important;
+  max-width: calc(100vw - 48px) !important;
+  max-height: calc(100vh - 48px) !important;
+  border-radius: 24px !important;
+  background: rgba(12, 14, 18, 0.94) !important;
+  backdrop-filter: blur(32px) !important;
+  -webkit-backdrop-filter: blur(32px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.85) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  padding: 22px 24px !important;
+  gap: 16px !important;
+}
+.section-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.section-modal-title h3 {
+  margin: 3px 0 0 0;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent-misty);
+  letter-spacing: -0.015em;
+}
+.section-title-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.axiom-corner-tag {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--accent-pine);
+  color: var(--accent-sage);
+  border: 1px solid rgba(150, 161, 137, 0.3);
+}
+.section-layer-filters {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 3px 6px;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.sec-layer-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #71717a;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.sec-layer-btn:hover {
+  color: #ffffff;
+}
+.sec-layer-btn.active {
+  color: var(--accent-misty);
+  background: rgba(255, 255, 255, 0.10);
+  font-weight: 600;
+}
+.sec-filter-indicator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #52525b;
+  transition: all 0.15s ease;
+}
+.sec-layer-btn.active .sec-filter-indicator {
+  background: var(--accent-sage);
+  box-shadow: 0 0 6px var(--accent-sage);
+}
+.section-modal-body.hero-visual {
+  width: 100% !important;
+  height: 380px !important;
+  min-height: 280px !important;
+  border-radius: 14px !important;
+  background: #0c0e12 !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  overflow: hidden !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+}
+.section-modal-body.hero-visual img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+.section-telemetry-ribbon {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  gap: 10px !important;
+  margin: 0 !important;
+}
+.sec-stat-item {
+  background: rgba(255, 255, 255, 0.035) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 12px !important;
+  padding: 10px 14px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+.sec-stat-label {
+  font-family: var(--font-mono) !important;
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.06em !important;
+  color: #71717a !important;
+  text-transform: uppercase !important;
+}
+.sec-stat-val {
+  font-family: var(--font-mono) !important;
+  font-size: 15px !important;
+  font-weight: 700 !important;
+  color: var(--accent-misty) !important;
+}
+.section-modal-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding-top: 4px;
+}
+.section-modal-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.axiom-export-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: var(--accent-macaroon);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.16s ease;
+}
+.axiom-export-pill:hover {
+  background: rgba(255, 255, 255, 0.12);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+.axiom-cta-pill {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 22px;
+  border-radius: 9999px;
+  background: var(--accent-misty);
+  color: #0b0c10;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.18s ease;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 4px 16px rgba(239, 248, 246, 0.18);
+}
+.axiom-cta-pill:hover {
+  background: #ffffff;
+  color: #000000;
+  box-shadow: 0 6px 22px rgba(255, 255, 255, 0.3);
 }

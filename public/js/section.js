@@ -304,7 +304,7 @@ export function sectionDrawing(sec) {
 
 const f = (v) => (Math.round(v * 1000) / 1000).toString();
 
-export function sectionSVG(sec) {
+export function sectionSVG(sec, opts = {}) {
   const { polylines, texts, bounds } = sectionDrawing(sec);
   const w = bounds.x1 - bounds.x0, h = bounds.y1 - bounds.y0;
   const scale = [200, 500, 1000, 2000, 5000, 10000, 25000].find((s) => (w * 1000) / s <= 1000) ?? 50000;
@@ -313,29 +313,41 @@ export function sectionSVG(sec) {
   const d = (pts, closed) => `M${pts.map(([x, y]) => `${f(x - bounds.x0)},${f(bounds.y1 - y)}`).join('L')}${closed ? 'Z' : ''}`;
   const group = (layer, attrs, items) => (items.length ? `<g id="${layer}" ${attrs}>${items.join('')}</g>` : '');
 
-  const groundFill = polylines.filter((p) => p.layer === 'SECTION_GROUND' && p.fill).map((p) => `<path d="${d(p.pts, true)}"/>`);
-  const groundLine = polylines.filter((p) => p.layer === 'SECTION_GROUND' && !p.fill).map((p) => `<path d="${d(p.pts, false)}"/>`);
-  const grid = polylines.filter((p) => p.layer === 'SECTION_GRID').map((p) => `<path d="${d(p.pts, false)}"/>`);
-  const bld = polylines.filter((p) => p.layer === 'SECTION_BUILDINGS').map((p) => `<path d="${d(p.pts, true)}"/>`);
-  const treeTrunks = polylines.filter((p) => p.layer === 'SECTION_TREES' && p.trunk).map((p) => `<path d="${d(p.pts, false)}"/>`);
-  const treeCrowns = polylines.filter((p) => p.layer === 'SECTION_TREES' && p.crown).map((p) => `<path d="${d(p.pts, true)}"/>`);
+  const layers = sec.layers || opts.layers || { ground: true, buildings: true, grid: true, trees: true };
+  const darkMode = opts.darkMode ?? true;
+
+  const groundFill = (layers.ground !== false) ? polylines.filter((p) => p.layer === 'SECTION_GROUND' && p.fill).map((p) => `<path d="${d(p.pts, true)}"/>`) : [];
+  const groundLine = (layers.ground !== false) ? polylines.filter((p) => p.layer === 'SECTION_GROUND' && !p.fill).map((p) => `<path d="${d(p.pts, false)}"/>`) : [];
+  const grid = (layers.grid !== false) ? polylines.filter((p) => p.layer === 'SECTION_GRID').map((p) => `<path d="${d(p.pts, false)}"/>`) : [];
+  const bld = (layers.buildings !== false) ? polylines.filter((p) => p.layer === 'SECTION_BUILDINGS').map((p) => `<path d="${d(p.pts, true)}"/>`) : [];
+  const treeTrunks = (layers.trees !== false) ? polylines.filter((p) => p.layer === 'SECTION_TREES' && p.trunk).map((p) => `<path d="${d(p.pts, false)}"/>`) : [];
+  const treeCrowns = (layers.trees !== false) ? polylines.filter((p) => p.layer === 'SECTION_TREES' && p.crown).map((p) => `<path d="${d(p.pts, true)}"/>`) : [];
   const wat = polylines.filter((p) => p.layer === 'SECTION_WATER').map((p) => `<path d="${d(p.pts, false)}"/>`);
   const txt = (layer) => texts.filter((t) => t.layer === layer)
-    .map((t) => `<text x="${f(t.x - bounds.x0)}" y="${f(bounds.y1 - t.y)}" font-size="${t.size}" text-anchor="${t.anchor}" font-family="Roboto, sans-serif">${t.text.replace(/[<>&]/g, '')}</text>`);
+    .map((t) => `<text x="${f(t.x - bounds.x0)}" y="${f(bounds.y1 - t.y)}" font-size="${t.size}" text-anchor="${t.anchor}" font-family="Inter, sans-serif">${t.text.replace(/[<>&]/g, '')}</text>`);
+
+  const bgFill = darkMode ? '#0c0e12' : '#ffffff';
+  const gridStroke = darkMode ? 'rgba(255,255,255,0.08)' : '#d8d8d8';
+  const groundFillColor = darkMode ? '#1c201a' : '#e6e2d8';
+  const groundStrokeColor = darkMode ? '#96a189' : '#000000';
+  const bldFill = darkMode ? '#262930' : '#ffffff';
+  const bldStroke = darkMode ? '#eff8f6' : '#3a3a3c';
+  const treeFill = darkMode ? '#96a189' : '#a8c98f';
+  const textColor = darkMode ? '#a1a1aa' : '#6e6e73';
+  const labelColor = darkMode ? '#eff8f6' : '#1d1d1f';
 
   return new Blob([`<?xml version="1.0" encoding="UTF-8"?>
-<!-- Urbanized section · ${(sec.length / 1000).toFixed(2)} km · 1:${scale} · vertical ×${sec.exaggeration} -->
 <svg xmlns="http://www.w3.org/2000/svg" width="${f(mm(w))}mm" height="${f(mm(h))}mm" viewBox="0 0 ${f(w)} ${f(h)}">
-<rect width="${f(w)}" height="${f(h)}" fill="#fff"/>
-${group('SECTION_GRID', `fill="none" stroke="#d8d8d8" stroke-width="${lw(0.06)}"`, grid)}
-${group('SECTION_GROUND_FILL', 'fill="#e6e2d8" stroke="none"', groundFill)}
+<rect width="${f(w)}" height="${f(h)}" fill="${bgFill}"/>
+${layers.grid !== false ? group('SECTION_GRID', `fill="none" stroke="${gridStroke}" stroke-width="${lw(0.06)}"`, grid) : ''}
+${group('SECTION_GROUND_FILL', `fill="${groundFillColor}" stroke="none"`, groundFill)}
 ${group('SECTION_WATER', `fill="none" stroke="#4a90d9" stroke-width="${lw(0.5)}"`, wat)}
 ${group('SECTION_TREES_TRUNKS', `fill="none" stroke="#6b5a45" stroke-width="${lw(0.12)}"`, treeTrunks)}
-${group('SECTION_TREES', `fill="#a8c98f" fill-opacity="0.85" stroke="#5f8a45" stroke-width="${lw(0.08)}"`, treeCrowns)}
-${group('SECTION_BUILDINGS', `fill="#fff" stroke="#3a3a3c" stroke-width="${lw(0.18)}"`, bld)}
-${group('SECTION_GROUND', `fill="none" stroke="#000" stroke-width="${lw(0.35)}"`, groundLine)}
-${group('SECTION_GRID_TEXT', 'fill="#6e6e73"', txt('SECTION_GRID'))}
-${group('SECTION_LABELS', 'fill="#1d1d1f"', txt('SECTION_LABELS'))}
+${group('SECTION_TREES', `fill="${treeFill}" fill-opacity="0.85" stroke="#798e79" stroke-width="${lw(0.08)}"`, treeCrowns)}
+${group('SECTION_BUILDINGS', `fill="${bldFill}" stroke="${bldStroke}" stroke-width="${lw(0.18)}"`, bld)}
+${group('SECTION_GROUND', `fill="none" stroke="${groundStrokeColor}" stroke-width="${lw(0.35)}"`, groundLine)}
+${layers.grid !== false ? group('SECTION_GRID_TEXT', `fill="${textColor}"`, txt('SECTION_GRID')) : ''}
+${group('SECTION_LABELS', `fill="${labelColor}" font-weight="600"`, txt('SECTION_LABELS'))}
 </svg>`], { type: 'image/svg+xml' });
 }
 

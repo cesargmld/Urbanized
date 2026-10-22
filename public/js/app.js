@@ -30,7 +30,7 @@ const start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
 start.zoom = Math.max(12, start.zoom);
 const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true }).setView([start.lat, start.lon], start.zoom);
 window.appMap = map;
-map.zoomControl.setPosition('bottomright');
+map.zoomControl.setPosition('topright');
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services';
 const tiles = (name, native) => L.tileLayer(`${ESRI}/${name}/MapServer/tile/{z}/{y}/{x}`, { maxZoom: 19, maxNativeZoom: native, attribution: 'Esri, Maxar, HERE, Garmin, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' });
 
@@ -850,6 +850,11 @@ map.on('click', (e) => {
   if (!secState.drawing) return;
   secState.points.push([e.latlng.lat, e.latlng.lng]);
   secRedraw();
+  if (secState.points.length === 2) {
+    setTimeout(() => {
+      $('#sec-build')?.click();
+    }, 150);
+  }
 });
 
 $('#sec-build')?.addEventListener('click', async () => {
@@ -879,6 +884,29 @@ const secRefresh = async () => {
   secState.model.flip = $('#sec-dir')?.value === '1';
   await showSection(secState.model);
 };
+
+// Topographic Section Layer Toggles (Terrain, Buildings, Grid, Vegetation)
+document.querySelectorAll('[data-seclayer]').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    if (!secState.model) return;
+    if (!secState.model.layers) {
+      secState.model.layers = { ground: true, buildings: true, grid: true, trees: true };
+    }
+    const l = btn.dataset.seclayer;
+    secState.model.layers[l] = !secState.model.layers[l];
+    btn.classList.toggle('active', !!secState.model.layers[l]);
+    await showSection(secState.model);
+  });
+});
+
+$('#btn-section-modal-done')?.addEventListener('click', () => {
+  const modal = $('#section-modal');
+  if (modal) { modal.hidden = true; modal.style.display = 'none'; }
+});
+$('#section-modal-close')?.addEventListener('click', () => {
+  const modal = $('#section-modal');
+  if (modal) { modal.hidden = true; modal.style.display = 'none'; }
+});
 $('#sec-exag')?.addEventListener('change', secRefresh);
 $('#sec-dir')?.addEventListener('change', secRefresh);
 
@@ -913,6 +941,8 @@ async function showSection(sec) {
   if (statMin) statMin.textContent = `${Math.round(sec.minZ)} m`;
   const statDrop = $('#sec-stat-drop');
   if (statDrop) statDrop.textContent = `${Math.round(sec.maxZ - sec.minZ)} m`;
+  const statExag = $('#sec-stat-exag');
+  if (statExag) statExag.textContent = `${(sec.exaggeration || 1).toFixed(1)}×`;
 
   const imgDrawer = $('#view-section-drawer img');
   if (imgDrawer) {

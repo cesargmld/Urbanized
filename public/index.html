@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="es">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -109,10 +109,10 @@
       </button>
 
       <!-- Minimalist Flat Language Initials Toggle: ES | EN (Plain text, subtle, zero dropdown padding) -->
-      <div class="lang-toggle-flat" id="lang-toggle-flat" role="group" aria-label="Idioma" style="display:inline-flex; align-items:center; gap:3px; margin-left:2px; font-family:var(--font-mono, 'JetBrains Mono', monospace); font-size:11px; user-select:none;">
-        <button type="button" class="lang-flat-btn active" data-lang="es" id="btn-lang-es" style="background:none; border:none; color:#ffffff; font-weight:700; font-size:11px; cursor:pointer; padding:2px 3px;">ES</button>
-        <span class="lang-flat-sep" style="opacity:0.35; font-size:10px; color:#a1a1aa;">|</span>
-        <button type="button" class="lang-flat-btn" data-lang="en" id="btn-lang-en" style="background:none; border:none; color:#71717a; font-weight:500; font-size:11px; cursor:pointer; padding:2px 3px;">EN</button>
+      <div class="lang-toggle-flat" id="lang-toggle-flat" role="group" aria-label="Language">
+        <button type="button" class="lang-flat-btn active" data-lang="en" id="btn-lang-en">EN</button>
+        <span class="lang-flat-sep">/</span>
+        <button type="button" class="lang-flat-btn" data-lang="es" id="btn-lang-es">ES</button>
       </div>
     </div>
   </header>
@@ -381,14 +381,13 @@
           </button>
         </div>
 
-        <!-- Cápsula 2: Modo de Extracción (Modelo 3D | Corte Topográfico) -->
-        <div class="axiom-island-capsule" role="group" aria-label="Modo de trabajo" style="border:1px solid rgba(255,255,255,0.12);">
-          <button type="button" class="axiom-island-btn active" id="island-mode-model" data-mode="model" title="Extracción volumétrica territorial 3D">
-            <span data-i18n="mode.model">Modelo 3D</span>
-          </button>
-          <button type="button" class="axiom-island-btn" id="island-mode-section" data-mode="section" title="Trazar perfil de corte topográfico y niveles">
-            <span data-i18n="mode.section">Corte Topográfico</span>
-          </button>
+              </div>
+
+      <!-- Architectural HUD Guidance for Section Drawing -->
+      <div class="axiom-section-guidance" id="section-guidance" hidden>
+        <div class="axiom-guidance-inner">
+          <span class="axiom-guidance-tag">CAD SECTION</span>
+          <span class="axiom-guidance-text" id="guidance-msg">Click Point A, then Point B on the map to cut topographic section</span>
         </div>
       </div>
 
@@ -2727,46 +2726,94 @@
        FOCUSED TOPOGRAPHIC SECTION MODAL
        ======================================================== -->
   <div class="section-modal-backdrop" id="section-modal" hidden>
-    <div class="section-modal-window">
+    <div class="section-modal-window axiom-hud-window">
+      <!-- 1. Header with title, corner brackets, layer switches and close -->
       <div class="section-modal-header">
         <div class="section-modal-title">
-          <span class="mono-tag">CORTE TOPOGRÁFICO Y PERFIL URBANO</span>
-          <h3>Perfil de Elevación y Cotas</h3>
-          <p id="sec-meta-drawer" class="mono-coords">—</p>
+          <div class="section-title-badge-row">
+            <span class="axiom-corner-tag">TOPOGRAPHIC PROFILE</span>
+            <span id="sec-meta-drawer" class="mono-coords">—</span>
+          </div>
+          <h3 data-i18n="section.title">Architectural Ground & Elevation Section</h3>
         </div>
-        <button type="button" class="modal-close-btn" id="section-modal-close" aria-label="Cerrar">&times;</button>
+
+        <!-- Inline Cut Profile Layer Filters (Terrain | Buildings | Datum Grid | Trees) -->
+        <div class="section-layer-filters" role="group" aria-label="Section Layers">
+          <button type="button" class="sec-layer-btn active" data-seclayer="ground" title="Toggle ground surface">
+            <span class="sec-filter-indicator"></span>
+            <span>Terrain</span>
+          </button>
+          <button type="button" class="sec-layer-btn active" data-seclayer="buildings" title="Toggle corridor buildings">
+            <span class="sec-filter-indicator"></span>
+            <span>Buildings</span>
+          </button>
+          <button type="button" class="sec-layer-btn active" data-seclayer="grid" title="Toggle elevation datum grid">
+            <span class="sec-filter-indicator"></span>
+            <span>Datum Grid</span>
+          </button>
+          <button type="button" class="sec-layer-btn active" data-seclayer="trees" title="Toggle tree canopies">
+            <span class="sec-filter-indicator"></span>
+            <span>Vegetation</span>
+          </button>
+        </div>
+
+        <button type="button" class="modal-close-btn" id="section-modal-close" aria-label="Close">✕</button>
       </div>
+
+      <!-- 2. HERO VISUAL CUT PROFILE (Placed First / Dominant) -->
+      <div class="section-modal-body hero-visual">
+        <div class="flat" id="view-section-drawer"><img alt="Topographic Section Cut" draggable="false"></div>
+      </div>
+
+      <!-- 3. TELEMETRY & METRIC KPIS (Placed Second / Clean Row) -->
       <div class="section-telemetry-ribbon">
         <div class="sec-stat-item">
-          <span class="sec-stat-label">DISTANCIA TOTAL</span>
+          <span class="sec-stat-label">TOTAL DISTANCE</span>
           <b class="sec-stat-val" id="sec-stat-len">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">COTA MÁXIMA</span>
+          <span class="sec-stat-label">MAX ELEVATION</span>
           <b class="sec-stat-val" id="sec-stat-max">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">COTA MÍNIMA</span>
+          <span class="sec-stat-label">MIN ELEVATION</span>
           <b class="sec-stat-val" id="sec-stat-min">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">DESNIVEL ACUMULADO</span>
+          <span class="sec-stat-label">TOTAL RELIEF (Δh)</span>
           <b class="sec-stat-val" id="sec-stat-drop">—</b>
         </div>
+        <div class="sec-stat-item">
+          <span class="sec-stat-label">EXAGGERATION</span>
+          <b class="sec-stat-val" id="sec-stat-exag">2.0×</b>
+        </div>
       </div>
-      <div class="section-modal-body">
-        <div class="flat" id="view-section-drawer"><img alt="" draggable="false"></div>
-      </div>
+
+      <!-- 4. FOOTER: EXPORTS & ACTION PILLS -->
       <div class="section-modal-footer">
         <div class="section-modal-actions">
-          <button class="axiom-subtle-btn dl" data-section="dxf">AutoCAD .dxf</button>
-          <button class="axiom-subtle-btn dl" data-section="svg">Vector .svg</button>
-          <button class="axiom-subtle-btn dl" data-section="png">Imagen .png</button>
+          <button class="axiom-export-pill dl" data-section="dxf">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>AutoCAD .DXF</span>
+          </button>
+          <button class="axiom-export-pill dl" data-section="svg">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Vector .SVG</span>
+          </button>
+          <button class="axiom-export-pill dl" data-section="png">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>Image .PNG</span>
+          </button>
         </div>
+
+        <button type="button" class="axiom-cta-pill" id="btn-section-modal-done">
+          <span>Accept & Close</span>
+        </button>
         <span id="sec-quota" style="display:none;"></span>
       </div>
     </div>
   </div>
+
   <!-- ========================================================
        URBNZD ARCHITECTURAL SHARE MODAL WINDOW
        ======================================================== -->
