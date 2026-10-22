@@ -140,6 +140,9 @@ const DICT = {
     'section.build': 'Build Section',
     'section.undo': 'Undo point',
     'section.clear': 'Clear line',
+    'sec.corridor': 'Corridor depth / width',
+    'sec.cutBldgs': 'Cut & project building footprints',
+    'sec.cutTrees': 'Include vegetation in cross-section',
 
     // Status & Feedback Messages
     'status.hint': 'Move the map so the area sits inside the frame.',
@@ -821,6 +824,9 @@ const DICT = {
     'section.build': 'Generar Perfil',
     'section.undo': 'Deshacer punto',
     'section.clear': 'Borrar línea',
+    'sec.corridor': 'Profundidad de proyección',
+    'sec.cutBldgs': 'Cortar edificios y proyectar perfil',
+    'sec.cutTrees': 'Incluir vegetación en el perfil',
 
     // Estados y Mensajes de Carga
     'status.hint': 'Mueve el mapa para centrar el área deseada dentro del marco.',

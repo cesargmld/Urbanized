@@ -7,6 +7,7 @@ import { MAP_GRID_STEPS } from './mapplan.js?v=6.0';
 import { classifyEcosystem } from './biodiversity.js?v=6.0';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=6.0';
 import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=6.0';
+window.buildSection = buildSection;
 import { createIllustrator } from './illustrate.js?v=6.0';
 import { viewsManager } from './viewsManager.js?v=6.0';
 import * as billing from './billing.js?v=6.0';
@@ -36,18 +37,23 @@ const tiles = (name, native) => L.tileLayer(`${ESRI}/${name}/MapServer/tile/{z}/
 
 // Official Esri Canvas Dark Gray tiles for high-end architectural matte dark map (Axiom style)
 const bases = {
-  map: L.layerGroup([
-    tiles('Canvas/World_Dark_Gray_Base', 16),
-    tiles('Canvas/World_Dark_Gray_Reference', 16)
+  bwnoise: L.layerGroup([
+    tiles('World_Imagery', 18),
+    tiles('Reference/World_Boundaries_and_Places', 18)
   ]),
   sat: L.layerGroup([
     tiles('World_Imagery', 18),
     tiles('Reference/World_Boundaries_and_Places', 18)
   ]),
+  map: L.layerGroup([
+    tiles('Canvas/World_Dark_Gray_Base', 16),
+    tiles('Canvas/World_Dark_Gray_Reference', 16)
+  ]),
 };
-let baseName = 'sat';
-store.set('ue:base', 'sat');
+let baseName = 'bwnoise';
+store.set('ue:base', 'bwnoise');
 bases[baseName].addTo(map);
+document.getElementById('map')?.classList.add('map-style-bwnoise');
 map.attributionControl.setPrefix(false);
 
 function setBaseMap(name) {
@@ -56,15 +62,37 @@ function setBaseMap(name) {
   baseName = name;
   bases[baseName].addTo(map);
   store.set('ue:base', baseName);
+
+  const isBw = baseName === 'bwnoise';
+  document.getElementById('map')?.classList.toggle('map-style-bwnoise', isBw);
+  const grid = document.getElementById('map-grid-overlay');
+  if (grid) grid.style.display = isBw ? 'block' : 'none';
+  const noise = document.getElementById('map-noise-overlay');
+  if (noise) noise.style.display = isBw ? 'block' : 'none';
+  const coordsNw = document.getElementById('map-coord-nw');
+  if (coordsNw) coordsNw.style.display = isBw ? 'block' : 'none';
+  const coordsSw = document.getElementById('map-coord-sw');
+  if (coordsSw) coordsSw.style.display = isBw ? 'block' : 'none';
+
   document.querySelectorAll('[data-base]').forEach((b) => {
     const isThis = b.dataset.base === baseName;
     b.setAttribute('aria-pressed', String(isThis));
     b.classList.toggle('active', isThis);
-    const dot = b.querySelector('.axiom-dot');
+    const dot = b.querySelector('.axiom-island-dot') || b.querySelector('.axiom-dot');
     if (dot) dot.classList.toggle('active', isThis);
   });
 }
 window.setBaseMap = setBaseMap;
+
+function toDMS(val, isLat) {
+  const dir = isLat ? (val >= 0 ? 'N' : 'S') : (val >= 0 ? 'E' : 'W');
+  const abs = Math.abs(val);
+  const deg = Math.floor(abs);
+  const minFloat = (abs - deg) * 60;
+  const min = Math.floor(minFloat);
+  const sec = ((minFloat - min) * 60).toFixed(1);
+  return `${deg}°${min}'${sec}"${dir}`;
+}
 
 document.querySelectorAll('[data-base]').forEach((b) => {
   b.setAttribute('aria-pressed', String(b.dataset.base === baseName));
@@ -86,6 +114,43 @@ function drawFrame() {
   frame.classList.toggle('circle', shape === 'circle');
   $('#frame-label').textContent = `${sizeKm()} × ${sizeKm()} ${t('km')}`;
   $('#size-out').textContent = `${sizeKm()} ${t('km')}`;
+
+  // 1. Image 1 Bold Center DMS GPS Coordinate
+  const frameDms = $('#frame-dms');
+  if (frameDms) {
+    frameDms.textContent = `${toDMS(c.lat, true)}, ${toDMS(c.lng, false)}`;
+  }
+
+  // 2. Image 1 Corner DMS Coordinates
+  try {
+    const bounds = map.getBounds();
+    const nw = bounds.getNorthWest();
+    const sw = bounds.getSouthWest();
+    const nwEl = $('#map-coord-nw');
+    if (nwEl) nwEl.textContent = `${toDMS(nw.lat, true)}, ${toDMS(nw.lng, false)}`;
+    const swEl = $('#map-coord-sw');
+    if (swEl) swEl.textContent = `${toDMS(sw.lat, true)}, ${toDMS(sw.lng, false)}`;
+  } catch (e) {}
+
+  // 3. Image 1 Dynamic Architectural Scale Indicator
+  try {
+    const metersPerCm = mpp * 38;
+    const rawRatio = metersPerCm * 100;
+    const scales = [100, 200, 250, 500, 1000, 2000, 2500, 5000, 10000, 20000, 25000, 50000];
+    const closest = scales.reduce((prev, curr) => Math.abs(curr - rawRatio) < Math.abs(prev - rawRatio) ? curr : prev);
+    const ratioEl = $('#arch-scale-ratio');
+    if (ratioEl) ratioEl.textContent = `1:${closest.toLocaleString()}`;
+    const metricEl = $('#arch-scale-metric');
+    if (metricEl) metricEl.textContent = `1 cm = ${(closest / 100).toFixed(0)} m`;
+
+    const barMeters = closest >= 5000 ? 500 : closest >= 2000 ? 200 : closest >= 1000 ? 100 : 50;
+    const barPx = Math.max(30, Math.min(180, Math.round(barMeters / mpp)));
+    const barLine = $('#arch-scale-bar-line');
+    if (barLine) barLine.style.width = `${barPx}px`;
+    const barLabel = $('#arch-scale-bar-label');
+    if (barLabel) barLabel.textContent = `${barMeters} m`;
+  } catch (e) {}
+
   // цена площади: бесплатно до 5 км², дальше — кредиты при скачивании
   const costEl = $('#size-cost');
   const extra = billing.state.billing ? sizeCredits(areaOf(size, shape)) : 0;
@@ -93,18 +158,16 @@ function drawFrame() {
   costEl.textContent = extra
     ? t('size.cost', { c: billing.creditsLabel(extra), usd: creditsUsd(extra) })
     : t('size.free', { km: FREE_AREA_KM2 });
-  // за бесплатной рамкой рамка, подпись и ползунок краснеют; при переходе строка цены вспыхивает
   const over = extra > 0;
   if (over !== frame.classList.contains('over') && costEl.dataset.ready) {
     costEl.classList.remove('flash');
-    void costEl.offsetWidth; // перезапуск анимации
+    void costEl.offsetWidth;
     costEl.classList.add('flash');
   }
   costEl.dataset.ready = '1';
   frame.classList.toggle('over', over);
   costEl.classList.toggle('paid', over);
   sizeInput.classList.toggle('over', over);
-  // граница бесплатной зоны на шкале ползунка
   const freeSide = (shape === 'circle' ? Math.sqrt((FREE_AREA_KM2 * 4) / Math.PI) : Math.sqrt(FREE_AREA_KM2)) * 1000;
   const lo = Number(sizeInput.min), hi = Number(sizeInput.max);
   sizeInput.style.setProperty('--free', `${Math.min(100, Math.max(0, ((freeSide - lo) / (hi - lo)) * 100)).toFixed(2)}%`);
@@ -911,6 +974,7 @@ $('#sec-exag')?.addEventListener('change', secRefresh);
 $('#sec-dir')?.addEventListener('change', secRefresh);
 
 async function showSection(sec) {
+  window.showSection = showSection;
   if (secState.url) URL.revokeObjectURL(secState.url);
   secState.url = URL.createObjectURL(SECTION_FORMATS.svg.make(sec));
 

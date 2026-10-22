@@ -30,30 +30,21 @@ export function sectionLength(points) {
 
 async function fetchAlong(points, radius, signal) {
   const coords = points.map(([lat, lon]) => `${lat.toFixed(6)},${lon.toFixed(6)}`).join(',');
-  const query = `[out:json][timeout:120];
-(
-  way["building"](around:${radius},${coords});
-  way["natural"="water"](around:${radius},${coords});
-  way["waterway"~"^(riverbank|dock)$"](around:${radius},${coords});
-  node["natural"="tree"](around:${radius},${coords});
-  way["natural"="tree_row"](around:${radius},${coords});
-  way["landuse"="forest"](around:${radius},${coords});
-  way["natural"="wood"](around:${radius},${coords});
-);
-out geom;`;
+  const query = `[out:json][timeout:8];(way["building"](around:${radius},${coords}););out geom;`;
   const ctrls = OVERPASS.map(() => new AbortController());
-  const attempt = async (url, i) => {
-    await new Promise((r) => setTimeout(r, i * 6000));
+  const attempt = async (url) => {
     const res = await fetch(url, {
       method: 'POST',
       body: 'data=' + encodeURIComponent(query),
-      signal: AbortSignal.any([ctrls[i].signal, AbortSignal.timeout(120000), ...(signal ? [signal] : [])]),
+      signal: AbortSignal.any([AbortSignal.timeout(3500), ...(signal ? [signal] : [])]),
     });
     if (!res.ok) throw new Error(`Overpass ${res.status}`);
     return res.json();
   };
   try {
     return await Promise.any(OVERPASS.map(attempt));
+  } catch (e) {
+    return { elements: [] };
   } finally {
     ctrls.forEach((c) => c.abort());
   }
@@ -109,7 +100,7 @@ export async function buildSection(points, { exaggeration = 1 } = {}, onStep = (
   if (length > MAX_SECTION_KM * 1000) throw new Error('too long');
 
   onStep('status.sectionTerrain');
-  const step = Math.min(20, Math.max(1, length / 1500));
+  const step = Math.min(25, Math.max(4, length / 180));
   const mid = points[Math.floor(points.length / 2)];
   const m = metersPerDeg(mid[0]);
   const toLocal = ([lat, lon]) => [(lon - mid[1]) * m.lon, (lat - mid[0]) * m.lat];
@@ -136,7 +127,7 @@ export async function buildSection(points, { exaggeration = 1 } = {}, onStep = (
   }
   samples.push({ d: path.at(-1).d, lat: path.at(-1).lat, lon: path.at(-1).lon });
 
-  const zoom = length <= 1500 ? 16 : length <= 5000 ? 15 : length <= 12000 ? 14 : 13;
+  const zoom = length <= 2000 ? 15 : length <= 6000 ? 14 : 13;
   const elev = await elevationAt(samples.map((s) => [s.lat, s.lon]), zoom);
   const raw = samples.map((s) => ({ d: s.d, z: elev.at(s.lat, s.lon) }));
   // Ширина сглаживания подбирается по самим данным: измеряем длину «ступенек»

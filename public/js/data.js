@@ -434,21 +434,24 @@ export async function elevationAt(points, zoom) {
     const ctx = canvas.getContext('2d', { willReadFrequently: true });
     ctx.imageSmoothingEnabled = false;
     let ok = true;
-    for (const [key, [tx, ty]] of tiles) {
+    await Promise.all(Array.from(tiles.entries()).map(async ([key, [tx, ty]]) => {
       let drawn = false;
       for (let zz = z; zz >= MAPTERHORN_MIN_Z && !drawn; zz--) {
         const k = 2 ** (z - zz);
         try {
           const img = await loadImage(MAPTERHORN_URL(zz, Math.floor(tx / k), Math.floor(ty / k)));
+          const c = document.createElement('canvas');
+          c.width = c.height = ts;
+          const cx = c.getContext('2d', { willReadFrequently: true });
+          cx.imageSmoothingEnabled = false;
           const part = ts / k;
-          ctx.clearRect(0, 0, ts, ts);
-          ctx.drawImage(img, (tx % k) * part, (ty % k) * part, part, part, 0, 0, ts, ts);
-          data.set(key, ctx.getImageData(0, 0, ts, ts).data);
+          cx.drawImage(img, (tx % k) * part, (ty % k) * part, part, part, 0, 0, ts, ts);
+          data.set(key, cx.getImageData(0, 0, ts, ts).data);
           drawn = true;
-        } catch { /* уровень грубее */ }
+        } catch {}
       }
-      if (!drawn) { ok = false; break; }
-    }
+      if (!drawn) ok = false;
+    }));
     if (!ok) continue;
     const px = (fx, fy) => {
       const tx = Math.floor(fx / ts), ty = Math.floor(fy / ts);

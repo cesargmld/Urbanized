@@ -365,19 +365,61 @@
          ====================================================== -->
     <div id="app" class="screen-layer active">
       <div id="map"></div>
-      <div class="frame" id="frame"><span id="frame-label">1.0 × 1.0 km</span></div>
+      <div class="frame" id="frame">
+        <div class="frame-bracket top-left"></div>
+        <div class="frame-bracket top-right"></div>
+        <div class="frame-bracket bottom-left"></div>
+        <div class="frame-bracket bottom-right"></div>
+
+        <!-- Inner Target (Building / Central Footprint) -->
+        <div class="frame-inner-target">
+          <div class="frame-inner-box"></div>
+          <span class="frame-inner-label">ÁREA DE PROYECTO</span>
+        </div>
+
+        <!-- Frame Top Dimension Badge -->
+        <span id="frame-label" class="frame-dim-badge">1.0 × 1.0 km</span>
+
+        <!-- Prominent Bold DMS Coordinate Callout (Image 1 Style) -->
+        <div class="frame-dms-callout" id="frame-dms">0°00'00.0"N, 0°00'00.0"W</div>
+      </div>
+
+      <!-- HUD Corner GPS Coordinates (Image 1 Format) -->
+      <div class="map-hud-coord top-left" id="map-coord-nw">0°00'00.0"N, 0°00'00.0"W</div>
+      <div class="map-hud-coord bottom-left" id="map-coord-sw">0°00'00.0"N, 0°00'00.0"W</div>
+
+      <!-- Live Dynamic Architectural Scale Bar (Modifies on Zoom) -->
+      <div class="map-arch-scale-card" id="map-arch-scale">
+        <div class="arch-scale-header">
+          <span class="arch-scale-tag">SCALE</span>
+          <b class="arch-scale-ratio" id="arch-scale-ratio">1:1,000</b>
+          <span class="arch-scale-metric" id="arch-scale-metric">1 cm = 10 m</span>
+        </div>
+        <div class="arch-scale-bar-wrap">
+          <div class="arch-scale-bar-line" id="arch-scale-bar-line"></div>
+          <span class="arch-scale-bar-label" id="arch-scale-bar-label">100 m</span>
+        </div>
+      </div>
+
+      <!-- Architectural Grid & Film Grain Overlays for Noisy Map -->
+      <div class="map-cad-grid-overlay" id="map-grid-overlay"></div>
+      <div class="map-noise-overlay" id="map-noise-overlay"></div>
 
       <!-- Top Floating Dynamic Island Inside Map (Divided into Base Layer & Mode Capsules) -->
       <div class="axiom-map-island" id="map-axiom-bar" aria-label="Controles de mapa" style="display:flex; flex-direction:row; gap:8px; align-items:center;">
         <!-- Cápsula 1: Capa Base (Satélite | Vectorial) -->
         <div class="axiom-island-capsule" role="group" aria-label="Capa base">
-          <button type="button" class="axiom-island-btn active" id="map-btn-sat" data-base="sat" title="Fotografía satelital de alta resolución">
+          <button type="button" class="axiom-island-btn active" id="map-btn-bwnoise" data-base="bwnoise" title="Architectural Noisy B&W High-Contrast Satellite">
             <span class="axiom-island-dot active"></span>
-            <span data-i18n="map.sat">Satélite</span>
+            <span>B&W Noise</span>
           </button>
-          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Mapa técnico oscuro vectorial">
+          <button type="button" class="axiom-island-btn" id="map-btn-sat" data-base="sat" title="Color Satellite Imagery">
             <span class="axiom-island-dot"></span>
-            <span data-i18n="map.dark">Mapa Oscuro</span>
+            <span>Satellite</span>
+          </button>
+          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Dark Technical CAD Map">
+            <span class="axiom-island-dot"></span>
+            <span>Dark Map</span>
           </button>
         </div>
 
