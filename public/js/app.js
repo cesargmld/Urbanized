@@ -27,9 +27,12 @@ const store = {
 
 /* ---------------- Карта ---------------- */
 
-const start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
+let start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
+if (!start.lat || !start.lon || (start.lat === 0 && start.lon === 0)) {
+  start = { lat: 41.6938, lon: 44.8015, zoom: 15 };
+}
 start.zoom = Math.max(12, start.zoom);
-const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true }).setView([start.lat, start.lon], start.zoom);
+const map = L.map('map', {  zoomControl: true, attributionControl: true, worldCopyJump: true , minZoom: 12 }).setView([start.lat, start.lon], start.zoom);
 window.appMap = map;
 window.map = map;
 map.zoomControl.setPosition('topright');
@@ -121,7 +124,7 @@ function drawFrame() {
   const size = Number(sizeInput.value);
   const c = map.getCenter();
   const mpp = (40075016.686 * Math.cos((c.lat * Math.PI) / 180)) / 2 ** (map.getZoom() + 8);
-  const px = size / mpp;
+  const px = Math.max(50, size / mpp);
   frame.style.width = frame.style.height = `${px}px`;
   frame.classList.toggle('circle', shape === 'circle');
   $('#frame-label').textContent = `${sizeKm()} × ${sizeKm()} ${t('km')}`;

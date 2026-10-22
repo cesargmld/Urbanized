@@ -33,21 +33,15 @@
         <img src="assets/urbnzd-logo.png" alt="URBNZD" class="axiom-header-logo" />
       </div>
 
-      <!-- Minimal Clean Workspace Trigger Pill [ 🏢 | E | Estudio ] -->
-      <button type="button" class="axiom-btn-secondary" id="view-btn-home" data-switchview="workspace-home" style="font-size:11px; padding:3px 9px; display:inline-flex; align-items:center; gap:6px; border-radius:9999px; border:1px solid rgba(255,255,255,0.12); margin-left:4px; font-weight:500;" title="Proyectos y Workspace">
-        <span style="display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; border-radius:50%; background:rgba(56,189,248,0.18); color:#38bdf8; font-weight:700; font-size:10px;">E</span>
-        <span id="header-ws-name" style="color:#f4f4f6;">Estudio</span>
-      </button>
-
-      <!-- Search Bar in Topbar Left -->
+      <!-- Clean Minimal Search Bar -->
       <div class="axiom-search-box search">
         <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="q" type="search" placeholder="Buscar ciudades, coordenadas..." aria-label="Buscar lugar" data-i18n-ph="search.ph" data-i18n-aria="search.aria" autocomplete="off">
+        <input id="q" type="search" placeholder="SEARCH LOCATION..." aria-label="Buscar lugar" data-i18n-ph="search.ph" data-i18n-aria="search.aria" autocomplete="off">
         <ul id="results" class="results" hidden></ul>
       </div>
     </div>
 
-    <!-- Center Mode Switcher Capsule: Map --- [3D Model | 2D Cartography | Axonometry] --- Composition -->
+    <!-- Center Mode Switcher Capsule -->
     <div class="axiom-topbar-center">
       <nav class="axiom-view-nav" role="tablist">
         <!-- Cluster 1: Territorial Map -->
@@ -365,12 +359,6 @@
         <div class="frame-bracket bottom-left"></div>
         <div class="frame-bracket bottom-right"></div>
 
-        <!-- Inner Target (Building / Central Footprint) -->
-        <div class="frame-inner-target">
-          <div class="frame-inner-poly"></div>
-          <span class="frame-inner-label">ÁREA DE PROYECTO</span>
-        </div>
-
         <!-- Frame Top Dimension Badge -->
         <span id="frame-label" class="frame-dim-badge">1.0 × 1.0 km</span>
 
@@ -403,15 +391,11 @@
       <div class="axiom-map-island" id="map-axiom-bar" aria-label="Controles de mapa" style="display:flex; flex-direction:row; gap:8px; align-items:center;">
         <!-- Cápsula 1: Capa Base (Satélite | Vectorial) -->
         <div class="axiom-island-capsule" role="group" aria-label="Capa base">
-          <button type="button" class="axiom-island-btn active" id="map-btn-monochrome" data-base="monochrome" title="Monochrome High-Contrast Satellite">
-            <span>MONOCHROME</span>
-          </button>
-          <button type="button" class="axiom-island-btn" id="map-btn-sat" data-base="sat" title="Color Satellite Imagery">
-            <span>SATELLITE</span>
-          </button>
-          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Dark Technical CAD Map">
-            <span>DARK MAP</span>
-          </button>
+          <button type="button" class="axiom-island-btn active" id="map-btn-monochrome" data-base="monochrome" title="Monochrome Satellite">MONOCHROME</button>
+          <span class="axiom-island-sep">/</span>
+          <button type="button" class="axiom-island-btn" id="map-btn-sat" data-base="sat" title="Color Satellite">SATELLITE</button>
+          <span class="axiom-island-sep">/</span>
+          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Dark CAD Map">DARK MAP</button>
         </div>
 
               </div>
