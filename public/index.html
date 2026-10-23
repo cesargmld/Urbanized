@@ -35,7 +35,7 @@
 
       <!-- Clean Minimal Search Bar with Pointer Arrow (Only visible on Map view) -->
       <div class="header-search-wrap" id="header-search-wrap" style="display:flex; align-items:center; gap:8px;">
-        <span class="header-search-arrow" style="color:rgba(255,255,255,0.4); font-size:13px; font-weight:400; user-select:none;">→</span>
+        <span class="header-search-arrow" style="color:rgba(255,255,255,0.7); font-size:16px; font-weight:400; user-select:none; margin-right:2px;">→</span>
         <div class="axiom-search-box search">
           <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           <input id="q" type="search" placeholder="SEARCH LOCATION..." aria-label="Buscar lugar" data-i18n-ph="search.ph" data-i18n-aria="search.aria" autocomplete="off">
@@ -80,24 +80,24 @@
 
     <!-- Right Controls: .urbnz Project Save/Load, Share & 1-Piece Language Selector -->
     <div class="axiom-topbar-right">
-      <button type="button" class="axiom-btn-secondary" id="btn-save-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:9999px;">
+      <button type="button" class="axiom-btn-secondary" id="btn-save-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:2px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
         <span data-i18n="nav.saveUrbnz">.urbnz</span>
       </button>
-      <button type="button" class="axiom-btn-secondary" id="btn-open-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:9999px;">
+      <button type="button" class="axiom-btn-secondary" id="btn-open-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:2px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
         <span data-i18n="nav.openUrbnz">Abrir</span>
       </button>
       <input type="file" id="input-open-urbnz" accept=".urbnz,.json" style="display:none;">
 
       <!-- Global Header Share Button -->
-      <button type="button" class="rayon-share-btn" id="btn-topbar-share" style="padding:4px 12px; font-size:11px; border-radius:9999px; display:inline-flex; align-items:center; gap:5px;">
+      <button type="button" class="rayon-share-btn" id="btn-topbar-share" style="padding:4px 12px; font-size:11px; border-radius:2px; display:inline-flex; align-items:center; gap:5px;">
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         <span>Share</span>
       </button>
 
       <!-- 1-Piece Language Selector Button (Toggles between EN and ES) -->
-      <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language">
+      <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language" style="border-radius:2px;">
         <span id="lang-current-label">EN</span>
       </button>
     </div>
@@ -435,7 +435,6 @@
         <form id="panel" autocomplete="off" class="axiom-setup-form">
           <div class="axiom-seg mode-seg" role="group">
             <button type="button" class="axiom-seg-item active" data-mode="model" aria-pressed="true"><span class="btn-bracket-label" data-i18n="mode.model">3D MODEL</span></button>
-            <span class="axiom-seg-sep">___</span>
             <button type="button" class="axiom-seg-item" data-mode="section" aria-pressed="false"><span class="btn-bracket-label" data-i18n="mode.section">TOPOGRAPHIC SECTION</span></button>
           </div>
 
@@ -445,7 +444,6 @@
               <span class="axiom-label" data-i18n="shape.label">Forma de la base</span>
               <div class="axiom-seg shape-seg" role="group">
                 <button type="button" class="axiom-seg-item active" data-shape="square" aria-pressed="true"><span class="btn-bracket-label" data-i18n="shape.square">SQUARE</span></button>
-                <span class="axiom-seg-sep">___</span>
                 <button type="button" class="axiom-seg-item" data-shape="circle" aria-pressed="false"><span class="btn-bracket-label" data-i18n="shape.circle">CIRCLE</span></button>
               </div>
             </div>
@@ -2996,7 +2994,10 @@
 
       <!-- HUD Bottom Bar -->
       <div class="tech-hud-footer">
-        <span class="tech-hud-sign">CGM ATELIER · GEOMETRIC ENGINE V6.0</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" style="height:12px; width:auto; filter:brightness(0) invert(1); opacity:0.85;" />
+          <span class="tech-hud-sign" style="letter-spacing:0.12em;">URBNZD ENGINE V6.0</span>
+        </div>
         <button type="button" class="tech-hud-btn" id="btn-cancel-loading" onclick="if(window.hideLoadingModal) window.hideLoadingModal();">ABORT OPERATION</button>
       </div>
     </div>

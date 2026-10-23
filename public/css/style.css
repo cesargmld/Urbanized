@@ -8573,3 +8573,490 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: #ffffff !important;
   border-color: rgba(255, 255, 255, 0.4) !important;
 }
+
+/* ========================================================
+   V36 ARCHITECTURAL PRECISION HUD SPECIFICATION
+   - 4-Corner Brackets ┌ ┐ └ ┘ with Terracotta Accent Background Tint
+   - Pure Rectilinear Search Box & Results with Terracotta Color Accent
+   - Dynamic Island Centered & Stable Without Color Jumping
+   - Continuous Unbroken Separator Lines
+   - Full Horizon CAD Viewport Topographic Section (No Tiny Popup)
+   - Translucent Liquid Glass Popups with 2px Edges & Terracotta Buttons
+   ======================================================== */
+
+/* 1. Flecha y Buscador Rectangular Limpio (Cero Marcos Curveados) */
+.header-search-arrow {
+  font-size: 16px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  user-select: none !important;
+  margin-right: 2px !important;
+}
+
+.axiom-search-box {
+  border-radius: 2px !important;
+  background: rgba(14, 16, 22, 0.7) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: none !important;
+  transition: border-color 0.18s ease, background 0.18s ease !important;
+}
+
+.axiom-search-box:focus-within {
+  border-color: #e06d44 !important;
+  background: rgba(18, 20, 26, 0.88) !important;
+  box-shadow: 0 4px 20px rgba(224, 109, 68, 0.18) !important;
+}
+
+.axiom-search-box input {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* Resultados del Buscador: Rectangulares con Naranja Terracota */
+.results {
+  border-radius: 2px !important;
+  background: rgba(10, 12, 16, 0.86) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8) !important;
+}
+
+.results li,
+.results li.search-preview-item {
+  border-radius: 2px !important;
+  transition: all 0.15s ease !important;
+}
+
+.results li:hover,
+.results li.search-preview-item:hover {
+  background: rgba(224, 109, 68, 0.12) !important;
+}
+
+.results li.search-preview-item .search-item-icon {
+  border-radius: 2px !important;
+  background: rgba(224, 109, 68, 0.16) !important;
+  border: 1px solid rgba(224, 109, 68, 0.35) !important;
+  color: #e06d44 !important;
+}
+
+.results li.search-preview-item .search-badge-type {
+  border-radius: 2px !important;
+  background: rgba(224, 109, 68, 0.18) !important;
+  color: #e06d44 !important;
+  border: 1px solid rgba(224, 109, 68, 0.4) !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+}
+
+/* 2. Dynamic Island Centrada y Estable sin saltos de color */
+.axiom-map-island {
+  position: absolute !important;
+  top: 16px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 600 !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  pointer-events: none !important;
+}
+
+.axiom-island-capsule {
+  pointer-events: auto !important;
+  background: rgba(10, 12, 16, 0.76) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+  padding: 3px 8px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+.axiom-island-btn {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 2px !important;
+  padding: 4px 8px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  transition: all 0.15s ease !important;
+}
+
+.axiom-island-btn:hover {
+  color: #ffffff !important;
+}
+
+.axiom-island-btn.active {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+/* 3. Separadores como Líneas Continuas Sutiles Sin Cortes */
+.axiom-island-sep,
+.axiom-nav-cluster-sep {
+  display: inline-block !important;
+  width: 14px !important;
+  height: 0px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.24) !important;
+  margin: 0 4px !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+  color: transparent !important;
+  vertical-align: middle !important;
+}
+
+/* 4. Corchetes Técnicos en las 4 Esquinas ┌ ┐ └ ┘ con Tinte Marcado al Presionar (Imagen 5) */
+.btn-bracket-label {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 5px 12px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+  transition: all 0.15s ease !important;
+}
+
+/* Active State: 4 Corners + Subtle Colored Tint */
+.axiom-seg-item.active .btn-bracket-label,
+.axiom-island-btn.active .btn-bracket-label,
+.axiom-view-btn.active .btn-bracket-label {
+  background: rgba(224, 109, 68, 0.14) !important;
+  color: #ffffff !important;
+  /* Dibuja las 4 esquinas ┌ ┐ └ ┘ de forma nítida con gradiente de 4 esquinas */
+  background: 
+    linear-gradient(to right, #ffffff 5px, transparent 5px) 0 0,
+    linear-gradient(to bottom, #ffffff 5px, transparent 5px) 0 0,
+    linear-gradient(to left, #ffffff 5px, transparent 5px) 100% 0,
+    linear-gradient(to bottom, #ffffff 5px, transparent 5px) 100% 0,
+    linear-gradient(to right, #ffffff 5px, transparent 5px) 0 100%,
+    linear-gradient(to top, #ffffff 5px, transparent 5px) 0 100%,
+    linear-gradient(to left, #ffffff 5px, transparent 5px) 100% 100%,
+    linear-gradient(to top, #ffffff 5px, transparent 5px) 100% 100%,
+    rgba(224, 109, 68, 0.14) !important;
+  background-repeat: no-repeat !important;
+  background-size: 5px 1.5px, 1.5px 5px, 5px 1.5px, 1.5px 5px, 5px 1.5px, 1.5px 5px, 5px 1.5px, 1.5px 5px, 100% 100% !important;
+}
+
+.axiom-seg-item.active .btn-bracket-label::before,
+.axiom-island-btn.active .btn-bracket-label::before,
+.axiom-view-btn.active .btn-bracket-label::before,
+.axiom-seg-item.active .btn-bracket-label::after,
+.axiom-island-btn.active .btn-bracket-label::after,
+.axiom-view-btn.active .btn-bracket-label::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Setup Card en Esquina Izquierda: Rectangular, Liquid Glass */
+.axiom-setup-card {
+  position: absolute !important;
+  bottom: 24px !important;
+  left: 20px !important;
+  width: 320px !important;
+  background: rgba(10, 12, 16, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  padding: 16px !important;
+}
+
+.axiom-seg {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+}
+
+.axiom-seg-item {
+  flex: 1 !important;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  padding: 3px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.axiom-seg-item:hover {
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.axiom-seg-item.active {
+  border-color: rgba(224, 109, 68, 0.4) !important;
+}
+
+/* 5. CORTE TOPOGRÁFICO EN PANTALLA COMPLETA INTEGRADO (FULL HORIZON CAD DOCK) */
+.section-modal-backdrop {
+  position: absolute !important;
+  inset: auto 0 0 0 !important;
+  top: auto !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  right: 0 !important;
+  width: 100vw !important;
+  height: 380px !important;
+  max-height: 48vh !important;
+  z-index: 850 !important;
+  background: rgba(8, 10, 14, 0.88) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 -16px 50px rgba(0, 0, 0, 0.85) !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: stretch !important;
+  justify-content: stretch !important;
+}
+
+.section-modal-window.axiom-hud-window {
+  width: 100vw !important;
+  max-width: 100vw !important;
+  height: 100% !important;
+  max-height: 100% !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0px !important;
+  box-shadow: none !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.section-modal-header {
+  padding: 10px 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.section-modal-title h3 {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  color: #ffffff !important;
+}
+
+.axiom-corner-tag {
+  background: rgba(224, 109, 68, 0.16) !important;
+  color: #e06d44 !important;
+  border: 1px solid rgba(224, 109, 68, 0.35) !important;
+  border-radius: 2px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+}
+
+.section-modal-body.hero-visual {
+  flex: 1 !important;
+  min-height: 0 !important;
+  height: 180px !important;
+  background: #060709 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 8px 24px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.section-modal-body.hero-visual .flat,
+.section-modal-body.hero-visual .flat img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 170px !important;
+  object-fit: contain !important;
+}
+
+.section-telemetry-ribbon {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 0 16px !important;
+}
+
+.sec-stat-item {
+  padding: 8px 14px !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+}
+
+.sec-stat-item:last-child {
+  border-right: none !important;
+}
+
+.sec-stat-label {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8px !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+.sec-stat-val {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+}
+
+.section-modal-footer {
+  padding: 8px 24px !important;
+  background: rgba(10, 12, 16, 0.6) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.axiom-export-pill {
+  border-radius: 2px !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #d4d4d8 !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  padding: 4px 10px !important;
+  transition: all 0.15s ease !important;
+}
+
+.axiom-export-pill:hover {
+  border-color: #e06d44 !important;
+  color: #ffffff !important;
+  background: rgba(224, 109, 68, 0.12) !important;
+}
+
+.axiom-cta-pill {
+  border-radius: 2px !important;
+  background: #e06d44 !important;
+  border: 1px solid #c85a32 !important;
+  color: #ffffff !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  padding: 5px 16px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+
+.axiom-cta-pill:hover {
+  background: #c85a32 !important;
+}
+
+/* Capas del Perfil de Corte */
+.sec-layer-btn {
+  border-radius: 2px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9.5px !important;
+  padding: 3px 8px !important;
+}
+
+.sec-layer-btn.active {
+  background: rgba(224, 109, 68, 0.14) !important;
+  color: #ffffff !important;
+}
+
+.sec-layer-btn.active .sec-filter-indicator {
+  background: #e06d44 !important;
+  box-shadow: 0 0 6px #e06d44 !important;
+}
+
+/* 6. TODAS LAS VENTANAS EMERGENTES (MODALES) CON LIQUID GLASS Y 2PX BORDER-RADIUS */
+.modal-backdrop,
+.axiom-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  background: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 20px !important;
+}
+
+.modal-backdrop[hidden],
+.axiom-modal-overlay[hidden] {
+  display: none !important;
+}
+
+.modal-window,
+.axiom-modal-dialog {
+  border-radius: 2px !important;
+  background: rgba(10, 12, 16, 0.82) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9) !important;
+  color: #f4f4f6 !important;
+}
+
+/* Botones Principales y Acentos en Modales: Naranja Terracota */
+.rayon-share-btn,
+.rayon-primary-btn,
+.axiom-btn-primary {
+  background: #e06d44 !important;
+  border: 1px solid #c85a32 !important;
+  color: #ffffff !important;
+  border-radius: 2px !important;
+  box-shadow: 0 2px 10px rgba(224, 109, 68, 0.3) !important;
+  transition: all 0.15s ease !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+}
+
+.rayon-share-btn:hover,
+.rayon-primary-btn:hover,
+.axiom-btn-primary:hover {
+  background: #c85a32 !important;
+}
+
+.axiom-btn-secondary,
+.rayon-secondary-btn {
+  border-radius: 2px !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #ffffff !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  transition: all 0.15s ease !important;
+}
+
+.axiom-btn-secondary:hover,
+.rayon-secondary-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+}
+
+.modal-close-btn,
+.axiom-modal-close-btn {
+  border-radius: 2px !important;
+  transition: all 0.15s ease !important;
+}
+
+.modal-close-btn:hover,
+.axiom-modal-close-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+/* Eliminación total del azul en avatares e indicadores */
+.rayon-user-avatar {
+  background: #242730 !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}

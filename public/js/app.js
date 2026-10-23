@@ -377,8 +377,8 @@ function showMapNotice(message, isError = true) {
   msgEl.textContent = message;
   const dot = notice.querySelector('.axiom-notice-dot');
   if (dot) {
-    dot.style.background = isError ? '#f87171' : '#38bdf8';
-    dot.style.boxShadow = isError ? '0 0 10px rgba(248, 113, 113, 0.8)' : '0 0 10px rgba(56, 189, 248, 0.8)';
+    dot.style.background = isError ? '#f87171' : '#e06d44';
+    dot.style.boxShadow = isError ? '0 0 10px rgba(248, 113, 113, 0.8)' : '0 0 10px rgba(224, 109, 68, 0.8)';
   }
   notice.hidden = false;
   clearTimeout(noticeTimeout);
