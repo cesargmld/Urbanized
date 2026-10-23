@@ -1438,13 +1438,15 @@ export async function applyLang(next = lang) {
       sel.value = lang;
     });
 
-    // Synchronize flat language toggle buttons
-    document.querySelectorAll('.lang-flat-btn').forEach((btn) => {
-      const isActive = btn.getAttribute('data-lang') === lang;
-      btn.classList.toggle('active', isActive);
-      btn.style.color = isActive ? '#ffffff' : '#71717a';
-      btn.style.fontWeight = isActive ? '700' : '500';
-    });
+    // Synchronize 1-piece language toggle button
+    const singleLangBtn = document.getElementById('btn-lang-toggle');
+    const singleLangLbl = document.getElementById('lang-current-label');
+    if (singleLangLbl) {
+      singleLangLbl.textContent = lang.toUpperCase();
+    }
+    if (typeof window !== 'undefined') {
+      window.currentLang = lang;
+    }
   }
 
   listeners.forEach((fn) => {

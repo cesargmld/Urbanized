@@ -1,6 +1,6 @@
 
 /* ========================================================
-   OFFICIAL BRAND TYPOGRAPHY: HELVETICA NOW DISPLAY + GEIST MONO
+   OFFICIAL BRAND TYPOGRAPHY: HELVETICA NOW DISPLAY EXCLUSIVELY
    ======================================================== */
 
 @font-face {
@@ -35,36 +35,12 @@
   font-display: swap;
 }
 
-@font-face {
-  font-family: 'Geist Mono';
-  src: url('../fonts/GeistMono-Regular.woff2') format('woff2');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Geist Mono';
-  src: url('../fonts/GeistMono-Medium.woff2') format('woff2');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: 'Geist Mono';
-  src: url('../fonts/GeistMono-Bold.woff2') format('woff2');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-
 /* Urbanized — Architectural Cartography & Moodboard Design System */
 :root {
   color-scheme: dark;
   --bg-app: #000000;
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Segoe UI", Roboto, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", monospace;
+  --font-sans: "Helvetica Now Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: "Helvetica Now Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font: var(--font-sans);
   --glass-bg: rgba(10, 11, 15, 0.82);
   --glass-bg-subtle: rgba(255, 255, 255, 0.04);
@@ -7464,7 +7440,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
    - Zoom-proof uncluttered frame with opacity mask
    ======================================================== */
 
-/* 1. Global Typography: Delicate, Technical Monospace */
+/* 1. Global Typography: Official Swiss Helvetica Now Display Exclusively */
 .axiom-topbar,
 .axiom-view-btn,
 .axiom-setup-card,
@@ -7479,11 +7455,12 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 .axiom-subtle-btn,
 .axiom-label,
 .axiom-sub-header,
-.axiom-val {
-  font-family: "JetBrains Mono", "Space Mono", "SF Mono", Menlo, Consolas, monospace !important;
+.axiom-val,
+.axiom-filter-trigger {
+  font-family: "Helvetica Now Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
   text-transform: uppercase !important;
-  letter-spacing: 0.14em !important;
-  font-weight: 400 !important;
+  letter-spacing: 0.05em !important;
+  font-weight: 500 !important;
 }
 
 /* 2. Topbar & Logo: Elegant, Minimal & Centered */
@@ -7803,13 +7780,13 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 
 
 /* ========================================================
-   HELVETICA NOW DISPLAY (MEDIUM) + GEIST MONO OVERHAUL
+   HELVETICA NOW DISPLAY (MEDIUM) OVERHAUL
    + TRANSLUCENT LIQUID GLASS HEADER
    ======================================================== */
 
 :root {
   --font-sans: 'Helvetica Now Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-  --font-mono: 'Geist Mono', 'SF Mono', Consolas, monospace !important;
+  --font-mono: 'Helvetica Now Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 }
 
 /* 1. Translucent Liquid Glass Header (Darker like 3D Island) */
@@ -7986,7 +7963,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   padding: 11px 16px !important;
 }
 
-/* 8. TECHNICAL METRICS & COORDINATES: GEIST MONO (Functional & Precise) */
+/* 8. TECHNICAL METRICS & COORDINATES: HELVETICA NOW DISPLAY MEDIUM */
 .map-hud-coord,
 .frame-dms-callout,
 .frame-dim-badge,
@@ -7994,9 +7971,9 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 .arch-scale-metric,
 .arch-scale-bar-label,
 .axiom-val {
-  font-family: var(--font-mono) !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
   font-weight: 500 !important;
-  letter-spacing: 0.06em !important;
+  letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
 }
 
@@ -8038,4 +8015,561 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   border-radius: 9999px !important;
   padding: 1px 7px !important;
   color: #ffffff !important;
+}
+
+/* ========================================================
+   IMAGE 2 PREMISE: CORNER BRACKETS [ ┌ ┐ └ ┘ ] & ___ SEPARATORS
+   ======================================================== */
+
+.axiom-island-sep,
+.axiom-nav-cluster-sep,
+.axiom-seg-sep {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 11px !important;
+  letter-spacing: 0.15em !important;
+  color: rgba(255, 255, 255, 0.22) !important;
+  user-select: none !important;
+  margin: 0 4px !important;
+}
+
+/* Corner Bracket Ticks on Active segmented items */
+.btn-bracket-label {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 8px;
+  font-family: 'Helvetica Now Display', sans-serif;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  transition: all 0.15s ease;
+}
+
+.axiom-island-btn.active .btn-bracket-label,
+.axiom-view-btn.active .btn-bracket-label,
+.axiom-seg-item.active .btn-bracket-label {
+  color: #ffffff !important;
+}
+
+/* Top-Left and Bottom-Right corner ticks replicating Image 2 */
+.axiom-island-btn.active .btn-bracket-label::before,
+.axiom-view-btn.active .btn-bracket-label::before,
+.axiom-seg-item.active .btn-bracket-label::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-top: 1.5px solid #ffffff;
+  border-left: 1.5px solid #ffffff;
+  pointer-events: none;
+}
+
+.axiom-island-btn.active .btn-bracket-label::after,
+.axiom-view-btn.active .btn-bracket-label::after,
+.axiom-seg-item.active .btn-bracket-label::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  width: 5px;
+  height: 5px;
+  border-bottom: 1.5px solid #ffffff;
+  border-right: 1.5px solid #ffffff;
+  pointer-events: none;
+}
+
+/* Header & Setup Card Restyling: No rounded gray blobs, pure translucent liquid glass */
+.axiom-topbar {
+  background: rgba(10, 12, 16, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.09) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+.axiom-header-logo {
+  height: 28px !important;
+  width: auto !important;
+  object-fit: contain !important;
+  display: block !important;
+}
+
+/* 1-Piece Language Button */
+.lang-single-btn {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  padding: 4px 10px !important;
+  border-radius: 9999px !important;
+  cursor: pointer !important;
+  transition: all 0.18s ease !important;
+}
+.lang-single-btn:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Universal Persistent Avatar Rail on Map */
+.map-left-rail {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+/* Filter Accordion Trigger: Helvetica Now Display Medium & Rectilinear Liquid Glass */
+.axiom-filter-trigger {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  text-transform: uppercase !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0px !important;
+  height: 34px !important;
+  padding: 0 10px !important;
+}
+
+.map-rail-avatar-btn {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: rgba(14, 16, 22, 0.88) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  cursor: pointer !important;
+  transition: all 0.2s ease !important;
+}
+.map-rail-avatar-btn .rayon-user-avatar {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 11px !important;
+  font-weight: 700 !important;
+  color: #ffffff !important;
+}
+.map-rail-avatar-btn:hover {
+  border-color: rgba(255, 255, 255, 0.5);
+  transform: scale(1.05);
+}
+
+/* #axiom-setup-card: Pure Rectilinear Liquid Glass, aligned perfectly bottom-left, zero fuzzy shadows */
+.axiom-setup-card {
+  position: absolute !important;
+  bottom: 24px !important;
+  left: 20px !important;
+  width: 310px !important;
+  background: rgba(10, 12, 16, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
+  padding: 14px !important;
+}
+
+.axiom-seg {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0px !important;
+  padding: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+.axiom-seg-item {
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  padding: 4px 6px !important;
+  border-radius: 0px !important;
+}
+.axiom-seg-item.active {
+  background: transparent !important;
+  color: #ffffff !important;
+}
+
+/* ========================================================
+   FOCUSED TOPOGRAPHIC SECTION MODAL OVERHAUL
+   Prominent, High-Contrast, Elevated above bottom credits
+   ======================================================== */
+.section-modal-backdrop {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  background: rgba(0, 0, 0, 0.72) !important;
+  backdrop-filter: blur(16px) !important;
+  -webkit-backdrop-filter: blur(16px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 30px !important;
+}
+
+.section-modal-window.axiom-hud-window {
+  width: 900px !important;
+  max-width: 92vw !important;
+  max-height: 84vh !important;
+  background: rgba(9, 11, 15, 0.94) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.9) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+  position: relative !important;
+  margin-bottom: 24px !important;
+}
+
+.section-modal-header {
+  padding: 12px 18px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+.section-modal-body.hero-visual {
+  flex: 1 !important;
+  min-height: 280px !important;
+  background: #000000 !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 16px !important;
+}
+.section-modal-body.hero-visual img {
+  max-width: 100% !important;
+  max-height: 320px !important;
+  object-fit: contain !important;
+}
+
+.section-telemetry-ribbon {
+  display: grid !important;
+  grid-template-columns: repeat(5, 1fr) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+.sec-stat-item {
+  padding: 10px 14px !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.sec-stat-item:last-child {
+  border-right: none !important;
+}
+.sec-stat-label {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+.sec-stat-val {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.03em !important;
+  color: #ffffff !important;
+}
+
+.section-modal-footer {
+  padding: 10px 18px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+
+/* ========================================================
+   RETRO-INDUSTRIAL TECH HUD LOADER (IMAGE 1 GRID PREMISE)
+   ======================================================== */
+.tech-hud-loader {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 99999 !important;
+  background: rgba(0, 0, 0, 0.82) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.tech-hud-card {
+  width: 580px !important;
+  max-width: 92vw !important;
+  background: #090a0e !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 0px !important;
+  box-shadow: 0 30px 90px rgba(0, 0, 0, 0.9) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+
+.tech-hud-header {
+  padding: 10px 14px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+.tech-hud-header-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+}
+.tech-hud-logo {
+  height: 18px !important;
+  width: auto !important;
+}
+.tech-hud-bracket-tag {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+}
+.tech-hud-header-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.tech-hud-speed {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  color: #ffffff !important;
+}
+.tech-hud-status-badge {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  padding: 1px 6px !important;
+  border: 1px solid rgba(255, 255, 255, 0.3) !important;
+  color: #ffffff !important;
+}
+
+.tech-hud-grid {
+  display: grid !important;
+  grid-template-columns: repeat(3, 1fr) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+.tech-hud-quadrant {
+  padding: 14px !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+.tech-hud-quadrant:nth-child(3n) {
+  border-right: none !important;
+}
+.tech-hud-quadrant:nth-child(n+4) {
+  border-bottom: none !important;
+}
+
+.tech-hud-quad-label {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Dial Q1 */
+.tech-radial-dial {
+  position: relative !important;
+  width: 76px !important;
+  height: 76px !important;
+  margin: 0 auto !important;
+}
+.tech-dial-svg {
+  width: 100% !important;
+  height: 100% !important;
+  transform: rotate(-90deg) !important;
+}
+.tech-dial-track {
+  fill: none !important;
+  stroke: rgba(255, 255, 255, 0.08) !important;
+  stroke-width: 4 !important;
+}
+.tech-dial-ticks {
+  fill: none !important;
+  stroke: rgba(255, 255, 255, 0.2) !important;
+  stroke-width: 2 !important;
+}
+.tech-dial-progress {
+  fill: none !important;
+  stroke: #ffffff !important;
+  stroke-width: 4 !important;
+  stroke-linecap: square !important;
+  transition: stroke-dashoffset 0.3s ease !important;
+}
+.tech-dial-center {
+  position: absolute !important;
+  inset: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+.tech-dial-pct {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+  color: #ffffff !important;
+}
+.tech-dial-sub {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 6.5px !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+
+/* Sources Q2 */
+.tech-sources-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+}
+.tech-source-row {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.04em !important;
+}
+.tech-src-name {
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.tech-src-status {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+/* Barcode Q3 */
+.tech-barcode-track {
+  display: flex !important;
+  align-items: flex-end !important;
+  gap: 3px !important;
+  height: 38px !important;
+}
+.tech-barcode-tick {
+  flex: 1 !important;
+  height: 100% !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  transition: background 0.2s ease !important;
+}
+.tech-barcode-tick.active {
+  background: #ffffff !important;
+}
+.tech-barcode-meta {
+  display: flex !important;
+  justify-content: space-between !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8px !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+
+/* Q4 Coords */
+.tech-coords-display {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+}
+.tech-dim-label {
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.tech-coords-display strong {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+
+/* Q5 Outputs */
+.tech-targets-tags {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+.tech-target-pill {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 7.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  padding: 2px 5px !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Q6 Status */
+.tech-pipeline-title {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.05em !important;
+  color: #ffffff !important;
+  margin-top: 4px !important;
+}
+.tech-pipeline-progress-bar {
+  width: 100% !important;
+  height: 4px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  margin-top: 8px !important;
+}
+.tech-pipeline-progress-fill {
+  height: 100% !important;
+  background: #ffffff !important;
+  transition: width 0.3s ease !important;
+}
+
+/* HUD Footer */
+.tech-hud-footer {
+  padding: 10px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  background: rgba(255, 255, 255, 0.02) !important;
+}
+.tech-hud-sign {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8px !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.tech-hud-btn {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 8.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  padding: 3px 8px !important;
+  cursor: pointer !important;
+}
+.tech-hud-btn:hover {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
 }

@@ -33,11 +33,14 @@
         <img src="assets/urbnzd-logo.png" alt="URBNZD" class="axiom-header-logo" />
       </div>
 
-      <!-- Clean Minimal Search Bar -->
-      <div class="axiom-search-box search">
-        <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-        <input id="q" type="search" placeholder="SEARCH LOCATION..." aria-label="Buscar lugar" data-i18n-ph="search.ph" data-i18n-aria="search.aria" autocomplete="off">
-        <ul id="results" class="results" hidden></ul>
+      <!-- Clean Minimal Search Bar with Pointer Arrow (Only visible on Map view) -->
+      <div class="header-search-wrap" id="header-search-wrap" style="display:flex; align-items:center; gap:8px;">
+        <span class="header-search-arrow" style="color:rgba(255,255,255,0.4); font-size:13px; font-weight:400; user-select:none;">→</span>
+        <div class="axiom-search-box search">
+          <svg class="axiom-search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          <input id="q" type="search" placeholder="SEARCH LOCATION..." aria-label="Buscar lugar" data-i18n-ph="search.ph" data-i18n-aria="search.aria" autocomplete="off">
+          <ul id="results" class="results" hidden></ul>
+        </div>
       </div>
     </div>
 
@@ -46,39 +49,36 @@
       <nav class="axiom-view-nav" role="tablist">
         <!-- Cluster 1: Territorial Map -->
         <button type="button" class="axiom-view-btn active" id="view-btn-map" data-view="app">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
-          <span data-i18n="nav.map">Mapa</span>
+          <span class="btn-bracket-label" data-i18n="nav.map">MAPA</span>
         </button>
 
-        <span class="axiom-nav-cluster-sep"></span>
+        <span class="axiom-nav-cluster-sep">___</span>
 
-        <!-- Cluster 2: Production Studios (3D Model | 2D Cartography | Axonometry) -->
-        <div class="axiom-nav-subgroup">
+        <!-- Cluster 2: Production Studios (3D Model ___ 2D Cartography ___ Axonometry) -->
+        <div class="axiom-nav-subgroup" style="display:flex; align-items:center; gap:6px;">
           <button type="button" class="axiom-view-btn disabled" id="view-btn-studio" data-view="result">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
-            <span data-i18n="nav.studio">Modelo 3D</span>
+            <span class="btn-bracket-label" data-i18n="nav.studio">MODELO 3D</span>
           </button>
+          <span class="axiom-nav-cluster-sep">___</span>
           <button type="button" class="axiom-view-btn disabled" id="view-btn-mapper" data-view="mapper">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
-            <span data-i18n="nav.vector">Cartografía 2D</span>
+            <span class="btn-bracket-label" data-i18n="nav.vector">CARTOGRAFÍA 2D</span>
           </button>
+          <span class="axiom-nav-cluster-sep">___</span>
           <button type="button" class="axiom-view-btn disabled" id="view-btn-illu" data-view="illustrator">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
-            <span data-i18n="nav.illu">Axonometría</span>
+            <span class="btn-bracket-label" data-i18n="nav.illu">AXONOMETRÍA</span>
           </button>
         </div>
 
-        <span class="axiom-nav-cluster-sep"></span>
+        <span class="axiom-nav-cluster-sep">___</span>
 
         <!-- Cluster 3: Technical Sheet Composition -->
         <button type="button" class="axiom-view-btn disabled" id="view-btn-comp" data-view="composition">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:3px;"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
-          <span data-i18n="nav.composition">Composición</span>
+          <span class="btn-bracket-label" data-i18n="nav.composition">COMPOSICIÓN</span>
         </button>
       </nav>
     </div>
 
-    <!-- Right Controls: .urbnz Project Save/Load, Share & Language (Simplified) -->
+    <!-- Right Controls: .urbnz Project Save/Load, Share & 1-Piece Language Selector -->
     <div class="axiom-topbar-right">
       <button type="button" class="axiom-btn-secondary" id="btn-save-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:9999px;">
         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
@@ -96,12 +96,10 @@
         <span>Share</span>
       </button>
 
-      <!-- Minimalist Flat Language Initials Toggle: ES | EN (Plain text, subtle, zero dropdown padding) -->
-      <div class="lang-toggle-flat" id="lang-toggle-flat" role="group" aria-label="Language">
-        <button type="button" class="lang-flat-btn active" data-lang="en" id="btn-lang-en">EN</button>
-        <span class="lang-flat-sep">/</span>
-        <button type="button" class="lang-flat-btn" data-lang="es" id="btn-lang-es">ES</button>
-      </div>
+      <!-- 1-Piece Language Selector Button (Toggles between EN and ES) -->
+      <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language">
+        <span id="lang-current-label">EN</span>
+      </button>
     </div>
   </header>
 
@@ -352,6 +350,13 @@
          VIEW 1: MAP SELECTION & PARAMETERS (#app)
          ====================================================== -->
     <div id="app" class="screen-layer active">
+      <!-- Universal Left Avatar Rail (Persistent across all modes: workspace/profile trigger) -->
+      <nav class="map-left-rail" id="map-left-rail" aria-label="Rail de navegación">
+        <button type="button" class="map-rail-avatar-btn" id="btn-map-avatar" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil">
+          <span class="rayon-user-avatar">C</span>
+        </button>
+      </nav>
+
       <div id="map"></div>
       <div class="frame" id="frame">
         <div class="frame-bracket top-left"></div>
@@ -391,14 +396,13 @@
       <div class="axiom-map-island" id="map-axiom-bar" aria-label="Controles de mapa" style="display:flex; flex-direction:row; gap:8px; align-items:center;">
         <!-- Cápsula 1: Capa Base (Satélite | Vectorial) -->
         <div class="axiom-island-capsule" role="group" aria-label="Capa base">
-          <button type="button" class="axiom-island-btn active" id="map-btn-monochrome" data-base="monochrome" title="Monochrome Satellite">MONOCHROME</button>
-          <span class="axiom-island-sep">/</span>
-          <button type="button" class="axiom-island-btn" id="map-btn-sat" data-base="sat" title="Color Satellite">SATELLITE</button>
-          <span class="axiom-island-sep">/</span>
-          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Dark CAD Map">DARK MAP</button>
+          <button type="button" class="axiom-island-btn active" id="map-btn-monochrome" data-base="monochrome" title="Monochrome Satellite"><span class="btn-bracket-label">MONOCHROME</span></button>
+          <span class="axiom-island-sep">___</span>
+          <button type="button" class="axiom-island-btn" id="map-btn-sat" data-base="sat" title="Color Satellite"><span class="btn-bracket-label">SATELLITE</span></button>
+          <span class="axiom-island-sep">___</span>
+          <button type="button" class="axiom-island-btn" id="map-btn-vector" data-base="map" title="Dark CAD Map"><span class="btn-bracket-label">DARK MAP</span></button>
         </div>
-
-              </div>
+      </div>
 
       <!-- Architectural HUD Guidance for Section Drawing -->
       <div class="axiom-section-guidance" id="section-guidance" hidden>
@@ -426,12 +430,13 @@
         </button>
       </div>
 
-      <!-- Left Setup Card on Map -->
+      <!-- Left Setup Card on Map (Translucent Liquid Glass & Rectilinear Edges) -->
       <aside class="axiom-setup-card" id="axiom-setup-card">
         <form id="panel" autocomplete="off" class="axiom-setup-form">
           <div class="axiom-seg mode-seg" role="group">
-            <button type="button" class="axiom-seg-item active" data-mode="model" aria-pressed="true" data-i18n="mode.model">Modelo 3D</button>
-            <button type="button" class="axiom-seg-item" data-mode="section" aria-pressed="false" data-i18n="mode.section">Corte Topográfico</button>
+            <button type="button" class="axiom-seg-item active" data-mode="model" aria-pressed="true"><span class="btn-bracket-label" data-i18n="mode.model">3D MODEL</span></button>
+            <span class="axiom-seg-sep">___</span>
+            <button type="button" class="axiom-seg-item" data-mode="section" aria-pressed="false"><span class="btn-bracket-label" data-i18n="mode.section">TOPOGRAPHIC SECTION</span></button>
           </div>
 
           <!-- 1. MODEL 3D EXTRACTION TOOLS -->
@@ -439,8 +444,9 @@
             <div class="axiom-control-row">
               <span class="axiom-label" data-i18n="shape.label">Forma de la base</span>
               <div class="axiom-seg shape-seg" role="group">
-                <button type="button" class="axiom-seg-item active" data-shape="square" aria-pressed="true" data-i18n="shape.square">Cuadrado</button>
-                <button type="button" class="axiom-seg-item" data-shape="circle" aria-pressed="false" data-i18n="shape.circle">Círculo</button>
+                <button type="button" class="axiom-seg-item active" data-shape="square" aria-pressed="true"><span class="btn-bracket-label" data-i18n="shape.square">SQUARE</span></button>
+                <span class="axiom-seg-sep">___</span>
+                <button type="button" class="axiom-seg-item" data-shape="circle" aria-pressed="false"><span class="btn-bracket-label" data-i18n="shape.circle">CIRCLE</span></button>
               </div>
             </div>
 
@@ -644,6 +650,9 @@
     <div id="result" class="screen-layer rayon-studio-layout">
       <!-- 1. LEFT RAIL (44px) - Rayon-inspired 7 canonical tabs + Export -->
       <nav class="rayon-left-rail" id="studio-left-rail" aria-label="Herramientas del estudio">
+        <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil" style="margin-bottom:8px; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#18181b; border:1px solid rgba(255,255,255,0.18); cursor:pointer;">
+          <span class="rayon-user-avatar" style="font-size:11px; font-weight:700; color:#ffffff;">C</span>
+        </button>
         <button type="button" class="rayon-rail-btn active" data-rail-tab="layers" data-tooltip="Capas (Layers)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
         </button>
@@ -1477,6 +1486,9 @@
       <div class="axiom-left-system" id="mapper-left-system">
         <!-- Categorized Left Icon Rail for Cartografía 2D -->
         <nav class="axiom-left-dock" aria-label="Herramientas de Cartografía 2D">
+          <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil" style="margin-bottom:8px; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#18181b; border:1px solid rgba(255,255,255,0.18); cursor:pointer;">
+            <span class="rayon-user-avatar" style="font-size:11px; font-weight:700; color:#ffffff;">C</span>
+          </button>
           <button type="button" class="axiom-dock-icon active" data-mapdrawer="layers" data-tooltip="1. Capas & Superposición QGIS">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           </button>
@@ -2881,48 +2893,112 @@
   </div>
 
   <!-- ========================================================
-       RAYON-STYLE AESTHETIC LOADER (media_1792369520403_bd7d918c.png)
+       RETRO-INDUSTRIAL TECH HUD LOADER (IMAGE 1 GRID PREMISE)
        ======================================================== -->
-  <div class="rayon-loader-modal" id="axiom-loading-modal" hidden>
-    <div class="rayon-loader-card">
-      <!-- URBNZD Official Header Logo (Clean Reticle & Brand Datum) -->
-      <div class="rayon-loader-glyph-wrap" style="display:flex; flex-direction:column; align-items:center; gap:12px; margin-bottom:18px;">
-        <img src="assets/urbnzd-logo.png" alt="URBNZD" class="axiom-loader-logo" />
-      </div>
-
-      <!-- Real-Time Architectural Data Sources & Layer Stream -->
-      <div class="rayon-loader-stream-wrap" style="width:100%; margin-bottom:16px; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.08); border-radius:10px; padding:10px 14px; display:flex; flex-direction:column; gap:6px; font-size:11px; font-family:var(--font-mono, monospace);">
-        <div style="display:flex; justify-content:space-between; align-items:center; color:#a1a1aa; font-size:10px; letter-spacing:0.05em; text-transform:uppercase; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:4px;">
-          <span>Fuentes Territoriales</span>
-          <span id="loading-pct-badge" style="color:#38bdf8; font-weight:700;">25%</span>
+  <div class="rayon-loader-modal tech-hud-loader" id="axiom-loading-modal" hidden>
+    <div class="tech-hud-card">
+      <!-- HUD Top Bar: System ID, Transfer Speed, Status -->
+      <div class="tech-hud-header">
+        <div class="tech-hud-header-left">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="tech-hud-logo" />
+          <span class="tech-hud-bracket-tag">[ DATA EXTRACTION ]</span>
         </div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="color:#d4d4d8;">1. Edificaciones & Huellas</span>
-          <span id="load-src-osm" style="color:#38bdf8; font-size:10px;">OSM Overpass / Overture</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="color:#d4d4d8;">2. Topografía & Curvas de Nivel</span>
-          <span id="load-src-dem" style="color:#71717a; font-size:10px;">Copernicus DEM 30m</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="color:#d4d4d8;">3. Red Vial & Ejes Urbanos</span>
-          <span id="load-src-roads" style="color:#71717a; font-size:10px;">OSM Highways Vector</span>
-        </div>
-        <div style="display:flex; align-items:center; justify-content:space-between;">
-          <span style="color:#d4d4d8;">4. Hidrología & Masa Arbórea</span>
-          <span id="load-src-water" style="color:#71717a; font-size:10px;">Satelital Multiespectral</span>
+        <div class="tech-hud-header-right">
+          <span class="tech-hud-speed" id="hud-transfer-speed">48.2 MB/S</span>
+          <span class="tech-hud-status-badge">SYS_ONLINE</span>
         </div>
       </div>
 
-      <!-- Sleek Progress Bar -->
-      <div class="rayon-loader-bar-track">
-        <div class="rayon-loader-bar-fill" id="axiom-laser-fill" style="width: 25%;"></div>
+      <!-- 6-Quadrant Tech Matrix Grid -->
+      <div class="tech-hud-grid">
+        <!-- Q1: Radial Dial / Circular Tick Progress -->
+        <div class="tech-hud-quadrant q1-dial">
+          <div class="tech-hud-quad-label">01 // FLUID PROGRESS</div>
+          <div class="tech-radial-dial">
+            <svg viewBox="0 0 100 100" class="tech-dial-svg">
+              <circle cx="50" cy="50" r="42" class="tech-dial-track"></circle>
+              <circle cx="50" cy="50" r="42" class="tech-dial-ticks" stroke-dasharray="2 4"></circle>
+              <circle cx="50" cy="50" r="42" class="tech-dial-progress" id="tech-dial-progress-circle"></circle>
+            </svg>
+            <div class="tech-dial-center">
+              <span class="tech-dial-pct" id="loading-pct-badge">25%</span>
+              <span class="tech-dial-sub">EXTRACTION</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q2: Layer Sources Status -->
+        <div class="tech-hud-quadrant q2-sources">
+          <div class="tech-hud-quad-label">02 // SATELLITE & GIS STREAMS</div>
+          <div class="tech-sources-list">
+            <div class="tech-source-row">
+              <span class="tech-src-name">OSM VOLUMES</span>
+              <span class="tech-src-status" id="load-src-osm">DOWNLOADING</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">COPERNICUS DEM</span>
+              <span class="tech-src-status" id="load-src-dem">PENDING</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">HIGHWAY NETWORK</span>
+              <span class="tech-src-status" id="load-src-roads">PENDING</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">SPECTRAL CANOPY</span>
+              <span class="tech-src-status" id="load-src-water">STANDBY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3: Barcode Volume Progress -->
+        <div class="tech-hud-quadrant q3-barcode">
+          <div class="tech-hud-quad-label">03 // GEOMETRIC BUFFER</div>
+          <div class="tech-barcode-track" id="tech-barcode-track">
+            <!-- Dynamic vertical tick bars -->
+          </div>
+          <div class="tech-barcode-meta">
+            <span id="tech-hud-volume">1,420 / 4,890 PTS</span>
+            <span id="tech-hud-eta">ETA: 0.8S</span>
+          </div>
+        </div>
+
+        <!-- Q4: Sector Coordinates -->
+        <div class="tech-hud-quadrant q4-coords">
+          <div class="tech-hud-quad-label">04 // TERRITORIAL DATUM</div>
+          <div class="tech-coords-display">
+            <div class="tech-coord-line"><span class="tech-dim-label">COORD_N:</span> <strong id="hud-coord-lat">41°41'37.7"N</strong></div>
+            <div class="tech-coord-line"><span class="tech-dim-label">COORD_W:</span> <strong id="hud-coord-lon">44°48'05.4"E</strong></div>
+            <div class="tech-coord-line"><span class="tech-dim-label">FRAME_DIM:</span> <strong id="hud-frame-dim">1.0 × 1.0 KM</strong></div>
+          </div>
+        </div>
+
+        <!-- Q5: Output Engines Target -->
+        <div class="tech-hud-quadrant q5-output">
+          <div class="tech-hud-quad-label">05 // COMPATIBILITY TARGETS</div>
+          <div class="tech-targets-tags">
+            <span class="tech-target-pill">SKETCHUP .SKP</span>
+            <span class="tech-target-pill">AUTOCAD .DXF</span>
+            <span class="tech-target-pill">RHINO .3DM</span>
+            <span class="tech-target-pill">QGIS .GEOJSON</span>
+          </div>
+        </div>
+
+        <!-- Q6: Engine Live State -->
+        <div class="tech-hud-quadrant q6-status">
+          <div class="tech-hud-quad-label">06 // ENGINE PIPELINE</div>
+          <div class="tech-pipeline-title" id="loading-title">INITIALIZING DATA</div>
+          <div class="tech-pipeline-progress-bar">
+            <div class="tech-pipeline-progress-fill" id="axiom-laser-fill" style="width: 25%;"></div>
+          </div>
+          <div id="loading-pct" style="display:none;">25%</div>
+        </div>
       </div>
 
-      <!-- Status Subtext -->
-      <div class="rayon-loader-status" id="loading-title">Fetching model data</div>
-      <div class="rayon-loader-sub" id="loading-sub" style="display:none;"></div>
-      <div id="loading-pct" style="display:none;">25%</div>
+      <!-- HUD Bottom Bar -->
+      <div class="tech-hud-footer">
+        <span class="tech-hud-sign">CGM ATELIER · GEOMETRIC ENGINE V6.0</span>
+        <button type="button" class="tech-hud-btn" id="btn-cancel-loading" onclick="if(window.hideLoadingModal) window.hideLoadingModal();">ABORT OPERATION</button>
+      </div>
     </div>
   </div>
 
@@ -3586,6 +3662,12 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       currentActiveView = viewName;
       window.currentWorkspaceMode = viewName;
 
+      // Visibility of Header Search: ONLY visible on Map ('app')
+      const searchWrap = document.getElementById('header-search-wrap');
+      if (searchWrap) {
+        searchWrap.style.display = (viewName === 'app') ? 'flex' : 'none';
+      }
+
       if (viewName === 'workspace-home') {
         renderWorkspaceHome();
       }
@@ -3629,6 +3711,15 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       btn.addEventListener('click', () => {
         switchView(btn.getAttribute('data-switchview'));
       });
+    });
+
+    // 1-Piece Language Selector Listener
+    document.getElementById('btn-lang-toggle')?.addEventListener('click', () => {
+      const current = window.currentLang || (typeof lang !== 'undefined' ? lang : 'en');
+      const next = current === 'en' ? 'es' : 'en';
+      if (window.applyLang) window.applyLang(next);
+      const lbl = document.getElementById('lang-current-label');
+      if (lbl) lbl.textContent = next.toUpperCase();
     });
 
     // Rayon Inspector: Axonometric View Grid (NW Iso, NE Iso, SW Iso, SE Iso, Top, Eye Level)

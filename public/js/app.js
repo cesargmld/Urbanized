@@ -72,12 +72,16 @@ function setBaseMap(name) {
   const isMono = baseName === 'monochrome';
   document.getElementById('map')?.classList.toggle('map-style-monochrome', isMono);
   document.getElementById('map')?.classList.remove('map-style-bwnoise');
+
+  // Coordinates, scale, and subtle overlays remain available and active across all 3 modes!
   const grid = document.getElementById('map-grid-overlay');
-  if (grid) grid.style.display = isMono ? 'block' : 'none';
+  if (grid) grid.style.display = 'block';
   const coordsNw = document.getElementById('map-coord-nw');
-  if (coordsNw) coordsNw.style.display = isMono ? 'block' : 'none';
+  if (coordsNw) coordsNw.style.display = 'block';
   const coordsSw = document.getElementById('map-coord-sw');
-  if (coordsSw) coordsSw.style.display = isMono ? 'block' : 'none';
+  if (coordsSw) coordsSw.style.display = 'block';
+  const archScale = document.getElementById('map-arch-scale');
+  if (archScale) archScale.style.display = 'block';
 
   document.querySelectorAll('[data-base]').forEach((b) => {
     const isThis = b.dataset.base === baseName || (baseName === 'monochrome' && b.dataset.base === 'bwnoise');
@@ -403,28 +407,70 @@ function renderLoadingProgress(pct) {
   if (pctEl) pctEl.textContent = `${Math.round(currentLoadingPct)}%`;
   if (badge) badge.textContent = `${Math.round(currentLoadingPct)}%`;
 
+  // Circular tick dial stroke-dashoffset (Circumference: 2 * PI * 42 ≈ 263.89)
+  const dialCircle = document.getElementById('tech-dial-progress-circle');
+  if (dialCircle) {
+    const circ = 263.89;
+    dialCircle.style.strokeDasharray = `${circ}`;
+    dialCircle.style.strokeDashoffset = `${circ - (circ * currentLoadingPct) / 100}`;
+  }
+
+  // Update barcode bars
+  const barcodeTrack = document.getElementById('tech-barcode-track');
+  if (barcodeTrack && !barcodeTrack.children.length) {
+    let barsHtml = '';
+    for (let i = 0; i < 24; i++) {
+      barsHtml += `<span class="tech-barcode-tick" data-bar-idx="${i}"></span>`;
+    }
+    barcodeTrack.innerHTML = barsHtml;
+  }
+  if (barcodeTrack) {
+    const activeCount = Math.round((currentLoadingPct / 100) * 24);
+    barcodeTrack.querySelectorAll('.tech-barcode-tick').forEach((bar, idx) => {
+      bar.classList.toggle('active', idx < activeCount);
+    });
+  }
+
+  // Telemetry values
+  const volEl = $('#tech-hud-volume');
+  if (volEl) volEl.textContent = `${Math.round((currentLoadingPct / 100) * 4890).toLocaleString()} / 4,890 PTS`;
+  const etaEl = $('#tech-hud-eta');
+  if (etaEl) {
+    const remainingSec = Math.max(0, ((100 - currentLoadingPct) * 0.04)).toFixed(1);
+    etaEl.textContent = `ETA: ${remainingSec}S`;
+  }
+
+  // Center Coordinates & Frame
+  const c = map.getCenter();
+  const latEl = $('#hud-coord-lat');
+  const lonEl = $('#hud-coord-lon');
+  const dimEl = $('#hud-frame-dim');
+  if (latEl) latEl.textContent = toDMS(c.lat, true);
+  if (lonEl) lonEl.textContent = toDMS(c.lng, false);
+  if (dimEl) dimEl.textContent = `${sizeKm()} × ${sizeKm()} KM`;
+
   const sOsm = $('#load-src-osm');
   const sDem = $('#load-src-dem');
   const sRoads = $('#load-src-roads');
   const sWater = $('#load-src-water');
   if (sOsm) {
-    if (currentLoadingPct > 35) { sOsm.style.color = '#4ade80'; sOsm.textContent = '✓ Cargado'; }
-    else { sOsm.style.color = '#38bdf8'; sOsm.textContent = 'Descargando...'; }
+    if (currentLoadingPct > 35) { sOsm.style.color = '#ffffff'; sOsm.textContent = 'ONLINE [OK]'; }
+    else { sOsm.style.color = 'rgba(255,255,255,0.7)'; sOsm.textContent = 'STREAMING...'; }
   }
   if (sDem) {
-    if (currentLoadingPct > 65) { sDem.style.color = '#4ade80'; sDem.textContent = '✓ Cargado'; }
-    else if (currentLoadingPct > 35) { sDem.style.color = '#38bdf8'; sDem.textContent = 'Malla DEM...'; }
-    else { sDem.style.color = '#71717a'; sDem.textContent = 'En espera'; }
+    if (currentLoadingPct > 65) { sDem.style.color = '#ffffff'; sDem.textContent = 'ONLINE [OK]'; }
+    else if (currentLoadingPct > 35) { sDem.style.color = 'rgba(255,255,255,0.7)'; sDem.textContent = 'DEM MESHING...'; }
+    else { sDem.style.color = 'rgba(255,255,255,0.3)'; sDem.textContent = 'WAITING'; }
   }
   if (sRoads) {
-    if (currentLoadingPct > 82) { sRoads.style.color = '#4ade80'; sRoads.textContent = '✓ Cargado'; }
-    else if (currentLoadingPct > 65) { sRoads.style.color = '#38bdf8'; sRoads.textContent = 'Trazando ejes...'; }
-    else { sRoads.style.color = '#71717a'; sRoads.textContent = 'En espera'; }
+    if (currentLoadingPct > 82) { sRoads.style.color = '#ffffff'; sRoads.textContent = 'ONLINE [OK]'; }
+    else if (currentLoadingPct > 65) { sRoads.style.color = 'rgba(255,255,255,0.7)'; sRoads.textContent = 'TRACING AXES...'; }
+    else { sRoads.style.color = 'rgba(255,255,255,0.3)'; sRoads.textContent = 'WAITING'; }
   }
   if (sWater) {
-    if (currentLoadingPct >= 96) { sWater.style.color = '#4ade80'; sWater.textContent = '✓ Listo'; }
-    else if (currentLoadingPct > 82) { sWater.style.color = '#38bdf8'; sWater.textContent = 'Sincronizando...'; }
-    else { sWater.style.color = '#71717a'; sWater.textContent = 'En espera'; }
+    if (currentLoadingPct >= 96) { sWater.style.color = '#ffffff'; sWater.textContent = 'SYNCHRONIZED'; }
+    else if (currentLoadingPct > 82) { sWater.style.color = 'rgba(255,255,255,0.7)'; sWater.textContent = 'PROCESSING...'; }
+    else { sWater.style.color = 'rgba(255,255,255,0.3)'; sWater.textContent = 'STANDBY'; }
   }
 }
 
@@ -928,11 +974,7 @@ map.on('click', (e) => {
   if (!secState.drawing) return;
   secState.points.push([e.latlng.lat, e.latlng.lng]);
   secRedraw();
-  if (secState.points.length === 2) {
-    setTimeout(() => {
-      $('#sec-build')?.click();
-    }, 150);
-  }
+  // DO NOT auto-trigger section build! Let the user review and click "Generar Perfil"
 });
 
 $('#sec-build')?.addEventListener('click', async () => {
