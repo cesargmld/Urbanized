@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=7.0">
+  <link rel="stylesheet" href="/css/style.css?v=7.1">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -1515,6 +1515,38 @@
         <div class="rayon-canvas-measure-pill">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21"/><line x1="21" y1="21" x2="3" y2="3"/></svg>
           <span id="canvas-measure-text-3d">1.0 × 1.0 km</span>
+        </div>
+
+        <!-- Environmental & Site Premises HUD in 3D Studio -->
+        <div class="studio-premises-hud" id="studio-premises-hud" style="position:absolute; right:16px; bottom:16px; z-index:30; display:flex; align-items:center; gap:10px; background:rgba(18,19,22,0.88); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.12); border-radius:8px; padding:6px 12px; pointer-events:auto; font-family:var(--font-mono, monospace);">
+          <!-- Rosa de los Vientos Climática ERA5 en 3D -->
+          <div style="display:flex; align-items:center; gap:8px;">
+            <svg viewBox="0 0 64 64" width="34" height="34" style="overflow:visible;">
+              <circle cx="32" cy="32" r="30" fill="none" stroke="rgba(255,255,255,0.12)" stroke-width="0.8" stroke-dasharray="2 2"/>
+              <line x1="32" y1="4" x2="32" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <polygon points="32,2 29.8,7.5 34.2,7.5" fill="#ffffff"/>
+              <text x="32" y="13" text-anchor="middle" fill="#ffffff" font-size="6.5" font-weight="600">N</text>
+              <g id="studio-wind-petals"></g>
+              <circle cx="32" cy="32" r="2" fill="#090a0d" stroke="#ffffff" stroke-width="1"/>
+            </svg>
+            <div style="display:flex; flex-direction:column;">
+              <span style="font-size:8.5px; color:#71717a; text-transform:uppercase; letter-spacing:0.04em;">VIENTO ERA5</span>
+              <strong id="studio-wind-dom" style="font-size:10.5px; color:#ffffff; font-weight:600;">—</strong>
+            </div>
+          </div>
+          <div style="width:1px; height:24px; background:rgba(255,255,255,0.12);"></div>
+          <!-- Sol NOAA Status -->
+          <div style="display:flex; flex-direction:column;">
+            <span style="font-size:8.5px; color:#71717a; text-transform:uppercase; letter-spacing:0.04em;">SOL NOAA</span>
+            <strong id="studio-sun-dom" style="font-size:10.5px; color:#38bdf8; font-weight:600;">21 JUN · 14:00</strong>
+          </div>
+          <div style="width:1px; height:24px; background:rgba(255,255,255,0.12);"></div>
+          <!-- Coordenadas & Escala -->
+          <div style="display:flex; flex-direction:column;">
+            <span style="font-size:8.5px; color:#71717a; text-transform:uppercase; letter-spacing:0.04em;">SITIO</span>
+            <span id="studio-site-coords" style="font-size:10.5px; color:#e4e4e7;">—</span>
+          </div>
         </div>
       </div>
 
@@ -3484,7 +3516,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=7.0"></script>
+  <script type="module" src="/js/app.js?v=7.1"></script>
   <script>
     (function() {
       // Synchronize shape & mode segmented buttons (stable layout height)
@@ -3872,14 +3904,6 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     let currentActiveView = 'app';
 
     function switchView(viewName, force = false) {
-      if (!force && viewName === 'app' && currentActiveView !== 'app' && currentActiveView !== 'workspace-home' && window.hasActiveModel?.()) {
-        const modal = document.getElementById('modal-return-map');
-        if (modal) {
-          modal.hidden = false;
-          return;
-        }
-      }
-
       document.querySelectorAll('.screen-layer').forEach(s => {
         const isActive = (s.id === viewName);
         s.classList.toggle('active', isActive);
@@ -3963,8 +3987,22 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
 
     document.querySelectorAll('.axiom-view-btn[data-view]').forEach(btn => {
       btn.addEventListener('click', () => {
-        if (btn.classList.contains('disabled')) return;
-        switchView(btn.getAttribute('data-view'));
+        const targetView = btn.getAttribute('data-view');
+        if (targetView === 'app') {
+          switchView('app', true);
+          return;
+        }
+        if (btn.classList.contains('disabled')) {
+          if (!window.hasActiveModel || !window.hasActiveModel()) {
+            window.pendingTargetView = targetView;
+            const buildBtn = document.getElementById('build');
+            if (buildBtn) {
+              buildBtn.click();
+              return;
+            }
+          }
+        }
+        switchView(targetView);
       });
     });
 
@@ -4122,6 +4160,8 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         const timeStr = formatSolarHour(hour);
         if (sunHourVal) sunHourVal.textContent = timeStr + ' hrs';
         if (sunEphemBadge) sunEphemBadge.textContent = activeSolarLabel + ' · ' + timeStr;
+        const stdSunDom = document.getElementById('studio-sun-dom');
+        if (stdSunDom) stdSunDom.textContent = activeSolarLabel + ' · ' + timeStr;
         if (window.set3DSunFromDateTime) {
           const res = window.set3DSunFromDateTime({ month: activeSolarMonth, day: activeSolarDay, hour });
           if (res) {

@@ -216,7 +216,9 @@ let windAbort = null;
 function renderWindRoseSVG(data) {
   const petalsEl = document.getElementById('arch-wind-petals');
   const domEl = document.getElementById('arch-wind-dom');
-  if (!petalsEl || !data || !data.sectors) return;
+  const studioPetalsEl = document.getElementById('studio-wind-petals');
+  const studioDomEl = document.getElementById('studio-wind-dom');
+  if (!data || !data.sectors) return;
 
   const totals = data.sectors.map((bins) => bins.reduce((a, b) => a + b, 0));
   const maxTotal = Math.max(0.01, ...totals);
@@ -245,11 +247,12 @@ function renderWindRoseSVG(data) {
     const stroke = isDom ? '#ffffff' : 'rgba(255,255,255,0.55)';
     pathsHtml += `<path d="M${x0},${y0} L${x1},${y1} A${r.toFixed(1)},${r.toFixed(1)} 0 0,1 ${x2},${y2} L${x3},${y3} Z" fill="${fill}" stroke="${stroke}" stroke-width="${isDom ? '0.9' : '0.45'}"/>`;
   }
-  petalsEl.innerHTML = pathsHtml;
-  if (domEl) {
-    const dirLabel = WIND_DIRS_16[data.dominant ?? 0] || 'N';
-    domEl.textContent = `${dirLabel} · ${(data.meanSpeed || 0).toFixed(1)} m/s`;
-  }
+  if (petalsEl) petalsEl.innerHTML = pathsHtml;
+  if (studioPetalsEl) studioPetalsEl.innerHTML = pathsHtml;
+  const dirLabel = WIND_DIRS_16[data.dominant ?? 0] || 'N';
+  const labelText = `${dirLabel} · ${(data.meanSpeed || 0).toFixed(1)} m/s`;
+  if (domEl) domEl.textContent = labelText;
+  if (studioDomEl) studioDomEl.textContent = labelText;
 }
 
 async function fetchClimaticWindRose(lat, lon) {
@@ -788,6 +791,22 @@ function renderMeta(m) {
   const sc = stlScale(m.size);
   const stlNote = $('#stl-note'); if (stlNote) stlNote.textContent = t('dl.stlNote', { scale: sc, mm: Math.round((m.size * 1000) / sc) });
   const stRelief = $('#st-relief'); if (stRelief) stRelief.textContent = Math.round(m.stats.relief);
+
+  // Sincronización de premisas de sitio en 3D Studio & Inspector
+  const stdCoords = $('#studio-site-coords');
+  if (stdCoords) {
+    stdCoords.textContent = `${m.center.lat.toFixed(4)}, ${m.center.lon.toFixed(4)} · ${m.size}m`;
+  }
+  const inspSite = $('#inspector-site-name');
+  if (inspSite) {
+    const searchVal = document.getElementById('q')?.value?.trim();
+    if (searchVal) inspSite.textContent = searchVal.split(',')[0];
+  }
+  const inspArea = $('#inspector-site-area');
+  if (inspArea) {
+    const m2 = m.size * m.size;
+    inspArea.textContent = `${m2.toLocaleString(loc)} m² (${(m2 / 1000000).toFixed(2)} km²)`;
+  }
 }
 
 async function showResult(m) {
@@ -801,9 +820,12 @@ async function showResult(m) {
   $('#view-btn-studio')?.classList.remove('disabled');
   $('#view-btn-mapper')?.classList.remove('disabled');
   $('#view-btn-illu')?.classList.remove('disabled');
+  $('#view-btn-comp')?.classList.remove('disabled');
 
+  const targetWorkspaceView = window.pendingTargetView || 'result';
+  window.pendingTargetView = null;
   if (window.switchWorkspaceView) {
-    window.switchWorkspaceView('result');
+    window.switchWorkspaceView(targetWorkspaceView);
   }
 
   const { showModel, triggerResize } = await import('./preview.js?v=6.0');
