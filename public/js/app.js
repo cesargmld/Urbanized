@@ -6,7 +6,7 @@ import { feasibilityStore } from './feasibility.js?v=1.0';
 import { MAP_GRID_STEPS } from './mapplan.js?v=6.0';
 import { classifyEcosystem } from './biodiversity.js?v=6.0';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=6.0';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=6.2';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=7.0';
 window.buildSection = buildSection;
 import { createIllustrator } from './illustrate.js?v=6.0';
 import { viewsManager } from './viewsManager.js?v=6.0';
@@ -179,9 +179,7 @@ function drawFrame() {
     : t('size.free', { km: FREE_AREA_KM2 });
   const over = extra > 0;
   if (over !== frame.classList.contains('over') && costEl.dataset.ready) {
-    costEl.classList.remove('flash');
-    void costEl.offsetWidth;
-    costEl.classList.add('flash');
+    costEl.classList.toggle('flash', over);
   }
   costEl.dataset.ready = '1';
   frame.classList.toggle('over', over);
@@ -322,22 +320,32 @@ setTimeout(() => {
   const c = map.getCenter();
   fetchClimaticWindRose(c.lat, c.lng);
 }, 120);
-// если рамка не помещается — отдаляем карту
-function fitFrame() {
+// 60 FPS Smooth Frame Sizing without recursive zoom locks
+function fitFrame(adjustZoom = false) {
   drawFrame();
+  if (!adjustZoom) return;
   const box = map.getContainer();
-  if (!box.clientWidth || !box.clientHeight) return; // карта ещё не видна
-  while (frame.offsetWidth > Math.min(box.clientWidth, box.clientHeight) * 0.85 && map.getZoom() > 3) {
-    map.setZoom(map.getZoom() - 1, { animate: false });
+  if (!box || !box.clientWidth || !box.clientHeight) return;
+  const size = Number(sizeInput.value);
+  const maxPx = Math.min(box.clientWidth, box.clientHeight) * 0.82;
+  const c = map.getCenter();
+  const currentZoom = map.getZoom();
+  const cosLat = Math.cos((c.lat * Math.PI) / 180);
+  const maxMpp = size / maxPx;
+  const targetZoom = Math.min(18, Math.max(3, Math.floor(Math.log2((40075016.686 * cosLat) / maxMpp) - 8)));
+  if (targetZoom < currentZoom) {
+    map.setZoom(targetZoom, { animate: false });
     drawFrame();
   }
 }
-sizeInput.addEventListener('input', fitFrame);
-fitFrame();
-setTimeout(() => { map.invalidateSize(); fitFrame(); }, 200);
-setTimeout(() => { map.invalidateSize(); fitFrame(); }, 800);
-window.addEventListener('resize', () => { map.invalidateSize(); fitFrame(); });
 
+// Butter-smooth drag from 250m to 3500m (NEVER freezes the thread with zoom loops)
+sizeInput.addEventListener('input', () => drawFrame());
+sizeInput.addEventListener('change', () => fitFrame(true));
+fitFrame(false);
+setTimeout(() => { map.invalidateSize(); drawFrame(); }, 200);
+setTimeout(() => { map.invalidateSize(); drawFrame(); }, 800);
+window.addEventListener('resize', () => { map.invalidateSize(); drawFrame(); });
 /* ---------------- Поиск (Nominatim) ---------------- */
 
 const q = $('#q'), results = $('#results');

@@ -10271,3 +10271,145 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   padding: 1px 8px !important;
   z-index: 400 !important;
 }
+
+/* ========================================================
+   v40 PRECISION POLISH & ROCK-SOLID FIXES
+   ======================================================== */
+
+/* 1. H3L KINETIC MOTION GRAPHICS STYLING */
+.h3l-globe-box {
+  width: 42px !important;
+  height: 42px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-right: 14px !important;
+  flex-shrink: 0 !important;
+}
+
+.h3l-globe-svg {
+  width: 100% !important;
+  height: 100% !important;
+  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2)) !important;
+}
+
+.h3l-wordmark-motion {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px !important;
+  position: relative !important;
+  font-family: "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
+  font-size: 34px !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.025em !important;
+  line-height: 1 !important;
+}
+
+.h3l-char-cell {
+  width: 22px !important;
+  height: 38px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  position: relative !important;
+  overflow: hidden !important;
+}
+
+.h3l-char-inner {
+  display: block !important;
+  width: 100% !important;
+  text-align: center !important;
+  transition: transform 0.05s ease, color 0.05s ease !important;
+}
+
+.h3l-char-inner.locked {
+  color: #ffffff !important;
+  transform: translateY(0) scale(1) !important;
+}
+
+.h3l-char-inner.scrambling {
+  color: rgba(255, 255, 255, 0.45) !important;
+  font-family: var(--font-mono), monospace !important;
+  font-size: 30px !important;
+  transform: translateY(-1px) scale(0.95) !important;
+}
+
+.h3l-scanner-line {
+  position: absolute !important;
+  bottom: -4px !important;
+  left: 0 !important;
+  width: 22px !important;
+  height: 3px !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
+  transition: transform 0.06s ease, opacity 0.1s ease !important;
+  pointer-events: none !important;
+}
+
+/* 2. STRICT ZERO-JUMP LOCKED SETUP CARD (IDENTICAL 254px TOOLS HEIGHT) */
+.axiom-setup-card {
+  position: absolute !important;
+  bottom: 24px !important;
+  left: 20px !important;
+  width: 320px !important;
+  min-width: 320px !important;
+  max-width: 320px !important;
+  height: 330px !important;
+  min-height: 330px !important;
+  max-height: 330px !important;
+  box-sizing: border-box !important;
+  overflow: hidden !important;
+  padding: 14px 16px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  background: rgba(10, 12, 16, 0.82) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+  z-index: 500 !important;
+}
+
+.axiom-setup-card:has(#map-filters-list:not([hidden])) {
+  height: 520px !important;
+  max-height: 520px !important;
+  overflow-y: auto !important;
+}
+
+.axiom-setup-form {
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: flex-start !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  gap: 10px !important;
+}
+
+.mode-seg {
+  height: 32px !important;
+  min-height: 32px !important;
+  max-height: 32px !important;
+  margin: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+#model-tools,
+#section-tools {
+  height: 254px !important;
+  min-height: 254px !important;
+  max-height: 254px !important;
+  box-sizing: border-box !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  flex-shrink: 0 !important;
+}
+
+#model-tools[hidden],
+#section-tools[hidden] {
+  display: none !important;
+}

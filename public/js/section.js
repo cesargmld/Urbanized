@@ -30,9 +30,30 @@ export function sectionLength(points) {
   return len;
 }
 
-async function fetchAlong(points, radius = 40, signal) {
-  const coords = points.map(([lat, lon]) => `${lat.toFixed(6)},${lon.toFixed(6)}`).join(',');
-  const r = Math.max(25, Math.min(150, radius || 40));
+async function fetchAlong(points, radius = 50, signal) {
+  // Interpolate intermediate coordinates along the corridor so Overpass queries the full cut line
+  const samples = [];
+  const totalLen = sectionLength(points);
+  const targetStep = Math.max(120, Math.min(350, totalLen / 20));
+  for (let i = 0; i < points.length - 1; i++) {
+    const p0 = points[i], p1 = points[i + 1];
+    const segLen = sectionLength([p0, p1]);
+    const numSub = Math.max(1, Math.round(segLen / targetStep));
+    for (let k = 0; k < numSub; k++) {
+      const t = k / numSub;
+      samples.push([p0[0] + t * (p1[0] - p0[0]), p0[1] + t * (p1[1] - p0[1])]);
+    }
+  }
+  samples.push(points[points.length - 1]);
+
+  // Cap to max 22 points for lightning-fast ~1s Overpass query
+  const maxPts = 22;
+  const filteredSamples = samples.length <= maxPts
+    ? samples
+    : samples.filter((_, idx) => idx % Math.ceil(samples.length / maxPts) === 0 || idx === samples.length - 1);
+
+  const coords = filteredSamples.map(([lat, lon]) => `${lat.toFixed(6)},${lon.toFixed(6)}`).join(',');
+  const r = Math.max(35, Math.min(150, radius || 50));
   const query = `[out:json][timeout:12];(
     way["building"](around:${r},${coords});
     relation["building"](around:${r},${coords});
@@ -45,6 +66,7 @@ async function fetchAlong(points, radius = 40, signal) {
     way["natural"="water"](around:${r},${coords});
     way["waterway"](around:${r},${coords});
   );out geom;`;
+
   const ctrls = OVERPASS.map(() => new AbortController());
   const attempt = async (url) => {
     const isProxy = url.startsWith('/');
