@@ -24,6 +24,147 @@
 </head>
 <body class="axiom-app">
   <!-- ========================================================
+       0. H3L STOP-MOTION ARCHITECTURAL PAGE LOADER
+       Step-by-step mechanical frame-by-frame assembly of URBNZD
+       ======================================================== -->
+  <div class="h3l-page-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
+    <div class="h3l-loader-grid-bg"></div>
+    <div class="h3l-loader-stage">
+      <!-- Top Technical Telemetry -->
+      <div class="h3l-stage-meta-top">
+        <span class="h3l-meta-code">SYS_BOOT // 12FPS_STEP</span>
+        <span class="h3l-meta-frame" id="h3l-frame-counter">FRM [00/18]</span>
+      </div>
+
+      <!-- Center Stop-Motion Brand Assembly -->
+      <div class="h3l-brand-assembly">
+        <!-- Corner Precision Reticles -->
+        <span class="h3l-reticle tl"></span>
+        <span class="h3l-reticle tr"></span>
+        <span class="h3l-reticle bl"></span>
+        <span class="h3l-reticle br"></span>
+
+        <!-- Stop-Motion Wireframe Globe Icon -->
+        <div class="h3l-globe-wrap" id="h3l-globe">
+          <svg viewBox="0 0 64 40" class="h3l-globe-svg">
+            <ellipse cx="32" cy="20" rx="28" ry="17" class="h3l-wire h3l-w1" />
+            <ellipse cx="32" cy="20" rx="18" ry="17" class="h3l-wire h3l-w2" />
+            <ellipse cx="32" cy="20" rx="7" ry="17" class="h3l-wire h3l-w3" />
+            <line x1="4" y1="20" x2="60" y2="20" class="h3l-wire h3l-w4" />
+            <path d="M 8 11 Q 32 14 56 11" class="h3l-wire h3l-w5" />
+            <path d="M 8 29 Q 32 26 56 29" class="h3l-wire h3l-w6" />
+          </svg>
+        </div>
+
+        <!-- Stop-Motion Mechanical Letter Cells: u r b n z d -->
+        <div class="h3l-wordmark" id="h3l-wordmark">
+          <span class="h3l-char" data-char="u" data-glyph="01">u</span>
+          <span class="h3l-char" data-char="r" data-glyph="02">r</span>
+          <span class="h3l-char" data-char="b" data-glyph="03">b</span>
+          <span class="h3l-char" data-char="n" data-glyph="04">n</span>
+          <span class="h3l-char" data-char="z" data-glyph="05">z</span>
+          <span class="h3l-char" data-char="d" data-glyph="06">d</span>
+          <span class="h3l-block-cursor" id="h3l-cursor"></span>
+        </div>
+      </div>
+
+      <!-- Bottom Discrete Stop-Motion Progress Ticks -->
+      <div class="h3l-stage-meta-bottom">
+        <div class="h3l-step-bar" id="h3l-step-bar">
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+        <div class="h3l-boot-status" id="h3l-boot-status">MOUNTING CARTOGRAPHIC ENGINE...</div>
+      </div>
+    </div>
+  </div>
+  <script>
+    // H3L STOP-MOTION MECHANICAL PAGE LOADER ENGINE (12 FPS)
+    (function initH3lStopMotionLoader() {
+      const loader = document.getElementById('h3l-page-loader');
+      if (!loader) return;
+      const chars = Array.from(loader.querySelectorAll('.h3l-char'));
+      const wires = Array.from(loader.querySelectorAll('.h3l-wire'));
+      const ticks = Array.from(loader.querySelectorAll('#h3l-step-bar span'));
+      const frameCounter = document.getElementById('h3l-frame-counter');
+      const bootStatus = document.getElementById('h3l-boot-status');
+      const cursor = document.getElementById('h3l-cursor');
+      const glyphPool = ['█', '▓', '▒', '░', '+', '×', '÷', '—', '0', '1', 'X', 'Z', '#'];
+      const statusSteps = [
+        'MOUNTING CARTOGRAPHIC ENGINE...',
+        'CALIBRATING WGS84 DATUM...',
+        'LOCKING VECTOR GEOMETRY...',
+        'SYNCHRONIZING SKETCHUP C-SDK...',
+        'URBNZD STUDIO READY'
+      ];
+      const totalFrames = 18;
+      let timer = null;
+
+      const renderH3lFrame = (f) => {
+        if (frameCounter) frameCounter.textContent = 'FRM [' + String(Math.min(f, totalFrames)).padStart(2, '0') + '/' + totalFrames + ']';
+        wires.forEach((w, idx) => { w.classList.toggle('locked', f >= idx + 1); });
+        const activeTicks = Math.floor((f / totalFrames) * ticks.length);
+        ticks.forEach((t, idx) => { t.classList.toggle('on', idx < activeTicks); });
+        const statusIdx = Math.min(statusSteps.length - 1, Math.floor((f / totalFrames) * statusSteps.length));
+        if (bootStatus) bootStatus.textContent = statusSteps[statusIdx];
+        chars.forEach((ch, idx) => {
+          const target = ch.getAttribute('data-char');
+          const startFrame = idx * 2 + 1;
+          const lockFrame = startFrame + 3;
+          if (f < startFrame) {
+            ch.textContent = '';
+            ch.className = 'h3l-char';
+          } else if (f < lockFrame) {
+            const randGlyph = glyphPool[(f + idx * 3) % glyphPool.length];
+            ch.textContent = (f === lockFrame - 1) ? target.toUpperCase() : randGlyph;
+            ch.className = 'h3l-char stamping';
+          } else {
+            ch.textContent = target;
+            ch.className = 'h3l-char locked';
+          }
+        });
+        if (cursor) cursor.classList.toggle('done', f >= totalFrames);
+      };
+
+      window.setH3lFrame = (f) => {
+        if (timer) clearTimeout(timer);
+        loader.hidden = false;
+        loader.style.display = 'flex';
+        loader.classList.remove('h3l-loader-exit');
+        renderH3lFrame(f);
+      };
+
+      let frame = 0;
+      const runStopMotionStep = () => {
+        frame++;
+        renderH3lFrame(frame);
+        if (frame < totalFrames) {
+          timer = setTimeout(runStopMotionStep, 80);
+        } else {
+          timer = setTimeout(() => {
+            loader.classList.add('h3l-loader-exit');
+            setTimeout(() => {
+              loader.style.display = 'none';
+              loader.hidden = true;
+            }, 220);
+          }, 280);
+        }
+      };
+
+      window.replayH3lLoader = () => {
+        if (timer) clearTimeout(timer);
+        frame = 0;
+        loader.hidden = false;
+        loader.style.display = 'flex';
+        loader.classList.remove('h3l-loader-exit');
+        runStopMotionStep();
+      };
+
+      timer = setTimeout(runStopMotionStep, 60);
+    })();
+  </script>
+
+  <!-- ========================================================
        1. TOP APPLICATION HEADER (Rayon / Axiom Minimalist Dark Glass)
        No redundant tooltips on main view switcher buttons!
        ======================================================== -->
@@ -80,25 +221,22 @@
 
     <!-- Right Controls: .urbnz Project Save/Load, Share & 1-Piece Language Selector -->
     <div class="axiom-topbar-right">
-      <button type="button" class="axiom-btn-secondary" id="btn-save-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:2px;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-        <span data-i18n="nav.saveUrbnz">.urbnz</span>
+      <button type="button" class="axiom-header-action" id="btn-save-urbnz" title="Guardar archivo .urbnz">
+        <span class="btn-bracket-label" data-i18n="nav.saveUrbnz">.URBNZ</span>
       </button>
-      <button type="button" class="axiom-btn-secondary" id="btn-open-urbnz" style="font-size:11px; padding:5px 10px; display:inline-flex; align-items:center; gap:5px; border-radius:2px;">
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
-        <span data-i18n="nav.openUrbnz">Abrir</span>
+      <button type="button" class="axiom-header-action" id="btn-open-urbnz" title="Abrir archivo .urbnz">
+        <span class="btn-bracket-label" data-i18n="nav.openUrbnz">OPEN</span>
       </button>
       <input type="file" id="input-open-urbnz" accept=".urbnz,.json" style="display:none;">
 
       <!-- Global Header Share Button -->
-      <button type="button" class="rayon-share-btn" id="btn-topbar-share" style="padding:4px 12px; font-size:11px; border-radius:2px; display:inline-flex; align-items:center; gap:5px;">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
-        <span>Share</span>
+      <button type="button" class="axiom-header-action" id="btn-topbar-share" title="Compartir proyecto">
+        <span class="btn-bracket-label">SHARE</span>
       </button>
 
       <!-- 1-Piece Language Selector Button (Toggles between EN and ES) -->
-      <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language" style="border-radius:2px;">
-        <span id="lang-current-label">EN</span>
+      <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language">
+        <span id="lang-current-label" class="btn-bracket-label">EN</span>
       </button>
     </div>
   </header>
@@ -354,6 +492,7 @@
       <nav class="map-left-rail" id="map-left-rail" aria-label="Rail de navegación">
         <button type="button" class="map-rail-avatar-btn" id="btn-map-avatar" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil">
           <span class="rayon-user-avatar">C</span>
+          <span class="workspace-pill-label">WORKSPACE</span>
         </button>
       </nav>
 
@@ -648,8 +787,9 @@
     <div id="result" class="screen-layer rayon-studio-layout">
       <!-- 1. LEFT RAIL (44px) - Rayon-inspired 7 canonical tabs + Export -->
       <nav class="rayon-left-rail" id="studio-left-rail" aria-label="Herramientas del estudio">
-        <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil" style="margin-bottom:8px; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#18181b; border:1px solid rgba(255,255,255,0.18); cursor:pointer;">
-          <span class="rayon-user-avatar" style="font-size:11px; font-weight:700; color:#ffffff;">C</span>
+        <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil">
+          <span class="rayon-user-avatar">C</span>
+          <span class="workspace-rail-caption">WORKSPACE</span>
         </button>
         <button type="button" class="rayon-rail-btn active" data-rail-tab="layers" data-tooltip="Capas (Layers)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
@@ -1484,8 +1624,9 @@
       <div class="axiom-left-system" id="mapper-left-system">
         <!-- Categorized Left Icon Rail for Cartografía 2D -->
         <nav class="axiom-left-dock" aria-label="Herramientas de Cartografía 2D">
-          <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil" style="margin-bottom:8px; width:30px; height:30px; border-radius:50%; display:flex; align-items:center; justify-content:center; background:#18181b; border:1px solid rgba(255,255,255,0.18); cursor:pointer;">
-            <span class="rayon-user-avatar" style="font-size:11px; font-weight:700; color:#ffffff;">C</span>
+          <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil">
+            <span class="rayon-user-avatar">C</span>
+            <span class="workspace-rail-caption">WORKSPACE</span>
           </button>
           <button type="button" class="axiom-dock-icon active" data-mapdrawer="layers" data-tooltip="1. Capas & Superposición QGIS">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
@@ -1905,6 +2046,10 @@
       <div class="axiom-left-system" id="illu-left-system">
         <!-- Categorized Left Icon Rail for Axonometría -->
         <nav class="axiom-left-dock" aria-label="Herramientas de Axonometría">
+          <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil">
+            <span class="rayon-user-avatar">C</span>
+            <span class="workspace-rail-caption">WORKSPACE</span>
+          </button>
           <button type="button" class="axiom-dock-icon active" data-illudrawer="layers" data-tooltip="1. Capas & Axonometría Isométrica Explotada">
             <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>
           </button>
@@ -2388,6 +2533,10 @@
     <div id="composition" class="screen-layer rayon-studio-layout" style="display:none;">
       <!-- 1. LEFT RAIL (44px) -->
       <nav class="rayon-rail-left" id="comp-left-rail" aria-label="Herramientas de Composición">
+        <button type="button" class="map-rail-avatar-btn studio-avatar-rail-btn" data-switchview="workspace-home" title="Espacio de Trabajo / Perfil">
+          <span class="rayon-user-avatar">C</span>
+          <span class="workspace-rail-caption">WORKSPACE</span>
+        </button>
         <button type="button" class="rayon-rail-btn active" data-comp-tab="format" data-tooltip="1. Formato & Diagramación de Pliego">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
         </button>

@@ -9060,3 +9060,521 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   border: 1px solid rgba(255, 255, 255, 0.16) !important;
   color: #ffffff !important;
 }
+
+/* ========================================================
+   V37 PURE MONOCHROME GRAYSCALE BRACKETS, DE-SATURATED HEADER,
+   WORKSPACE BADGE, LIQUID GLASS CREDITS & H3L STOP-MOTION LOADER
+   ======================================================== */
+
+/* 1. CERO MARCOS EXTERIORES Y CERO TONO NARANJA EN BOTONES:
+      Solo quedan los 4 corchetes ┌ ┐ └ ┘ y relleno en escala de grises */
+.axiom-view-btn,
+.axiom-view-btn.active,
+.axiom-island-btn,
+.axiom-island-btn.active,
+.axiom-seg-item,
+.axiom-seg-item.active,
+.axiom-header-action,
+.lang-single-btn {
+  border: none !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  padding: 2px 4px !important;
+  outline: none !important;
+}
+
+/* Quitamos cualquier fondo o píldora del subgrupo de navegación */
+.axiom-nav-subgroup {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+}
+
+/* Tipografía refinada y proporcionada (no gigante ni saturada) */
+.btn-bracket-label {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 4px 10px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.52) !important;
+  background: transparent !important;
+  transition: color 0.15s ease, background-color 0.15s ease !important;
+}
+
+.axiom-view-btn:hover .btn-bracket-label,
+.axiom-island-btn:hover .btn-bracket-label,
+.axiom-seg-item:hover .btn-bracket-label,
+.axiom-header-action:hover .btn-bracket-label,
+.lang-single-btn:hover .btn-bracket-label {
+  color: #ffffff !important;
+}
+
+/* Estado Activo o Hover en Header Actions: 4 Corchetes ┌ ┐ └ ┘ + Escala de Grises Sutil */
+.axiom-seg-item.active .btn-bracket-label,
+.axiom-island-btn.active .btn-bracket-label,
+.axiom-view-btn.active .btn-bracket-label,
+.axiom-header-action:hover .btn-bracket-label,
+.lang-single-btn:hover .btn-bracket-label {
+  color: #ffffff !important;
+  background:
+    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
+    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
+    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
+    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
+    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
+    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
+    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
+    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
+    rgba(255, 255, 255, 0.08) !important;
+  background-repeat: no-repeat !important;
+  background-size: 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 100% 100% !important;
+}
+
+/* Controles derechos del Header (.URBNZ, OPEN, SHARE, EN): Limpios y desaturados */
+.axiom-topbar-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+
+.axiom-topbar-right button,
+#btn-topbar-share,
+#btn-save-urbnz,
+#btn-open-urbnz,
+#btn-lang-toggle {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+}
+
+/* Buscador y Resultados: Escala de grises limpia */
+.axiom-search-box:focus-within {
+  border-color: rgba(255, 255, 255, 0.45) !important;
+  background: rgba(18, 20, 26, 0.88) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+}
+
+.results li:hover,
+.results li.search-preview-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.results li.search-preview-item .search-item-icon {
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.07) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  color: #ffffff !important;
+}
+
+.results li.search-preview-item .search-badge-type {
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.09) !important;
+  color: #e4e4e7 !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+/* Botones de modales y CTAs en escala de grises arquitectónica */
+.rayon-share-btn,
+.rayon-primary-btn,
+.axiom-btn-primary,
+.axiom-cta-pill {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border: 1px solid #ffffff !important;
+  color: #090a0d !important;
+  border-radius: 2px !important;
+  box-shadow: none !important;
+  font-weight: 500 !important;
+}
+
+.rayon-share-btn:hover,
+.rayon-primary-btn:hover,
+.axiom-btn-primary:hover,
+.axiom-cta-pill:hover {
+  background: #ffffff !important;
+}
+
+.axiom-corner-tag {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+
+.sec-layer-btn.active {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+.sec-layer-btn.active .sec-filter-indicator {
+  background: #ffffff !important;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 2. ICONO DE WORKSPACE CON INICIAL + TEXTO "WORKSPACE" EN MAPA Y EN TODAS LAS VISTAS */
+#btn-map-avatar {
+  width: auto !important;
+  height: 28px !important;
+  border-radius: 2px !important;
+  padding: 0 10px 0 4px !important;
+  background: rgba(10, 12, 16, 0.76) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+}
+
+#btn-map-avatar:hover {
+  border-color: rgba(255, 255, 255, 0.38) !important;
+  background: rgba(18, 20, 26, 0.88) !important;
+  transform: none !important;
+}
+
+#btn-map-avatar .rayon-user-avatar {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.workspace-pill-label {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  text-transform: uppercase !important;
+}
+
+/* En los rieles laterales de Studio 3D, Cartografía 2D, Axonometría y Composición */
+.studio-avatar-rail-btn {
+  width: 38px !important;
+  height: auto !important;
+  min-height: 38px !important;
+  padding: 4px 2px !important;
+  margin-bottom: 8px !important;
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 3px !important;
+  cursor: pointer !important;
+}
+
+.studio-avatar-rail-btn .rayon-user-avatar {
+  width: 20px !important;
+  height: 20px !important;
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.workspace-rail-caption {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 6px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  text-transform: uppercase !important;
+  line-height: 1 !important;
+}
+
+/* 3. LOGO EN EL LOADER DE EXTRACCIÓN (BLANCO NÍTIDO) */
+.tech-hud-logo {
+  height: 20px !important;
+  width: auto !important;
+  filter: brightness(0) invert(1) !important;
+  opacity: 0.96 !important;
+  display: block !important;
+}
+
+/* 4. LIQUID GLASS EN CRÉDITOS DE OPENSTREETMAP Y MADE BY CGM ATELIER */
+.leaflet-control-attribution {
+  position: fixed !important;
+  bottom: 10px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  background: rgba(10, 12, 16, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+  padding: 4px 12px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.06em !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  z-index: 450 !important;
+}
+
+.cgm-credit-subtle {
+  position: fixed !important;
+  bottom: 10px !important;
+  right: 20px !important;
+  background: rgba(10, 12, 16, 0.72) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 2px !important;
+  padding: 4px 10px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.08em !important;
+  text-transform: uppercase !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
+  z-index: 1000 !important;
+  transition: all 0.15s ease !important;
+}
+
+.cgm-credit-subtle:hover {
+  color: #ffffff !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+}
+
+/* Elevamos ligeramente la tarjeta de escala para que no choque con made by cgm atelier */
+.map-arch-scale-card {
+  bottom: 42px !important;
+  right: 20px !important;
+  border-radius: 2px !important;
+  background: rgba(10, 12, 16, 0.76) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 5. H3L STOP-MOTION PAGE LOADER (12 FPS DISCRETE FRAME ASSEMBLY) */
+.h3l-page-loader {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: #060709 !important;
+  display: flex;
+  align-items: center !important;
+  justify-content: center !important;
+  overflow: hidden !important;
+  user-select: none !important;
+}
+
+.h3l-page-loader.h3l-loader-exit {
+  opacity: 0 !important;
+  transition: opacity 0.22s steps(4, end) !important;
+  pointer-events: none !important;
+}
+
+.h3l-loader-grid-bg {
+  position: absolute !important;
+  inset: 0 !important;
+  background-image:
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+  background-size: 48px 48px !important;
+  pointer-events: none !important;
+}
+
+.h3l-loader-stage {
+  position: relative !important;
+  width: 460px !important;
+  max-width: 90vw !important;
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 18px !important;
+}
+
+.h3l-stage-meta-top {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.14em !important;
+  color: rgba(255, 255, 255, 0.42) !important;
+}
+
+.h3l-brand-assembly {
+  position: relative !important;
+  padding: 38px 32px !important;
+  background: rgba(255, 255, 255, 0.015) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 18px !important;
+}
+
+/* 4 Esquinas Reticulares en el Stage H3L */
+.h3l-reticle {
+  position: absolute !important;
+  width: 8px !important;
+  height: 8px !important;
+  pointer-events: none !important;
+}
+.h3l-reticle.tl { top: -1px !important; left: -1px !important; border-top: 2px solid #ffffff !important; border-left: 2px solid #ffffff !important; }
+.h3l-reticle.tr { top: -1px !important; right: -1px !important; border-top: 2px solid #ffffff !important; border-right: 2px solid #ffffff !important; }
+.h3l-reticle.bl { bottom: -1px !important; left: -1px !important; border-bottom: 2px solid #ffffff !important; border-left: 2px solid #ffffff !important; }
+.h3l-reticle.br { bottom: -1px !important; right: -1px !important; border-bottom: 2px solid #ffffff !important; border-right: 2px solid #ffffff !important; }
+
+.h3l-globe-wrap {
+  width: 58px !important;
+  height: 36px !important;
+  flex-shrink: 0 !important;
+}
+
+.h3l-globe-svg {
+  width: 100% !important;
+  height: 100% !important;
+  overflow: visible !important;
+}
+
+.h3l-wire {
+  fill: none !important;
+  stroke: #ffffff !important;
+  stroke-width: 2.2 !important;
+  opacity: 0 !important;
+}
+
+.h3l-wire.locked {
+  opacity: 1 !important;
+}
+
+.h3l-wordmark {
+  display: inline-flex !important;
+  align-items: baseline !important;
+  gap: 2px !important;
+  min-width: 195px !important;
+}
+
+.h3l-char {
+  display: inline-block !important;
+  min-width: 28px !important;
+  text-align: center !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 44px !important;
+  font-weight: 500 !important;
+  line-height: 1 !important;
+  letter-spacing: -0.02em !important;
+  color: transparent !important;
+}
+
+/* Stop-motion frame: bloque invertido de alto contraste antes de asentar la letra */
+.h3l-char.stamping {
+  background: #ffffff !important;
+  color: #060709 !important;
+  font-size: 32px !important;
+  padding: 2px 0 !important;
+  transform: translateY(-2px) !important;
+}
+
+/* Letra asentada final */
+.h3l-char.locked {
+  background: transparent !important;
+  color: #ffffff !important;
+  font-size: 44px !important;
+  transform: translateY(0) !important;
+}
+
+.h3l-block-cursor {
+  display: inline-block !important;
+  width: 12px !important;
+  height: 34px !important;
+  background: #ffffff !important;
+  margin-left: 4px !important;
+  vertical-align: baseline !important;
+  animation: h3lCursorStep 0.32s steps(2, end) infinite !important;
+}
+
+.h3l-block-cursor.done {
+  opacity: 0 !important;
+  animation: none !important;
+}
+
+@keyframes h3lCursorStep {
+  0% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+.h3l-stage-meta-bottom {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 8px !important;
+}
+
+.h3l-step-bar {
+  display: grid !important;
+  grid-template-columns: repeat(12, 1fr) !important;
+  gap: 4px !important;
+  height: 5px !important;
+}
+
+.h3l-step-bar span {
+  background: rgba(255, 255, 255, 0.1) !important;
+  height: 100% !important;
+}
+
+.h3l-step-bar span.on {
+  background: #ffffff !important;
+}
+
+.h3l-boot-status {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  text-align: right !important;
+}
+
+/* 6. LIMPIEZA TOTAL DE SOMBRAS/FONDOS RESIDUALES EN BOTONES DEL SETUP CARD (SOLO 4 CORCHETES) */
+.axiom-setup-card .axiom-seg,
+.axiom-setup-card .mode-seg,
+.axiom-setup-card .shape-seg {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.axiom-setup-card .axiom-seg-item,
+.axiom-setup-card .axiom-seg-item.active,
+.axiom-setup-card .axiom-seg-item:hover,
+.axiom-setup-card .axiom-seg-item:focus {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+}

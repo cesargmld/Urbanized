@@ -181,6 +181,127 @@ const server = http.createServer(async (req, res) => {
     return;
   }
 
+  // Compilador nativo de Modelo Urbano a archivo SketchUp (.skp) con Tags CGM Atelier y Materiales D5 Render
+  if (req.url.startsWith('/api/export-skp') && req.method === 'POST') {
+    const chunks = [];
+    for await (const chunk of req) chunks.push(chunk);
+    try {
+      const payload = JSON.parse(Buffer.concat(chunks).toString('utf-8') || '{}');
+      const skp = require('openskp');
+      const M2I = skp.METRES_TO_INCHES || 39.37007874015748;
+      const toIn = (pt) => [pt[0] * M2I, pt[1] * M2I, (pt[2] || 0) * M2I];
+
+      const builder = skp.create();
+
+      // 1. Materiales Diferenciados Estándar CGM Atelier (Listos para D5 Render)
+      const matMuroBlanco = builder.addMaterial('Mat_Muro_Blanco', [242, 242, 240, 255], 1.0);
+      const matPisoPorcelanato = builder.addMaterial('Mat_Piso_Porcelanato', [230, 226, 218, 255], 1.0);
+      const matAluminioNegro = builder.addMaterial('Mat_Aluminio_Negro', [25, 25, 28, 255], 1.0);
+      const matCristalClaro = builder.addMaterial('Mat_Cristal_Claro', [140, 200, 230, 90], 0.35);
+      const matMadera = builder.addMaterial('Mat_Madera', [155, 105, 65, 255], 1.0);
+
+      // 2. Tags Estándar Obligatorios CGM Atelier
+      const tagLosa = builder.addLayer('01_Losa_y_Pisos', { color: [230, 226, 218, 255] });
+      const tagEstructura = builder.addLayer('02_Estructura_y_Nucleos', { color: [200, 200, 205, 255] });
+      const tagMuros = builder.addLayer('03_Muros_Tablaroca_Interiores', { color: [242, 242, 240, 255] });
+      const tagCanceleria = builder.addLayer('04_Canceleria_y_Mamparas_Cristal', { color: [140, 200, 230, 255] });
+      const tagPlafones = builder.addLayer('05_Plafones_e_Iluminacion', { color: [220, 220, 220, 255] });
+      const tagMobiliario = builder.addLayer('06_Mobiliario_y_Equipos', { color: [155, 105, 65, 255] });
+
+      const addMeshFaces = (grp, mesh, matHandle) => {
+        if (!mesh || !Array.isArray(mesh.verts) || !Array.isArray(mesh.faces)) return;
+        const verts = mesh.verts;
+        for (const f of mesh.faces) {
+          const idx = Array.isArray(f) ? f : f.v;
+          if (!idx || idx.length < 3) continue;
+          const pts = [];
+          for (let i = 0; i < idx.length; i++) {
+            const v = verts[idx[i]];
+            if (v) pts.push(toIn(v));
+          }
+          if (pts.length >= 3) {
+            try { grp.addFace(pts, { material: matHandle, backMaterial: matHandle }); } catch (e) {}
+          }
+        }
+      };
+
+      // 3. Construcción en Grupos Aislados (Cero geometría suelta)
+      if (payload.terrain && payload.terrain.verts?.length) {
+        builder.addGroup((g) => {
+          addMeshFaces(g, payload.terrain, matPisoPorcelanato);
+        }, { name: 'Terreno_Topografico_DEM', layer: tagLosa, material: matPisoPorcelanato });
+      }
+
+      if (Array.isArray(payload.roadMeshes) && payload.roadMeshes.length) {
+        builder.addGroup((g) => {
+          for (const rm of payload.roadMeshes) addMeshFaces(g, rm, matAluminioNegro);
+        }, { name: 'Vialidades_y_Banquetas', layer: tagLosa, material: matAluminioNegro });
+      }
+
+      if (Array.isArray(payload.water) && payload.water.length) {
+        builder.addGroup((g) => {
+          for (const w of payload.water) addMeshFaces(g, w, matCristalClaro);
+        }, { name: 'Cuerpos_de_Agua', layer: tagCanceleria, material: matCristalClaro });
+      }
+
+      if (Array.isArray(payload.bridges) && payload.bridges.length) {
+        builder.addGroup((g) => {
+          for (const br of payload.bridges) addMeshFaces(g, br, matMuroBlanco);
+        }, { name: 'Puentes_e_Infraestructura', layer: tagEstructura, material: matMuroBlanco });
+      }
+
+      if (Array.isArray(payload.buildings) && payload.buildings.length) {
+        const bldgs = payload.buildings.slice(0, 1200);
+        for (let i = 0; i < bldgs.length; i++) {
+          const b = bldgs[i];
+          const isGlass = b.cls === 'commercial' || b.cls === 'public';
+          const mat = isGlass ? matCristalClaro : matMuroBlanco;
+          const tag = isGlass ? tagCanceleria : tagEstructura;
+          builder.addGroup((g) => {
+            addMeshFaces(g, b, mat);
+          }, { name: b.name || `Volumen_Edificio_${i + 1}`, layer: tag, material: mat });
+        }
+      }
+
+      if (Array.isArray(payload.trees) && payload.trees.length) {
+        const trees = payload.trees.slice(0, 400);
+        builder.addGroup((g) => {
+          for (const t of trees) {
+            const x = t.x || 0, y = t.y || 0, z = t.z || 0;
+            const r = Math.max(1.2, (t.r || 2.5) * 0.7);
+            const h = Math.max(3.0, t.h || 6.0);
+            const zTop = z + h;
+            const zBase = z + h * 0.25;
+            const p1 = toIn([x - r, y - r, zBase]);
+            const p2 = toIn([x + r, y - r, zBase]);
+            const p3 = toIn([x + r, y + r, zBase]);
+            const p4 = toIn([x - r, y + r, zBase]);
+            const top = toIn([x, y, zTop]);
+            try {
+              g.addFace([p1, p2, top], { material: matMadera });
+              g.addFace([p2, p3, top], { material: matMadera });
+              g.addFace([p3, p4, top], { material: matMadera });
+              g.addFace([p4, p1, top], { material: matMadera });
+            } catch (e) {}
+          }
+        }, { name: 'Vegetacion_y_Arbolado', layer: tagMobiliario, material: matMadera });
+      }
+
+      const skpBytes = builder.toBytes();
+      res.writeHead(200, {
+        'Content-Type': 'application/octet-stream',
+        'Content-Disposition': 'attachment; filename="Proyecto_URBNZD_CGM.skp"',
+        'Access-Control-Allow-Origin': '*',
+      });
+      res.end(Buffer.from(skpBytes));
+    } catch (err) {
+      console.error('Error compilando SKP nativo:', err);
+      res.writeHead(500, { 'Content-Type': 'application/json' });
+      res.end(JSON.stringify({ error: 'Error al compilar .skp: ' + (err.message || String(err)) }));
+    }
+    return;
+  }
+
   // Conversor nativo de SketchUp (.skp) a GLB mediante openskp
   if (req.url.startsWith('/api/convert-skp') && req.method === 'POST') {
     const chunks = [];

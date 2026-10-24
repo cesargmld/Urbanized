@@ -865,11 +865,13 @@ function save(blob, name) {
   setTimeout(() => URL.revokeObjectURL(a.href), 30000);
 }
 
-document.querySelectorAll('.dl').forEach((btn) =>
+document.querySelectorAll('.dl[data-format]').forEach((btn) =>
   btn.addEventListener('click', async () => {
     if (!model || btn.classList.contains('busy')) return;
     const fmt = FORMATS[btn.dataset.format];
-    btn.querySelector('span').dataset.busy = t('dl.busy');
+    if (!fmt) return;
+    const sp = btn.querySelector('span');
+    if (sp) sp.dataset.busy = t('dl.busy');
     btn.classList.add('busy');
     try {
       // сначала файл, потом списание: если сборка файла упала, кредиты остаются на месте
