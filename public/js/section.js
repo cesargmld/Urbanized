@@ -5,9 +5,11 @@ import { elevationAt, buildingHeight } from './data.js?v=4.1';
 export const MAX_SECTION_KM = 20;
 const num = (v) => { const n = parseFloat(String(v ?? '').replace(',', '.')); return Number.isFinite(n) ? n : null; };
 const OVERPASS = [
+  '/api/overpass',
+  'https://overpass.openstreetmap.fr/api/interpreter',
+  'https://z.overpass-api.de/api/interpreter',
+  'https://lz4.overpass-api.de/api/interpreter',
   'https://overpass-api.de/api/interpreter',
-  'https://maps.mail.ru/osm/tools/overpass/api/interpreter',
-  'https://overpass.private.coffee/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
 ];
 
@@ -28,15 +30,29 @@ export function sectionLength(points) {
   return len;
 }
 
-async function fetchAlong(points, radius, signal) {
+async function fetchAlong(points, radius = 40, signal) {
   const coords = points.map(([lat, lon]) => `${lat.toFixed(6)},${lon.toFixed(6)}`).join(',');
-  const query = `[out:json][timeout:8];(way["building"](around:${radius},${coords}););out geom;`;
+  const r = Math.max(25, Math.min(150, radius || 40));
+  const query = `[out:json][timeout:12];(
+    way["building"](around:${r},${coords});
+    relation["building"](around:${r},${coords});
+    way["aeroway"="terminal"](around:${r},${coords});
+    relation["aeroway"="terminal"](around:${r},${coords});
+    node["natural"="tree"](around:${r},${coords});
+    way["natural"="tree_row"](around:${r},${coords});
+    way["landuse"="forest"](around:${r},${coords});
+    way["natural"="wood"](around:${r},${coords});
+    way["natural"="water"](around:${r},${coords});
+    way["waterway"](around:${r},${coords});
+  );out geom;`;
   const ctrls = OVERPASS.map(() => new AbortController());
   const attempt = async (url) => {
+    const isProxy = url.startsWith('/');
     const res = await fetch(url, {
       method: 'POST',
+      headers: isProxy ? { 'Content-Type': 'application/x-www-form-urlencoded' } : undefined,
       body: 'data=' + encodeURIComponent(query),
-      signal: AbortSignal.any([AbortSignal.timeout(3500), ...(signal ? [signal] : [])]),
+      signal: AbortSignal.any([AbortSignal.timeout(8000), ...(signal ? [signal] : [])]),
     });
     if (!res.ok) throw new Error(`Overpass ${res.status}`);
     return res.json();
@@ -95,7 +111,7 @@ function crossIntervals(poly, path) {
   return spans;
 }
 
-export async function buildSection(points, { exaggeration = 1 } = {}, onStep = () => {}, signal) {
+export async function buildSection(points, { exaggeration = 1, buffer = 40, includeBuildings = true, includeTrees = true } = {}, onStep = () => {}, signal) {
   const length = sectionLength(points);
   if (length > MAX_SECTION_KM * 1000) throw new Error('too long');
 
@@ -163,7 +179,7 @@ export async function buildSection(points, { exaggeration = 1 } = {}, onStep = (
 
   onStep('status.sectionData');
   let osm = { elements: [] };
-  try { osm = await fetchAlong(points, 30, signal); } catch { /* без зданий */ }
+  try { osm = await fetchAlong(points, buffer || 40, signal); } catch { /* sin edificios */ }
 
   const buildings = [], water = [], trees = [];
   // проекция точки на линию разреза: расстояние вдоль и отступ в сторону
@@ -186,43 +202,87 @@ export async function buildSection(points, { exaggeration = 1 } = {}, onStep = (
   };
   for (const el of osm.elements ?? []) {
     const tt = el.tags ?? {};
+
+    // 1. Árboles individuales (nodos)
     if (el.type === 'node' && tt.natural === 'tree') {
+      if (!includeTrees) continue;
       const pr = project(toLocal([el.lat, el.lon]));
-      if (pr && pr.off <= 18) addTree(pr.d, num(tt.height) ?? 10, (num(tt.diameter_crown) ?? 6) / 2);
+      if (pr && pr.off <= (buffer || 40) * 0.6) addTree(pr.d, num(tt.height) ?? 10, (num(tt.diameter_crown) ?? 6) / 2);
       continue;
     }
-    if (el.type !== 'way' || !el.geometry) continue;
+
+    // 2. Extraer polígonos/líneas tanto de ways como de relations (multipolygons)
+    const rawPolys = [];
+    if (el.type === 'way' && el.geometry && el.geometry.length >= 2) {
+      rawPolys.push(el.geometry);
+    } else if (el.type === 'relation' && el.members) {
+      for (const m of el.members) {
+        if (m.geometry && m.geometry.length >= 2 && (m.role === 'outer' || !m.role)) {
+          rawPolys.push(m.geometry);
+        }
+      }
+    }
+    if (!rawPolys.length) continue;
+
+    // 3. Hileras de árboles (tree_row)
     if (tt.natural === 'tree_row') {
-      const pts = el.geometry.map((g) => toLocal([g.lat, g.lon]));
-      for (let i = 1; i < pts.length; i++) {
-        const seg = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
-        for (let k = 0; k < seg; k += 8) {
-          const f = k / seg;
-          const pr = project([pts[i - 1][0] + f * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + f * (pts[i][1] - pts[i - 1][1])]);
-          if (pr && pr.off <= 18) addTree(pr.d, 9 + noise(pr.d) * 3, 3);
+      if (!includeTrees) continue;
+      for (const geom of rawPolys) {
+        const pts = geom.map((g) => toLocal([g.lat, g.lon]));
+        for (let i = 1; i < pts.length; i++) {
+          const seg = Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+          for (let k = 0; k < seg; k += 8) {
+            const f = k / seg;
+            const pr = project([pts[i - 1][0] + f * (pts[i][0] - pts[i - 1][0]), pts[i - 1][1] + f * (pts[i][1] - pts[i - 1][1])]);
+            if (pr && pr.off <= 18) addTree(pr.d, 9 + noise(pr.d) * 3, 3);
+          }
         }
       }
       continue;
     }
+
+    // 4. Bosques / Vegetación continua
     if (tt.landuse === 'forest' || tt.natural === 'wood') {
-      const poly = el.geometry.map((g) => toLocal([g.lat, g.lon]));
-      for (const [d0, d1] of crossIntervals(poly, path))
-        for (let d2 = d0 + 3; d2 < d1 - 2; d2 += 6 + noise(d2) * 3) addTree(d2, 12 + noise(d2 * 1.7) * 7, 3 + noise(d2 * 2.3) * 1.5);
+      if (!includeTrees) continue;
+      for (const geom of rawPolys) {
+        const poly = geom.map((g) => toLocal([g.lat, g.lon]));
+        for (const [d0, d1] of crossIntervals(poly, path))
+          for (let d2 = d0 + 3; d2 < d1 - 2; d2 += 6 + noise(d2) * 3) addTree(d2, 12 + noise(d2 * 1.7) * 7, 3 + noise(d2 * 2.3) * 1.5);
+      }
       continue;
     }
-    const poly = el.geometry.map((g) => toLocal([g.lat, g.lon]));
-    const spans = crossIntervals(poly, path);
-    if (!spans.length) continue;
-    const t = tt;
-    if (t.building) {
-      const { base, top } = buildingHeight(t);
-      for (const [d0, d1] of spans) {
-        let g = Infinity;
-        for (let x = d0; x <= d1; x += Math.max(1, (d1 - d0) / 10)) g = Math.min(g, groundAt(x));
-        buildings.push({ d0, d1, base: g + base, top: g + top, name: t.name ?? '', levels: t['building:levels'] ?? null });
+
+    // 5. Edificios, Terminales o Volúmenes arquitectónicos
+    const isBuilding = !!(tt.building || tt.aeroway === 'terminal' || tt['building:part']);
+    for (const geom of rawPolys) {
+      const poly = geom.map((g) => toLocal([g.lat, g.lon]));
+      const spans = crossIntervals(poly, path);
+      if (!spans.length) continue;
+
+      if (isBuilding) {
+        if (!includeBuildings) continue;
+        let { base, top } = buildingHeight(tt);
+        if (!top || isNaN(top) || top <= 0) {
+          if (tt['building:levels']) top = Math.max(3.5, parseFloat(tt['building:levels']) * 3.5);
+          else if (tt.aeroway === 'terminal') top = 14;
+          else top = 8;
+        }
+        if (!base || isNaN(base)) base = 0;
+        for (const [d0, d1] of spans) {
+          let g = Infinity;
+          for (let x = d0; x <= d1; x += Math.max(1, (d1 - d0) / 10)) g = Math.min(g, groundAt(x));
+          buildings.push({
+            d0, d1,
+            base: g + base,
+            top: g + top,
+            name: tt.name ?? (tt.aeroway === 'terminal' ? 'Terminal' : ''),
+            levels: tt['building:levels'] ?? null
+          });
+        }
+      } else {
+        // Cuerpos de agua
+        for (const [d0, d1] of spans) water.push({ d0, d1, z: Math.min(groundAt(d0), groundAt(d1)) });
       }
-    } else {
-      for (const [d0, d1] of spans) water.push({ d0, d1, z: Math.min(groundAt(d0), groundAt(d1)) });
     }
   }
 

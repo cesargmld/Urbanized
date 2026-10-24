@@ -28,31 +28,32 @@
        Step-by-step mechanical frame-by-frame assembly of URBNZD
        ======================================================== -->
   <div class="h3l-page-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
+    <!-- Perfectly Aligned Background Architectural Grid (40x40px, intersecting the stage corners) -->
     <div class="h3l-loader-grid-bg"></div>
-    <div class="h3l-loader-stage">
-      <!-- Top Technical Telemetry -->
-      <div class="h3l-stage-meta-top">
-        <span class="h3l-meta-code">SYS_BOOT // 12FPS_STEP</span>
-        <span class="h3l-meta-frame" id="h3l-frame-counter">FRM [00/16]</span>
-      </div>
 
-      <!-- Center Stop-Motion Brand Assembly (100% Original urbnzd-logo.png) -->
+    <div class="h3l-loader-stage">
+      <!-- Center Stop-Motion Brand Assembly -->
       <div class="h3l-brand-assembly">
-        <!-- Corner Precision Reticles -->
+        <!-- Corner Precision Reticles in Monochrome Grayscale -->
         <span class="h3l-reticle tl"></span>
         <span class="h3l-reticle tr"></span>
         <span class="h3l-reticle bl"></span>
         <span class="h3l-reticle br"></span>
 
-        <div class="h3l-original-logo-stage" id="h3l-logo-stage">
-          <!-- Faint wireframe ghost guide of the original PNG -->
-          <img src="assets/urbnzd-logo.png" alt="" aria-hidden="true" class="h3l-logo-ghost" draggable="false" />
-          <!-- Step-by-step revealed original PNG -->
-          <img src="assets/urbnzd-logo.png" alt="URBNZD" id="h3l-logo-reveal" class="h3l-logo-reveal" draggable="false" />
-          <!-- Stop-motion high-contrast mechanical stamp head over active glyph -->
-          <div class="h3l-logo-stamp-head" id="h3l-stamp-head"></div>
-          <!-- Blinking mechanical block cursor -->
-          <div class="h3l-logo-cursor" id="h3l-cursor"></div>
+        <!-- Authentic Globe Icon Crop (100% original from assets/urbnzd-logo.png) -->
+        <div class="h3l-globe-box" id="h3l-globe-box">
+          <img src="assets/urbnzd-logo.png" alt="" class="h3l-globe-crop-img" draggable="false" />
+        </div>
+
+        <!-- Stop-Motion Helvetica Now Display Wordmark -->
+        <div class="h3l-wordmark-motion" id="h3l-wordmark">
+          <span class="h3l-char" data-target="u" id="h3l-c0">_</span>
+          <span class="h3l-char" data-target="r" id="h3l-c1">_</span>
+          <span class="h3l-char" data-target="b" id="h3l-c2">_</span>
+          <span class="h3l-char" data-target="n" id="h3l-c3">_</span>
+          <span class="h3l-char" data-target="z" id="h3l-c4">_</span>
+          <span class="h3l-char" data-target="d" id="h3l-c5">_</span>
+          <span class="h3l-block-cursor" id="h3l-cursor"></span>
         </div>
       </div>
 
@@ -62,108 +63,110 @@
           <span></span><span></span><span></span><span></span><span></span><span></span>
           <span></span><span></span><span></span><span></span><span></span><span></span>
         </div>
-        <div class="h3l-boot-status" id="h3l-boot-status">MOUNTING CARTOGRAPHIC ENGINE...</div>
       </div>
     </div>
   </div>
   <script>
-    // H3L STOP-MOTION MECHANICAL PAGE LOADER ENGINE (12 FPS - ORIGINAL PNG LOGO)
+    // H3L STOP-MOTION MECHANICAL TYPOGRAPHY LOADER (12 FPS, HELVETICA NOW DISPLAY)
     (function initH3lStopMotionLoader() {
       const loader = document.getElementById('h3l-page-loader');
       if (!loader) return;
-      const logoReveal = document.getElementById('h3l-logo-reveal');
-      const stampHead = document.getElementById('h3l-stamp-head');
+      const chars = [
+        document.getElementById('h3l-c0'),
+        document.getElementById('h3l-c1'),
+        document.getElementById('h3l-c2'),
+        document.getElementById('h3l-c3'),
+        document.getElementById('h3l-c4'),
+        document.getElementById('h3l-c5')
+      ];
       const cursor = document.getElementById('h3l-cursor');
       const ticks = Array.from(loader.querySelectorAll('#h3l-step-bar span'));
-      const frameCounter = document.getElementById('h3l-frame-counter');
-      const bootStatus = document.getElementById('h3l-boot-status');
+      const targets = ['u', 'r', 'b', 'n', 'z', 'd'];
+      const scramblePool = ['a', 'c', 'e', 'x', 'o', 's', 'v', '1', '7', '/', '_'];
 
-      // Exact pixel column boundaries of assets/urbnzd-logo.png (300x82 px):
-      // Globe: 6%..28.5% | u: 33.5%..42.8% | r: 44.0%..50.0% | b: 50.5%..60.8% | n: 61.5%..70.6% | z: 71.2%..80.0% | d: 80.0%..91.5%
-      const keyframes = [
-        { reveal: 0,    stampL: 6.0,  stampW: 11.0, cursorL: 6.0,  stamp: true,  status: 'MOUNTING CARTOGRAPHIC ENGINE...' },
-        { reveal: 17.5, stampL: 17.5, stampW: 11.0, cursorL: 17.5, stamp: false, status: 'MOUNTING CARTOGRAPHIC ENGINE...' },
-        { reveal: 28.5, stampL: 33.5, stampW: 9.3,  cursorL: 33.5, stamp: true,  status: 'CALIBRATING WGS84 DATUM...' },
-        { reveal: 28.5, stampL: 33.5, stampW: 9.3,  cursorL: 33.5, stamp: true,  status: 'CALIBRATING WGS84 DATUM...' },
-        { reveal: 42.8, stampL: 44.0, stampW: 6.0,  cursorL: 44.0, stamp: false, status: 'CALIBRATING WGS84 DATUM...' },
-        { reveal: 42.8, stampL: 44.0, stampW: 6.0,  cursorL: 44.0, stamp: true,  status: 'LOCKING VECTOR GEOMETRY...' },
-        { reveal: 50.0, stampL: 50.5, stampW: 10.3, cursorL: 50.5, stamp: false, status: 'LOCKING VECTOR GEOMETRY...' },
-        { reveal: 50.0, stampL: 50.5, stampW: 10.3, cursorL: 50.5, stamp: true,  status: 'LOCKING VECTOR GEOMETRY...' },
-        { reveal: 60.8, stampL: 61.5, stampW: 9.1,  cursorL: 61.5, stamp: false, status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
-        { reveal: 60.8, stampL: 61.5, stampW: 9.1,  cursorL: 61.5, stamp: true,  status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
-        { reveal: 70.6, stampL: 71.2, stampW: 8.8,  cursorL: 71.2, stamp: false, status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
-        { reveal: 70.6, stampL: 71.2, stampW: 8.8,  cursorL: 71.2, stamp: true,  status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
-        { reveal: 80.0, stampL: 80.0, stampW: 10.2, cursorL: 80.0, stamp: false, status: 'FINALIZING D5 RENDER PIPELINE...' },
-        { reveal: 80.0, stampL: 80.0, stampW: 10.2, cursorL: 80.0, stamp: true,  status: 'FINALIZING D5 RENDER PIPELINE...' },
-        { reveal: 92.0, stampL: 92.0, stampW: 0,    cursorL: 91.5, stamp: false, status: 'URBNZD STUDIO READY' },
-        { reveal: 100,  stampL: 92.0, stampW: 0,    cursorL: 91.5, stamp: false, status: 'URBNZD STUDIO READY' }
+      // 12 Discrete Mechanical Steps
+      const steps = [
+        { activeIndex: 0, locked: [], scrambles: { 0: '_' } },
+        { activeIndex: 0, locked: [], scrambles: { 0: 'v' } },
+        { activeIndex: 1, locked: ['u'], scrambles: { 1: '/' } },
+        { activeIndex: 1, locked: ['u'], scrambles: { 1: 'i' } },
+        { activeIndex: 2, locked: ['u', 'r'], scrambles: { 2: 'p' } },
+        { activeIndex: 2, locked: ['u', 'r'], scrambles: { 2: 'h' } },
+        { activeIndex: 3, locked: ['u', 'r', 'b'], scrambles: { 3: 'm' } },
+        { activeIndex: 3, locked: ['u', 'r', 'b'], scrambles: { 3: 'r' } },
+        { activeIndex: 4, locked: ['u', 'r', 'b', 'n'], scrambles: { 4: 's' } },
+        { activeIndex: 4, locked: ['u', 'r', 'b', 'n'], scrambles: { 4: '2' } },
+        { activeIndex: 5, locked: ['u', 'r', 'b', 'n', 'z'], scrambles: { 5: 'q' } },
+        { activeIndex: 6, locked: ['u', 'r', 'b', 'n', 'z', 'd'], scrambles: {} }
       ];
-      const totalFrames = keyframes.length;
-      let timer = null;
 
-      const renderH3lFrame = (f) => {
-        const idx = Math.max(0, Math.min(totalFrames - 1, f - 1));
-        const kf = keyframes[idx];
-        if (frameCounter) frameCounter.textContent = 'FRM [' + String(Math.min(f, totalFrames)).padStart(2, '0') + '/' + totalFrames + ']';
-        if (bootStatus) bootStatus.textContent = kf.status;
-
-        const activeTicks = Math.round((f / totalFrames) * ticks.length);
-        ticks.forEach((t, i) => { t.classList.toggle('on', i < activeTicks); });
-
-        if (logoReveal) {
-          const rightClip = Math.max(0, 100 - kf.reveal);
-          logoReveal.style.clipPath = 'inset(0 ' + rightClip.toFixed(2) + '% 0 0)';
-        }
-        if (stampHead) {
-          if (kf.stamp && kf.stampW > 0) {
-            stampHead.style.opacity = '1';
-            stampHead.style.left = kf.stampL + '%';
-            stampHead.style.width = kf.stampW + '%';
+      const renderStep = (idx) => {
+        const s = steps[Math.min(idx, steps.length - 1)];
+        chars.forEach((c, i) => {
+          if (!c) return;
+          if (i < s.locked.length) {
+            c.textContent = s.locked[i];
+            c.classList.add('locked');
+            c.classList.remove('scramble');
+          } else if (s.scrambles[i] !== undefined) {
+            c.textContent = s.scrambles[i];
+            c.classList.add('scramble');
+            c.classList.remove('locked');
           } else {
-            stampHead.style.opacity = '0';
+            c.textContent = '_';
+            c.classList.remove('locked', 'scramble');
+          }
+        });
+
+        // Position cursor at active cell
+        if (cursor) {
+          if (s.activeIndex < chars.length) {
+            const activeChar = chars[s.activeIndex];
+            if (activeChar) {
+              const offset = activeChar.offsetLeft;
+              cursor.style.transform = 'translateX(' + offset + 'px)';
+              cursor.style.display = 'block';
+            }
+          } else {
+            cursor.style.display = 'none';
           }
         }
-        if (cursor) {
-          cursor.style.left = kf.cursorL + '%';
-          cursor.classList.toggle('done', f >= totalFrames);
-        }
+
+        // Fill progress ticks
+        const activeCount = Math.round(((idx + 1) / steps.length) * ticks.length);
+        ticks.forEach((t, i) => t.classList.toggle('on', i < activeCount));
       };
 
-      window.setH3lFrame = (f) => {
-        if (timer) clearTimeout(timer);
-        loader.hidden = false;
-        loader.style.display = 'flex';
-        loader.classList.remove('h3l-loader-exit');
-        renderH3lFrame(f);
-      };
+      let currentStep = 0;
+      let timer = null;
 
-      let frame = 0;
-      const runStopMotionStep = () => {
-        frame++;
-        renderH3lFrame(frame);
-        if (frame < totalFrames) {
-          timer = setTimeout(runStopMotionStep, 80);
+      const runLoop = () => {
+        renderStep(currentStep);
+        currentStep++;
+        if (currentStep < steps.length) {
+          timer = setTimeout(runLoop, 80); // ~12 fps discrete cadence
         } else {
+          // Hold complete logo for 220ms then exit
           timer = setTimeout(() => {
             loader.classList.add('h3l-loader-exit');
             setTimeout(() => {
               loader.style.display = 'none';
               loader.hidden = true;
-            }, 220);
-          }, 280);
+            }, 200);
+          }, 240);
         }
       };
 
       window.replayH3lLoader = () => {
         if (timer) clearTimeout(timer);
-        frame = 0;
+        currentStep = 0;
         loader.hidden = false;
         loader.style.display = 'flex';
         loader.classList.remove('h3l-loader-exit');
-        runStopMotionStep();
+        runLoop();
       };
 
-      timer = setTimeout(runStopMotionStep, 60);
+      timer = setTimeout(runLoop, 60);
     })();
   </script>
 
@@ -224,21 +227,25 @@
 
     <!-- Right Controls: .urbnz Project Save/Load, Share & 1-Piece Language Selector -->
     <div class="axiom-topbar-right">
-      <button type="button" class="axiom-header-action" id="btn-save-urbnz" title="Guardar archivo .urbnz">
-        <span class="btn-bracket-label" data-i18n="nav.saveUrbnz">.URBNZ</span>
+      <button type="button" class="axiom-header-action" id="btn-save-urbnz" title="Exportar archivo de proyecto .urbnzd">
+        <svg class="header-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+        <span class="btn-bracket-label">.URBNZD</span>
       </button>
-      <button type="button" class="axiom-header-action" id="btn-open-urbnz" title="Abrir archivo .urbnz">
+      <button type="button" class="axiom-header-action" id="btn-open-urbnz" title="Abrir archivo .urbnzd">
+        <svg class="header-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
         <span class="btn-bracket-label" data-i18n="nav.openUrbnz">OPEN</span>
       </button>
-      <input type="file" id="input-open-urbnz" accept=".urbnz,.json" style="display:none;">
+      <input type="file" id="input-open-urbnz" accept=".urbnz,.urbnzd,.json" style="display:none;">
 
       <!-- Global Header Share Button -->
       <button type="button" class="axiom-header-action" id="btn-topbar-share" title="Compartir proyecto">
+        <svg class="header-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
         <span class="btn-bracket-label">SHARE</span>
       </button>
 
       <!-- 1-Piece Language Selector Button (Toggles between EN and ES) -->
       <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language">
+        <svg class="header-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span id="lang-current-label" class="btn-bracket-label">EN</span>
       </button>
     </div>
@@ -2947,6 +2954,11 @@
        ======================================================== -->
   <div class="section-modal-backdrop" id="section-modal" hidden>
     <div class="section-modal-window axiom-hud-window">
+      <!-- 4-Corner Precision Reticles for Floating CAD Window -->
+      <span class="axiom-bracket tl"></span>
+      <span class="axiom-bracket tr"></span>
+      <span class="axiom-bracket bl"></span>
+      <span class="axiom-bracket br"></span>
       <!-- 1. Header with title, live exaggeration presets, layer switches and close -->
       <div class="section-modal-header">
         <div class="section-modal-title">

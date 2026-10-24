@@ -1115,7 +1115,10 @@ $('#sec-build')?.addEventListener('click', async () => {
   updateLoadingModal('status.sectionTerrain');
   try {
     const exaggeration = Number($('#sec-exag')?.value || 2);
-    const sec = await buildSection(secState.points, { exaggeration }, (k) => {
+    const buffer = Number($('#sec-buf')?.value || 40);
+    const includeBuildings = $('#sec-buildings') ? $('#sec-buildings').checked : true;
+    const includeTrees = $('#sec-trees') ? $('#sec-trees').checked : true;
+    const sec = await buildSection(secState.points, { exaggeration, buffer, includeBuildings, includeTrees }, (k) => {
       updateLoadingModal(k);
       setSecStatus(k, { busy: true });
     });
@@ -1272,7 +1275,8 @@ async function showSection(sec) {
 
   const metaDrawer = $('#sec-meta-drawer');
   if (metaDrawer) {
-    metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Cota +${Math.round(sec.minZ)}m a +${Math.round(sec.maxZ)}m · Pendiente media ${(avgSlope || 0).toFixed(1)}% · ${sec.buildings.length} edif.`;
+    const treeCount = sec.trees ? sec.trees.length : 0;
+    metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Cota +${Math.round(sec.minZ)}m a +${Math.round(sec.maxZ)}m · Pendiente media ${(avgSlope || 0).toFixed(1)}% · ${sec.buildings.length} edif. · ${treeCount} árb.`;
   }
 
   const statLen = $('#sec-stat-len');
