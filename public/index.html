@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=6.0">
+  <link rel="stylesheet" href="/css/style.css?v=6.3">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -33,10 +33,10 @@
       <!-- Top Technical Telemetry -->
       <div class="h3l-stage-meta-top">
         <span class="h3l-meta-code">SYS_BOOT // 12FPS_STEP</span>
-        <span class="h3l-meta-frame" id="h3l-frame-counter">FRM [00/18]</span>
+        <span class="h3l-meta-frame" id="h3l-frame-counter">FRM [00/16]</span>
       </div>
 
-      <!-- Center Stop-Motion Brand Assembly -->
+      <!-- Center Stop-Motion Brand Assembly (100% Original urbnzd-logo.png) -->
       <div class="h3l-brand-assembly">
         <!-- Corner Precision Reticles -->
         <span class="h3l-reticle tl"></span>
@@ -44,27 +44,15 @@
         <span class="h3l-reticle bl"></span>
         <span class="h3l-reticle br"></span>
 
-        <!-- Stop-Motion Wireframe Globe Icon -->
-        <div class="h3l-globe-wrap" id="h3l-globe">
-          <svg viewBox="0 0 64 40" class="h3l-globe-svg">
-            <ellipse cx="32" cy="20" rx="28" ry="17" class="h3l-wire h3l-w1" />
-            <ellipse cx="32" cy="20" rx="18" ry="17" class="h3l-wire h3l-w2" />
-            <ellipse cx="32" cy="20" rx="7" ry="17" class="h3l-wire h3l-w3" />
-            <line x1="4" y1="20" x2="60" y2="20" class="h3l-wire h3l-w4" />
-            <path d="M 8 11 Q 32 14 56 11" class="h3l-wire h3l-w5" />
-            <path d="M 8 29 Q 32 26 56 29" class="h3l-wire h3l-w6" />
-          </svg>
-        </div>
-
-        <!-- Stop-Motion Mechanical Letter Cells: u r b n z d -->
-        <div class="h3l-wordmark" id="h3l-wordmark">
-          <span class="h3l-char" data-char="u" data-glyph="01">u</span>
-          <span class="h3l-char" data-char="r" data-glyph="02">r</span>
-          <span class="h3l-char" data-char="b" data-glyph="03">b</span>
-          <span class="h3l-char" data-char="n" data-glyph="04">n</span>
-          <span class="h3l-char" data-char="z" data-glyph="05">z</span>
-          <span class="h3l-char" data-char="d" data-glyph="06">d</span>
-          <span class="h3l-block-cursor" id="h3l-cursor"></span>
+        <div class="h3l-original-logo-stage" id="h3l-logo-stage">
+          <!-- Faint wireframe ghost guide of the original PNG -->
+          <img src="assets/urbnzd-logo.png" alt="" aria-hidden="true" class="h3l-logo-ghost" draggable="false" />
+          <!-- Step-by-step revealed original PNG -->
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" id="h3l-logo-reveal" class="h3l-logo-reveal" draggable="false" />
+          <!-- Stop-motion high-contrast mechanical stamp head over active glyph -->
+          <div class="h3l-logo-stamp-head" id="h3l-stamp-head"></div>
+          <!-- Blinking mechanical block cursor -->
+          <div class="h3l-logo-cursor" id="h3l-cursor"></div>
         </div>
       </div>
 
@@ -79,51 +67,66 @@
     </div>
   </div>
   <script>
-    // H3L STOP-MOTION MECHANICAL PAGE LOADER ENGINE (12 FPS)
+    // H3L STOP-MOTION MECHANICAL PAGE LOADER ENGINE (12 FPS - ORIGINAL PNG LOGO)
     (function initH3lStopMotionLoader() {
       const loader = document.getElementById('h3l-page-loader');
       if (!loader) return;
-      const chars = Array.from(loader.querySelectorAll('.h3l-char'));
-      const wires = Array.from(loader.querySelectorAll('.h3l-wire'));
+      const logoReveal = document.getElementById('h3l-logo-reveal');
+      const stampHead = document.getElementById('h3l-stamp-head');
+      const cursor = document.getElementById('h3l-cursor');
       const ticks = Array.from(loader.querySelectorAll('#h3l-step-bar span'));
       const frameCounter = document.getElementById('h3l-frame-counter');
       const bootStatus = document.getElementById('h3l-boot-status');
-      const cursor = document.getElementById('h3l-cursor');
-      const glyphPool = ['█', '▓', '▒', '░', '+', '×', '÷', '—', '0', '1', 'X', 'Z', '#'];
-      const statusSteps = [
-        'MOUNTING CARTOGRAPHIC ENGINE...',
-        'CALIBRATING WGS84 DATUM...',
-        'LOCKING VECTOR GEOMETRY...',
-        'SYNCHRONIZING SKETCHUP C-SDK...',
-        'URBNZD STUDIO READY'
+
+      // Exact pixel column boundaries of assets/urbnzd-logo.png (300x82 px):
+      // Globe: 6%..28.5% | u: 33.5%..42.8% | r: 44.0%..50.0% | b: 50.5%..60.8% | n: 61.5%..70.6% | z: 71.2%..80.0% | d: 80.0%..91.5%
+      const keyframes = [
+        { reveal: 0,    stampL: 6.0,  stampW: 11.0, cursorL: 6.0,  stamp: true,  status: 'MOUNTING CARTOGRAPHIC ENGINE...' },
+        { reveal: 17.5, stampL: 17.5, stampW: 11.0, cursorL: 17.5, stamp: false, status: 'MOUNTING CARTOGRAPHIC ENGINE...' },
+        { reveal: 28.5, stampL: 33.5, stampW: 9.3,  cursorL: 33.5, stamp: true,  status: 'CALIBRATING WGS84 DATUM...' },
+        { reveal: 28.5, stampL: 33.5, stampW: 9.3,  cursorL: 33.5, stamp: true,  status: 'CALIBRATING WGS84 DATUM...' },
+        { reveal: 42.8, stampL: 44.0, stampW: 6.0,  cursorL: 44.0, stamp: false, status: 'CALIBRATING WGS84 DATUM...' },
+        { reveal: 42.8, stampL: 44.0, stampW: 6.0,  cursorL: 44.0, stamp: true,  status: 'LOCKING VECTOR GEOMETRY...' },
+        { reveal: 50.0, stampL: 50.5, stampW: 10.3, cursorL: 50.5, stamp: false, status: 'LOCKING VECTOR GEOMETRY...' },
+        { reveal: 50.0, stampL: 50.5, stampW: 10.3, cursorL: 50.5, stamp: true,  status: 'LOCKING VECTOR GEOMETRY...' },
+        { reveal: 60.8, stampL: 61.5, stampW: 9.1,  cursorL: 61.5, stamp: false, status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
+        { reveal: 60.8, stampL: 61.5, stampW: 9.1,  cursorL: 61.5, stamp: true,  status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
+        { reveal: 70.6, stampL: 71.2, stampW: 8.8,  cursorL: 71.2, stamp: false, status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
+        { reveal: 70.6, stampL: 71.2, stampW: 8.8,  cursorL: 71.2, stamp: true,  status: 'SYNCHRONIZING SKETCHUP C-SDK...' },
+        { reveal: 80.0, stampL: 80.0, stampW: 10.2, cursorL: 80.0, stamp: false, status: 'FINALIZING D5 RENDER PIPELINE...' },
+        { reveal: 80.0, stampL: 80.0, stampW: 10.2, cursorL: 80.0, stamp: true,  status: 'FINALIZING D5 RENDER PIPELINE...' },
+        { reveal: 92.0, stampL: 92.0, stampW: 0,    cursorL: 91.5, stamp: false, status: 'URBNZD STUDIO READY' },
+        { reveal: 100,  stampL: 92.0, stampW: 0,    cursorL: 91.5, stamp: false, status: 'URBNZD STUDIO READY' }
       ];
-      const totalFrames = 18;
+      const totalFrames = keyframes.length;
       let timer = null;
 
       const renderH3lFrame = (f) => {
+        const idx = Math.max(0, Math.min(totalFrames - 1, f - 1));
+        const kf = keyframes[idx];
         if (frameCounter) frameCounter.textContent = 'FRM [' + String(Math.min(f, totalFrames)).padStart(2, '0') + '/' + totalFrames + ']';
-        wires.forEach((w, idx) => { w.classList.toggle('locked', f >= idx + 1); });
-        const activeTicks = Math.floor((f / totalFrames) * ticks.length);
-        ticks.forEach((t, idx) => { t.classList.toggle('on', idx < activeTicks); });
-        const statusIdx = Math.min(statusSteps.length - 1, Math.floor((f / totalFrames) * statusSteps.length));
-        if (bootStatus) bootStatus.textContent = statusSteps[statusIdx];
-        chars.forEach((ch, idx) => {
-          const target = ch.getAttribute('data-char');
-          const startFrame = idx * 2 + 1;
-          const lockFrame = startFrame + 3;
-          if (f < startFrame) {
-            ch.textContent = '';
-            ch.className = 'h3l-char';
-          } else if (f < lockFrame) {
-            const randGlyph = glyphPool[(f + idx * 3) % glyphPool.length];
-            ch.textContent = (f === lockFrame - 1) ? target.toUpperCase() : randGlyph;
-            ch.className = 'h3l-char stamping';
+        if (bootStatus) bootStatus.textContent = kf.status;
+
+        const activeTicks = Math.round((f / totalFrames) * ticks.length);
+        ticks.forEach((t, i) => { t.classList.toggle('on', i < activeTicks); });
+
+        if (logoReveal) {
+          const rightClip = Math.max(0, 100 - kf.reveal);
+          logoReveal.style.clipPath = 'inset(0 ' + rightClip.toFixed(2) + '% 0 0)';
+        }
+        if (stampHead) {
+          if (kf.stamp && kf.stampW > 0) {
+            stampHead.style.opacity = '1';
+            stampHead.style.left = kf.stampL + '%';
+            stampHead.style.width = kf.stampW + '%';
           } else {
-            ch.textContent = target;
-            ch.className = 'h3l-char locked';
+            stampHead.style.opacity = '0';
           }
-        });
-        if (cursor) cursor.classList.toggle('done', f >= totalFrames);
+        }
+        if (cursor) {
+          cursor.style.left = kf.cursorL + '%';
+          cursor.classList.toggle('done', f >= totalFrames);
+        }
       };
 
       window.setH3lFrame = (f) => {
@@ -514,16 +517,41 @@
       <div class="map-hud-coord top-left" id="map-coord-nw">0°00'00.0"N, 0°00'00.0"W</div>
       <div class="map-hud-coord bottom-left" id="map-coord-sw">0°00'00.0"N, 0°00'00.0"W</div>
 
-      <!-- Live Dynamic Architectural Scale Bar (Modifies on Zoom) -->
+      <!-- Live Dynamic Architectural Scale Bar + Real ERA5 Wind Rose (Open-Meteo 30yr) -->
       <div class="map-arch-scale-card" id="map-arch-scale">
-        <div class="arch-scale-header">
-          <span class="arch-scale-tag">SCALE</span>
-          <b class="arch-scale-ratio" id="arch-scale-ratio">1:1,000</b>
-          <span class="arch-scale-metric" id="arch-scale-metric">1 cm = 10 m</span>
-        </div>
-        <div class="arch-scale-bar-wrap">
-          <div class="arch-scale-bar-line" id="arch-scale-bar-line"></div>
-          <span class="arch-scale-bar-label" id="arch-scale-bar-label">100 m</span>
+        <div class="arch-scale-climate-row">
+          <!-- North & ERA5 Climatic Wind Rose SVG -->
+          <div class="arch-wind-rose-wrap" id="arch-wind-rose-wrap" title="Rosa de los Vientos Climática Real (ERA5 Open-Meteo)">
+            <svg viewBox="0 0 64 64" class="arch-wind-rose-svg" id="arch-wind-rose-svg">
+              <circle cx="32" cy="32" r="26" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="0.8" stroke-dasharray="1.5 2"/>
+              <circle cx="32" cy="32" r="16" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.7"/>
+              <line x1="32" y1="4" x2="32" y2="60" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <line x1="4" y1="32" x2="60" y2="32" stroke="rgba(255,255,255,0.15)" stroke-width="0.7"/>
+              <polygon points="32,2 29.8,7.5 34.2,7.5" fill="#ffffff"/>
+              <text x="32" y="13" text-anchor="middle" fill="#ffffff" font-size="6.5" font-weight="600">N</text>
+              <g id="arch-wind-petals"></g>
+              <circle cx="32" cy="32" r="2" fill="#090a0d" stroke="#ffffff" stroke-width="1"/>
+            </svg>
+            <div class="arch-wind-meta">
+              <span class="arch-wind-tag">WIND ERA5</span>
+              <strong class="arch-wind-val" id="arch-wind-dom">NNE · 3.4 m/s</strong>
+            </div>
+          </div>
+
+          <div class="arch-scale-divider"></div>
+
+          <!-- Architectural Scale Indicator -->
+          <div class="arch-scale-main">
+            <div class="arch-scale-header">
+              <span class="arch-scale-tag">SCALE</span>
+              <b class="arch-scale-ratio" id="arch-scale-ratio">1:1,000</b>
+              <span class="arch-scale-metric" id="arch-scale-metric">1 cm = 10 m</span>
+            </div>
+            <div class="arch-scale-bar-wrap">
+              <div class="arch-scale-bar-line" id="arch-scale-bar-line"></div>
+              <span class="arch-scale-bar-label" id="arch-scale-bar-label">100 m</span>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -735,9 +763,9 @@
               <input id="sec-buf" type="range" min="10" max="150" step="5" value="40" class="axiom-range">
             </div>
 
-            <div class="axiom-seg" role="group" style="margin-top:8px; margin-bottom:10px;">
-              <button type="button" class="axiom-seg-item active" id="btn-sec-bldgs" aria-pressed="true">EDIFICIOS</button>
-              <button type="button" class="axiom-seg-item active" id="btn-sec-trees" aria-pressed="true">VEGETACIÓN</button>
+            <div class="axiom-seg" role="group" style="margin-top:4px; margin-bottom:6px;">
+              <button type="button" class="axiom-seg-item active" id="btn-sec-bldgs" aria-pressed="true"><span class="btn-bracket-label">EDIFICIOS</span></button>
+              <button type="button" class="axiom-seg-item active" id="btn-sec-trees" aria-pressed="true"><span class="btn-bracket-label">VEGETACIÓN</span></button>
             </div>
             <input type="checkbox" id="sec-buildings" checked hidden>
             <input type="checkbox" id="sec-trees" checked hidden>
@@ -991,10 +1019,30 @@
             </div>
           </div>
 
-          <!-- Sombreado Solar & Asoleamiento -->
+          <!-- Sombreado Solar & Asoleamiento Astronómico Real (NOAA / Meeus) -->
           <div class="axiom-editor-group" style="padding:0; margin-top:10px;">
-            <span class="axiom-sub-header">Sol, Sombra & Asoleamiento</span>
+            <div class="axiom-row-between" style="margin-bottom:6px;">
+              <span class="axiom-sub-header" style="margin:0;">Sol Astronómico Real (NOAA)</span>
+              <span class="axiom-count-pill" id="val-solar-ephemeris" style="font-size:9px;">21 JUN · 14:00</span>
+            </div>
+
+            <!-- Selector de Efeméride Solar: Verano / Equinoccio / Invierno -->
+            <div class="axiom-seg solar-season-seg" role="group" style="margin-bottom:8px;">
+              <button type="button" class="axiom-seg-item active" data-solardate="5-21" aria-pressed="true"><span class="btn-bracket-label" style="font-size:8.5px; padding:3px 6px;">21 JUN · VERANO</span></button>
+              <button type="button" class="axiom-seg-item" data-solardate="2-21" aria-pressed="false"><span class="btn-bracket-label" style="font-size:8.5px; padding:3px 6px;">21 MAR · EQUIN</span></button>
+              <button type="button" class="axiom-seg-item" data-solardate="11-21" aria-pressed="false"><span class="btn-bracket-label" style="font-size:8.5px; padding:3px 6px;">21 DIC · INVIER</span></button>
+            </div>
+
+            <!-- Control de Hora Solar Real -->
             <div class="axiom-control-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label">Hora Solar Local</span>
+                <span class="axiom-val" id="val-studio-sun-hour">14:00 hrs</span>
+              </div>
+              <input type="range" min="6" max="19.5" step="0.25" value="14" id="slider-studio-sun-hour" class="axiom-range">
+            </div>
+
+            <div class="axiom-control-row" style="margin-top:4px;">
               <div class="axiom-row-between">
                 <span class="axiom-label">Azimut Solar</span>
                 <span class="axiom-val" id="val-studio-sun-azimuth">315°</span>
@@ -1006,7 +1054,7 @@
                 <span class="axiom-label">Elevación Solar</span>
                 <span class="axiom-val" id="val-studio-sun-elevation">45°</span>
               </div>
-              <input type="range" min="15" max="85" step="5" value="45" id="slider-studio-sun-elevation" class="axiom-range">
+              <input type="range" min="5" max="88" step="2" value="45" id="slider-studio-sun-elevation" class="axiom-range">
             </div>
           </div>
 
@@ -2899,48 +2947,63 @@
        ======================================================== -->
   <div class="section-modal-backdrop" id="section-modal" hidden>
     <div class="section-modal-window axiom-hud-window">
-      <!-- 1. Header with title, corner brackets, layer switches and close -->
+      <!-- 1. Header with title, live exaggeration presets, layer switches and close -->
       <div class="section-modal-header">
         <div class="section-modal-title">
           <div class="section-title-badge-row">
-            <span class="axiom-corner-tag">TOPOGRAPHIC PROFILE</span>
+            <span class="axiom-corner-tag">[ CAD SECTION // PROFILE ]</span>
             <span id="sec-meta-drawer" class="mono-coords">—</span>
           </div>
-          <h3 data-i18n="section.title">Architectural Ground & Elevation Section</h3>
+          <h3 data-i18n="section.title">Architectural Ground, Slope & Elevation Section</h3>
         </div>
 
-        <!-- Inline Cut Profile Layer Filters (Terrain | Buildings | Datum Grid | Trees) -->
-        <div class="section-layer-filters" role="group" aria-label="Section Layers">
-          <button type="button" class="sec-layer-btn active" data-seclayer="ground" title="Toggle ground surface">
-            <span class="sec-filter-indicator"></span>
-            <span>Terrain</span>
-          </button>
-          <button type="button" class="sec-layer-btn active" data-seclayer="buildings" title="Toggle corridor buildings">
-            <span class="sec-filter-indicator"></span>
-            <span>Buildings</span>
-          </button>
-          <button type="button" class="sec-layer-btn active" data-seclayer="grid" title="Toggle elevation datum grid">
-            <span class="sec-filter-indicator"></span>
-            <span>Datum Grid</span>
-          </button>
-          <button type="button" class="sec-layer-btn active" data-seclayer="trees" title="Toggle tree canopies">
-            <span class="sec-filter-indicator"></span>
-            <span>Vegetation</span>
-          </button>
-        </div>
+        <!-- Live Exaggeration & Flip Controls Directly in Header -->
+        <div class="section-header-controls" style="display:flex; align-items:center; gap:14px;">
+          <div class="section-exag-pills" role="group" aria-label="Exageración vertical" style="display:flex; align-items:center; gap:4px;">
+            <span style="font-size:9px; color:rgba(255,255,255,0.45); letter-spacing:0.08em; margin-right:4px;">SCALE Z:</span>
+            <button type="button" class="sec-exag-btn" data-secexag="1"><span class="btn-bracket-label" style="font-size:9px; padding:2px 7px;">1×</span></button>
+            <button type="button" class="sec-exag-btn active" data-secexag="2"><span class="btn-bracket-label" style="font-size:9px; padding:2px 7px;">2×</span></button>
+            <button type="button" class="sec-exag-btn" data-secexag="3"><span class="btn-bracket-label" style="font-size:9px; padding:2px 7px;">3×</span></button>
+            <button type="button" class="sec-exag-btn" data-secexag="5"><span class="btn-bracket-label" style="font-size:9px; padding:2px 7px;">5×</span></button>
+            <button type="button" class="sec-exag-btn" id="btn-sec-flip-dir" title="Invertir sentido del corte A ↔ B"><span class="btn-bracket-label" style="font-size:9px; padding:2px 7px;">A ↔ B</span></button>
+          </div>
 
-        <button type="button" class="modal-close-btn" id="section-modal-close" aria-label="Close">✕</button>
+          <!-- Inline Cut Profile Layer Filters (Terrain | Buildings | Datum Grid | Trees) -->
+          <div class="section-layer-filters" role="group" aria-label="Section Layers">
+            <button type="button" class="sec-layer-btn active" data-seclayer="ground" title="Toggle ground surface">
+              <span class="sec-filter-indicator"></span>
+              <span>TERRAIN</span>
+            </button>
+            <button type="button" class="sec-layer-btn active" data-seclayer="buildings" title="Toggle corridor buildings">
+              <span class="sec-filter-indicator"></span>
+              <span>BUILDINGS</span>
+            </button>
+            <button type="button" class="sec-layer-btn active" data-seclayer="grid" title="Toggle elevation datum grid">
+              <span class="sec-filter-indicator"></span>
+              <span>DATUM GRID</span>
+            </button>
+            <button type="button" class="sec-layer-btn active" data-seclayer="trees" title="Toggle tree canopies">
+              <span class="sec-filter-indicator"></span>
+              <span>CANOPY</span>
+            </button>
+          </div>
+
+          <button type="button" class="modal-close-btn" id="section-modal-close" aria-label="Close">✕</button>
+        </div>
       </div>
 
-      <!-- 2. HERO VISUAL CUT PROFILE (Placed First / Dominant) -->
-      <div class="section-modal-body hero-visual">
+      <!-- 2. HERO VISUAL CUT PROFILE (Placed First / Dominant with Interactive Crosshair) -->
+      <div class="section-modal-body hero-visual" id="sec-hero-stage">
         <div class="flat" id="view-section-drawer"><img alt="Topographic Section Cut" draggable="false"></div>
+        <div class="sec-hover-guide" id="sec-hover-guide" hidden>
+          <span class="sec-hover-badge" id="sec-hover-badge">0 m · +0 m</span>
+        </div>
       </div>
 
-      <!-- 3. TELEMETRY & METRIC KPIS (Placed Second / Clean Row) -->
-      <div class="section-telemetry-ribbon">
+      <!-- 3. TELEMETRY & METRIC KPIS (6-Column Architectural CAD Ribbon) -->
+      <div class="section-telemetry-ribbon" style="grid-template-columns: repeat(6, 1fr);">
         <div class="sec-stat-item">
-          <span class="sec-stat-label">TOTAL DISTANCE</span>
+          <span class="sec-stat-label">TOTAL DISTANCE (L)</span>
           <b class="sec-stat-val" id="sec-stat-len">—</b>
         </div>
         <div class="sec-stat-item">
@@ -2952,11 +3015,15 @@
           <b class="sec-stat-val" id="sec-stat-min">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">TOTAL RELIEF (Δh)</span>
+          <span class="sec-stat-label">TOTAL RELIEF (ΔH)</span>
           <b class="sec-stat-val" id="sec-stat-drop">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">EXAGGERATION</span>
+          <span class="sec-stat-label">MEAN / MAX SLOPE</span>
+          <b class="sec-stat-val" id="sec-stat-slope">—</b>
+        </div>
+        <div class="sec-stat-item">
+          <span class="sec-stat-label">VERTICAL EXAG.</span>
           <b class="sec-stat-val" id="sec-stat-exag">2.0×</b>
         </div>
       </div>
@@ -2966,20 +3033,20 @@
         <div class="section-modal-actions">
           <button class="axiom-export-pill dl" data-section="dxf">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>AutoCAD .DXF</span>
+            <span>AUTOCAD .DXF</span>
           </button>
           <button class="axiom-export-pill dl" data-section="svg">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Vector .SVG</span>
+            <span>ILLUSTRATOR .SVG</span>
           </button>
           <button class="axiom-export-pill dl" data-section="png">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>Image .PNG</span>
+            <span>HIGH-RES .PNG</span>
           </button>
         </div>
 
         <button type="button" class="axiom-cta-pill" id="btn-section-modal-done">
-          <span>Accept & Close</span>
+          <span>CLOSE SECTION DOCK</span>
         </button>
         <span id="sec-quota" style="display:none;"></span>
       </div>
@@ -3387,23 +3454,26 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=6.0"></script>
+  <script type="module" src="/js/app.js?v=6.2"></script>
   <script>
     (function() {
-      // Synchronize shape & mode segmented buttons
+      // Synchronize shape & mode segmented buttons (stable layout height)
       document.querySelectorAll('.mode-seg button').forEach(btn => {
         btn.addEventListener('click', () => {
           const targetMode = btn.getAttribute('data-mode');
           btn.parentElement?.querySelectorAll('button').forEach(b => {
-            b.classList.remove('active');
-            b.setAttribute('aria-pressed', 'false');
+            b.classList.toggle('active', b === btn);
+            b.setAttribute('aria-pressed', String(b === btn));
           });
-          btn.classList.add('active');
-          btn.setAttribute('aria-pressed', 'true');
           const m = document.getElementById('model-tools');
           const s = document.getElementById('section-tools');
           if (m) m.hidden = (targetMode !== 'model');
           if (s) s.hidden = (targetMode !== 'section');
+          const f = document.getElementById('frame');
+          if (f) f.hidden = (targetMode !== 'model');
+          const g = document.getElementById('section-guidance');
+          if (g) g.hidden = (targetMode !== 'section');
+          if (window.setMode) window.setMode(targetMode);
         });
       });
       document.querySelectorAll('.shape-seg button').forEach(btn => {
@@ -3812,6 +3882,17 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       currentActiveView = viewName;
       window.currentWorkspaceMode = viewName;
 
+      // Close Topographic Section Dock automatically when leaving the Map ('app')
+      if (viewName !== 'app') {
+        const secModal = document.getElementById('section-modal');
+        if (secModal) {
+          secModal.hidden = true;
+          secModal.setAttribute('hidden', '');
+          secModal.style.display = 'none';
+        }
+        document.body.classList.remove('section-dock-open');
+      }
+
       // Visibility of Header Search: ONLY visible on Map ('app')
       const searchWrap = document.getElementById('header-search-wrap');
       if (searchWrap) {
@@ -3989,27 +4070,72 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       showCadToast('Cota de Nivel Z activa: haz clic en cualquier cubierta o punto del relieve');
     });
 
-    // 3. Real-Time Sun Azimuth & Elevation with Dynamic Shadows
-    const sunAzSlider = document.getElementById('slider-studio-sun-azimuth');
-    const sunElSlider = document.getElementById('slider-studio-sun-elevation');
-    const sunAzVal = document.getElementById('val-studio-sun-azimuth');
-    const sunElVal = document.getElementById('val-studio-sun-elevation');
+      // 3. Real-Time Astronomical Sun (NOAA/Meeus) + Manual Azimuth & Elevation Overrides
+      const sunAzSlider = document.getElementById('slider-studio-sun-azimuth');
+      const sunElSlider = document.getElementById('slider-studio-sun-elevation');
+      const sunAzVal = document.getElementById('val-studio-sun-azimuth');
+      const sunElVal = document.getElementById('val-studio-sun-elevation');
+      const sunHourSlider = document.getElementById('slider-studio-sun-hour');
+      const sunHourVal = document.getElementById('val-studio-sun-hour');
+      const sunEphemBadge = document.getElementById('val-solar-ephemeris');
+      let activeSolarMonth = 5, activeSolarDay = 21, activeSolarLabel = '21 JUN';
 
-    function sync3DSunPosition() {
-      if (!sunAzSlider || !sunElSlider) return;
-      const az = parseFloat(sunAzSlider.value);
-      const el = parseFloat(sunElSlider.value);
-      if (sunAzVal) sunAzVal.textContent = az + '°';
-      if (sunElVal) sunElVal.textContent = el + '°';
-      if (window.set3DSun) {
-        window.set3DSun(az, el);
+      function formatSolarHour(h) {
+        const hrs = Math.floor(h);
+        const mins = Math.round((h - hrs) * 60);
+        return String(hrs).padStart(2, '0') + ':' + String(mins).padStart(2, '0');
       }
-    }
-    sunAzSlider?.addEventListener('input', sync3DSunPosition);
-    sunElSlider?.addEventListener('input', sync3DSunPosition);
 
-    // Initial sun position sync
-    setTimeout(sync3DSunPosition, 200);
+      function applyAstronomicalSun() {
+        if (!sunHourSlider) return;
+        const hour = parseFloat(sunHourSlider.value);
+        const timeStr = formatSolarHour(hour);
+        if (sunHourVal) sunHourVal.textContent = timeStr + ' hrs';
+        if (sunEphemBadge) sunEphemBadge.textContent = activeSolarLabel + ' · ' + timeStr;
+        if (window.set3DSunFromDateTime) {
+          const res = window.set3DSunFromDateTime({ month: activeSolarMonth, day: activeSolarDay, hour });
+          if (res) {
+            if (sunAzSlider) sunAzSlider.value = String(res.azDeg);
+            if (sunElSlider) sunElSlider.value = String(res.clampedAlt);
+            if (sunAzVal) sunAzVal.textContent = res.azDeg + '°';
+            if (sunElVal) sunElVal.textContent = res.clampedAlt + '°';
+          }
+        }
+      }
+
+      document.querySelectorAll('.solar-season-seg [data-solardate]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.solar-season-seg [data-solardate]').forEach(b => {
+            b.classList.remove('active');
+            b.setAttribute('aria-pressed', 'false');
+          });
+          btn.classList.add('active');
+          btn.setAttribute('aria-pressed', 'true');
+          const [m, d] = btn.getAttribute('data-solardate').split('-').map(Number);
+          activeSolarMonth = m;
+          activeSolarDay = d;
+          activeSolarLabel = m === 5 ? '21 JUN' : (m === 2 ? '21 MAR' : '21 DIC');
+          applyAstronomicalSun();
+        });
+      });
+
+      sunHourSlider?.addEventListener('input', applyAstronomicalSun);
+
+      function sync3DSunPosition() {
+        if (!sunAzSlider || !sunElSlider) return;
+        const az = parseFloat(sunAzSlider.value);
+        const el = parseFloat(sunElSlider.value);
+        if (sunAzVal) sunAzVal.textContent = az + '°';
+        if (sunElVal) sunElVal.textContent = el + '°';
+        if (window.set3DSun) {
+          window.set3DSun(az, el);
+        }
+      }
+      sunAzSlider?.addEventListener('input', sync3DSunPosition);
+      sunElSlider?.addEventListener('input', sync3DSunPosition);
+
+      // Initial sun position sync
+      setTimeout(applyAstronomicalSun, 200);
 
     // 4. Dependent Controls Dimming
     function updateDependentDimming() {

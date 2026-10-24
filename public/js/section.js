@@ -317,27 +317,38 @@ export function sectionSVG(sec, opts = {}) {
   const txt = (layer) => texts.filter((t) => t.layer === layer)
     .map((t) => `<text x="${f(t.x - bounds.x0)}" y="${f(bounds.y1 - t.y)}" font-size="${t.size}" text-anchor="${t.anchor}" font-family="Inter, sans-serif">${t.text.replace(/[<>&]/g, '')}</text>`);
 
-  const bgFill = darkMode ? '#0c0e12' : '#ffffff';
-  const gridStroke = darkMode ? 'rgba(255,255,255,0.08)' : '#d8d8d8';
-  const groundFillColor = darkMode ? '#1c201a' : '#e6e2d8';
-  const groundStrokeColor = darkMode ? '#96a189' : '#000000';
-  const bldFill = darkMode ? '#262930' : '#ffffff';
-  const bldStroke = darkMode ? '#eff8f6' : '#3a3a3c';
-  const treeFill = darkMode ? '#96a189' : '#a8c98f';
-  const textColor = darkMode ? '#a1a1aa' : '#6e6e73';
-  const labelColor = darkMode ? '#eff8f6' : '#1d1d1f';
+  const bgFill = darkMode ? '#07080b' : '#ffffff';
+  const gridStroke = darkMode ? 'rgba(255,255,255,0.12)' : '#d8d8d8';
+  const groundFillColor = darkMode ? 'url(#secGroundGrad)' : '#e6e2d8';
+  const groundStrokeColor = darkMode ? '#ffffff' : '#000000';
+  const bldFill = darkMode ? 'rgba(255,255,255,0.14)' : '#ffffff';
+  const bldStroke = darkMode ? 'rgba(255,255,255,0.88)' : '#3a3a3c';
+  const treeFill = darkMode ? 'rgba(255,255,255,0.22)' : '#a8c98f';
+  const textColor = darkMode ? 'rgba(255,255,255,0.58)' : '#6e6e73';
+  const labelColor = darkMode ? '#ffffff' : '#1d1d1f';
+  const hatchStep = f(Math.max(2, (bounds.x1 - bounds.x0) / 140));
 
   return new Blob([`<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="${f(mm(w))}mm" height="${f(mm(h))}mm" viewBox="0 0 ${f(w)} ${f(h)}">
+<defs>
+  <linearGradient id="secGroundGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#ffffff" stop-opacity="0.22"/>
+    <stop offset="100%" stop-color="#ffffff" stop-opacity="0.03"/>
+  </linearGradient>
+  <pattern id="secEarthHatch" width="${hatchStep}" height="${hatchStep}" patternTransform="rotate(45 0 0)" patternUnits="userSpaceOnUse">
+    <line x1="0" y1="0" x2="0" y2="${hatchStep}" stroke="rgba(255,255,255,0.14)" stroke-width="${lw(0.08)}"/>
+  </pattern>
+</defs>
 <rect width="${f(w)}" height="${f(h)}" fill="${bgFill}"/>
-${layers.grid !== false ? group('SECTION_GRID', `fill="none" stroke="${gridStroke}" stroke-width="${lw(0.06)}"`, grid) : ''}
+${layers.grid !== false ? group('SECTION_GRID', `fill="none" stroke="${gridStroke}" stroke-width="${lw(0.06)}" stroke-dasharray="${lw(0.3)} ${lw(0.3)}"`, grid) : ''}
 ${group('SECTION_GROUND_FILL', `fill="${groundFillColor}" stroke="none"`, groundFill)}
-${group('SECTION_WATER', `fill="none" stroke="#4a90d9" stroke-width="${lw(0.5)}"`, wat)}
-${group('SECTION_TREES_TRUNKS', `fill="none" stroke="#6b5a45" stroke-width="${lw(0.12)}"`, treeTrunks)}
-${group('SECTION_TREES', `fill="${treeFill}" fill-opacity="0.85" stroke="#798e79" stroke-width="${lw(0.08)}"`, treeCrowns)}
-${group('SECTION_BUILDINGS', `fill="${bldFill}" stroke="${bldStroke}" stroke-width="${lw(0.18)}"`, bld)}
-${group('SECTION_GROUND', `fill="none" stroke="${groundStrokeColor}" stroke-width="${lw(0.35)}"`, groundLine)}
-${layers.grid !== false ? group('SECTION_GRID_TEXT', `fill="${textColor}"`, txt('SECTION_GRID')) : ''}
+${darkMode ? group('SECTION_GROUND_HATCH', `fill="url(#secEarthHatch)" stroke="none"`, groundFill) : ''}
+${group('SECTION_WATER', `fill="none" stroke="#94a3b8" stroke-width="${lw(0.5)}"`, wat)}
+${group('SECTION_TREES_TRUNKS', `fill="none" stroke="rgba(255,255,255,0.45)" stroke-width="${lw(0.12)}"`, treeTrunks)}
+${group('SECTION_TREES', `fill="${treeFill}" stroke="rgba(255,255,255,0.55)" stroke-width="${lw(0.08)}"`, treeCrowns)}
+${group('SECTION_BUILDINGS', `fill="${bldFill}" stroke="${bldStroke}" stroke-width="${lw(0.2)}"`, bld)}
+${group('SECTION_GROUND', `fill="none" stroke="${groundStrokeColor}" stroke-width="${lw(0.45)}"`, groundLine)}
+${layers.grid !== false ? group('SECTION_GRID_TEXT', `fill="${textColor}" font-weight="500"`, txt('SECTION_GRID')) : ''}
 ${group('SECTION_LABELS', `fill="${labelColor}" font-weight="600"`, txt('SECTION_LABELS'))}
 </svg>`], { type: 'image/svg+xml' });
 }

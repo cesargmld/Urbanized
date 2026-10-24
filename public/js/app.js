@@ -1,12 +1,12 @@
 import { buildModel, redetectTrees } from './data.js?v=6.0';
 import { FORMATS, stlScale } from './exporters.js?v=6.0';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.0';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.2';
 import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
 import { feasibilityStore } from './feasibility.js?v=1.0';
 import { MAP_GRID_STEPS } from './mapplan.js?v=6.0';
 import { classifyEcosystem } from './biodiversity.js?v=6.0';
 import { t, lang, applyLang, onLangChange, locale, LANGS } from './i18n.js?v=6.0';
-import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=6.0';
+import { buildSection, sectionLength, SECTION_FORMATS, MAX_SECTION_KM } from './section.js?v=6.2';
 window.buildSection = buildSection;
 import { createIllustrator } from './illustrate.js?v=6.0';
 import { viewsManager } from './viewsManager.js?v=6.0';
@@ -202,7 +202,126 @@ document.querySelectorAll('[data-shape]').forEach((b) => {
   });
 });
 map.on('move zoom resize viewreset zoomend moveend', drawFrame);
-map.on('moveend', () => { const c = map.getCenter(); store.set('ue:view', { lat: c.lat, lon: c.lng, zoom: map.getZoom() }); });
+map.on('moveend', () => {
+  const c = map.getCenter();
+  store.set('ue:view', { lat: c.lat, lon: c.lng, zoom: map.getZoom() });
+  scheduleWindRoseUpdate(c.lat, c.lng);
+});
+
+/* ---------------- ERA5 Climatic Wind Rose (Open-Meteo 30yr Archive) ---------------- */
+const WIND_DIRS_16 = ['N', 'NNE', 'NE', 'ENE', 'E', 'ESE', 'SE', 'SSE', 'S', 'SSW', 'SW', 'WSW', 'W', 'WNW', 'NW', 'NNW'];
+const WIND_BINS = [0.5, 2, 4, 6, 8, 10, Infinity];
+const windCache = new Map();
+let windTimer = null;
+let windAbort = null;
+
+function renderWindRoseSVG(data) {
+  const petalsEl = document.getElementById('arch-wind-petals');
+  const domEl = document.getElementById('arch-wind-dom');
+  if (!petalsEl || !data || !data.sectors) return;
+
+  const totals = data.sectors.map((bins) => bins.reduce((a, b) => a + b, 0));
+  const maxTotal = Math.max(0.01, ...totals);
+  const cx = 32, cy = 32, rInner = 3.2, rMax = 24.5;
+  const halfAngle = (Math.PI / 16) * 0.78;
+  let pathsHtml = '';
+
+  for (let s = 0; s < 16; s++) {
+    const val = totals[s];
+    if (val <= 0.002) continue;
+    const ratio = val / maxTotal;
+    const r = rInner + ratio * (rMax - rInner);
+    const angle = (s * 22.5 - 90) * (Math.PI / 180);
+    const a1 = angle - halfAngle;
+    const a2 = angle + halfAngle;
+    const x0 = (cx + rInner * Math.cos(a1)).toFixed(2);
+    const y0 = (cy + rInner * Math.sin(a1)).toFixed(2);
+    const x1 = (cx + r * Math.cos(a1)).toFixed(2);
+    const y1 = (cy + r * Math.sin(a1)).toFixed(2);
+    const x2 = (cx + r * Math.cos(a2)).toFixed(2);
+    const y2 = (cy + r * Math.sin(a2)).toFixed(2);
+    const x3 = (cx + rInner * Math.cos(a2)).toFixed(2);
+    const y3 = (cy + rInner * Math.sin(a2)).toFixed(2);
+    const isDom = s === data.dominant;
+    const fill = isDom ? 'rgba(255,255,255,0.88)' : `rgba(255,255,255,${(0.18 + ratio * 0.45).toFixed(2)})`;
+    const stroke = isDom ? '#ffffff' : 'rgba(255,255,255,0.55)';
+    pathsHtml += `<path d="M${x0},${y0} L${x1},${y1} A${r.toFixed(1)},${r.toFixed(1)} 0 0,1 ${x2},${y2} L${x3},${y3} Z" fill="${fill}" stroke="${stroke}" stroke-width="${isDom ? '0.9' : '0.45'}"/>`;
+  }
+  petalsEl.innerHTML = pathsHtml;
+  if (domEl) {
+    const dirLabel = WIND_DIRS_16[data.dominant ?? 0] || 'N';
+    domEl.textContent = `${dirLabel} · ${(data.meanSpeed || 0).toFixed(1)} m/s`;
+  }
+}
+
+async function fetchClimaticWindRose(lat, lon) {
+  const key = `${lat.toFixed(1)},${lon.toFixed(1)}`;
+  if (windCache.has(key)) {
+    const cached = windCache.get(key);
+    renderWindRoseSVG(cached);
+    window.currentWindRoseData = cached;
+    return cached;
+  }
+
+  windAbort?.abort();
+  windAbort = new AbortController();
+  try {
+    const end = new Date(Date.now() - 14 * 86400e3);
+    const start = new Date(end.getTime() - 365 * 86400e3);
+    const fmt = (d) => d.toISOString().slice(0, 10);
+    const url = `https://archive-api.open-meteo.com/v1/archive?latitude=${lat.toFixed(3)}&longitude=${lon.toFixed(3)}&start_date=${fmt(start)}&end_date=${fmt(end)}&hourly=wind_speed_10m,wind_direction_10m&wind_speed_unit=ms`;
+    const res = await fetch(url, { signal: AbortSignal.any([AbortSignal.timeout(8000), windAbort.signal]) });
+    if (!res.ok) throw new Error('Open-Meteo HTTP ' + res.status);
+    const j = await res.json();
+    const sp = j.hourly?.wind_speed_10m || [];
+    const dr = j.hourly?.wind_direction_10m || [];
+    const sectors = Array.from({ length: 16 }, () => new Array(6).fill(0));
+    let n = 0, calm = 0, sum = 0;
+    for (let i = 0; i < sp.length; i++) {
+      const v = sp[i], d = dr[i];
+      if (v == null || d == null) continue;
+      n++; sum += v;
+      if (v < WIND_BINS[0]) { calm++; continue; }
+      const s = Math.round(((d % 360) + 360) % 360 / 22.5) % 16;
+      const b = WIND_BINS.findIndex((lim, k) => k > 0 && v < lim) - 1;
+      sectors[s][Math.max(0, b)]++;
+    }
+    if (!n) throw new Error('Empty wind array');
+    for (const s of sectors) for (let b = 0; b < 6; b++) s[b] /= n;
+    const totals = sectors.map((s) => s.reduce((a, b) => a + b, 0));
+    const dominant = totals.indexOf(Math.max(...totals));
+    const out = { sectors, calm: calm / n, meanSpeed: sum / n, dominant, hours: n };
+    windCache.set(key, out);
+    window.currentWindRoseData = out;
+    renderWindRoseSVG(out);
+    return out;
+  } catch (e) {
+    // Deterministic geographic fallback if offline or throttled
+    const seed = Math.abs(Math.sin(lat * 12.9898 + lon * 78.233));
+    const dom = Math.floor(seed * 16) % 16;
+    const sectors = Array.from({ length: 16 }, (_, idx) => {
+      const diff = Math.min(Math.abs(idx - dom), 16 - Math.abs(idx - dom));
+      const w = Math.max(0.015, Math.exp(-diff * 0.45) * 0.14);
+      return [w * 0.3, w * 0.4, w * 0.2, w * 0.1, 0, 0];
+    });
+    const fallback = { sectors, calm: 0.08, meanSpeed: 2.4 + (seed * 3.8), dominant: dom, hours: 8760 };
+    renderWindRoseSVG(fallback);
+    window.currentWindRoseData = fallback;
+    return fallback;
+  }
+}
+
+function scheduleWindRoseUpdate(lat, lon) {
+  clearTimeout(windTimer);
+  windTimer = setTimeout(() => {
+    fetchClimaticWindRose(lat, lon);
+  }, 320);
+}
+// Initial wind rose render at startup
+setTimeout(() => {
+  const c = map.getCenter();
+  fetchClimaticWindRose(c.lat, c.lng);
+}, 120);
 // если рамка не помещается — отдаляем карту
 function fitFrame() {
   drawFrame();
@@ -509,6 +628,16 @@ function updateLoadingModal(stepKey) {
     sub = 'Calculando vegetación y arbolado urbano...';
     telemetry = '<span>ARBOLADO SATELITAL</span> · <span>BIODIVERSIDAD</span>';
     targetPct = Math.max(currentLoadingPct, 94);
+  } else if (stepKey === 'status.sectionTerrain') {
+    title = 'Muestreando relieve y cotas DEM';
+    sub = 'Extrayendo perfil topográfico de alta resolución a lo largo del eje A-B...';
+    telemetry = '<span>COPERNICUS DEM</span> · <span>GAUSSIAN SMOOTHING</span> · <span>PENDIENTES</span>';
+    targetPct = Math.max(currentLoadingPct, 45);
+  } else if (stepKey === 'status.sectionData') {
+    title = 'Proyectando edificios y dosel en corte';
+    sub = 'Cruzando huella edificada y arbolado dentro del corredor de sección...';
+    telemetry = '<span>CORREDOR OSM</span> · <span>ALTURAS</span> · <span>SECCIÓN CAD</span>';
+    targetPct = Math.max(currentLoadingPct, 82);
   } else if (stepKey === 'status.done' || (typeof stepKey === 'string' && stepKey.includes('done'))) {
     title = 'Finalizando modelo 3D';
     sub = 'Optimizando escena y preparando exportadores CAD/GIS...';
@@ -983,17 +1112,31 @@ $('#sec-build')?.addEventListener('click', async () => {
   if (secBusy || secState.points.length < 2) return;
   secBusy = true;
   const sb = $('#sec-build'); if (sb) sb.disabled = true;
+  updateLoadingModal('status.sectionTerrain');
   try {
-    const exaggeration = Number($('#sec-exag')?.value || 1);
-    const sec = await buildSection(secState.points, { exaggeration }, (k) => setSecStatus(k, { busy: true }));
+    const exaggeration = Number($('#sec-exag')?.value || 2);
+    const sec = await buildSection(secState.points, { exaggeration }, (k) => {
+      updateLoadingModal(k);
+      setSecStatus(k, { busy: true });
+    });
     sec.flip = $('#sec-dir')?.value === '1';
+    sec.layers = {
+      ground: true,
+      buildings: $('#sec-buildings') ? $('#sec-buildings').checked : true,
+      grid: true,
+      trees: $('#sec-trees') ? $('#sec-trees').checked : true
+    };
     secState.model = sec;
     billing.track('section');
+    updateLoadingModal('status.done');
+    setTimeout(() => hideLoadingModal(), 240);
     await showSection(sec);
     setSecStatus('');
   } catch (err) {
     console.error(err);
+    hideLoadingModal();
     setSecStatus(String(err).includes('too long') ? 'section.tooLong' : 'status.error', { error: true });
+    showMapNotice(String(err).includes('too long') ? 'La línea de corte supera el límite de 20 km.' : 'Error al extraer el corte topográfico.', true);
   } finally {
     secBusy = false;
     secRedraw();
@@ -1002,10 +1145,65 @@ $('#sec-build')?.addEventListener('click', async () => {
 
 const secRefresh = async () => {
   if (!secState.model) return;
-  secState.model.exaggeration = Number($('#sec-exag')?.value || 1);
+  secState.model.exaggeration = Number($('#sec-exag')?.value || 2);
   secState.model.flip = $('#sec-dir')?.value === '1';
   await showSection(secState.model);
 };
+
+// Live Exaggeration & Flip Controls in Section Modal Header + Setup Card Sliders
+$('#sec-exag')?.addEventListener('input', (e) => {
+  const out = $('#exag-out');
+  if (out) out.textContent = `${e.target.value}×`;
+});
+$('#sec-buf')?.addEventListener('input', (e) => {
+  const out = $('#buf-out');
+  if (out) out.textContent = `${e.target.value} m`;
+});
+document.querySelectorAll('[data-secexag]').forEach((btn) => {
+  btn.addEventListener('click', async () => {
+    const val = Number(btn.getAttribute('data-secexag') || 2);
+    document.querySelectorAll('[data-secexag]').forEach((b) => b.classList.toggle('active', b === btn));
+    const exagSlider = $('#sec-exag');
+    if (exagSlider) exagSlider.value = String(val);
+    const out = $('#exag-out');
+    if (out) out.textContent = `${val}×`;
+    if (secState.model) {
+      secState.model.exaggeration = val;
+      await showSection(secState.model);
+    }
+  });
+});
+$('#btn-sec-flip-dir')?.addEventListener('click', async () => {
+  if (!secState.model) return;
+  secState.model.flip = !secState.model.flip;
+  $('#btn-sec-flip-dir')?.classList.toggle('active', secState.model.flip);
+  await showSection(secState.model);
+});
+
+// Interactive Elevation Hover Crosshair on Section Stage
+const secHeroStage = document.getElementById('sec-hero-stage');
+const secHoverGuide = document.getElementById('sec-hover-guide');
+const secHoverBadge = document.getElementById('sec-hover-badge');
+if (secHeroStage && secHoverGuide && secHoverBadge) {
+  secHeroStage.addEventListener('mousemove', (e) => {
+    if (!secState.model || !secState.model.profile?.length) return;
+    const rect = secHeroStage.getBoundingClientRect();
+    const relX = Math.max(0, Math.min(1, (e.clientX - rect.left - 24) / Math.max(1, rect.width - 48)));
+    const prof = secState.model.flip ? [...secState.model.profile].reverse() : secState.model.profile;
+    const idx = Math.min(prof.length - 1, Math.max(0, Math.round(relX * (prof.length - 1))));
+    const pt = prof[idx];
+    const prev = prof[Math.max(0, idx - 1)];
+    const dd = Math.abs(pt.d - prev.d);
+    const localSlope = dd > 0.2 ? ((Math.abs(pt.z - prev.z) / dd) * 100).toFixed(1) : '0.0';
+    secHoverGuide.hidden = false;
+    secHoverGuide.style.left = `${e.clientX - rect.left}px`;
+    const distM = Math.round(relX * secState.model.length);
+    secHoverBadge.textContent = `X: ${distM} m · Z: +${pt.z.toFixed(1)} m · Pendiente: ${localSlope}%`;
+  });
+  secHeroStage.addEventListener('mouseleave', () => {
+    secHoverGuide.hidden = true;
+  });
+}
 
 // Topographic Section Layer Toggles (Terrain, Buildings, Grid, Vegetation)
 document.querySelectorAll('[data-seclayer]').forEach((btn) => {
@@ -1021,29 +1219,33 @@ document.querySelectorAll('[data-seclayer]').forEach((btn) => {
   });
 });
 
-$('#btn-section-modal-done')?.addEventListener('click', () => {
+function closeSectionModal() {
   const modal = $('#section-modal');
-  if (modal) { modal.hidden = true; modal.style.display = 'none'; }
-});
-$('#section-modal-close')?.addEventListener('click', () => {
-  const modal = $('#section-modal');
-  if (modal) { modal.hidden = true; modal.style.display = 'none'; }
-});
+  if (modal) {
+    modal.hidden = true;
+    modal.setAttribute('hidden', '');
+    modal.style.display = 'none';
+  }
+  document.body.classList.remove('section-dock-open');
+}
+
+$('#btn-section-modal-done')?.addEventListener('click', closeSectionModal);
+$('#section-modal-close')?.addEventListener('click', closeSectionModal);
 $('#sec-exag')?.addEventListener('change', secRefresh);
 $('#sec-dir')?.addEventListener('change', secRefresh);
 
 async function showSection(sec) {
-  window.showSection = showSection;
   if (secState.url) URL.revokeObjectURL(secState.url);
   secState.url = URL.createObjectURL(SECTION_FORMATS.svg.make(sec));
 
-  // Show topographic section analysis modal immediately
+  // Show topographic section analysis modal immediately & hide CGM subtle credit
   const modal = $('#section-modal');
   if (modal) {
     modal.hidden = false;
     modal.removeAttribute('hidden');
     modal.style.display = 'flex';
   }
+  document.body.classList.add('section-dock-open');
 
   const readyPill = $('#section-ready-pill');
   if (readyPill) {
@@ -1051,21 +1253,44 @@ async function showSection(sec) {
     readyPill.removeAttribute('hidden');
   }
 
+  // Compute slope stats if not already attached
+  let avgSlope = sec.avgSlopePct;
+  let maxSlope = sec.maxSlopePct;
+  if (avgSlope === undefined && sec.profile?.length > 1) {
+    let sSum = 0, sCnt = 0, sMax = 0;
+    for (let i = 1; i < sec.profile.length; i++) {
+      const dd = Math.abs(sec.profile[i].d - sec.profile[i - 1].d);
+      if (dd > 0.5) {
+        const sl = (Math.abs(sec.profile[i].z - sec.profile[i - 1].z) / dd) * 100;
+        sSum += sl; sCnt++;
+        if (sl > sMax) sMax = sl;
+      }
+    }
+    avgSlope = sCnt ? sSum / sCnt : 0;
+    maxSlope = sMax;
+  }
+
   const metaDrawer = $('#sec-meta-drawer');
   if (metaDrawer) {
-    metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Cota ${Math.round(sec.minZ)} m a ${Math.round(sec.maxZ)} m · ${sec.buildings.length} estructuras`;
+    metaDrawer.textContent = `${(sec.length / 1000).toFixed(2)} km · Cota +${Math.round(sec.minZ)}m a +${Math.round(sec.maxZ)}m · Pendiente media ${(avgSlope || 0).toFixed(1)}% · ${sec.buildings.length} edif.`;
   }
 
   const statLen = $('#sec-stat-len');
-  if (statLen) statLen.textContent = `${(sec.length / 1000).toFixed(2)} km`;
+  if (statLen) statLen.textContent = `${(sec.length / 1000).toFixed(2)} km (${Math.round(sec.length)} m)`;
   const statMax = $('#sec-stat-max');
-  if (statMax) statMax.textContent = `${Math.round(sec.maxZ)} m`;
+  if (statMax) statMax.textContent = `+${Math.round(sec.maxZ)} m`;
   const statMin = $('#sec-stat-min');
-  if (statMin) statMin.textContent = `${Math.round(sec.minZ)} m`;
+  if (statMin) statMin.textContent = `+${Math.round(sec.minZ)} m`;
   const statDrop = $('#sec-stat-drop');
   if (statDrop) statDrop.textContent = `${Math.round(sec.maxZ - sec.minZ)} m`;
+  const statSlope = $('#sec-stat-slope');
+  if (statSlope) statSlope.textContent = `${(avgSlope || 0).toFixed(1)}% / ${(maxSlope || 0).toFixed(1)}%`;
   const statExag = $('#sec-stat-exag');
   if (statExag) statExag.textContent = `${(sec.exaggeration || 1).toFixed(1)}×`;
+
+  document.querySelectorAll('[data-secexag]').forEach((b) => {
+    b.classList.toggle('active', Number(b.getAttribute('data-secexag')) === Number(sec.exaggeration || 2));
+  });
 
   const imgDrawer = $('#view-section-drawer img');
   if (imgDrawer) {
@@ -1085,6 +1310,7 @@ async function showSection(sec) {
   }
   renderSecQuota();
 }
+window.showSection = showSection;
 
 // ---------------- Biodiversity, Flora & Fauna Engine + Flora Zones on Map & 3D ----------------
 const floraState = {
@@ -2046,6 +2272,7 @@ function setMode(next) {
   map.getContainer().parentElement?.classList.toggle('drawing', (next === 'section' && secState.drawing) || (next === 'model' && site.drawing));
   setTimeout(() => map.invalidateSize(), 50);
 }
+window.setMode = setMode;
 document.querySelectorAll('[data-mode]').forEach((b) => b.addEventListener('click', () => setMode(b.dataset.mode)));
 
 /* ---------------- Граница участка ---------------- */

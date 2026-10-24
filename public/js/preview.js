@@ -1754,18 +1754,43 @@ export async function loadExternal3DModel(file) {
 window.loadExternal3DModel = loadExternal3DModel;
 
 // ========================================================
-// 3D SOLAR ASOLEAMIENTO ENGINE
+// 3D SOLAR ASOLEAMIENTO ENGINE (Astronomical NOAA / Meeus + Manual Override)
 // ========================================================
+const DEG_RAD = Math.PI / 180;
+
+export function computeAstronomicalSun(date, lat, lon) {
+  const d = (date.getTime() - Date.UTC(2000, 0, 1, 12)) / 86400000;
+  const M = (357.5291 + 0.98560028 * d) * DEG_RAD;
+  const C = (1.9148 * Math.sin(M) + 0.02 * Math.sin(2 * M) + 0.0003 * Math.sin(3 * M)) * DEG_RAD;
+  const L = M + C + (102.9372 + 180) * DEG_RAD;
+  const eps = 23.4397 * DEG_RAD;
+  const dec = Math.asin(Math.sin(L) * Math.sin(eps));
+  const ra = Math.atan2(Math.sin(L) * Math.cos(eps), Math.cos(L));
+  const theta = (280.16 + 360.9856235 * d) * DEG_RAD + lon * DEG_RAD;
+  const H = theta - ra;
+  const phi = lat * DEG_RAD;
+  const alt = Math.asin(Math.sin(phi) * Math.sin(dec) + Math.cos(phi) * Math.cos(dec) * Math.cos(H));
+  const az = Math.atan2(Math.sin(H), Math.cos(H) * Math.sin(phi) - Math.tan(dec) * Math.cos(phi)) + Math.PI;
+  return {
+    azDeg: ((az / DEG_RAD) % 360 + 360) % 360,
+    altDeg: alt / DEG_RAD,
+    azRad: az,
+    altRad: alt
+  };
+}
+window.computeAstronomicalSun = computeAstronomicalSun;
+
 export function set3DSun(azimuthDeg, elevationDeg) {
   if (!ctx || !ctx.sun) return;
   const az = Number(azimuthDeg) ?? 315;
-  const el = Number(elevationDeg) ?? 45;
+  const el = Math.max(2, Number(elevationDeg) ?? 45);
   const azRad = (az * Math.PI) / 180;
   const elRad = (el * Math.PI) / 180;
   const s = ctx.modelSize || 1200;
   const dist = s * 1.8;
+  // Z-up geographic coordinates: +X = East, +Y = North, +Z = Up
   const x = dist * Math.cos(elRad) * Math.sin(azRad);
-  const y = -dist * Math.cos(elRad) * Math.cos(azRad);
+  const y = dist * Math.cos(elRad) * Math.cos(azRad);
   const z = dist * Math.sin(elRad);
   ctx.sun.position.set(x, y, z);
   const targetZ = ctx.zMid || 0;
@@ -1777,6 +1802,26 @@ export function set3DSun(azimuthDeg, elevationDeg) {
   }
 }
 window.set3DSun = set3DSun;
+
+export function set3DSunFromDateTime({ month = 5, day = 21, hour = 14 } = {}) {
+  const lat = ctx?.lastModel?.center?.lat ?? 41.6938;
+  const lon = ctx?.lastModel?.center?.lon ?? 44.8015;
+  const year = new Date().getUTCFullYear();
+  const tzHours = Math.round(lon / 15);
+  const wholeHours = Math.floor(hour);
+  const mins = Math.round((hour - wholeHours) * 60);
+  const utcDate = new Date(Date.UTC(year, month, day, wholeHours - tzHours, mins));
+  const pos = computeAstronomicalSun(utcDate, lat, lon);
+  const clampedAlt = Math.max(3, Math.min(88, pos.altDeg));
+  set3DSun(pos.azDeg, clampedAlt);
+  return {
+    azDeg: Math.round(pos.azDeg),
+    altDeg: Math.round(pos.altDeg),
+    clampedAlt: Math.round(clampedAlt),
+    isDaylight: pos.altDeg > 0
+  };
+}
+window.set3DSunFromDateTime = set3DSunFromDateTime;
 
 // ========================================================
 // 3D CAD INTERACTIVE MEASUREMENT RULER

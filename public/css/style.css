@@ -9377,7 +9377,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
 }
 
-/* 5. H3L STOP-MOTION PAGE LOADER (12 FPS DISCRETE FRAME ASSEMBLY) */
+/* 5. H3L STOP-MOTION PAGE LOADER (12 FPS DISCRETE FRAME ASSEMBLY - ORIGINAL LOGO PNG) */
 .h3l-page-loader {
   position: fixed !important;
   inset: 0 !important;
@@ -9428,13 +9428,12 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 
 .h3l-brand-assembly {
   position: relative !important;
-  padding: 38px 32px !important;
+  padding: 40px 36px !important;
   background: rgba(255, 255, 255, 0.015) !important;
   border: 1px solid rgba(255, 255, 255, 0.08) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  gap: 18px !important;
 }
 
 /* 4 Esquinas Reticulares en el Stage H3L */
@@ -9449,76 +9448,62 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 .h3l-reticle.bl { bottom: -1px !important; left: -1px !important; border-bottom: 2px solid #ffffff !important; border-left: 2px solid #ffffff !important; }
 .h3l-reticle.br { bottom: -1px !important; right: -1px !important; border-bottom: 2px solid #ffffff !important; border-right: 2px solid #ffffff !important; }
 
-.h3l-globe-wrap {
-  width: 58px !important;
-  height: 36px !important;
-  flex-shrink: 0 !important;
+/* Original urbnzd-logo.png Stage (300x82 aspect ratio preserved 1:1) */
+.h3l-original-logo-stage {
+  position: relative !important;
+  width: 280px !important;
+  height: 76px !important;
+  display: block !important;
+  user-select: none !important;
 }
 
-.h3l-globe-svg {
+.h3l-logo-ghost {
+  position: absolute !important;
+  inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
-  overflow: visible !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) !important;
+  opacity: 0.08 !important;
+  pointer-events: none !important;
 }
 
-.h3l-wire {
-  fill: none !important;
-  stroke: #ffffff !important;
-  stroke-width: 2.2 !important;
-  opacity: 0 !important;
-}
-
-.h3l-wire.locked {
+.h3l-logo-reveal {
+  position: absolute !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) !important;
   opacity: 1 !important;
+  clip-path: inset(0 100% 0 0);
+  pointer-events: none !important;
 }
 
-.h3l-wordmark {
-  display: inline-flex !important;
-  align-items: baseline !important;
-  gap: 2px !important;
-  min-width: 195px !important;
-}
-
-.h3l-char {
-  display: inline-block !important;
-  min-width: 28px !important;
-  text-align: center !important;
-  font-family: 'Helvetica Now Display', sans-serif !important;
-  font-size: 44px !important;
-  font-weight: 500 !important;
-  line-height: 1 !important;
-  letter-spacing: -0.02em !important;
-  color: transparent !important;
-}
-
-/* Stop-motion frame: bloque invertido de alto contraste antes de asentar la letra */
-.h3l-char.stamping {
+.h3l-logo-stamp-head {
+  position: absolute !important;
+  top: 12% !important;
+  height: 76% !important;
+  left: 6% !important;
+  width: 10% !important;
   background: #ffffff !important;
-  color: #060709 !important;
-  font-size: 32px !important;
-  padding: 2px 0 !important;
-  transform: translateY(-2px) !important;
+  mix-blend-mode: difference !important;
+  opacity: 0;
+  pointer-events: none !important;
 }
 
-/* Letra asentada final */
-.h3l-char.locked {
-  background: transparent !important;
-  color: #ffffff !important;
-  font-size: 44px !important;
-  transform: translateY(0) !important;
-}
-
-.h3l-block-cursor {
-  display: inline-block !important;
-  width: 12px !important;
-  height: 34px !important;
+.h3l-logo-cursor {
+  position: absolute !important;
+  top: 14% !important;
+  height: 72% !important;
+  width: 10px !important;
+  left: 6% !important;
   background: #ffffff !important;
-  margin-left: 4px !important;
-  vertical-align: baseline !important;
-  animation: h3lCursorStep 0.32s steps(2, end) infinite !important;
+  animation: h3lCursorStep 0.28s steps(2, end) infinite !important;
+  pointer-events: none !important;
 }
 
-.h3l-block-cursor.done {
+.h3l-logo-cursor.done {
   opacity: 0 !important;
   animation: none !important;
 }
@@ -9577,4 +9562,310 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   border: none !important;
   box-shadow: none !important;
   outline: none !important;
+}
+
+/* 7. LOCK SETUP CARD DIMENSIONS (ZERO LAYOUT JUMP BETWEEN 3D MODEL & TOPOGRAPHIC SECTION) */
+.axiom-setup-card {
+  width: 320px !important;
+  display: flex !important;
+  flex-direction: column !important;
+}
+.axiom-setup-card:not(:has(#map-filters-list:not([hidden]))) {
+  height: 331px !important;
+  min-height: 331px !important;
+  max-height: 331px !important;
+}
+.axiom-setup-form {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+#model-tools:not([hidden]),
+#section-tools:not([hidden]) {
+  flex: 1 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+}
+#sec-hint {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9px !important;
+  font-weight: 400 !important;
+  letter-spacing: 0.04em !important;
+  line-height: 1.3 !important;
+  color: rgba(255, 255, 255, 0.55) !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-transform: uppercase !important;
+}
+#section-guidance .axiom-guidance-inner {
+  border-radius: 2px !important;
+  background: rgba(10, 12, 16, 0.82) !important;
+  backdrop-filter: blur(18px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(140%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  padding: 6px 12px !important;
+}
+#section-guidance .axiom-guidance-tag {
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.12em !important;
+}
+#section-guidance #section-guidance-text {
+  font-size: 9.5px !important;
+  letter-spacing: 0.06em !important;
+  color: rgba(255, 255, 255, 0.8) !important;
+}
+
+/* 8. HIDE "MADE BY CGM ATELIER" WHEN TOPOGRAPHIC SECTION RESULT IS OPEN */
+body.section-dock-open .cgm-credit-subtle,
+body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* 9. REDISEÑO PROTAGÓNICO DEL DOCK DE CORTE TOPOGRÁFICO (#section-modal) */
+#section-modal.section-modal-backdrop {
+  height: 416px !important;
+  max-height: 52vh !important;
+  background: rgba(8, 10, 14, 0.88) !important;
+  backdrop-filter: blur(24px) saturate(140%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(140%) !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.22) !important;
+}
+#section-modal .section-modal-window,
+#section-modal .section-modal-card {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: space-between !important;
+  border-radius: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+#section-modal .section-modal-header {
+  height: 48px !important;
+  min-height: 48px !important;
+  padding: 0 24px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-shrink: 0 !important;
+}
+#section-modal .section-layer-filters {
+  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  padding: 2px !important;
+  gap: 2px !important;
+}
+#section-modal .sec-layer-btn {
+  border-radius: 2px !important;
+  font-size: 9px !important;
+  padding: 4px 10px !important;
+  letter-spacing: 0.08em !important;
+}
+#section-modal .section-modal-body.hero-visual {
+  flex: 1 !important;
+  min-height: 210px !important;
+  height: 226px !important;
+  margin: 0 !important;
+  padding: 8px 24px !important;
+  border: none !important;
+  border-radius: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background:
+    linear-gradient(to right, rgba(255,255,255,0.025) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.025) 1px, transparent 1px) !important;
+  background-size: 32px 32px !important;
+}
+#section-modal .section-modal-body.hero-visual .flat {
+  width: 100% !important;
+  height: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: none !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+#section-modal .section-modal-body.hero-visual .flat img {
+  width: 100% !important;
+  height: 100% !important;
+  max-height: 210px !important;
+  object-fit: fill !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+#section-modal .section-telemetry-ribbon {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 0 !important;
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 24px !important;
+  margin: 0 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  align-items: center !important;
+  flex-shrink: 0 !important;
+}
+#section-modal .sec-stat-item {
+  border: none !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  padding: 4px 14px !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  justify-content: center !important;
+  gap: 2px !important;
+  box-shadow: none !important;
+}
+#section-modal .sec-stat-item:last-child {
+  border-right: none !important;
+}
+#section-modal .sec-stat-label,
+#section-modal .sec-stat-lbl {
+  font-size: 7.5px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+#section-modal .sec-stat-val {
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
+  color: #ffffff !important;
+}
+#section-modal .section-modal-footer {
+  height: 46px !important;
+  min-height: 46px !important;
+  padding: 0 24px !important;
+  margin: 0 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  flex-shrink: 0 !important;
+}
+
+/* 9. INTERACTIVE HOVER CROSSHAIR & EXAGGERATION BUTTONS IN SECTION MODAL */
+#sec-hero-stage {
+  position: relative !important;
+  cursor: crosshair !important;
+}
+.sec-hover-guide {
+  position: absolute !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 1px !important;
+  background: rgba(255, 255, 255, 0.55) !important;
+  pointer-events: none !important;
+  z-index: 20 !important;
+}
+.sec-hover-badge {
+  position: absolute !important;
+  top: 10px !important;
+  left: 8px !important;
+  background: rgba(8, 10, 14, 0.92) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  border-radius: 2px !important;
+  padding: 3px 8px !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+}
+.sec-exag-btn {
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+}
+.sec-exag-btn.active .btn-bracket-label,
+.sec-exag-btn:hover .btn-bracket-label {
+  color: #ffffff !important;
+  background:
+    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
+    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
+    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
+    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
+    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
+    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
+    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
+    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
+    rgba(255, 255, 255, 0.1) !important;
+  background-repeat: no-repeat !important;
+  background-size: 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 100% 100% !important;
+}
+.axiom-export-pill:hover {
+  border-color: rgba(255, 255, 255, 0.55) !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* 10. CLIMATIC WIND ROSE (ERA5 OPEN-METEO) + ARCHITECTURAL SCALE CARD */
+.arch-scale-climate-row {
+  display: flex !important;
+  align-items: center !important;
+  gap: 12px !important;
+}
+.arch-wind-rose-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+.arch-wind-rose-svg {
+  width: 38px !important;
+  height: 38px !important;
+  flex-shrink: 0 !important;
+  overflow: visible !important;
+}
+.arch-wind-meta {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 2px !important;
+}
+.arch-wind-tag {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 7.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+.arch-wind-val {
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 9.5px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.06em !important;
+  color: #ffffff !important;
+  white-space: nowrap !important;
+}
+.arch-scale-divider {
+  width: 1px !important;
+  height: 30px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+.arch-scale-main {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 4px !important;
 }
