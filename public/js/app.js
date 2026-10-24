@@ -1329,7 +1329,10 @@ async function showSection(sec) {
   const imgDrawer = $('#view-section-drawer img');
   if (imgDrawer) {
     imgDrawer.src = secState.url;
+    imgDrawer.style.display = 'block';
   }
+  const placeholder = $('#view-section-placeholder');
+  if (placeholder) placeholder.style.display = 'none';
 
   // Legacy container sync
   const box = $('#section-result');
@@ -2299,6 +2302,17 @@ function setMode(next) {
     $('#sec-draw')?.setAttribute('aria-pressed', 'false');
     const guidance = $('#section-guidance');
     if (guidance) guidance.hidden = true;
+  }
+
+  // Strict spatial guarantee: switching to 3D MODEL immediately closes any open section dock
+  if (next === 'model') {
+    closeSectionModal();
+    const readyPill = $('#section-ready-pill');
+    if (readyPill) {
+      readyPill.hidden = true;
+      readyPill.setAttribute('hidden', '');
+      readyPill.style.display = 'none';
+    }
   }
 
   siteRedraw();
@@ -3665,5 +3679,6 @@ billing.refresh().then(() => billing.handleLoginLink());
 
 // применяем язык последним: к этому моменту все обработчики и данные готовы
 applyLang();
+closeSectionModal();
 
 

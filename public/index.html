@@ -14,7 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=7.1">
+  <link rel="stylesheet" href="/css/style.css?v=7.2">
   <script type="importmap">
     { "imports": {
       "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
@@ -24,167 +24,105 @@
 </head>
 <body class="axiom-app">
   <!-- ========================================================
-       0. H3L STOP-MOTION ARCHITECTURAL PAGE LOADER
-       Step-by-step mechanical frame-by-frame assembly of URBNZD
+       0. URBNZD ARCHITECTURAL STUDIO INTRO SPLASH
+       Minimalist, authentic brand reveal with precision CAD reticles
        ======================================================== -->
   <div class="h3l-page-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
-    <!-- Precision Architectural CAD Grid (40x40px, perfectly aligned to stage) -->
+    <!-- Subtle Architectural Coordinate Grid -->
     <div class="h3l-loader-grid-bg"></div>
 
     <div class="h3l-loader-stage">
-      <!-- Kinetic Architectural Frame -->
-      <div class="h3l-brand-assembly" id="h3l-brand-assembly">
-        <!-- 4-Corner Precision Reticles in Monochromatic Grayscale -->
+      <!-- Precision Architectural CAD Frame with Authentic Logo -->
+      <div class="h3l-brand-stage" id="h3l-brand-stage">
+        <!-- 4-Corner Precision Reticles -->
         <span class="h3l-reticle tl"></span>
         <span class="h3l-reticle tr"></span>
         <span class="h3l-reticle bl"></span>
         <span class="h3l-reticle br"></span>
 
-        <!-- Kinetic Revolving World Globe Vector SVG (True Geometric Meridian Sweep) -->
-        <div class="h3l-globe-box" id="h3l-globe-box">
-          <svg viewBox="0 0 48 48" class="h3l-globe-svg" id="h3l-globe-svg">
-            <circle cx="24" cy="24" r="18" fill="none" stroke="#ffffff" stroke-width="1.8"/>
-            <line x1="6" y1="24" x2="42" y2="24" stroke="rgba(255,255,255,0.7)" stroke-width="1.2"/>
-            <path d="M 8 16 Q 24 19 40 16" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
-            <path d="M 8 32 Q 24 29 40 32" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1"/>
-            <!-- Dynamic Revolving Meridian Ellipse -->
-            <ellipse cx="24" cy="24" rx="10" ry="18" fill="none" stroke="#ffffff" stroke-width="1.4" id="h3l-globe-meridian"/>
-            <ellipse cx="24" cy="24" rx="18" ry="18" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.8"/>
-            <polygon points="24,3 22,8 26,8" fill="#ffffff"/>
-          </svg>
+        <!-- Authentic Brand Logo (Monochrome Pure White) -->
+        <div class="h3l-logo-container">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="h3l-studio-logo" id="h3l-studio-logo" />
+          <!-- Laser Scan Hairline Sweep -->
+          <div class="h3l-laser-sweep" id="h3l-laser-sweep"></div>
         </div>
 
-        <!-- H3L Kinetic Typographic Wordmark (Helvetica Now Display) -->
-        <div class="h3l-wordmark-motion" id="h3l-wordmark">
-          <div class="h3l-char-cell" id="h3l-cell-0"><span class="h3l-char-inner" id="h3l-c0">_</span></div>
-          <div class="h3l-char-cell" id="h3l-cell-1"><span class="h3l-char-inner" id="h3l-c1">_</span></div>
-          <div class="h3l-char-cell" id="h3l-cell-2"><span class="h3l-char-inner" id="h3l-c2">_</span></div>
-          <div class="h3l-char-cell" id="h3l-cell-3"><span class="h3l-char-inner" id="h3l-c3">_</span></div>
-          <div class="h3l-char-cell" id="h3l-cell-4"><span class="h3l-char-inner" id="h3l-c4">_</span></div>
-          <div class="h3l-char-cell" id="h3l-cell-5"><span class="h3l-char-inner" id="h3l-c5">_</span></div>
-          <span class="h3l-scanner-line" id="h3l-scanner"></span>
+        <!-- Studio Technical Metadata Subline -->
+        <div class="h3l-meta-row">
+          <span class="h3l-meta-left">URBNZD // ARCHITECTURAL COMPUTING</span>
+          <span class="h3l-meta-right">CGM ATELIER · 2026</span>
         </div>
       </div>
 
-      <!-- Bottom Discrete Stop-Motion Step Bar -->
-      <div class="h3l-stage-meta-bottom">
-        <div class="h3l-step-bar" id="h3l-step-bar">
-          <span></span><span></span><span></span><span></span><span></span><span></span>
-          <span></span><span></span><span></span><span></span><span></span><span></span>
+      <!-- Minimalist Discrete Progress Bar -->
+      <div class="h3l-progress-dock">
+        <div class="h3l-progress-track" id="h3l-progress-track">
+          <span class="h3l-tick"></span><span class="h3l-tick"></span>
+          <span class="h3l-tick"></span><span class="h3l-tick"></span>
+          <span class="h3l-tick"></span><span class="h3l-tick"></span>
+          <span class="h3l-tick"></span><span class="h3l-tick"></span>
         </div>
+        <div class="h3l-status-text" id="h3l-status-text">INITIALIZING STUDIO WORKSPACE...</div>
       </div>
     </div>
   </div>
   <script>
-    // H3L KINETIC TYPOGRAPHY & REVOLVING GLOBE MOTION GRAPHIC (12 FPS DISCRETE STEPS)
-    (function initH3lKineticMotion() {
+    (function initStudioSplash() {
       const loader = document.getElementById('h3l-page-loader');
       if (!loader) return;
-      const chars = [
-        document.getElementById('h3l-c0'),
-        document.getElementById('h3l-c1'),
-        document.getElementById('h3l-c2'),
-        document.getElementById('h3l-c3'),
-        document.getElementById('h3l-c4'),
-        document.getElementById('h3l-c5')
-      ];
-      const meridian = document.getElementById('h3l-globe-meridian');
-      const scanner = document.getElementById('h3l-scanner');
-      const ticks = Array.from(loader.querySelectorAll('#h3l-step-bar span'));
-      const targets = ['u', 'r', 'b', 'n', 'z', 'd'];
-      const scrambleSets = [
-        ['V', '1', '/', 'u'],
-        ['F', '7', '|', 'r'],
-        ['P', 'D', '8', 'b'],
-        ['H', 'M', '#', 'n'],
-        ['S', '2', '%', 'z'],
-        ['Q', '0', 'O', 'd']
+
+      const ticks = Array.from(loader.querySelectorAll('.h3l-tick'));
+      const statusText = document.getElementById('h3l-status-text');
+      const statuses = [
+        'INITIALIZING ENVIRONMENT...',
+        'CONNECTING NOAA / METEO...',
+        'COMPUTING GEODATA TILES...',
+        'STUDIO READY'
       ];
 
-      // 14 Discrete 12 FPS Kinetic Frames
-      let frame = 0;
-      let timer = null;
-      const totalFrames = 14;
-
-      const renderKineticFrame = (f) => {
-        // 1. Globe dynamic meridian sweep (revolving 3D globe effect)
-        if (meridian) {
-          const rxVals = [4, 10, 16, 12, 6, 2, 8, 14, 18, 11, 5, 9, 13, 10];
-          meridian.setAttribute('rx', String(rxVals[f % rxVals.length]));
-        }
-
-        // 2. Ticks fill
-        const activeTicks = Math.round((f / totalFrames) * ticks.length);
-        ticks.forEach((t, i) => t.classList.toggle('on', i < activeTicks));
-
-        // 3. Sequential letter lock and scramble
-        // f=0..2: all scramble
-        // f=3: lock 'u'
-        // f=5: lock 'r'
-        // f=7: lock 'b'
-        // f=9: lock 'n'
-        // f=11: lock 'z'
-        // f=12: lock 'd'
-        const lockSchedule = [-1, -1, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5];
-        const lockedUpTo = lockSchedule[Math.min(f, lockSchedule.length - 1)];
-
-        chars.forEach((c, idx) => {
-          if (!c) return;
-          if (idx <= lockedUpTo) {
-            c.textContent = targets[idx];
-            c.classList.add('locked');
-            c.classList.remove('scrambling');
-          } else {
-            const pool = scrambleSets[idx];
-            const randGlyph = pool[(f + idx) % pool.length];
-            c.textContent = randGlyph;
-            c.classList.add('scrambling');
-            c.classList.remove('locked');
-          }
+      let step = 0;
+      const totalSteps = ticks.length; // 8
+      let interval = setInterval(() => {
+        step++;
+        ticks.forEach((t, i) => {
+          if (i < step) t.classList.add('active');
         });
-
-        // 4. Scanner laser bar position
-        if (scanner) {
-          if (f < 12) {
-            const activeCell = chars[Math.min(5, Math.max(0, lockedUpTo + 1))];
-            if (activeCell && activeCell.parentElement) {
-              const x = activeCell.parentElement.offsetLeft;
-              scanner.style.transform = 'translateX(' + x + 'px)';
-              scanner.style.opacity = '1';
-            }
-          } else {
-            scanner.style.opacity = '0';
-          }
+        if (statusText) {
+          const statusIdx = Math.min(statuses.length - 1, Math.floor((step / totalSteps) * statuses.length));
+          statusText.textContent = statuses[statusIdx];
         }
-      };
 
-      const stepLoop = () => {
-        renderKineticFrame(frame);
-        frame++;
-        if (frame <= totalFrames) {
-          timer = setTimeout(stepLoop, 85); // 12 FPS cadence
-        } else {
-          // Hold complete brand for 220ms then cinematic exit
-          timer = setTimeout(() => {
-            loader.classList.add('h3l-loader-exit');
-            setTimeout(() => {
-              loader.style.display = 'none';
-              loader.hidden = true;
-            }, 200);
-          }, 240);
+        if (step >= totalSteps) {
+          clearInterval(interval);
+          setTimeout(dismiss, 140);
         }
-      };
+      }, 70); // 8 steps * 70ms = 560ms total
+
+      function dismiss() {
+        if (!loader || loader.dataset.dismissed) return;
+        loader.dataset.dismissed = 'true';
+        loader.classList.add('h3l-loader-exit');
+        setTimeout(() => {
+          loader.hidden = true;
+          loader.style.display = 'none';
+        }, 220);
+      }
+
+      // Allow click anywhere to skip immediately
+      loader.addEventListener('click', dismiss);
+
+      // Failsafe timeout at 1000ms
+      setTimeout(dismiss, 1000);
 
       window.replayH3lLoader = () => {
-        if (timer) clearTimeout(timer);
-        frame = 0;
+        delete loader.dataset.dismissed;
         loader.hidden = false;
         loader.style.display = 'flex';
         loader.classList.remove('h3l-loader-exit');
-        stepLoop();
+        ticks.forEach(t => t.classList.remove('active'));
+        step = 0;
+        initStudioSplash();
       };
-
-      timer = setTimeout(stepLoop, 60);
     })();
   </script>
 
@@ -3002,7 +2940,7 @@
   <!-- ========================================================
        FOCUSED TOPOGRAPHIC SECTION MODAL
        ======================================================== -->
-  <div class="section-modal-backdrop" id="section-modal" hidden>
+  <div class="section-modal-backdrop" id="section-modal" hidden style="display: none !important;">
     <div class="section-modal-window axiom-hud-window">
       <!-- 4-Corner Precision Reticles for Floating CAD Window -->
       <span class="axiom-bracket tl"></span>
@@ -3056,7 +2994,13 @@
 
       <!-- 2. HERO VISUAL CUT PROFILE (Placed First / Dominant with Interactive Crosshair) -->
       <div class="section-modal-body hero-visual" id="sec-hero-stage">
-        <div class="flat" id="view-section-drawer"><img alt="Topographic Section Cut" draggable="false"></div>
+        <div class="flat" id="view-section-drawer">
+          <img id="view-section-drawer-img" alt="" draggable="false" style="display:none; width:100%; height:100%; object-fit:fill;">
+          <div id="view-section-placeholder" class="sec-empty-state">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+            <span>Traza una línea de corte en el mapa para calcular el perfil</span>
+          </div>
+        </div>
         <div class="sec-hover-guide" id="sec-hover-guide" hidden>
           <span class="sec-hover-badge" id="sec-hover-badge">0 m · +0 m</span>
         </div>
@@ -3516,7 +3460,7 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=7.1"></script>
+  <script type="module" src="/js/app.js?v=7.2"></script>
   <script>
     (function() {
       // Synchronize shape & mode segmented buttons (stable layout height)
@@ -3535,6 +3479,24 @@
           if (f) f.hidden = (targetMode !== 'model');
           const g = document.getElementById('section-guidance');
           if (g) g.hidden = (targetMode !== 'section');
+
+          // Strict spatial guarantee: switching to 3D MODEL closes any section dock immediately
+          if (targetMode === 'model') {
+            const sm = document.getElementById('section-modal');
+            if (sm) {
+              sm.hidden = true;
+              sm.setAttribute('hidden', '');
+              sm.style.display = 'none';
+            }
+            document.body.classList.remove('section-dock-open');
+            const rp = document.getElementById('section-ready-pill');
+            if (rp) {
+              rp.hidden = true;
+              rp.setAttribute('hidden', '');
+              rp.style.display = 'none';
+            }
+          }
+
           if (window.setMode) window.setMode(targetMode);
         });
       });
@@ -3576,6 +3538,14 @@
 
       // Section Modal handlers
       const sectionModal = document.getElementById('section-modal');
+      const closeSectionModalDom = () => {
+        if (sectionModal) {
+          sectionModal.hidden = true;
+          sectionModal.setAttribute('hidden', '');
+          sectionModal.style.display = 'none';
+        }
+        document.body.classList.remove('section-dock-open');
+      };
       document.getElementById('btn-open-section-modal')?.addEventListener('click', () => {
         if (sectionModal) {
           sectionModal.hidden = false;
@@ -3583,12 +3553,8 @@
           sectionModal.style.display = 'flex';
         }
       });
-      document.getElementById('section-modal-close')?.addEventListener('click', () => {
-        if (sectionModal) {
-          sectionModal.hidden = true;
-          sectionModal.setAttribute('hidden', '');
-          sectionModal.style.display = 'none';
-        }
+      document.getElementById('section-modal-close')?.addEventListener('click', closeSectionModalDom);
+      document.getElementById('btn-section-modal-done')?.addEventListener('click', closeSectionModalDom);
       });
 
       // Helper to resize all viewports when any left drawer toggles so the model always centers in the free space

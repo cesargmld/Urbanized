@@ -10145,7 +10145,16 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
 }
 
 /* 4. REDESIGNED FLOATING CAD SECTION DOCK (SPATIAL AWARENESS: ZERO OVERLAPS) */
-#section-modal.section-modal-backdrop {
+#section-modal.section-modal-backdrop[hidden],
+#section-modal[hidden],
+#section-modal.hidden {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+#section-modal.section-modal-backdrop:not([hidden]) {
   position: fixed !important;
   inset: auto !important;
   bottom: 34px !important;
@@ -10168,6 +10177,21 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   padding: 0 !important;
   margin: 0 !important;
   overflow: hidden !important;
+}
+
+.sec-empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  height: 100%;
+  color: rgba(255, 255, 255, 0.4);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  text-align: center;
+  padding: 20px;
 }
 
 #section-modal .section-modal-window {
@@ -10281,74 +10305,108 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
    v40 PRECISION POLISH & ROCK-SOLID FIXES
    ======================================================== */
 
-/* 1. H3L KINETIC MOTION GRAPHICS STYLING */
-.h3l-globe-box {
-  width: 42px !important;
-  height: 42px !important;
+/* 1. AUTHENTIC ARCHITECTURAL STUDIO SPLASH (MINIMALIST & FAST) */
+.h3l-brand-stage {
+  position: relative !important;
+  padding: 32px 44px !important;
+  background: rgba(12, 14, 18, 0.85) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border-radius: 4px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 16px !important;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+}
+
+.h3l-logo-container {
+  position: relative !important;
+  width: 260px !important;
+  height: 72px !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  margin-right: 14px !important;
-  flex-shrink: 0 !important;
-}
-
-.h3l-globe-svg {
-  width: 100% !important;
-  height: 100% !important;
-  filter: drop-shadow(0 2px 8px rgba(255, 255, 255, 0.2)) !important;
-}
-
-.h3l-wordmark-motion {
-  display: flex !important;
-  align-items: center !important;
-  gap: 2px !important;
-  position: relative !important;
-  font-family: "Helvetica Now Display", "Helvetica Neue", Helvetica, Arial, sans-serif !important;
-  font-size: 34px !important;
-  font-weight: 700 !important;
-  letter-spacing: -0.025em !important;
-  line-height: 1 !important;
-}
-
-.h3l-char-cell {
-  width: 22px !important;
-  height: 38px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  position: relative !important;
   overflow: hidden !important;
 }
 
-.h3l-char-inner {
-  display: block !important;
-  width: 100% !important;
-  text-align: center !important;
-  transition: transform 0.05s ease, color 0.05s ease !important;
+.h3l-studio-logo {
+  width: 250px !important;
+  height: auto !important;
+  max-height: 68px !important;
+  object-fit: contain !important;
+  filter: brightness(0) invert(1) drop-shadow(0 2px 14px rgba(255, 255, 255, 0.25)) !important;
+  user-select: none !important;
 }
 
-.h3l-char-inner.locked {
-  color: #ffffff !important;
-  transform: translateY(0) scale(1) !important;
-}
-
-.h3l-char-inner.scrambling {
-  color: rgba(255, 255, 255, 0.45) !important;
-  font-family: var(--font-mono), monospace !important;
-  font-size: 30px !important;
-  transform: translateY(-1px) scale(0.95) !important;
-}
-
-.h3l-scanner-line {
+.h3l-laser-sweep {
   position: absolute !important;
-  bottom: -4px !important;
-  left: 0 !important;
-  width: 22px !important;
-  height: 3px !important;
-  background: #ffffff !important;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
-  transition: transform 0.06s ease, opacity 0.1s ease !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  width: 40px !important;
+  background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.4) 45%, rgba(255, 255, 255, 0.95) 50%, rgba(255, 255, 255, 0.4) 55%, transparent 100%) !important;
+  filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.9)) !important;
+  animation: h3lLaserSweep 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) infinite !important;
   pointer-events: none !important;
+}
+
+@keyframes h3lLaserSweep {
+  0% { left: -50px; opacity: 0; }
+  15% { opacity: 1; }
+  85% { opacity: 1; }
+  100% { left: 280px; opacity: 0; }
+}
+
+.h3l-meta-row {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  width: 100% !important;
+  padding-top: 10px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-family: var(--font-mono), monospace !important;
+  font-size: 8px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  text-transform: uppercase !important;
+}
+
+.h3l-progress-dock {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 8px !important;
+  width: 220px !important;
+  margin-top: 12px !important;
+}
+
+.h3l-progress-track {
+  display: flex !important;
+  gap: 3px !important;
+  width: 100% !important;
+  height: 2px !important;
+}
+
+.h3l-tick {
+  flex: 1 !important;
+  height: 100% !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 1px !important;
+  transition: background 0.08s ease, box-shadow 0.08s ease !important;
+}
+
+.h3l-tick.active {
+  background: #ffffff !important;
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.7) !important;
+}
+
+.h3l-status-text {
+  font-family: var(--font-mono), monospace !important;
+  font-size: 7.5px !important;
+  letter-spacing: 0.16em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+  text-transform: uppercase !important;
 }
 
 /* 2. STRICT ZERO-JUMP LOCKED SETUP CARD (IDENTICAL 254px TOOLS HEIGHT) */
