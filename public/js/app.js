@@ -191,11 +191,17 @@ function drawFrame() {
   sizeInput.classList.toggle('has-free', billing.state.billing && hi > freeSide);
 }
 document.querySelectorAll('[data-shape]').forEach((b) => {
-  b.setAttribute('aria-pressed', String(b.dataset.shape === shape));
+  const isMatch = b.dataset.shape === shape;
+  b.setAttribute('aria-pressed', String(isMatch));
+  b.classList.toggle('active', isMatch);
   b.addEventListener('click', () => {
     shape = b.dataset.shape;
     store.set('ue:shape', shape);
-    document.querySelectorAll('[data-shape]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+    document.querySelectorAll('[data-shape]').forEach((x) => {
+      const match = x.dataset.shape === shape;
+      x.setAttribute('aria-pressed', String(match));
+      x.classList.toggle('active', match);
+    });
     drawFrame();
   });
 });

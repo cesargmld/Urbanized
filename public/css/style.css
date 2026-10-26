@@ -7148,32 +7148,17 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: #d1d3be;
 }
 
-/* 7. Image 2 Active Nav Corner Tick Brackets */
+/* 7. Image 2 Active Nav - Clean rounded liquid glass (no bracket ticks) */
 .axiom-view-btn.active {
   position: relative !important;
-  background: rgba(255, 255, 255, 0.12) !important;
+  background: rgba(255, 255, 255, 0.14) !important;
   color: #ffffff !important;
-  border-radius: 6px !important;
+  border-radius: 8px !important;
 }
-.axiom-view-btn.active::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  width: 5px;
-  height: 5px;
-  border-top: 1.5px solid #ffffff;
-  border-left: 1.5px solid #ffffff;
-}
+.axiom-view-btn.active::before,
 .axiom-view-btn.active::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 5px;
-  height: 5px;
-  border-top: 1.5px solid #ffffff;
-  border-right: 1.5px solid #ffffff;
+  display: none !important;
+  content: none !important;
 }
 
 /* 8. Image 2 Stepper & Circle Action Buttons */
@@ -8029,12 +8014,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 .axiom-island-sep,
 .axiom-nav-cluster-sep,
 .axiom-seg-sep {
-  font-family: 'Helvetica Now Display', sans-serif !important;
-  font-size: 11px !important;
-  letter-spacing: 0.15em !important;
-  color: rgba(255, 255, 255, 0.22) !important;
-  user-select: none !important;
-  margin: 0 4px !important;
+  display: none !important;
 }
 
 /* Corner Bracket Ticks on Active segmented items */
@@ -8057,33 +8037,17 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: #ffffff !important;
 }
 
-/* Top-Left and Bottom-Right corner ticks replicating Image 2 */
+/* Clean rounded pills - brackets completely eliminated */
+.btn-bracket-label::before,
+.btn-bracket-label::after,
 .axiom-island-btn.active .btn-bracket-label::before,
 .axiom-view-btn.active .btn-bracket-label::before,
-.axiom-seg-item.active .btn-bracket-label::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 5px;
-  height: 5px;
-  border-top: 1.5px solid #ffffff;
-  border-left: 1.5px solid #ffffff;
-  pointer-events: none;
-}
-
+.axiom-seg-item.active .btn-bracket-label::before,
 .axiom-island-btn.active .btn-bracket-label::after,
 .axiom-view-btn.active .btn-bracket-label::after,
 .axiom-seg-item.active .btn-bracket-label::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  width: 5px;
-  height: 5px;
-  border-bottom: 1.5px solid #ffffff;
-  border-right: 1.5px solid #ffffff;
-  pointer-events: none;
+  display: none !important;
+  content: none !important;
 }
 
 /* Header & Setup Card Restyling: No rounded gray blobs, pure translucent liquid glass */
@@ -8729,25 +8693,16 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   transition: all 0.15s ease !important;
 }
 
-/* Active State: 4 Corners + Subtle Colored Tint */
+/* Clean label with zero bracket ticks or gradients */
+.btn-bracket-label {
+  background: transparent !important;
+  padding: 0 !important;
+}
 .axiom-seg-item.active .btn-bracket-label,
 .axiom-island-btn.active .btn-bracket-label,
 .axiom-view-btn.active .btn-bracket-label {
-  background: rgba(224, 109, 68, 0.14) !important;
+  background: transparent !important;
   color: #ffffff !important;
-  /* Dibuja las 4 esquinas ┌ ┐ └ ┘ de forma nítida con gradiente de 4 esquinas */
-  background: 
-    linear-gradient(to right, #ffffff 5px, transparent 5px) 0 0,
-    linear-gradient(to bottom, #ffffff 5px, transparent 5px) 0 0,
-    linear-gradient(to left, #ffffff 5px, transparent 5px) 100% 0,
-    linear-gradient(to bottom, #ffffff 5px, transparent 5px) 100% 0,
-    linear-gradient(to right, #ffffff 5px, transparent 5px) 0 100%,
-    linear-gradient(to top, #ffffff 5px, transparent 5px) 0 100%,
-    linear-gradient(to left, #ffffff 5px, transparent 5px) 100% 100%,
-    linear-gradient(to top, #ffffff 5px, transparent 5px) 100% 100%,
-    rgba(224, 109, 68, 0.14) !important;
-  background-repeat: no-repeat !important;
-  background-size: 5px 1.5px, 1.5px 5px, 5px 1.5px, 1.5px 5px, 5px 1.5px, 1.5px 5px, 5px 1.5px, 1.5px 5px, 100% 100% !important;
 }
 
 .axiom-seg-item.active .btn-bracket-label::before,
@@ -9123,25 +9078,14 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: #ffffff !important;
 }
 
-/* Estado Activo o Hover en Header Actions: 4 Corchetes ┌ ┐ └ ┘ + Escala de Grises Sutil */
+/* Estado Activo o Hover en Header Actions: Limpio y sutil sin corchetes */
 .axiom-seg-item.active .btn-bracket-label,
 .axiom-island-btn.active .btn-bracket-label,
 .axiom-view-btn.active .btn-bracket-label,
 .axiom-header-action:hover .btn-bracket-label,
 .lang-single-btn:hover .btn-bracket-label {
   color: #ffffff !important;
-  background:
-    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
-    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
-    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
-    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
-    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
-    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
-    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
-    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
-    rgba(255, 255, 255, 0.08) !important;
-  background-repeat: no-repeat !important;
-  background-size: 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 100% 100% !important;
+  background: transparent !important;
 }
 
 /* Controles derechos del Header (.URBNZ, OPEN, SHARE, EN): Limpios y desaturados */
@@ -9808,18 +9752,7 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
 .sec-exag-btn.active .btn-bracket-label,
 .sec-exag-btn:hover .btn-bracket-label {
   color: #ffffff !important;
-  background:
-    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
-    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 0 0,
-    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
-    linear-gradient(to bottom, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 0,
-    linear-gradient(to right, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
-    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 0 100%,
-    linear-gradient(to left, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
-    linear-gradient(to top, rgba(255,255,255,0.9) 4px, transparent 4px) 100% 100%,
-    rgba(255, 255, 255, 0.1) !important;
-  background-repeat: no-repeat !important;
-  background-size: 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 4px 1px, 1px 4px, 100% 100% !important;
+  background: transparent !important;
 }
 .axiom-export-pill:hover {
   border-color: rgba(255, 255, 255, 0.55) !important;
@@ -10515,7 +10448,7 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* 2. TOPBAR CENTER SWITCHER & LEFT RAIL CON CÁPSULA BLANCA (IMAGEN 2 & 5) */
+/* 2. TOPBAR CENTER SWITCHER & LEFT RAIL CON LIQUID GLASS SUTIL */
 .axiom-view-nav {
   display: inline-flex !important;
   align-items: center !important;
@@ -10537,27 +10470,66 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   font-weight: 500 !important;
   color: rgba(255, 255, 255, 0.6) !important;
   background: transparent !important;
-  border: none !important;
+  border: 1px solid transparent !important;
   transition: all 0.15s ease !important;
   cursor: pointer !important;
 }
 .axiom-view-btn:hover {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
 .axiom-view-btn.active {
-  background: #ffffff !important;
-  color: #0b0c10 !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(14px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
 }
 .axiom-view-btn.active .btn-bracket-label,
 .axiom-view-btn.active svg {
-  color: #0b0c10 !important;
-  stroke: #0b0c10 !important;
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 .axiom-nav-cluster-sep {
   display: none !important;
+}
+
+/* Island buttons (Monochrome, Satellite, Dark Map) */
+.axiom-top-island {
+  border-radius: 10px !important;
+  background: rgba(18, 20, 26, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+.axiom-island-btn {
+  border-radius: 7px !important;
+  border: 1px solid transparent !important;
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  padding: 5px 12px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  transition: all 0.15s ease !important;
+}
+.axiom-island-btn:hover {
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+.axiom-island-btn.active {
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
 }
 
 /* Left Rail & Icon Docks */
@@ -10572,6 +10544,7 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
 .rayon-rail-icon {
   border-radius: 8px !important;
   color: rgba(255, 255, 255, 0.55) !important;
+  border: 1px solid transparent !important;
   transition: all 0.15s ease !important;
 }
 .rayon-rail-btn:hover,
@@ -10583,17 +10556,19 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
 .rayon-rail-btn.active,
 .axiom-dock-icon.active,
 .rayon-rail-icon.active {
-  background: #ffffff !important;
-  color: #0b0c10 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.26) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 .rayon-rail-btn.active svg,
 .axiom-dock-icon.active svg,
 .rayon-rail-icon.active svg {
-  stroke: #0b0c10 !important;
+  stroke: #ffffff !important;
 }
 
-/* 3. WORKSPACE DOT-GRID & TARJETA ISLA FLOTANTE (IMAGEN 3 & 5) */
+/* 3. WORKSPACE DOT-GRID & TARJETA ISLA FLOTANTE */
 .axiom-workspace,
 #app,
 .axiom-map-viewport,
@@ -10634,41 +10609,69 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   justify-content: center !important;
   gap: 6px !important;
   transition: all 0.15s ease !important;
-  border: none !important;
+  border: 1px solid transparent !important;
   background: transparent !important;
 }
 .axiom-setup-card .axiom-seg-item:hover {
   color: #ffffff !important;
   background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.1) !important;
 }
-.axiom-setup-card .axiom-seg-item.active {
-  background: #ffffff !important;
-  color: #0b0c10 !important;
+.axiom-setup-card .axiom-seg-item.active,
+.axiom-setup-card .axiom-seg-item[aria-pressed="true"] {
+  background: rgba(255, 255, 255, 0.16) !important;
+  backdrop-filter: blur(14px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.28) !important;
+  color: #ffffff !important;
   font-weight: 600 !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
 }
 .axiom-setup-card .axiom-seg-item.active .btn-bracket-label,
-.axiom-setup-card .axiom-seg-item.active svg {
-  color: #0b0c10 !important;
-  stroke: #0b0c10 !important;
+.axiom-setup-card .axiom-seg-item.active svg,
+.axiom-setup-card .axiom-seg-item[aria-pressed="true"] .btn-bracket-label,
+.axiom-setup-card .axiom-seg-item[aria-pressed="true"] svg {
+  color: #ffffff !important;
+  stroke: #ffffff !important;
 }
 
 #build.generate {
   border-radius: 9px !important;
-  background: #ffffff !important;
+  background: rgba(255, 255, 255, 0.94) !important;
   color: #0b0c10 !important;
   font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
   font-size: 12px !important;
   font-weight: 600 !important;
   height: 38px !important;
-  box-shadow: 0 4px 14px rgba(255, 255, 255, 0.15) !important;
-  border: none !important;
+  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
   cursor: pointer !important;
   transition: transform 0.15s ease, box-shadow 0.15s ease !important;
 }
 #build.generate:hover {
   transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.26) !important;
+}
+
+/* 4. ELIMINAR EL PANEL INÚTIL DE LA DERECHA EN EL ÁREA DE TRABAJO 3D */
+#studio-right-inspector,
+.rayon-inspector-panel {
+  display: none !important;
+  width: 0 !important;
+  min-width: 0 !important;
+  max-width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+
+#result .viewer-wrap,
+#result .viewer {
+  flex: 1 1 100% !important;
+  width: 100% !important;
+  max-width: 100% !important;
 }
 
 /* 4. MODALES EMERGENTES REDONDEADOS (IMAGEN 4) */
