@@ -6655,19 +6655,19 @@ input[type="range"]::-webkit-slider-thumb,
   padding: 20px 20px !important;
 }
 .mode-seg {
-  border-radius: 0px !important;
-  background: transparent !important;
-  padding: 0 !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  gap: 0 !important;
+  border-radius: 9px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  padding: 3px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  gap: 3px !important;
 }
 .mode-seg .axiom-seg-item {
-  border-radius: 0px !important;
-  font-family: var(--font-mono) !important;
-  font-size: 9.5px !important;
-  padding: 7px 12px !important;
-  font-weight: 400 !important;
-  letter-spacing: 0.14em !important;
+  border-radius: 7px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 11px !important;
+  padding: 6px 10px !important;
+  font-weight: 500 !important;
+  letter-spacing: 0.04em !important;
   color: rgba(255, 255, 255, 0.45) !important;
   background: transparent !important;
   border: none !important;
@@ -7527,22 +7527,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   display: none !important;
 }
 
-/* Header Right Buttons: Fine Outline Pills */
-.axiom-topbar-right button {
-  border: 1px solid rgba(255, 255, 255, 0.22) !important;
-  border-radius: 9999px !important;
-  background: transparent !important;
-  font-size: 9px !important;
-  letter-spacing: 0.12em !important;
-  color: rgba(255, 255, 255, 0.8) !important;
-  padding: 3px 10px !important;
-}
-#btn-topbar-share {
-  background: #ffffff !important;
-  color: #000000 !important;
-  border-color: #ffffff !important;
-  font-weight: 500 !important;
-}
+
 
 /* 3. Elimination of Rounded Gray Blobs in Setup Card */
 .axiom-setup-card {
@@ -7569,25 +7554,24 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 500 !important;
 }
 
-/* Flat Rectilinear Segmented Controls */
+/* Liquid Glass Segmented Controls */
 .axiom-seg {
   display: flex !important;
-  background: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  border-radius: 0px !important;
-  padding: 0 !important;
-  gap: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
+  gap: 3px !important;
 }
 .axiom-seg-item {
   flex: 1 !important;
   padding: 6px 10px !important;
-  border-radius: 0 !important;
-  border: none !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.16) !important;
+  border-radius: 7px !important;
+  border: 1px solid transparent !important;
   background: transparent !important;
-  color: rgba(255, 255, 255, 0.45) !important;
-  font-size: 9px !important;
-  letter-spacing: 0.14em !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-size: 11px !important;
+  letter-spacing: 0.04em !important;
   cursor: pointer !important;
 }
 .axiom-seg-item:last-child {
@@ -7605,7 +7589,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 
 /* Primary CTA Button */
 .axiom-cta-btn.generate {
-  border-radius: 2px !important;
+  border-radius: 9px !important;
   background: #ffffff !important;
   color: #000000 !important;
   border: 1px solid #ffffff !important;
@@ -7886,12 +7870,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: rgba(255, 255, 255, 0.8) !important;
   padding: 4px 12px !important;
 }
-#btn-topbar-share {
-  background: #ffffff !important;
-  color: #000000 !important;
-  border-color: #ffffff !important;
-  font-weight: 500 !important;
-}
+
 
 /* 6. Top Base Map Switcher: Helvetica Now Display Medium */
 .axiom-island-btn {
@@ -8102,9 +8081,9 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 500 !important;
   letter-spacing: 0.05em !important;
   text-transform: uppercase !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 0px !important;
+  background: rgba(255, 255, 255, 0.04) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 9px !important;
   height: 34px !important;
   padding: 0 10px !important;
 }
@@ -8124,7 +8103,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   transition: all 0.2s ease !important;
 }
 .map-rail-avatar-btn .rayon-user-avatar {
-  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
   font-size: 11px !important;
   font-weight: 700 !important;
   color: #ffffff !important;
@@ -8134,39 +8113,41 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   transform: scale(1.05);
 }
 
-/* #axiom-setup-card: Pure Rectilinear Liquid Glass, aligned perfectly bottom-left, zero fuzzy shadows */
+/* #axiom-setup-card: Subtle Liquid Glass */
 .axiom-setup-card {
   position: absolute !important;
   bottom: 24px !important;
   left: 20px !important;
-  width: 310px !important;
-  background: rgba(10, 12, 16, 0.78) !important;
+  width: 320px !important;
+  background: rgba(18, 20, 26, 0.92) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 2px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
-  padding: 14px !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  padding: 14px 16px !important;
 }
 
 .axiom-seg {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0px !important;
-  padding: 0 !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
   display: flex !important;
   align-items: center !important;
-  gap: 2px !important;
+  gap: 3px !important;
 }
 .axiom-seg-item {
   background: transparent !important;
-  border: none !important;
-  color: rgba(255, 255, 255, 0.45) !important;
-  padding: 4px 6px !important;
-  border-radius: 0px !important;
+  border: 1px solid transparent !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  padding: 6px 10px !important;
+  border-radius: 7px !important;
 }
 .axiom-seg-item.active {
-  background: transparent !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.38) !important;
   color: #ffffff !important;
 }
 
@@ -8721,42 +8702,49 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   bottom: 24px !important;
   left: 20px !important;
   width: 320px !important;
-  background: rgba(10, 12, 16, 0.78) !important;
+  background: rgba(18, 20, 26, 0.92) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 2px !important;
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.7) !important;
-  padding: 16px !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 14px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+  padding: 14px 16px !important;
 }
 
 .axiom-seg {
   display: flex !important;
   align-items: center !important;
-  gap: 6px !important;
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
+  gap: 3px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
 }
 
 .axiom-seg-item {
   flex: 1 !important;
   background: transparent !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 2px !important;
-  color: rgba(255, 255, 255, 0.45) !important;
-  padding: 3px !important;
+  border: 1px solid transparent !important;
+  border-radius: 7px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  padding: 6px 10px !important;
   cursor: pointer !important;
-  transition: all 0.15s ease !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .axiom-seg-item:hover {
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
   color: #ffffff !important;
 }
 
 .axiom-seg-item.active {
-  border-color: rgba(224, 109, 68, 0.4) !important;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.24) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+  backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.38) !important;
+  color: #ffffff !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1.5px 1px rgba(255, 255, 255, 0.55) !important;
+}
 }
 
 /* 5. CORTE TOPOGRÁFICO EN PANTALLA COMPLETA INTEGRADO (FULL HORIZON CAD DOCK) */
@@ -8885,28 +8873,28 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 }
 
 .axiom-export-pill {
-  border-radius: 2px !important;
-  border: 1px solid rgba(255, 255, 255, 0.16) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
-  color: #d4d4d8 !important;
-  font-family: 'Helvetica Now Display', sans-serif !important;
+  border-radius: 9999px !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
   font-size: 10px !important;
-  padding: 4px 10px !important;
+  padding: 5px 12px !important;
   transition: all 0.15s ease !important;
 }
 
 .axiom-export-pill:hover {
-  border-color: #e06d44 !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
   color: #ffffff !important;
-  background: rgba(224, 109, 68, 0.12) !important;
+  background: rgba(255, 255, 255, 0.18) !important;
 }
 
 .axiom-cta-pill {
-  border-radius: 2px !important;
-  background: #e06d44 !important;
-  border: 1px solid #c85a32 !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border: 1px solid rgba(255, 255, 255, 0.25) !important;
   color: #ffffff !important;
-  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
   font-size: 10.5px !important;
   font-weight: 600 !important;
   padding: 5px 16px !important;
@@ -8915,15 +8903,15 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 }
 
 .axiom-cta-pill:hover {
-  background: #c85a32 !important;
+  background: rgba(255, 255, 255, 0.22) !important;
 }
 
 /* Capas del Perfil de Corte */
 .sec-layer-btn {
-  border-radius: 2px !important;
-  font-family: 'Helvetica Now Display', sans-serif !important;
-  font-size: 9.5px !important;
-  padding: 3px 8px !important;
+  border-radius: 7px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 10px !important;
+  padding: 5px 12px !important;
 }
 
 .sec-layer-btn.active {
@@ -8958,8 +8946,8 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 
 .modal-window,
 .axiom-modal-dialog {
-  border-radius: 2px !important;
-  background: rgba(10, 12, 16, 0.82) !important;
+  border-radius: 16px !important;
+  background: rgba(14, 16, 22, 0.92) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
@@ -8967,50 +8955,66 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: #f4f4f6 !important;
 }
 
-/* Botones Principales y Acentos en Modales: Naranja Terracota */
+/* Botones Principales y Acentos en Modales */
 .rayon-share-btn,
 .rayon-primary-btn,
 .axiom-btn-primary {
-  background: #e06d44 !important;
-  border: 1px solid #c85a32 !important;
-  color: #ffffff !important;
-  border-radius: 2px !important;
-  box-shadow: 0 2px 10px rgba(224, 109, 68, 0.3) !important;
-  transition: all 0.15s ease !important;
-  font-family: 'Helvetica Now Display', sans-serif !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(230, 235, 240, 0.90) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  color: #0c0d12 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.18), inset 0 1px 0 #ffffff !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-weight: 600 !important;
 }
-
 .rayon-share-btn:hover,
 .rayon-primary-btn:hover,
 .axiom-btn-primary:hover {
-  background: #c85a32 !important;
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.28), inset 0 1px 0 #ffffff !important;
+  color: #000000 !important;
 }
 
 .axiom-btn-secondary,
 .rayon-secondary-btn {
-  border-radius: 2px !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  background: rgba(255, 255, 255, 0.04) !important;
+  border-radius: 8px !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
   color: #ffffff !important;
-  font-family: 'Helvetica Now Display', sans-serif !important;
-  transition: all 0.15s ease !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
 
 .axiom-btn-secondary:hover,
 .rayon-secondary-btn:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.12) !important;
   border-color: rgba(255, 255, 255, 0.3) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
 }
 
 .modal-close-btn,
 .axiom-modal-close-btn {
-  border-radius: 2px !important;
+  border-radius: 50% !important;
+  width: 26px !important;
+  height: 26px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
   transition: all 0.15s ease !important;
 }
 
 .modal-close-btn:hover,
 .axiom-modal-close-btn:hover {
-  background: rgba(255, 255, 255, 0.1) !important;
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
   color: #ffffff !important;
 }
 
@@ -9028,29 +9032,11 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 
 /* 1. CERO MARCOS EXTERIORES Y CERO TONO NARANJA EN BOTONES:
       Solo quedan los 4 corchetes ┌ ┐ └ ┘ y relleno en escala de grises */
-.axiom-view-btn,
-.axiom-view-btn.active,
-.axiom-island-btn,
-.axiom-island-btn.active,
-.axiom-seg-item,
-.axiom-seg-item.active,
-.axiom-header-action,
-.lang-single-btn {
-  border: none !important;
-  background: transparent !important;
-  box-shadow: none !important;
-  border-radius: 0 !important;
-  padding: 2px 4px !important;
-  outline: none !important;
-}
-
-/* Quitamos cualquier fondo o píldora del subgrupo de navegación */
+/* Base resets for navigation and controls */
 .axiom-nav-subgroup {
   background: transparent !important;
   border: none !important;
-  border-radius: 0 !important;
   padding: 0 !important;
-  box-shadow: none !important;
 }
 
 /* Tipografía refinada y proporcionada (no gigante ni saturada) */
@@ -9088,24 +9074,11 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   background: transparent !important;
 }
 
-/* Controles derechos del Header (.URBNZ, OPEN, SHARE, EN): Limpios y desaturados */
+/* Controles derechos del Header (.URBNZ, OPEN, SHARE, EN) */
 .axiom-topbar-right {
   display: flex !important;
   align-items: center !important;
   gap: 6px !important;
-}
-
-.axiom-topbar-right button,
-#btn-topbar-share,
-#btn-save-urbnz,
-#btn-open-urbnz,
-#btn-lang-toggle {
-  background: transparent !important;
-  border: none !important;
-  border-radius: 0 !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-  color: rgba(255, 255, 255, 0.72) !important;
 }
 
 /* Buscador y Resultados: Escala de grises limpia */
@@ -9494,25 +9467,6 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 }
 
 /* 6. LIMPIEZA TOTAL DE SOMBRAS/FONDOS RESIDUALES EN BOTONES DEL SETUP CARD (SOLO 4 CORCHETES) */
-.axiom-setup-card .axiom-seg,
-.axiom-setup-card .mode-seg,
-.axiom-setup-card .shape-seg {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  padding: 0 !important;
-}
-
-.axiom-setup-card .axiom-seg-item,
-.axiom-setup-card .axiom-seg-item.active,
-.axiom-setup-card .axiom-seg-item:hover,
-.axiom-setup-card .axiom-seg-item:focus {
-  background: transparent !important;
-  border: none !important;
-  box-shadow: none !important;
-  outline: none !important;
-}
-
 /* 7. LOCK SETUP CARD DIMENSIONS (ZERO LAYOUT JUMP BETWEEN 3D MODEL & TOPOGRAPHIC SECTION) */
 .axiom-setup-card {
   width: 320px !important;
@@ -9612,17 +9566,17 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   flex-shrink: 0 !important;
 }
 #section-modal .section-layer-filters {
-  border-radius: 2px !important;
-  background: rgba(255, 255, 255, 0.03) !important;
-  border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  padding: 2px !important;
-  gap: 2px !important;
+  border-radius: 9px !important;
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  padding: 3px !important;
+  gap: 3px !important;
 }
 #section-modal .sec-layer-btn {
-  border-radius: 2px !important;
-  font-size: 9px !important;
-  padding: 4px 10px !important;
-  letter-spacing: 0.08em !important;
+  border-radius: 7px !important;
+  font-size: 10px !important;
+  padding: 5px 12px !important;
+  letter-spacing: 0.04em !important;
 }
 #section-modal .section-modal-body.hero-visual {
   flex: 1 !important;
@@ -9744,15 +9698,31 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   white-space: nowrap !important;
 }
 .sec-exag-btn {
-  background: transparent !important;
-  border: none !important;
-  padding: 0 !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 7px !important;
+  padding: 4px 10px !important;
   cursor: pointer !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 11px !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
-.sec-exag-btn.active .btn-bracket-label,
-.sec-exag-btn:hover .btn-bracket-label {
+.sec-exag-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
   color: #ffffff !important;
-  background: transparent !important;
+}
+.sec-exag-btn.active {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.10) 100%) !important;
+  backdrop-filter: blur(20px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.40) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4), inset 0 1.5px 1px rgba(255, 255, 255, 0.55) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
 }
 .axiom-export-pill:hover {
   border-color: rgba(255, 255, 255, 0.55) !important;
@@ -9825,23 +9795,27 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   gap: 6px !important;
   height: 28px !important;
   padding: 0 10px !important;
-  background: rgba(255, 255, 255, 0.05) !important;
-  border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  border-radius: 2px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  border-radius: 8px !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
   color: rgba(255, 255, 255, 0.85) !important;
-  font-family: var(--font-mono), monospace !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
   font-size: 11px !important;
-  font-weight: 600 !important;
+  font-weight: 500 !important;
   letter-spacing: 0.04em !important;
   cursor: pointer !important;
-  transition: all 0.15s ease !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
   user-select: none !important;
 }
 
 .axiom-header-action:hover,
 .lang-single-btn:hover {
   background: rgba(255, 255, 255, 0.12) !important;
-  border-color: rgba(255, 255, 255, 0.3) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
   color: #ffffff !important;
 }
 
@@ -10448,96 +10422,322 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   color: rgba(255, 255, 255, 0.5) !important;
 }
 
-/* 2. TOPBAR CENTER SWITCHER & LEFT RAIL CON LIQUID GLASS SUTIL */
-.axiom-view-nav {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 3px !important;
-  background: rgba(0, 0, 0, 0.45) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 9999px !important;
-  padding: 3px !important;
-  backdrop-filter: blur(20px) !important;
+/* ========================================================
+   v45 SISTEMA MAESTRO DE BOTONES LIQUID GLASS UNIFICADO
+   (TODAS LAS VISTAS, HUD, HEADER, SETUP CARD, STUDIO, MODALES)
+   ======================================================== */
+
+/* 1. RESET ESTRICTO ANTI-CORCHETES Y ANTI-BORDES RECTOS EN TODO BOTÓN */
+.btn-bracket-label::before,
+.btn-bracket-label::after,
+.axiom-view-btn::before,
+.axiom-view-btn::after,
+.axiom-island-btn::before,
+.axiom-island-btn::after,
+.axiom-seg-item::before,
+.axiom-seg-item::after,
+.sec-exag-btn::before,
+.sec-exag-btn::after,
+.sec-layer-btn::before,
+.sec-layer-btn::after,
+.axiom-header-action::before,
+.axiom-header-action::after,
+.lang-single-btn::before,
+.lang-single-btn::after,
+.rayon-rail-btn::before,
+.rayon-rail-btn::after {
+  display: none !important;
+  content: none !important;
 }
-.axiom-view-btn {
-  display: inline-flex !important;
-  align-items: center !important;
-  gap: 6px !important;
-  padding: 5px 13px !important;
-  border-radius: 9999px !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  background: transparent !important;
-  border: 1px solid transparent !important;
-  transition: all 0.15s ease !important;
-  cursor: pointer !important;
-}
-.axiom-view-btn:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-.axiom-view-btn.active {
-  background: rgba(255, 255, 255, 0.16) !important;
-  backdrop-filter: blur(14px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
-}
-.axiom-view-btn.active .btn-bracket-label,
-.axiom-view-btn.active svg {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-.axiom-nav-cluster-sep {
+
+.axiom-nav-cluster-sep,
+.axiom-island-sep,
+.axiom-seg-sep {
   display: none !important;
 }
 
-/* Island buttons (Monochrome, Satellite, Dark Map) */
-.axiom-top-island {
-  border-radius: 10px !important;
-  background: rgba(18, 20, 26, 0.75) !important;
+/* 2. BASE UNIVERSAL DE BOTONES LIQUID GLASS (TRANSLÚCIDO CON BRILLO Y PROFUNDIDAD) */
+.axiom-view-btn,
+.axiom-header-action,
+#btn-save-urbnz,
+#btn-open-urbnz,
+#btn-topbar-share,
+.lang-single-btn,
+#btn-lang-toggle,
+.map-rail-avatar-btn,
+.studio-avatar-rail-btn,
+#btn-map-avatar,
+.axiom-island-btn,
+.axiom-seg-item,
+.axiom-setup-card .axiom-seg-item,
+[data-shape],
+[data-mode],
+[data-base],
+.rayon-seg-btn,
+.sec-exag-btn,
+.sec-layer-btn,
+.axiom-subtle-btn,
+.axiom-back-btn,
+.rayon-axon-btn,
+.axiom-filter-trigger,
+.axiom-btn-secondary,
+.rayon-secondary-btn,
+.tech-hud-btn,
+.btn-open-section-modal,
+.rayon-card-act-btn,
+.rayon-list-act-btn {
+  border-radius: 8px !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(16px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(16px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.13) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  cursor: pointer !important;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* HOVER UNIVERSAL DE BOTONES */
+.axiom-view-btn:hover,
+.axiom-header-action:hover,
+#btn-save-urbnz:hover,
+#btn-open-urbnz:hover,
+#btn-topbar-share:hover,
+.lang-single-btn:hover,
+#btn-lang-toggle:hover,
+.map-rail-avatar-btn:hover,
+.studio-avatar-rail-btn:hover,
+#btn-map-avatar:hover,
+.axiom-island-btn:hover,
+.axiom-seg-item:hover,
+.axiom-setup-card .axiom-seg-item:hover,
+[data-shape]:hover,
+[data-mode]:hover,
+[data-base]:hover,
+.rayon-seg-btn:hover,
+.sec-exag-btn:hover,
+.sec-layer-btn:hover,
+.axiom-subtle-btn:hover,
+.axiom-back-btn:hover,
+.rayon-axon-btn:hover,
+.axiom-filter-trigger:hover,
+.axiom-btn-secondary:hover,
+.rayon-secondary-btn:hover,
+.tech-hud-btn:hover,
+.btn-open-section-modal:hover,
+.rayon-card-act-btn:hover,
+.rayon-list-act-btn:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.28) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.20) !important;
+  color: #ffffff !important;
+}
+
+/* 3. ESTADO ACTIVO / SELECCIONADO: LIQUID GLASS ELEVADO, REFRACTIVO Y VIBRANTE */
+.axiom-view-btn.active,
+.axiom-island-btn.active,
+.axiom-seg-item.active,
+.axiom-seg-item[aria-pressed="true"],
+.axiom-setup-card .axiom-seg-item.active,
+.axiom-setup-card .axiom-seg-item[aria-pressed="true"],
+.rayon-seg-btn.active,
+.sec-exag-btn.active,
+.sec-layer-btn.active,
+.rayon-rail-btn.active,
+.axiom-dock-icon.active,
+.rayon-rail-icon.active,
+.rayon-axon-btn.active,
+.stipple-swatch.active,
+[data-mode].active,
+[data-mode][aria-pressed="true"],
+[data-shape].active,
+[data-shape][aria-pressed="true"],
+[data-base].active,
+[data-base][aria-pressed="true"],
+[data-secexag].active,
+[data-seclayer].active,
+[data-solardate].active {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.26) 0%, rgba(255, 255, 255, 0.10) 100%) !important;
+  backdrop-filter: blur(20px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.40) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.45), inset 0 1.5px 1px rgba(255, 255, 255, 0.55), inset 0 -1px 0.5px rgba(0, 0, 0, 0.25) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+  border-radius: 8px !important;
+}
+
+.axiom-view-btn.active svg,
+.axiom-island-btn.active svg,
+.axiom-seg-item.active svg,
+.axiom-seg-item[aria-pressed="true"] svg,
+.rayon-rail-btn.active svg,
+.axiom-dock-icon.active svg,
+.rayon-rail-icon.active svg,
+.rayon-axon-btn.active svg,
+.sec-layer-btn.active svg {
+  stroke: #ffffff !important;
+  color: #ffffff !important;
+}
+
+.axiom-view-btn.active .btn-bracket-label,
+.axiom-island-btn.active .btn-bracket-label,
+.axiom-seg-item.active .btn-bracket-label,
+.axiom-seg-item[aria-pressed="true"] .btn-bracket-label,
+.sec-exag-btn.active .btn-bracket-label,
+.sec-layer-btn.active .btn-bracket-label {
+  color: #ffffff !important;
+  background: transparent !important;
+}
+
+/* 4. BOTONES PRIMARIOS Y CTA (LUMINOSOS Y DESTACADOS) */
+#build.generate,
+#sec-build,
+.axiom-cta-btn,
+.axiom-btn-primary,
+.rayon-primary-btn,
+#btn-pin-place-toggle {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(230, 235, 240, 0.90) 100%) !important;
   backdrop-filter: blur(20px) !important;
   -webkit-backdrop-filter: blur(20px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  color: #0c0d12 !important;
+  border: 1px solid rgba(255, 255, 255, 0.8) !important;
+  border-radius: 9px !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.18), inset 0 1px 0 #ffffff !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
+}
+#build.generate:hover,
+#sec-build:hover,
+.axiom-cta-btn:hover,
+.axiom-btn-primary:hover,
+.rayon-primary-btn:hover,
+#btn-pin-place-toggle:hover {
+  transform: translateY(-1px) !important;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.28), inset 0 1px 0 #ffffff !important;
+  color: #000000 !important;
+}
+
+/* 5. CÁPSULAS Y PILLS DE EXPORTACIÓN Y TAGS */
+.axiom-export-pill,
+#btn-section-modal-done,
+.pin-tag-pill,
+.sheet-page-pill {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(14px) !important;
+  -webkit-backdrop-filter: blur(14px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+  font-size: 10px !important;
+  font-weight: 500 !important;
+  padding: 5px 12px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 6px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.axiom-export-pill:hover,
+#btn-section-modal-done:hover,
+.pin-tag-pill:hover,
+.sheet-page-pill:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+  color: #ffffff !important;
+}
+.axiom-export-pill svg,
+#btn-section-modal-done svg {
+  stroke: #ffffff !important;
+}
+
+/* 6. BOTONES DE CIERRE (✕) CIRCULARES Y CRISTALINOS */
+.modal-close-btn,
+.axiom-modal-close-btn,
+.axiom-drawer-close,
+#section-modal-close,
+#axiom-notice-close,
+#modal-share-close,
+#popover-pin-close {
+  width: 26px !important;
+  height: 26px !important;
+  min-width: 26px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(12px) !important;
+  -webkit-backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.modal-close-btn:hover,
+.axiom-modal-close-btn:hover,
+.axiom-drawer-close:hover,
+#section-modal-close:hover,
+#axiom-notice-close:hover,
+#modal-share-close:hover,
+#popover-pin-close:hover {
+  background: rgba(255, 255, 255, 0.20) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  color: #ffffff !important;
+}
+
+/* 7. CONTENEDORES DE ISLAS FLOTANTES Y SEGMENTADOS */
+.axiom-view-nav {
+  background: rgba(14, 16, 22, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 11px !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
   padding: 3px !important;
   display: inline-flex !important;
   align-items: center !important;
   gap: 3px !important;
 }
-.axiom-island-btn {
-  border-radius: 7px !important;
-  border: 1px solid transparent !important;
-  background: transparent !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  padding: 5px 12px !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  transition: all 0.15s ease !important;
-}
-.axiom-island-btn:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-}
-.axiom-island-btn.active {
-  background: rgba(255, 255, 255, 0.16) !important;
-  backdrop-filter: blur(14px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.22) !important;
+
+.axiom-top-island {
+  border-radius: 11px !important;
+  background: rgba(14, 16, 22, 0.78) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+  padding: 3px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 3px !important;
 }
 
-/* Left Rail & Icon Docks */
+.axiom-setup-card .axiom-seg,
+.mode-seg,
+.shape-seg,
+.solar-season-seg,
+.section-layer-filters {
+  background: rgba(0, 0, 0, 0.45) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  border-radius: 9px !important;
+  padding: 3px !important;
+  display: flex !important;
+  gap: 3px !important;
+}
+
+/* 8. LEFT TOOL RAILS EN TODOS LOS ESPACIOS */
 .rayon-left-rail,
 .axiom-left-dock,
 .rayon-rail-left {
   background: #0d0e12 !important;
-  border-right: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
 }
 .rayon-rail-btn,
 .axiom-dock-icon,
@@ -10553,107 +10753,8 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   background: rgba(255, 255, 255, 0.08) !important;
   color: #ffffff !important;
 }
-.rayon-rail-btn.active,
-.axiom-dock-icon.active,
-.rayon-rail-icon.active {
-  background: rgba(255, 255, 255, 0.16) !important;
-  backdrop-filter: blur(12px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.26) !important;
-  color: #ffffff !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-}
-.rayon-rail-btn.active svg,
-.axiom-dock-icon.active svg,
-.rayon-rail-icon.active svg {
-  stroke: #ffffff !important;
-}
 
-/* 3. WORKSPACE DOT-GRID & TARJETA ISLA FLOTANTE */
-.axiom-workspace,
-#app,
-.axiom-map-viewport,
-.screen-layer.rayon-studio-layout {
-  background-color: #0c0d12 !important;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px) !important;
-  background-size: 24px 24px !important;
-}
-
-.axiom-setup-card {
-  border-radius: 14px !important;
-  background: rgba(18, 20, 26, 0.9) !important;
-  backdrop-filter: blur(28px) !important;
-  -webkit-backdrop-filter: blur(28px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-  padding: 14px 16px !important;
-}
-
-.axiom-setup-card .axiom-seg {
-  background: rgba(0, 0, 0, 0.35) !important;
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
-  border-radius: 9px !important;
-  padding: 3px !important;
-  display: flex !important;
-  gap: 3px !important;
-}
-
-.axiom-setup-card .axiom-seg-item {
-  border-radius: 7px !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
-  font-size: 11px !important;
-  font-weight: 500 !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  padding: 6px 10px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 6px !important;
-  transition: all 0.15s ease !important;
-  border: 1px solid transparent !important;
-  background: transparent !important;
-}
-.axiom-setup-card .axiom-seg-item:hover {
-  color: #ffffff !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  border-color: rgba(255, 255, 255, 0.1) !important;
-}
-.axiom-setup-card .axiom-seg-item.active,
-.axiom-setup-card .axiom-seg-item[aria-pressed="true"] {
-  background: rgba(255, 255, 255, 0.16) !important;
-  backdrop-filter: blur(14px) saturate(180%) !important;
-  -webkit-backdrop-filter: blur(14px) saturate(180%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.28) !important;
-  color: #ffffff !important;
-  font-weight: 600 !important;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
-}
-.axiom-setup-card .axiom-seg-item.active .btn-bracket-label,
-.axiom-setup-card .axiom-seg-item.active svg,
-.axiom-setup-card .axiom-seg-item[aria-pressed="true"] .btn-bracket-label,
-.axiom-setup-card .axiom-seg-item[aria-pressed="true"] svg {
-  color: #ffffff !important;
-  stroke: #ffffff !important;
-}
-
-#build.generate {
-  border-radius: 9px !important;
-  background: rgba(255, 255, 255, 0.94) !important;
-  color: #0b0c10 !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
-  font-size: 12px !important;
-  font-weight: 600 !important;
-  height: 38px !important;
-  box-shadow: 0 4px 16px rgba(255, 255, 255, 0.16) !important;
-  border: 1px solid rgba(255, 255, 255, 0.4) !important;
-  cursor: pointer !important;
-  transition: transform 0.15s ease, box-shadow 0.15s ease !important;
-}
-#build.generate:hover {
-  transform: translateY(-1px) !important;
-  box-shadow: 0 6px 20px rgba(255, 255, 255, 0.26) !important;
-}
-
-/* 4. ELIMINAR EL PANEL INÚTIL DE LA DERECHA EN EL ÁREA DE TRABAJO 3D */
+/* 9. ELIMINACIÓN DEL PANEL DERECHO INÚTIL EN 3D STUDIO (100% ANCHO LIBRE) */
 #studio-right-inspector,
 .rayon-inspector-panel {
   display: none !important;
@@ -10674,85 +10775,47 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   max-width: 100% !important;
 }
 
-/* 4. MODALES EMERGENTES REDONDEADOS (IMAGEN 4) */
+/* 10. MODALES EMERGENTES Y SETUP CARD REDONDEADOS */
+.axiom-setup-card {
+  border-radius: 14px !important;
+  background: rgba(18, 20, 26, 0.92) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.10) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
+  padding: 14px 16px !important;
+}
+
 #section-modal .section-modal-window,
 .axiom-modal-clean {
   border-radius: 20px !important;
   background: rgba(18, 20, 26, 0.94) !important;
   backdrop-filter: blur(28px) !important;
   -webkit-backdrop-filter: blur(28px) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
   box-shadow: 0 32px 80px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
   overflow: hidden !important;
 }
-.axiom-clean-badge {
-  display: inline-flex !important;
-  align-items: center !important;
-  padding: 3px 8px !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  border-radius: 6px !important;
-  font-size: 10px !important;
-  font-weight: 600 !important;
-  color: #ffffff !important;
-  letter-spacing: 0.02em !important;
-}
-.clean-coords {
-  font-family: var(--font-mono), monospace !important;
-  font-size: 10px !important;
-  color: rgba(255, 255, 255, 0.5) !important;
-}
-.modal-close-btn {
-  width: 26px !important;
-  height: 26px !important;
-  border-radius: 50% !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  border: none !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-}
-.modal-close-btn:hover {
-  background: rgba(255, 255, 255, 0.15) !important;
-  color: #ffffff !important;
-}
-#btn-section-modal-done {
-  border-radius: 9999px !important;
-  background: rgba(255, 255, 255, 0.08) !important;
-  color: #ffffff !important;
+
+.map-arch-scale-card,
+.axiom-climatic-card {
+  border-radius: 10px !important;
+  background: rgba(14, 16, 22, 0.78) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
-  font-size: 11px !important;
-  padding: 6px 14px !important;
-  font-weight: 500 !important;
-  cursor: pointer !important;
-  transition: all 0.15s ease !important;
-}
-#btn-section-modal-done:hover {
-  background: rgba(255, 255, 255, 0.16) !important;
-  color: #ffffff !important;
-}
-.axiom-export-pill {
-  border-radius: 9999px !important;
-  background: rgba(255, 255, 255, 0.06) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  color: #ffffff !important;
-  font-size: 10px !important;
-  font-weight: 500 !important;
-  padding: 5px 11px !important;
-  transition: all 0.15s ease !important;
-}
-.axiom-export-pill:hover {
-  background: #ffffff !important;
-  color: #0b0c10 !important;
-  border-color: #ffffff !important;
-}
-.axiom-export-pill:hover svg {
-  stroke: #0b0c10 !important;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
 }
 
-/* 5. SLIDERS SUTILES, MICRO-FINOS Y NAVEGABLES (IMAGEN 3 & 5) */
+.axiom-search-box {
+  border-radius: 9px !important;
+  background: rgba(18, 20, 26, 0.85) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+}
+
+/* 11. SLIDERS SUTILES, MICRO-FINOS Y NAVEGABLES */
 input[type="range"],
 input[type="range"].axiom-range,
 .axiom-range {
