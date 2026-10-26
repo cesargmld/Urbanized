@@ -808,9 +808,46 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
 
 export function setLayerVisibility(key, visible) {
   if (!ctx || !ctx.layerGroups) return;
-  const g = ctx.layerGroups[key];
-  if (g) g.visible = Boolean(visible);
+  const isVis = Boolean(visible);
+  const groupsToUpdate = key === 'buildings'
+    ? ['education', 'commercial', 'health', 'residential', 'other_buildings']
+    : (key === 'roads' ? ['roads_major', 'roads_minor'] : [key]);
+
+  groupsToUpdate.forEach(k => {
+    const g = ctx.layerGroups[k];
+    if (g) g.visible = isVis;
+  });
 }
+window.setLayerVisibility = setLayerVisibility;
+
+export function setLayerOpacity(key, opacity) {
+  if (!ctx || !ctx.layerGroups) return;
+  const num = Math.max(0, Math.min(1, Number(opacity)));
+  const groupsToUpdate = key === 'buildings'
+    ? ['education', 'commercial', 'health', 'residential', 'other_buildings']
+    : (key === 'roads' ? ['roads_major', 'roads_minor'] : [key]);
+
+  groupsToUpdate.forEach(k => {
+    const g = ctx.layerGroups[k];
+    if (g) {
+      g.traverse((obj) => {
+        if (obj.isMesh && obj.material) {
+          obj.material.transparent = num < 0.99;
+          obj.material.opacity = num;
+          obj.material.needsUpdate = true;
+        }
+        if (obj.isLine || obj.isLineSegments) {
+          if (obj.material) {
+            obj.material.transparent = num < 0.99;
+            obj.material.opacity = num;
+            obj.material.needsUpdate = true;
+          }
+        }
+      });
+    }
+  });
+}
+window.setLayerOpacity = setLayerOpacity;
 
 export function getLayerStats(model) {
   const m = model || ctx?.lastModel;

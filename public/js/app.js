@@ -1,6 +1,6 @@
 import { buildModel, redetectTrees } from './data.js?v=6.0';
 import { FORMATS, stlScale } from './exporters.js?v=6.0';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.2';
+import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, setLayerOpacity, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.2';
 import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
 import { feasibilityStore } from './feasibility.js?v=1.0';
 import { MAP_GRID_STEPS } from './mapplan.js?v=6.0';
@@ -860,6 +860,8 @@ async function showResult(m) {
     const stats = getLayerStats(m);
     const totalEl = $('#gis-total-badge');
     if (totalEl) totalEl.textContent = stats.totalBuildings + stats.trees;
+    const bldgTotalEl = $('#count-total-bldgs');
+    if (bldgTotalEl) bldgTotalEl.textContent = stats.totalBuildings || (m.stats?.buildings || 0);
     const headerBadge = $('#gis-header-badge');
     if (headerBadge) headerBadge.textContent = stats.totalBuildings + stats.trees;
     const eduEl = $('#count-education'); if (eduEl) eduEl.textContent = stats.education;
@@ -1961,6 +1963,125 @@ document.querySelectorAll('[data-gislayer]').forEach((el) => {
       el.setAttribute('aria-pressed', String(nextActive));
       setLayerVisibility(layerKey, nextActive);
     });
+  }
+});
+
+// ---------------- Aesthetic 4-Step Left Editor (3D Studio) ----------------
+// 1. Step Navigation
+document.querySelectorAll('.editor-step-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    const targetId = btn.getAttribute('data-step-target');
+    document.querySelectorAll('.editor-step-btn').forEach(b => {
+      const isTarget = (b === btn);
+      b.classList.toggle('active', isTarget);
+      b.setAttribute('aria-selected', String(isTarget));
+    });
+    document.querySelectorAll('.editor-step-panel').forEach(panel => {
+      const isTarget = (panel.id === targetId);
+      panel.classList.toggle('active', isTarget);
+      if (isTarget) {
+        panel.removeAttribute('hidden');
+      } else {
+        panel.setAttribute('hidden', '');
+      }
+    });
+  });
+});
+
+// 2. Prender / Apagar Capas (Eye button toggles)
+document.querySelectorAll('.layer-eye-btn').forEach((btn) => {
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    const layerKey = btn.getAttribute('data-layer-toggle');
+    const isNowActive = !btn.classList.contains('active');
+    btn.classList.toggle('active', isNowActive);
+    setLayerVisibility(layerKey, isNowActive);
+  });
+});
+
+// 3. Sliders de Opacidad en tiempo real
+document.querySelectorAll('.layer-opacity-slider').forEach((slider) => {
+  slider.addEventListener('input', (e) => {
+    const layerKey = slider.getAttribute('data-layer-opacity');
+    const val = Number(e.target.value);
+    const valEl = document.getElementById(`val-op-${layerKey}`);
+    if (valEl) valEl.textContent = `${val}%`;
+    setLayerOpacity(layerKey, val / 100);
+  });
+});
+
+// 4. Master actions: Mostrar / Ocultar todas
+document.getElementById('btn-layers-all-show')?.addEventListener('click', () => {
+  document.querySelectorAll('.layer-eye-btn').forEach(btn => {
+    btn.classList.add('active');
+    const key = btn.getAttribute('data-layer-toggle');
+    if (key) setLayerVisibility(key, true);
+  });
+});
+document.getElementById('btn-layers-all-hide')?.addEventListener('click', () => {
+  document.querySelectorAll('.layer-eye-btn').forEach(btn => {
+    btn.classList.remove('active');
+    const key = btn.getAttribute('data-layer-toggle');
+    if (key) setLayerVisibility(key, false);
+  });
+});
+
+// 5. Step 2: Render Finish Modes
+document.querySelectorAll('[data-render-mode]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('[data-render-mode]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const mode = btn.getAttribute('data-render-mode');
+    if (mode === 'model' || mode === 'gis') {
+      $('#btn-render-model')?.click();
+    } else if (mode === 'maqueta') {
+      $('#btn-render-maqueta')?.click();
+    }
+  });
+});
+
+// 6. Step 2: Solar Study (NOAA)
+let currentSolarSeason = { month: 5, day: 21 };
+document.querySelectorAll('.solar-season-seg [data-solardate]').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.solar-season-seg [data-solardate]').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const parts = btn.getAttribute('data-solardate').split('-');
+    const m = Number(parts[0]);
+    const d = Number(parts[1]);
+    currentSolarSeason = { month: m, day: d };
+    const hour = Number($('#slider-studio-sun-step')?.value || 14);
+    if (window.set3DSunFromDateTime) {
+      window.set3DSunFromDateTime({ month: m, day: d, hour });
+    }
+    const ephemEl = document.getElementById('val-solar-step-ephem');
+    if (ephemEl) {
+      const monthNames = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+      ephemEl.textContent = `${d} ${monthNames[m]} · ${Math.floor(hour)}:00`;
+    }
+  });
+});
+$('#slider-studio-sun-step')?.addEventListener('input', (e) => {
+  const hour = Number(e.target.value);
+  const hourInt = Math.floor(hour);
+  const min = Math.round((hour - hourInt) * 60);
+  const timeStr = `${String(hourInt).padStart(2, '0')}:${String(min).padStart(2, '0')} hrs`;
+  const valEl = document.getElementById('val-studio-sun-step');
+  if (valEl) valEl.textContent = timeStr;
+  if (window.set3DSunFromDateTime) {
+    window.set3DSunFromDateTime({ month: currentSolarSeason.month, day: currentSolarSeason.day, hour });
+  }
+});
+
+// 7. Step 3: Analysis Pin & Isochrone Bridges
+$('#btn-pin-place-step')?.addEventListener('click', () => {
+  $('#btn-pin-place-toggle')?.click();
+});
+$('#chk-isochrones-step')?.addEventListener('change', (e) => {
+  const chk = document.getElementById('chk-isochrones-active');
+  if (chk) {
+    chk.checked = e.target.checked;
+    chk.dispatchEvent(new Event('change'));
   }
 });
 
