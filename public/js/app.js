@@ -711,12 +711,6 @@ function hideLoadingModal() {
   const modal = $('#axiom-loading-modal');
   if (modal) modal.hidden = true;
 }
-    loadingInterval = null;
-  }
-  currentLoadingPct = 15;
-  const modal = $('#axiom-loading-modal');
-  if (modal) modal.hidden = true;
-}
 
 let statusState = ['status.hint', {}];
 function setStatus(key, opts = {}) {

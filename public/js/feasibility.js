@@ -1,6 +1,6 @@
 // Módulo Paramétrico de Factibilidad Urbana (Estilo Finch 3D / Autodesk Forma)
-// Utiliza Turf.js para buffers negativos de remetimientos, cálculo de COS, CUS y envolvente 3D.
-import * as turf from 'https://cdn.jsdelivr.net/npm/@turf/turf@7.1.0/+esm';
+// Utiliza Turf.js (vía window.turf optimizado) para buffers negativos de remetimientos, cálculo de COS, CUS y envolvente 3D.
+const getTurf = () => (typeof window !== 'undefined' ? window.turf : (typeof globalThis !== 'undefined' ? globalThis.turf : null));
 
 export const LEVEL_HEIGHT_M = 3.5; // Altura estándar de entrepiso (m)
 
@@ -238,6 +238,11 @@ class FeasibilityStore {
    * - Metros cuadrados totales construibles (m²) según CUS y niveles máximos
    */
   compute(model) {
+    const turf = getTurf();
+    if (!turf) {
+      // Fallback simple si Turf aún no está listo
+      return;
+    }
     const centerLat = model?.center?.lat ?? 19.4326;
     const centerLon = model?.center?.lon ?? -99.1332;
     const lotRingLocal = this.resolveTargetLotRing(model);

@@ -2,6 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script type="importmap">
+    { "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
+    } }
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Urbanized — 3D City & Cartography Studio</title>
   <meta name="description" content="Generador 3D de ciudades, cartografía analítica QGIS y axonometría arquitectónica. Exportación a AutoCAD, SketchUp, Rhino, Illustrator, ArchiCAD, FBX y QGIS.">
@@ -14,55 +20,54 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
-  <link rel="stylesheet" href="/css/style.css?v=7.3">
-  <script type="importmap">
-    { "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"
-    } }
-  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Turf.js/6.5.0/turf.min.js"></script>
+  <link rel="stylesheet" href="/css/style.css?v=7.4">
 </head>
 <body class="axiom-app">
   <!-- ========================================================
        0. URBNZD ARCHITECTURAL STUDIO INTRO SPLASH
-       Minimalist, authentic brand reveal with precision CAD reticles
+       Minimalist architectural loader with prominent brand logo hierarchy
        ======================================================== -->
-  <div class="h3l-page-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
-    <!-- Subtle Architectural Coordinate Grid -->
-    <div class="h3l-loader-grid-bg"></div>
+  <div class="h3l-page-loader modern-arch-loader" id="h3l-page-loader" aria-label="URBNZD Studio">
+    <div class="arch-loader-card">
+      <div class="arch-loader-spotlight"></div>
 
-    <div class="h3l-loader-stage">
-      <!-- Precision Architectural CAD Frame with Authentic Logo -->
-      <div class="h3l-brand-stage" id="h3l-brand-stage">
-        <!-- 4-Corner Precision Reticles -->
-        <span class="h3l-reticle tl"></span>
-        <span class="h3l-reticle tr"></span>
-        <span class="h3l-reticle bl"></span>
-        <span class="h3l-reticle br"></span>
-
-        <!-- Authentic Brand Logo (Monochrome Pure White) -->
-        <div class="h3l-logo-container">
-          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="h3l-studio-logo" id="h3l-studio-logo" />
-          <!-- Laser Scan Hairline Sweep -->
-          <div class="h3l-laser-sweep" id="h3l-laser-sweep"></div>
+      <!-- Amplia Jerarquía al Logo de Inicio -->
+      <div class="arch-loader-brand-hero">
+        <div class="arch-loader-logo-wrap">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="arch-loader-hero-logo" />
         </div>
+        <div class="arch-loader-brand-sub">Architectural Computing · CGM Atelier</div>
+      </div>
 
-        <!-- Studio Technical Metadata Subline -->
-        <div class="h3l-meta-row">
-          <span class="h3l-meta-left">URBNZD // ARCHITECTURAL COMPUTING</span>
-          <span class="h3l-meta-right">CGM ATELIER · 2026</span>
+      <!-- Concentric Pulsing Rings with Live Percentage -->
+      <div class="arch-pulse-container">
+        <div class="arch-pulse-ring ring-outer"></div>
+        <div class="arch-pulse-ring ring-mid"></div>
+        <div class="arch-pulse-ring ring-core">
+          <span class="arch-loader-pct" id="h3l-pct-badge">15%</span>
         </div>
       </div>
 
-      <!-- Minimalist Discrete Progress Bar -->
-      <div class="h3l-progress-dock">
-        <div class="h3l-progress-track" id="h3l-progress-track">
-          <span class="h3l-tick"></span><span class="h3l-tick"></span>
-          <span class="h3l-tick"></span><span class="h3l-tick"></span>
-          <span class="h3l-tick"></span><span class="h3l-tick"></span>
-          <span class="h3l-tick"></span><span class="h3l-tick"></span>
+      <!-- Typewriter Status Text Display -->
+      <div class="arch-loader-text-wrap">
+        <h3 class="arch-loader-title" id="h3l-status-title">
+          <span class="type-text">Iniciando estudio territorial...</span><span class="type-cursor">|</span>
+        </h3>
+        <p class="arch-loader-sub" id="h3l-status-sub">Conectando servidores cartográficos y satelitales...</p>
+      </div>
+
+      <!-- Minimalist Hairline Laser Progress Bar -->
+      <div class="arch-progress-dock">
+        <div class="arch-progress-bar">
+          <div class="arch-progress-fill" id="h3l-laser-fill" style="width: 15%;"></div>
         </div>
-        <div class="h3l-status-text" id="h3l-status-text">INITIALIZING STUDIO WORKSPACE...</div>
+      </div>
+
+      <!-- Technical Telemetry Badges -->
+      <div class="arch-loader-telemetry">
+        <span>Copernicus DEM</span> · <span>OpenStreetMap</span> · <span>Mallas 3D</span>
       </div>
     </div>
   </div>
@@ -71,32 +76,40 @@
       const loader = document.getElementById('h3l-page-loader');
       if (!loader) return;
 
-      const ticks = Array.from(loader.querySelectorAll('.h3l-tick'));
-      const statusText = document.getElementById('h3l-status-text');
-      const statuses = [
-        'INITIALIZING ENVIRONMENT...',
-        'CONNECTING NOAA / METEO...',
-        'COMPUTING GEODATA TILES...',
-        'STUDIO READY'
+      const pctBadge = document.getElementById('h3l-pct-badge');
+      const laserFill = document.getElementById('h3l-laser-fill');
+      const statusTitle = document.getElementById('h3l-status-title')?.querySelector('.type-text');
+      const statusSub = document.getElementById('h3l-status-sub');
+
+      const steps = [
+        { pct: 18, title: 'Iniciando estudio territorial...', sub: 'Conectando Copernicus DEM y OpenStreetMap...' },
+        { pct: 45, title: 'Sincronizando topografía y satélite...', sub: 'Cargando tiles de elevación Copernicus DEM...' },
+        { pct: 82, title: 'Compilando capas cartográficas...', sub: 'Vectorizando vialidades, edificios y mallas 3D...' },
+        { pct: 100, title: 'Estudio preparado', sub: 'URBNZD Studio listo' }
       ];
 
-      let step = 0;
-      const totalSteps = ticks.length; // 8
-      let interval = setInterval(() => {
-        step++;
-        ticks.forEach((t, i) => {
-          if (i < step) t.classList.add('active');
-        });
-        if (statusText) {
-          const statusIdx = Math.min(statuses.length - 1, Math.floor((step / totalSteps) * statuses.length));
-          statusText.textContent = statuses[statusIdx];
-        }
+      let stepIdx = 0;
+      function applyStep(s) {
+        if (pctBadge) pctBadge.textContent = s.pct + '%';
+        if (laserFill) laserFill.style.width = s.pct + '%';
+        if (statusTitle) statusTitle.textContent = s.title;
+        if (statusSub) statusSub.textContent = s.sub;
+      }
 
-        if (step >= totalSteps) {
-          clearInterval(interval);
-          setTimeout(dismiss, 140);
+      applyStep(steps[0]);
+
+      let timer = setInterval(() => {
+        if (stepIdx < steps.length - 2) {
+          stepIdx++;
+          applyStep(steps[stepIdx]);
         }
-      }, 70); // 8 steps * 70ms = 560ms total
+        // When appMap is loaded, advance to final 100% step and dismiss
+        if (window.appMap) {
+          clearInterval(timer);
+          applyStep(steps[steps.length - 1]);
+          setTimeout(dismiss, 320);
+        }
+      }, 350);
 
       function dismiss() {
         if (!loader || loader.dataset.dismissed) return;
@@ -105,22 +118,23 @@
         setTimeout(() => {
           loader.hidden = true;
           loader.style.display = 'none';
-        }, 220);
+          if (window.appMap && typeof window.appMap.invalidateSize === 'function') {
+            window.appMap.invalidateSize();
+          }
+        }, 280);
       }
 
-      // Allow click anywhere to skip immediately
       loader.addEventListener('click', dismiss);
-
-      // Failsafe timeout at 1000ms
-      setTimeout(dismiss, 1000);
+      // Failsafe: dismiss after max 3500ms even if network is slow
+      setTimeout(dismiss, 3500);
 
       window.replayH3lLoader = () => {
         delete loader.dataset.dismissed;
         loader.hidden = false;
         loader.style.display = 'flex';
         loader.classList.remove('h3l-loader-exit');
-        ticks.forEach(t => t.classList.remove('active'));
-        step = 0;
+        stepIdx = 0;
+        applyStep(steps[0]);
         initStudioSplash();
       };
     })();
@@ -203,6 +217,11 @@
       <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language">
         <svg class="header-action-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span id="lang-current-label" class="btn-bracket-label">en</span>
+      </button>
+
+      <!-- Homologated Circular Workspace Trigger Icon (100% matched with workspace avatar) -->
+      <button type="button" class="axiom-header-avatar-btn map-rail-avatar-btn" id="btn-topbar-workspace" data-switchview="workspace-home" title="Espacio de trabajo">
+        <span class="rayon-user-avatar">C</span>
       </button>
     </div>
   </header>
@@ -3286,6 +3305,14 @@
       <!-- Glow ambient background spotlight -->
       <div class="arch-loader-spotlight"></div>
 
+      <!-- Amplia Jerarquía al Logo de Inicio -->
+      <div class="arch-loader-brand-hero">
+        <div class="arch-loader-logo-wrap">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="arch-loader-hero-logo" />
+        </div>
+        <div class="arch-loader-brand-sub">Architectural Computing · CGM Atelier</div>
+      </div>
+
       <!-- Centered Minimalist Concentric Architectural Pulsing Rings -->
       <div class="arch-pulse-container">
         <div class="arch-pulse-ring ring-outer"></div>
@@ -3558,8 +3585,7 @@
     </div>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-  <script type="module" src="/js/app.js?v=7.3"></script>
+  <script type="module" src="/js/app.js?v=7.4"></script>
   <script>
     (function() {
       // Synchronize shape & mode segmented buttons (stable layout height)
@@ -3654,7 +3680,6 @@
       });
       document.getElementById('section-modal-close')?.addEventListener('click', closeSectionModalDom);
       document.getElementById('btn-section-modal-done')?.addEventListener('click', closeSectionModalDom);
-      });
 
       // Helper to resize all viewports when any left drawer toggles so the model always centers in the free space
       function notifyViewportResize() {

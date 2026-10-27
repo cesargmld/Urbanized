@@ -9835,17 +9835,21 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
 .h3l-page-loader {
   position: fixed !important;
   inset: 0 !important;
-  z-index: 10000 !important;
-  background: #08090b !important;
+  z-index: 100000 !important;
+  background: rgba(8, 9, 12, 0.88) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   display: flex !important;
   align-items: center !important;
   justify-content: center !important;
-  transition: opacity 0.2s ease, visibility 0.2s ease !important;
+  transition: opacity 0.3s ease, visibility 0.3s ease !important;
 }
 
-.h3l-page-loader.h3l-loader-exit {
+.h3l-page-loader.h3l-loader-exit,
+.h3l-page-loader[hidden] {
   opacity: 0 !important;
   pointer-events: none !important;
+  display: none !important;
 }
 
 .h3l-loader-grid-bg {
@@ -11509,3 +11513,275 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
     padding: 24px 18px !important;
   }
 }
+
+/* ========================================================
+   v48: BRAND LOGO HIERARCHY LOADER, LIQUID GLASS WORKSPACE PILLS,
+   CIRCULAR WORKSPACE ICON, HOMOLOGATED TYPOGRAPHY & TOUCH RESPONSIVE
+   ======================================================== */
+
+/* 1. BRAND LOGO COMMANDING HIERARCHY IN LOADERS */
+.arch-loader-brand-hero {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin-bottom: 22px !important;
+  width: 100% !important;
+}
+
+.arch-loader-logo-wrap {
+  position: relative !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 10px 24px !important;
+  margin-bottom: 8px !important;
+  background: radial-gradient(circle at center, rgba(255, 255, 255, 0.08) 0%, transparent 75%) !important;
+}
+
+.arch-loader-hero-logo {
+  height: 42px !important;
+  width: auto !important;
+  max-width: 240px !important;
+  object-fit: contain !important;
+  filter: drop-shadow(0 0 20px rgba(255, 255, 255, 0.32)) !important;
+  transition: filter 0.3s ease, transform 0.3s ease !important;
+}
+
+.arch-loader-brand-sub {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+  letter-spacing: 0.06em !important;
+  text-transform: uppercase !important;
+}
+
+/* 2. CIRCULAR WORKSPACE AVATAR (HOMOLOGADO CON INTERFAZ RAYON) */
+.map-rail-avatar-btn,
+.studio-avatar-rail-btn,
+.axiom-header-avatar-btn,
+#btn-topbar-workspace,
+#btn-map-avatar {
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+  min-height: 36px !important;
+  border-radius: 50% !important;
+  background: rgba(18, 20, 28, 0.82) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.18) !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.map-rail-avatar-btn:hover,
+.studio-avatar-rail-btn:hover,
+.axiom-header-avatar-btn:hover,
+#btn-topbar-workspace:hover,
+#btn-map-avatar:hover {
+  transform: scale(1.08) !important;
+  border-color: rgba(255, 255, 255, 0.42) !important;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.7), 0 0 12px rgba(255, 255, 255, 0.2) !important;
+}
+
+.map-rail-avatar-btn .rayon-user-avatar,
+.studio-avatar-rail-btn .rayon-user-avatar,
+.axiom-header-avatar-btn .rayon-user-avatar,
+#btn-topbar-workspace .rayon-user-avatar,
+#btn-map-avatar .rayon-user-avatar {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.16) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  line-height: 1 !important;
+}
+
+/* 3. BOTONES DEL ESPACIO DE TRABAJO (CAPSULAS REDONDEADAS + LIQUID GLASS, NUNCA CUADRADOS) */
+#workspace-home .rayon-primary-btn,
+#workspace-home #ws-btn-new-model {
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  color: #08090b !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  padding: 8px 20px !important;
+  border: none !important;
+  box-shadow: 0 4px 18px rgba(255, 255, 255, 0.22) !important;
+  transition: transform 0.18s ease, box-shadow 0.18s ease !important;
+}
+
+#workspace-home .rayon-primary-btn:hover,
+#workspace-home #ws-btn-new-model:hover {
+  transform: translateY(-1px) scale(1.02) !important;
+  box-shadow: 0 6px 24px rgba(255, 255, 255, 0.35) !important;
+}
+
+#workspace-home .rayon-secondary-btn,
+#workspace-home #ws-btn-import-urbnz,
+#workspace-home .rayon-select,
+#workspace-home .rayon-seg-btn,
+#workspace-home .rayon-search-box input {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  padding: 7px 18px !important;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+}
+
+#workspace-home .rayon-secondary-btn:hover,
+#workspace-home #ws-btn-import-urbnz:hover,
+#workspace-home .rayon-seg-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  border-color: rgba(255, 255, 255, 0.26) !important;
+  color: #ffffff !important;
+}
+
+#workspace-home .rayon-seg-btn.active {
+  background: rgba(255, 255, 255, 0.22) !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  color: #ffffff !important;
+}
+
+#workspace-home .rayon-nav-item {
+  border-radius: 9999px !important;
+  padding: 9px 18px !important;
+  margin: 3px 0 !important;
+  font-size: 13px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.72) !important;
+  transition: background 0.18s ease, color 0.18s ease !important;
+}
+
+#workspace-home .rayon-nav-item:hover {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #ffffff !important;
+}
+
+#workspace-home .rayon-nav-item.active {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+  font-weight: 600 !important;
+}
+
+#workspace-home .rayon-tag-template {
+  border-radius: 9999px !important;
+  padding: 4px 12px !important;
+  font-size: 11.5px !important;
+}
+
+/* 4. HOMOLOGACIÓN TIPOGRÁFICA (EVITAR VARIACIONES BRUSCAS Y TEXTO ILEGIBLE) */
+.arch-loader-title {
+  font-size: 16px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em !important;
+  color: #ffffff !important;
+  margin-bottom: 6px !important;
+}
+
+.arch-loader-sub {
+  font-size: 13px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  letter-spacing: -0.005em !important;
+  margin: 0 !important;
+}
+
+.arch-loader-telemetry {
+  font-size: 12px !important;
+  font-weight: 500 !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.btn-bracket-label,
+.axiom-view-btn,
+.axiom-header-action {
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+}
+
+/* 5. EXPERIENCIA ADAPTATIVA COMPLETA: IPAD & MÓVIL */
+@media screen and (max-width: 1024px) {
+  .axiom-topbar-center {
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scrollbar-width: none !important;
+    max-width: 55vw !important;
+  }
+  .axiom-topbar-center::-webkit-scrollbar {
+    display: none !important;
+  }
+  .axiom-view-nav {
+    padding: 3px 6px !important;
+    gap: 3px !important;
+  }
+  .axiom-view-btn {
+    padding: 6px 12px !important;
+    white-space: nowrap !important;
+  }
+  #axiom-setup-card {
+    position: fixed !important;
+    bottom: 16px !important;
+    left: 16px !important;
+    right: 16px !important;
+    max-width: none !important;
+    width: auto !important;
+    margin: 0 !important;
+    border-radius: 20px !important;
+    z-index: 1000 !important;
+  }
+  .axiom-setup-header {
+    padding: 12px 16px !important;
+  }
+  .axiom-setup-body {
+    padding: 14px 16px !important;
+  }
+}
+
+@media screen and (max-width: 600px) {
+  .axiom-topbar-left {
+    gap: 6px !important;
+  }
+  .header-search-wrap {
+    max-width: 140px !important;
+  }
+  .axiom-search-box input {
+    width: 100% !important;
+    font-size: 12px !important;
+  }
+  .axiom-header-action .btn-bracket-label {
+    display: none !important;
+  }
+  .axiom-header-action {
+    padding: 7px 9px !important;
+  }
+  .arch-loader-card {
+    width: 92% !important;
+    padding: 26px 18px 20px !important;
+  }
+  .arch-loader-hero-logo {
+    height: 34px !important;
+  }
+}
+
