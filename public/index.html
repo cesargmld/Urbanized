@@ -29,111 +29,76 @@
        0. URBNZD ARCHITECTURAL STUDIO INTRO SPLASH
        Retro-Industrial Tech HUD Loader (Authentic Brand Hierarchy)
        ======================================================== -->
-  <div class="h3l-page-loader tech-hud-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
-    <div class="tech-hud-card">
-      <!-- HUD Top Bar: System ID, Transfer Speed, Status -->
-      <div class="tech-hud-header">
-        <div class="tech-hud-header-left">
-          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="tech-hud-logo" id="h3l-studio-logo" style="height:22px; width:auto; filter:brightness(0) invert(1);" />
-          <span class="tech-hud-bracket-tag">[ STUDIO INITIALIZATION ]</span>
-        </div>
-        <div class="tech-hud-header-right">
-          <span class="tech-hud-speed" id="h3l-transfer-speed">96.4 MB/S</span>
-          <span class="tech-hud-status-badge">SYS_ONLINE</span>
+  <!-- ========================================================
+       URBNZD BRAND HERO STARTUP LOADER (MAXIMUM BRAND HIERARCHY)
+       Diferenciado del loader de descarga de modelos: jerarquía visual monumental del logo
+       ======================================================== -->
+  <div class="h3l-page-loader brand-hero-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
+    <div class="brand-hero-card">
+      <!-- Decoración Corner Brackets Arquitectónicos -->
+      <div class="brand-hero-bracket tl"></div>
+      <div class="brand-hero-bracket tr"></div>
+      <div class="brand-hero-bracket bl"></div>
+      <div class="brand-hero-bracket br"></div>
+
+      <!-- Telemetría Superior -->
+      <div class="brand-hero-topline">
+        <span class="brand-hero-tag">[ URBNZD SPATIAL COMPUTING ]</span>
+        <span class="brand-hero-sys"><span class="brand-pulse-dot"></span>SYS_INITIALIZING</span>
+      </div>
+
+      <!-- PROTAGONISTA CENTRAL: LOGO CON MÁXIMA JERARQUÍA -->
+      <div class="brand-hero-logo-box">
+        <img src="assets/urbnzd-logo.png" alt="URBNZD" class="brand-hero-logo" id="h3l-studio-logo" />
+        <div class="brand-hero-caption">
+          <span class="brand-hero-sub">ESTUDIO ARQUITECTÓNICO & CARTOGRAFÍA 3D</span>
+          <span class="brand-hero-credit">CGM ATELIER · PRECISION MODELING ENGINE</span>
         </div>
       </div>
 
-      <!-- 6-Quadrant Tech Matrix Grid -->
-      <div class="tech-hud-grid">
-        <!-- Q1: Radial Dial / Circular Tick Progress -->
-        <div class="tech-hud-quadrant q1-dial">
-          <div class="tech-hud-quad-label">01 // FLUID PROGRESS</div>
-          <div class="tech-radial-dial">
-            <svg viewBox="0 0 100 100" class="tech-dial-svg">
-              <circle cx="50" cy="50" r="42" class="tech-dial-track"></circle>
-              <circle cx="50" cy="50" r="42" class="tech-dial-ticks" stroke-dasharray="2 4"></circle>
-              <circle cx="50" cy="50" r="42" class="tech-dial-progress" id="h3l-dial-progress-circle"></circle>
-            </svg>
-            <div class="tech-dial-center">
-              <span class="tech-dial-pct" id="h3l-pct-badge">15%</span>
-              <span class="tech-dial-sub">EXTRACTION</span>
-            </div>
+      <!-- Barra Láser & Telemetría en Vivo -->
+      <div class="brand-hero-progress-section">
+        <div class="brand-hero-progress-meta">
+          <div class="brand-hero-status-wrap">
+            <span class="brand-hero-status-lbl">ETAPA:</span>
+            <span class="brand-hero-status-txt" id="h3l-status-title">CONECTANDO REPOSITORIO OSM & DEM</span>
+          </div>
+          <div class="brand-hero-pct-wrap">
+            <span class="brand-hero-pct" id="h3l-pct-badge">15%</span>
           </div>
         </div>
 
-        <!-- Q2: Layer Sources Status -->
-        <div class="tech-hud-quadrant q2-sources">
-          <div class="tech-hud-quad-label">02 // SATELLITE & GIS STREAMS</div>
-          <div class="tech-sources-list">
-            <div class="tech-source-row">
-              <span class="tech-src-name">OSM VOLUMES</span>
-              <span class="tech-src-status" id="h3l-src-osm">CONNECTING...</span>
-            </div>
-            <div class="tech-source-row">
-              <span class="tech-src-name">COPERNICUS DEM</span>
-              <span class="tech-src-status" id="h3l-src-dem">STREAMING...</span>
-            </div>
-            <div class="tech-source-row">
-              <span class="tech-src-name">HIGHWAY NETWORK</span>
-              <span class="tech-src-status" id="h3l-src-roads">READY</span>
-            </div>
-            <div class="tech-source-row">
-              <span class="tech-src-name">SPECTRAL CANOPY</span>
-              <span class="tech-src-status" id="h3l-src-water">SYNCHRONIZED</span>
-            </div>
-          </div>
+        <div class="brand-hero-laser-track">
+          <div class="brand-hero-laser-fill" id="h3l-laser-fill" style="width: 15%;"></div>
         </div>
 
-        <!-- Q3: Barcode Volume Progress -->
-        <div class="tech-hud-quadrant q3-barcode">
-          <div class="tech-hud-quad-label">03 // GEOMETRIC BUFFER</div>
-          <div class="tech-barcode-track" id="h3l-barcode-track">
-            <!-- Dynamic vertical tick bars -->
+        <div class="brand-hero-telemetry-row">
+          <div class="brand-telemetry-item">
+            <span class="brand-tele-k">DATUM</span>
+            <span class="brand-tele-v">WGS84 / EPSG:4326</span>
           </div>
-          <div class="tech-barcode-meta">
-            <span id="h3l-hud-volume">1,420 / 4,890 PTS</span>
-            <span id="h3l-hud-eta">ETA: 0.6S</span>
+          <div class="brand-telemetry-item">
+            <span class="brand-tele-k">ELEV_SRC</span>
+            <span class="brand-tele-v">COPERNICUS GLO-30</span>
           </div>
-        </div>
-
-        <!-- Q4: Sector Coordinates -->
-        <div class="tech-hud-quadrant q4-coords">
-          <div class="tech-hud-quad-label">04 // TERRITORIAL DATUM</div>
-          <div class="tech-coords-display">
-            <div class="tech-coord-line"><span class="tech-dim-label">DATUM:</span> <strong>WGS84 / EPSG:4326</strong></div>
-            <div class="tech-coord-line"><span class="tech-dim-label">ELEV_SRC:</span> <strong>COPERNICUS 30M GLO</strong></div>
-            <div class="tech-coord-line"><span class="tech-dim-label">FORMAT:</span> <strong>SKETCHUP + CAD NATIVE</strong></div>
+          <div class="brand-telemetry-item">
+            <span class="brand-tele-k">SPEED</span>
+            <span class="brand-tele-v" id="h3l-transfer-speed">96.4 MB/S</span>
           </div>
-        </div>
-
-        <!-- Q5: Output Engines Target -->
-        <div class="tech-hud-quadrant q5-output">
-          <div class="tech-hud-quad-label">05 // COMPATIBILITY TARGETS</div>
-          <div class="tech-targets-tags">
-            <span class="tech-target-pill">SKETCHUP .SKP</span>
-            <span class="tech-target-pill">AUTOCAD .DXF</span>
-            <span class="tech-target-pill">RHINO .3DM</span>
-            <span class="tech-target-pill">QGIS .GEOJSON</span>
-          </div>
-        </div>
-
-        <!-- Q6: Engine Live State -->
-        <div class="tech-hud-quadrant q6-status">
-          <div class="tech-hud-quad-label">06 // ENGINE PIPELINE</div>
-          <div class="tech-pipeline-title" id="h3l-status-title">INICIALIZANDO DATOS</div>
-          <div class="tech-pipeline-progress-bar">
-            <div class="tech-pipeline-progress-fill" id="h3l-laser-fill" style="width: 25%;"></div>
+          <div class="brand-telemetry-item">
+            <span class="brand-tele-k">TARGET</span>
+            <span class="brand-tele-v">SKETCHUP (.SKP)</span>
           </div>
         </div>
       </div>
 
-      <!-- HUD Bottom Bar -->
-      <div class="tech-hud-footer">
-        <div style="display:flex; align-items:center; gap:8px;">
-          <img src="assets/urbnzd-logo.png" alt="URBNZD" style="height:12px; width:auto; filter:brightness(0) invert(1); opacity:0.85;" />
-          <span class="tech-hud-sign" style="letter-spacing:0.12em;">URBNZD ARCHITECTURAL COMPUTING · CGM ATELIER</span>
-        </div>
-        <button type="button" class="tech-hud-btn" id="h3l-btn-skip" onclick="if(window.dismissH3lLoader) window.dismissH3lLoader();">SALTAR INTRO</button>
+      <!-- Footer con botón de entrada frameless liquid glass -->
+      <div class="brand-hero-footer">
+        <span class="brand-hero-foot-txt">LISTO PARA EXPLORAR CUALQUIER COORDENADA MUNDIAL</span>
+        <button type="button" class="brand-hero-btn" id="h3l-btn-skip" onclick="if(window.dismissH3lLoader) window.dismissH3lLoader();">
+          <span>SALTAR INTRO</span>
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><polyline points="9 18 15 12 9 6"/></svg>
+        </button>
       </div>
     </div>
   </div>

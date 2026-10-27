@@ -8246,7 +8246,258 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 }
 
 /* ========================================================
+   URBNZD BRAND HERO STARTUP LOADER (MAXIMUM BRAND HIERARCHY)
+   Diferenciado del loader de descarga: logo dominante central
+   ======================================================== */
+.brand-hero-loader {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 999999 !important;
+  background: #08090d !important;
+  background-image: 
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.05) 0%, transparent 65%),
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px) !important;
+  background-size: 100% 100%, 32px 32px, 32px 32px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.35s ease !important;
+}
+
+.brand-hero-card {
+  position: relative !important;
+  width: 560px !important;
+  max-width: 90vw !important;
+  background: rgba(13, 14, 18, 0.88) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 16px !important;
+  padding: 34px 38px 24px !important;
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.85), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+}
+
+.brand-hero-bracket {
+  position: absolute !important;
+  width: 10px !important;
+  height: 10px !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  border-style: solid !important;
+  pointer-events: none !important;
+}
+.brand-hero-bracket.tl { top: -1px; left: -1px; border-width: 2px 0 0 2px !important; border-top-left-radius: 4px; }
+.brand-hero-bracket.tr { top: -1px; right: -1px; border-width: 2px 2px 0 0 !important; border-top-right-radius: 4px; }
+.brand-hero-bracket.bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px !important; border-bottom-left-radius: 4px; }
+.brand-hero-bracket.br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0 !important; border-bottom-right-radius: 4px; }
+
+.brand-hero-topline {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 22px !important;
+  padding-bottom: 12px !important;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.brand-hero-tag {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10px !important;
+  letter-spacing: 0.14em !important;
+  color: rgba(255, 255, 255, 0.5) !important;
+}
+.brand-hero-sys {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9.5px !important;
+  letter-spacing: 0.1em !important;
+  color: #38bdf8 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.brand-pulse-dot {
+  width: 6px !important;
+  height: 6px !important;
+  border-radius: 50% !important;
+  background: #38bdf8 !important;
+  box-shadow: 0 0 8px #38bdf8 !important;
+  animation: pulseDot 1.4s ease-in-out infinite !important;
+}
+@keyframes pulseDot {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+.brand-hero-logo-box {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 6px 0 26px !important;
+  gap: 12px !important;
+}
+.brand-hero-logo {
+  height: 64px !important;
+  width: auto !important;
+  max-width: 280px !important;
+  filter: brightness(0) invert(1) drop-shadow(0 0 24px rgba(255, 255, 255, 0.28)) !important;
+  transition: transform 0.3s ease !important;
+  animation: brandBreathe 3s ease-in-out infinite !important;
+}
+@keyframes brandBreathe {
+  0%, 100% { transform: scale(1); filter: brightness(0) invert(1) drop-shadow(0 0 24px rgba(255, 255, 255, 0.22)); }
+  50% { transform: scale(1.02); filter: brightness(0) invert(1) drop-shadow(0 0 36px rgba(255, 255, 255, 0.42)); }
+}
+
+.brand-hero-caption {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+.brand-hero-sub {
+  font-family: 'Helvetica Now Display', 'Inter', sans-serif !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.18em !important;
+  color: #ffffff !important;
+  text-transform: uppercase !important;
+}
+.brand-hero-credit {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+.brand-hero-progress-section {
+  width: 100% !important;
+  margin-bottom: 22px !important;
+}
+.brand-hero-progress-meta {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-bottom: 10px !important;
+}
+.brand-hero-status-wrap {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.brand-hero-status-lbl {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9px !important;
+  letter-spacing: 0.1em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.brand-hero-status-txt {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.08em !important;
+  color: #e4e4e7 !important;
+}
+.brand-hero-pct {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 14px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.06em !important;
+  color: #ffffff !important;
+}
+
+.brand-hero-laser-track {
+  position: relative !important;
+  width: 100% !important;
+  height: 4px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-radius: 2px !important;
+  overflow: hidden !important;
+  margin-bottom: 14px !important;
+}
+.brand-hero-laser-fill {
+  height: 100% !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.85) !important;
+  border-radius: 2px !important;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+.brand-hero-telemetry-row {
+  width: 100% !important;
+  display: grid !important;
+  grid-template-columns: repeat(4, 1fr) !important;
+  gap: 8px !important;
+  padding: 10px 12px !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  border: 1px solid rgba(255, 255, 255, 0.07) !important;
+  border-radius: 8px !important;
+}
+.brand-telemetry-item {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+}
+.brand-tele-k {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 8px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.4) !important;
+}
+.brand-tele-v {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 9.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.04em !important;
+  color: #d4d4d8 !important;
+  white-space: nowrap !important;
+}
+
+.brand-hero-footer {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  padding-top: 14px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.brand-hero-foot-txt {
+  font-family: var(--font-mono, monospace) !important;
+  font-size: 8.5px !important;
+  letter-spacing: 0.12em !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+}
+.brand-hero-btn {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  border-radius: 20px !important;
+  padding: 6px 14px !important;
+  color: #ffffff !important;
+  font-family: 'Helvetica Now Display', sans-serif !important;
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.1em !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  transition: all 0.2s ease !important;
+}
+.brand-hero-btn:hover {
+  background: rgba(255, 255, 255, 0.14) !important;
+  border-color: rgba(255, 255, 255, 0.4) !important;
+  transform: translateY(-1px) !important;
+}
+
+/* ========================================================
    RETRO-INDUSTRIAL TECH HUD LOADER (IMAGE 1 GRID PREMISE)
+   (Preservado intacto para modal de creación/descarga de modelo)
    ======================================================== */
 .tech-hud-loader {
   position: fixed !important;
