@@ -10924,3 +10924,588 @@ input[type="range"].layer-opacity-slider::-webkit-slider-thumb:hover {
   width: 100% !important;
   max-width: 100% !important;
 }
+
+/* ========================================================
+   v47 ARCHITECTURAL LOADER, WORKSPACE LIQUID GLASS,
+   CIRCULAR WORKSPACE AVATAR, HOMOLOGATED TYPOGRAPHY &
+   FULL MOBILE / IPAD RESPONSIVE SYSTEM
+   ======================================================== */
+
+/* 1. ARCHITECTURAL TYPEWRITER LOADER (HIGH-END MINIMALIST) */
+.rayon-loader-modal.modern-arch-loader {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: rgba(8, 9, 12, 0.72) !important;
+  backdrop-filter: blur(20px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(20px) saturate(160%) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  transition: opacity 0.3s ease !important;
+}
+
+.rayon-loader-modal.modern-arch-loader[hidden] {
+  display: none !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+.arch-loader-card {
+  position: relative !important;
+  width: 90% !important;
+  max-width: 440px !important;
+  background: rgba(14, 16, 22, 0.88) !important;
+  backdrop-filter: blur(36px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(36px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  border-radius: 20px !important;
+  box-shadow: 0 28px 70px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.14) !important;
+  padding: 32px 28px 24px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  text-align: center !important;
+  overflow: hidden !important;
+}
+
+.arch-loader-spotlight {
+  position: absolute !important;
+  top: -80px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  width: 260px !important;
+  height: 180px !important;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.12) 0%, transparent 70%) !important;
+  pointer-events: none !important;
+}
+
+/* Concentric Architectural Pulsing Rings */
+.arch-pulse-container {
+  position: relative !important;
+  width: 84px !important;
+  height: 84px !important;
+  margin-bottom: 20px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.arch-pulse-ring {
+  position: absolute !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+}
+
+.arch-pulse-ring.ring-outer {
+  width: 84px !important;
+  height: 84px !important;
+  border-style: dashed !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  animation: archRotateRings 14s linear infinite !important;
+}
+
+.arch-pulse-ring.ring-mid {
+  width: 62px !important;
+  height: 62px !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  animation: archPulseBreath 2.8s ease-in-out infinite !important;
+}
+
+.arch-pulse-ring.ring-core {
+  width: 44px !important;
+  height: 44px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  box-shadow: 0 0 16px rgba(255, 255, 255, 0.18) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.arch-loader-pct {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Mono", monospace !important;
+  font-size: 11.5px !important;
+  font-weight: 600 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.02em !important;
+}
+
+@keyframes archRotateRings {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes archPulseBreath {
+  0%, 100% { transform: scale(1); opacity: 0.4; }
+  50% { transform: scale(1.08); opacity: 0.85; }
+}
+
+/* Typewriter Title & Subtitle */
+.arch-loader-text-wrap {
+  margin-bottom: 20px !important;
+  min-height: 52px !important;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+
+.arch-loader-title {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 15px !important;
+  font-weight: 550 !important;
+  color: #ffffff !important;
+  letter-spacing: -0.015em !important;
+  margin: 0 0 6px !important;
+  line-height: 1.35 !important;
+}
+
+.arch-loader-title .type-cursor {
+  display: inline-block !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-weight: 300 !important;
+  margin-left: 2px !important;
+  animation: archCursorBlink 0.9s infinite !important;
+}
+
+@keyframes archCursorBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.arch-loader-sub {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12.5px !important;
+  color: rgba(255, 255, 255, 0.62) !important;
+  margin: 0 !important;
+  line-height: 1.4 !important;
+}
+
+/* Hairline Progress Bar */
+.arch-progress-dock {
+  width: 100% !important;
+  max-width: 320px !important;
+  margin-bottom: 14px !important;
+}
+
+.arch-progress-bar {
+  width: 100% !important;
+  height: 3px !important;
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-radius: 9999px !important;
+  overflow: hidden !important;
+}
+
+.arch-progress-fill {
+  height: 100% !important;
+  background: #ffffff !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8) !important;
+  border-radius: 9999px !important;
+  transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+
+/* Telemetry Badges */
+.arch-loader-telemetry {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 11px !important;
+  color: rgba(255, 255, 255, 0.45) !important;
+  margin-bottom: 18px !important;
+  letter-spacing: 0.01em !important;
+}
+
+.arch-loader-cancel-btn {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 9999px !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  font-size: 12px !important;
+  font-weight: 450 !important;
+  padding: 7px 18px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.arch-loader-cancel-btn:hover {
+  background: rgba(255, 255, 255, 0.16) !important;
+  color: #ffffff !important;
+}
+
+/* 2. WORKSPACE CIRCULAR AVATAR TRIGGER (HOMOLOGADO) */
+.map-rail-avatar-btn,
+.studio-avatar-rail-btn,
+#btn-map-avatar {
+  width: 38px !important;
+  height: 38px !important;
+  min-width: 38px !important;
+  min-height: 38px !important;
+  border-radius: 50% !important;
+  background: rgba(14, 16, 22, 0.85) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  cursor: pointer !important;
+  padding: 0 !important;
+  margin: 6px auto !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+
+.map-rail-avatar-btn:hover,
+.studio-avatar-rail-btn:hover,
+#btn-map-avatar:hover {
+  transform: scale(1.06) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.6) !important;
+}
+
+.map-rail-avatar-btn .rayon-user-avatar,
+.studio-avatar-rail-btn .rayon-user-avatar,
+#btn-map-avatar .rayon-user-avatar {
+  width: 28px !important;
+  height: 28px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.14) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+}
+
+.workspace-rail-caption,
+.workspace-pill-label {
+  display: none !important;
+}
+
+/* 3. BOTONES DEL ESPACIO DE TRABAJO (WORKSPACE): REDONDEADOS Y CON LIQUID GLASS */
+#workspace-home {
+  background: #090a0d !important;
+}
+
+#workspace-home .rayon-user-dropdown,
+#ws-user-menu {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3) !important;
+  padding: 5px 12px 5px 6px !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  transition: all 0.15s ease !important;
+}
+#workspace-home .rayon-user-dropdown:hover,
+#ws-user-menu:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+}
+
+#workspace-home .rayon-user-avatar {
+  width: 26px !important;
+  height: 26px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.15) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #ffffff !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+#workspace-home .rayon-nav-item {
+  border-radius: 9999px !important;
+  background: transparent !important;
+  border: none !important;
+  color: rgba(255, 255, 255, 0.65) !important;
+  font-size: 12.5px !important;
+  font-weight: 450 !important;
+  padding: 8px 14px !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+#workspace-home .rayon-nav-item:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+  color: #ffffff !important;
+}
+#workspace-home .rayon-nav-item.active {
+  background: rgba(255, 255, 255, 0.14) !important;
+  color: #ffffff !important;
+  font-weight: 550 !important;
+}
+
+#workspace-home .rayon-primary-btn,
+#ws-btn-new-model {
+  border-radius: 9999px !important;
+  background: #ffffff !important;
+  color: #0c0d12 !important;
+  border: none !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35) !important;
+  font-size: 12.5px !important;
+  font-weight: 550 !important;
+  padding: 9px 18px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  cursor: pointer !important;
+  transition: transform 0.15s ease, background 0.15s ease !important;
+}
+#workspace-home .rayon-primary-btn:hover,
+#ws-btn-new-model:hover {
+  background: #f4f4f5 !important;
+  transform: translateY(-1px) !important;
+}
+
+#workspace-home .rayon-secondary-btn,
+#ws-btn-import-urbnz {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: rgba(255, 255, 255, 0.85) !important;
+  font-size: 12.5px !important;
+  font-weight: 450 !important;
+  padding: 8px 16px !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+#workspace-home .rayon-secondary-btn:hover,
+#ws-btn-import-urbnz:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+#ws-view-mode-seg {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  padding: 3px !important;
+}
+#ws-view-mode-seg .rayon-seg-btn {
+  border-radius: 9999px !important;
+  width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+}
+
+#ws-search-input,
+.rayon-search-box {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+
+#ws-sort-select {
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.06) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+}
+
+.rayon-model-card {
+  border-radius: 16px !important;
+  background: rgba(18, 20, 26, 0.88) !important;
+  backdrop-filter: blur(24px) !important;
+  -webkit-backdrop-filter: blur(24px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  overflow: hidden !important;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease !important;
+}
+.rayon-model-card:hover {
+  transform: translateY(-2px) !important;
+  border-color: rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* 4. HOMOLOGACIÓN TIPOGRÁFICA (SIN VARIACIONES BRUSCAS NI MICRO-LETRAS) */
+body, button, input, select, textarea, span, p, h1, h2, h3 {
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif !important;
+}
+
+/* Base de botones y textos interactivos en escala armónica */
+.axiom-view-btn,
+.axiom-header-action,
+.lang-single-btn,
+.axiom-island-btn,
+.axiom-seg-item,
+.editor-step-btn {
+  font-size: 12.5px !important;
+  font-weight: 450 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.axiom-export-title,
+.axiom-modal-title,
+.axiom-card-title,
+.rayon-breadcrumb-title h1 {
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.015em !important;
+}
+
+.axiom-sub-header,
+.axiom-label,
+.layer-name {
+  font-size: 12.5px !important;
+  font-weight: 450 !important;
+  letter-spacing: -0.01em !important;
+}
+
+.export-coords,
+.axiom-hint,
+.layer-opacity-val,
+.step-link-btn,
+.axiom-count-pill,
+.axiom-dot-count {
+  font-size: 11.5px !important;
+  font-weight: 450 !important;
+}
+
+/* Eliminar micro-fuentes menores a 11px */
+.btn-bracket-label,
+.tech-hud-sign,
+.axiom-notice-text,
+.copilot-pill {
+  font-size: 11.5px !important;
+}
+
+/* 5. RESPONSIVE COMPLETO: MÓVIL Y IPAD */
+/* iPad & Tablets (<= 1024px) */
+@media screen and (max-width: 1024px) {
+  .axiom-header {
+    padding: 0 12px !important;
+    gap: 8px !important;
+  }
+  .axiom-view-nav {
+    padding: 2px !important;
+    gap: 1px !important;
+  }
+  .axiom-view-btn {
+    padding: 6px 9px !important;
+    font-size: 12px !important;
+  }
+  .axiom-setup-card {
+    width: 300px !important;
+    left: 14px !important;
+    bottom: 16px !important;
+  }
+  .rayon-left-drawer {
+    width: 280px !important;
+    min-width: 280px !important;
+  }
+}
+
+/* Tablets en vertical & Móviles grandes (<= 768px) */
+@media screen and (max-width: 768px) {
+  .axiom-header {
+    height: 52px !important;
+    padding: 0 10px !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+  }
+  .axiom-header::-webkit-scrollbar {
+    display: none !important;
+  }
+
+  .axiom-view-nav {
+    overflow-x: auto !important;
+    flex-shrink: 0 !important;
+  }
+
+  /* Setup card en móvil: Bottom Sheet elegante */
+  .axiom-setup-card {
+    position: absolute !important;
+    left: 10px !important;
+    right: 10px !important;
+    bottom: 12px !important;
+    width: auto !important;
+    max-height: 48vh !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    z-index: 500 !important;
+    border-radius: 16px !important;
+    padding: 12px 14px !important;
+  }
+
+  /* Studio Left Drawer en móvil: deslizable sobre el canvas */
+  .rayon-studio-layout {
+    flex-direction: column !important;
+  }
+  .rayon-left-rail {
+    display: none !important;
+  }
+  .rayon-left-drawer {
+    position: absolute !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+    max-height: 45vh !important;
+    z-index: 500 !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-right: none !important;
+    border-radius: 18px 18px 0 0 !important;
+    background: rgba(14, 16, 22, 0.94) !important;
+    backdrop-filter: blur(28px) !important;
+    box-shadow: 0 -12px 40px rgba(0, 0, 0, 0.7) !important;
+  }
+
+  /* Workspace en móvil */
+  .rayon-home-screen {
+    flex-direction: column !important;
+  }
+  .rayon-home-sidebar {
+    width: 100% !important;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    padding: 10px 14px !important;
+  }
+  .rayon-home-nav {
+    flex-direction: row !important;
+    overflow-x: auto !important;
+    gap: 4px !important;
+  }
+  .rayon-cards-grid {
+    grid-template-columns: 1fr !important;
+    padding: 14px !important;
+  }
+
+  /* Touch Target Size */
+  button, .axiom-view-btn, .axiom-island-btn, .axiom-seg-item, .editor-step-btn {
+    min-height: 38px !important;
+  }
+}
+
+/* Teléfonos inteligentes (<= 480px) */
+@media screen and (max-width: 480px) {
+  .axiom-brand .axiom-logo {
+    display: none !important;
+  }
+  .axiom-header-action .btn-bracket-label {
+    display: none !important;
+  }
+  .axiom-topbar-right {
+    gap: 2px !important;
+  }
+  .arch-loader-card {
+    padding: 24px 18px !important;
+  }
+}

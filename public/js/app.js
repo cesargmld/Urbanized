@@ -610,6 +610,24 @@ function renderLoadingProgress(pct) {
   }
 }
 
+let typewriterTimer = null;
+function typewriteTitle(el, text, speed = 20) {
+  if (!el) return;
+  if (typewriterTimer) clearInterval(typewriterTimer);
+  el.innerHTML = '<span class="type-text"></span><span class="type-cursor">|</span>';
+  const textSpan = el.querySelector('.type-text');
+  let charIdx = 0;
+  typewriterTimer = setInterval(() => {
+    if (charIdx < text.length) {
+      textSpan.textContent += text.charAt(charIdx);
+      charIdx++;
+    } else {
+      clearInterval(typewriterTimer);
+      typewriterTimer = null;
+    }
+  }, speed);
+}
+
 function updateLoadingModal(stepKey) {
   const modal = $('#axiom-loading-modal');
   if (!modal) return;
@@ -665,7 +683,7 @@ function updateLoadingModal(stepKey) {
   const titleEl = $('#loading-title');
   const subEl = $('#loading-sub');
   const telEl = $('#loading-telemetry');
-  if (titleEl) titleEl.textContent = title;
+  if (titleEl) typewriteTitle(titleEl, title, 20);
   if (subEl) subEl.textContent = sub;
   if (telEl) telEl.innerHTML = telemetry;
 
@@ -681,8 +699,18 @@ function updateLoadingModal(stepKey) {
 }
 
 function hideLoadingModal() {
+  if (typewriterTimer) {
+    clearInterval(typewriterTimer);
+    typewriterTimer = null;
+  }
   if (loadingInterval) {
     clearInterval(loadingInterval);
+    loadingInterval = null;
+  }
+  currentLoadingPct = 15;
+  const modal = $('#axiom-loading-modal');
+  if (modal) modal.hidden = true;
+}
     loadingInterval = null;
   }
   currentLoadingPct = 15;
