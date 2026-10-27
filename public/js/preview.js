@@ -65,47 +65,62 @@ function init(container) {
   const group = new THREE.Group();
   scene.add(group);
 
-  // Click handler for interactive 3D pin dropping, lot placement, and interactive CAD measurement
+  // Click handler with drag threshold (distinguishes camera orbit/pan from interactive CAD clicks)
+  let studioPointerStart = { x: 0, y: 0 };
   renderer.domElement.addEventListener('pointerdown', (e) => {
-    if (!ctx || !ctx.lastModel) return;
+    studioPointerStart = { x: e.clientX, y: e.clientY };
+  });
 
-    if (isMeasuring3D) {
+  renderer.domElement.addEventListener('pointerup', (e) => {
+    if (!ctx || !ctx.lastModel) return;
+    const dragDist = Math.hypot(e.clientX - studioPointerStart.x, e.clientY - studioPointerStart.y);
+    if (dragDist > 6) return; // Ignore drag / camera orbit gestures
+
+    // 1. Interactive 3D Measurement Tools (Distance, Area Polygon, Spot Elevation)
+    if (currentStudioTool === 'measure_dist') {
       handle3DMeasureClick(e);
       return;
     }
+    if (currentStudioTool === 'measure_area') {
+      handle3DAreaClick(e);
+      return;
+    }
+    if (currentStudioTool === 'level_cota') {
+      handle3DSpotElevationClick(e);
+      return;
+    }
 
+    // 2. Spatial Pin & Feasibility Lot Dropping
     const isPlacingPin = pinStore.isPlacing();
     const isPlacingLot = feasibilityStore.isPlacingLot;
-    if (!isPlacingPin && !isPlacingLot) {
-      // Raycast to select element for Inspector de Selección
-      const rect = renderer.domElement.getBoundingClientRect();
-      const mouse = new THREE.Vector2(
-        ((e.clientX - rect.left) / rect.width) * 2 - 1,
-        -((e.clientY - rect.top) / rect.height) * 2 + 1
-      );
-      const raycaster = new THREE.Raycaster();
-      raycaster.setFromCamera(mouse, camera);
-      const targets = [];
-      if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
-      if (conceptualBlocksGroup?.children?.length) targets.push(...conceptualBlocksGroup.children);
-      const hits = raycaster.intersectObjects(targets, true);
-      if (hits.length > 0) {
-        const hitObj = hits[0].object;
-        const u = hitObj.userData || {};
-        const selType = document.getElementById('sel-elem-type');
-        const selH = document.getElementById('sel-elem-height');
-        const selL = document.getElementById('sel-elem-levels');
-        const selF = document.getElementById('sel-elem-footprint');
-        const selT = document.getElementById('sel-elem-tag');
-        if (selType) selType.textContent = u.type || 'Edificación Urbana';
-        if (selH) selH.textContent = u.height || '18.0 m';
-        if (selL) selL.textContent = u.levels || '5 pisos';
-        if (selF) selF.textContent = u.footprint || '850 m²';
-        if (selT) selT.textContent = u.tag || '02_Estructura_y_Nucleos';
+    if (isPlacingPin || isPlacingLot) {
+      const hitPt = getRaycastHitPoint(e);
+      if (hitPt) {
+        const model = ctx.lastModel;
+        if (isPlacingLot) {
+          feasibilityStore.setSiteOrigin(hitPt.x, hitPt.y, hitPt.z);
+          feasibilityStore.setPlacingMode(false);
+          renderFeasibilityVolume();
+          return;
+        }
+        if (isPlacingPin) {
+          const lat = model.center.lat + (hitPt.y / 111319.49);
+          const lon = model.center.lon + (hitPt.x / (111319.49 * Math.cos((model.center.lat * Math.PI) / 180)));
+          pinStore.addPin({
+            x: hitPt.x,
+            y: hitPt.y,
+            z: hitPt.z,
+            lat,
+            lon
+          });
+          pinStore.setPlacingMode(false);
+          return;
+        }
       }
       return;
     }
 
+    // 3. Default Orbit / Selection Mode
     const rect = renderer.domElement.getBoundingClientRect();
     const mouse = new THREE.Vector2(
       ((e.clientX - rect.left) / rect.width) * 2 - 1,
@@ -114,32 +129,22 @@ function init(container) {
     const raycaster = new THREE.Raycaster();
     raycaster.setFromCamera(mouse, camera);
     const targets = [];
-    if (ctx.terrainMesh) targets.push(ctx.terrainMesh);
     if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
-    const hits = raycaster.intersectObjects(targets, false);
+    if (conceptualBlocksGroup?.children?.length) targets.push(...conceptualBlocksGroup.children);
+    const hits = raycaster.intersectObjects(targets, true);
     if (hits.length > 0) {
-      const hit = hits[0].point;
-      const model = ctx.lastModel;
-
-      if (isPlacingLot) {
-        feasibilityStore.setSiteOrigin(hit.x, hit.y, hit.z);
-        feasibilityStore.setPlacingMode(false);
-        renderFeasibilityVolume();
-        return;
-      }
-
-      if (isPlacingPin) {
-        const lat = model.center.lat + (hit.y / 111319.49);
-        const lon = model.center.lon + (hit.x / (111319.49 * Math.cos((model.center.lat * Math.PI) / 180)));
-        pinStore.addPin({
-          x: hit.x,
-          y: hit.y,
-          z: hit.z,
-          lat,
-          lon
-        });
-        pinStore.setPlacingMode(false);
-      }
+      const hitObj = hits[0].object;
+      const u = hitObj.userData || {};
+      const selType = document.getElementById('sel-elem-type');
+      const selH = document.getElementById('sel-elem-height');
+      const selL = document.getElementById('sel-elem-levels');
+      const selF = document.getElementById('sel-elem-footprint');
+      const selT = document.getElementById('sel-elem-tag');
+      if (selType) selType.textContent = u.type || 'Edificación Urbana';
+      if (selH) selH.textContent = u.height || '18.0 m';
+      if (selL) selL.textContent = u.levels || '5 pisos';
+      if (selF) selF.textContent = u.footprint || '850 m²';
+      if (selT) selT.textContent = u.tag || '02_Estructura_y_Nucleos';
     }
   });
 
@@ -1863,16 +1868,82 @@ window.set3DSunFromDateTime = set3DSunFromDateTime;
 // ========================================================
 // 3D CAD INTERACTIVE MEASUREMENT RULER
 // ========================================================
-let isMeasuring3D = false;
+// 3D CAD UNIFIED TOOL ENGINE & MEASUREMENT SUITE
+// ========================================================
+let currentStudioTool = 'orbit'; // 'orbit' | 'measure_dist' | 'measure_area' | 'level_cota' | 'section'
 let measurePointA = null;
 let measureLineMesh = null;
 let measureMarkerA = null;
 
-export function setMeasuring3DMode(enabled) {
-  isMeasuring3D = Boolean(enabled);
-  if (!isMeasuring3D) {
-    clearMeasure3D();
+let areaPoints = [];
+let areaLineMesh = null;
+let areaVertexMarkers = [];
+
+let spotElevationsGroup = null;
+
+export function getRaycastHitPoint(e) {
+  if (!ctx || !ctx.renderer || !ctx.camera) return null;
+  const rect = ctx.renderer.domElement.getBoundingClientRect();
+  const mouse = new THREE.Vector2(
+    ((e.clientX - rect.left) / rect.width) * 2 - 1,
+    -((e.clientY - rect.top) / rect.height) * 2 + 1
+  );
+  const raycaster = new THREE.Raycaster();
+  raycaster.setFromCamera(mouse, ctx.camera);
+  const targets = [];
+  if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
+  if (ctx.terrainMesh) targets.push(ctx.terrainMesh);
+  if (conceptualBlocksGroup?.children?.length) targets.push(...conceptualBlocksGroup.children);
+  const hits = raycaster.intersectObjects(targets, true);
+  return hits.length ? hits[0].point : null;
+}
+
+export function setStudioTool(toolName) {
+  currentStudioTool = toolName;
+
+  // Clear cross-talk with pins and feasibility
+  if (pinStore?.setPlacingMode) pinStore.setPlacingMode(false);
+  if (feasibilityStore?.setPlacingMode) feasibilityStore.setPlacingMode(false);
+
+  // Clean other active tools
+  if (toolName !== 'measure_dist') clearMeasure3D();
+  if (toolName !== 'measure_area') clearAreaMeasure3D();
+  if (toolName !== 'section' && isSectionActive) toggleSectionCut3D(false);
+
+  // Sync UI active classes in .rayon-tool-dock
+  const dockBtns = {
+    'orbit': 'dock-tool-select-3d',
+    'measure_dist': 'dock-tool-dim-3d',
+    'measure_area': 'dock-tool-area-3d',
+    'level_cota': 'dock-tool-level-3d',
+    'section': 'dock-tool-section-3d'
+  };
+
+  document.querySelectorAll('.rayon-tool-dock .rayon-tool-btn').forEach(b => b.classList.remove('active'));
+  const activeId = dockBtns[toolName];
+  if (activeId) {
+    document.getElementById(activeId)?.classList.add('active');
   }
+
+  // Toast notifications (safely positioned at top of viewport)
+  if (toolName === 'orbit') {
+    window.showCadToast?.('Modo Órbita y Selección 3D activo');
+  } else if (toolName === 'measure_dist') {
+    window.showCadToast?.('📏 Medir Distancia: Haz clic en punto A y luego en punto B');
+  } else if (toolName === 'measure_area') {
+    window.showCadToast?.('📐 Medir Superficie (m²): Haz clic en 3 o más puntos para delimitar el polígono');
+  } else if (toolName === 'level_cota') {
+    window.showCadToast?.('▼ Cota de Nivel Z: Haz clic sobre cualquier punto de cubierta o terreno');
+  } else if (toolName === 'section') {
+    toggleSectionCut3D(true);
+    window.showCadToast?.('Plano de Sección 3D activo');
+  }
+}
+window.setStudioTool = setStudioTool;
+
+// --- 1. Linear Distance Measurement ---
+export function setMeasuring3DMode(enabled) {
+  setStudioTool(enabled ? 'measure_dist' : 'orbit');
 }
 window.setMeasuring3DMode = setMeasuring3DMode;
 
@@ -1896,49 +1967,34 @@ export function clearMeasure3D() {
 window.clearMeasure3D = clearMeasure3D;
 
 function handle3DMeasureClick(e) {
-  if (!ctx || !ctx.renderer || !ctx.camera) return;
-  const rect = ctx.renderer.domElement.getBoundingClientRect();
-  const mouse = new THREE.Vector2(
-    ((e.clientX - rect.left) / rect.width) * 2 - 1,
-    -((e.clientY - rect.top) / rect.height) * 2 + 1
-  );
-  const raycaster = new THREE.Raycaster();
-  raycaster.setFromCamera(mouse, ctx.camera);
-  const targets = [];
-  if (ctx.buildingMeshes?.length) targets.push(...ctx.buildingMeshes);
-  if (ctx.terrainMesh) targets.push(ctx.terrainMesh);
-  if (conceptualBlocksGroup?.children?.length) targets.push(...conceptualBlocksGroup.children);
-
-  const hits = raycaster.intersectObjects(targets, true);
-  if (!hits.length) return;
-  const hitPt = hits[0].point;
+  const hitPt = getRaycastHitPoint(e);
+  if (!hitPt) return;
 
   if (!measurePointA) {
-    // First point
     measurePointA = hitPt.clone();
     clearMeasure3D();
     measurePointA = hitPt.clone();
-    const markerGeo = new THREE.SphereGeometry(Math.max(2, (ctx.modelSize || 1000) * 0.007), 16, 16);
-    const markerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8 });
+    const s = ctx.modelSize || 1000;
+    const markerGeo = new THREE.SphereGeometry(Math.max(1.8, s * 0.006), 16, 16);
+    const markerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, depthTest: false });
     measureMarkerA = new THREE.Mesh(markerGeo, markerMat);
     measureMarkerA.position.copy(hitPt);
+    measureMarkerA.renderOrder = 1000;
     ctx.scene.add(measureMarkerA);
 
-    window.showCadToast?.(`Punto A fijado en X:${hitPt.x.toFixed(1)}, Y:${hitPt.y.toFixed(1)}, Z:${hitPt.z.toFixed(1)}. Haz clic en Punto B.`);
+    window.showCadToast?.(`Punto A fijado (Z: ${hitPt.z.toFixed(1)}m). Clic en Punto B.`);
   } else {
-    // Second point: complete dimension
     const ptB = hitPt.clone();
     const d = measurePointA.distanceTo(ptB);
     const dxy = Math.sqrt(Math.pow(ptB.x - measurePointA.x, 2) + Math.pow(ptB.y - measurePointA.y, 2));
     const dz = ptB.z - measurePointA.z;
 
     const lineGeo = new THREE.BufferGeometry().setFromPoints([measurePointA, ptB]);
-    const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2, depthTest: false });
+    const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2.5, depthTest: false });
     measureLineMesh = new THREE.Line(lineGeo, lineMat);
     measureLineMesh.renderOrder = 999;
     ctx.scene.add(measureLineMesh);
 
-    // Add floating badge
     let badge = document.getElementById('studio-measure-badge');
     if (!badge) {
       badge = document.createElement('div');
@@ -1946,13 +2002,177 @@ function handle3DMeasureClick(e) {
       badge.className = 'studio-measure-badge';
       document.getElementById('result-viewer-wrap')?.appendChild(badge);
     }
-    badge.textContent = `📏 ${d.toFixed(2)} m (Δxy: ${dxy.toFixed(1)} m · Δz: ${Math.abs(dz).toFixed(1)} m)`;
+    const rect = ctx.renderer.domElement.getBoundingClientRect();
+    badge.innerHTML = `📏 <strong>${d.toFixed(2)} m</strong> (Δxy: ${dxy.toFixed(1)} m · Δz: ${Math.abs(dz).toFixed(1)} m) <button type="button" onclick="window.clearMeasure3D()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; margin-left:6px;" title="Borrar">✕</button>`;
     badge.style.left = `${e.clientX - rect.left + 12}px`;
-    badge.style.top = `${e.clientY - rect.top - 20}px`;
+    badge.style.top = `${e.clientY - rect.top - 24}px`;
 
-    window.showCadToast?.(`Cota 3D: ${d.toFixed(2)} m · ΔH: ${Math.abs(dz).toFixed(1)} m`);
-    measurePointA = null; // Ready for next measurement
+    window.showCadToast?.(`Distancia 3D: ${d.toFixed(2)} m · ΔH: ${Math.abs(dz).toFixed(1)} m`);
+    measurePointA = null; // Ready for subsequent measurements
   }
+}
+
+// --- 2. Polygon Area Measurement (m²) ---
+export function clearAreaMeasure3D() {
+  areaPoints = [];
+  if (areaLineMesh && ctx?.scene) {
+    ctx.scene.remove(areaLineMesh);
+    areaLineMesh.geometry?.dispose();
+    areaLineMesh.material?.dispose();
+    areaLineMesh = null;
+  }
+  if (areaVertexMarkers.length && ctx?.scene) {
+    areaVertexMarkers.forEach(m => {
+      ctx.scene.remove(m);
+      m.geometry?.dispose();
+      m.material?.dispose();
+    });
+    areaVertexMarkers = [];
+  }
+  const badge = document.getElementById('studio-area-badge');
+  if (badge) badge.remove();
+}
+window.clearAreaMeasure3D = clearAreaMeasure3D;
+
+function handle3DAreaClick(e) {
+  const hitPt = getRaycastHitPoint(e);
+  if (!hitPt) return;
+
+  const s = ctx.modelSize || 1000;
+  areaPoints.push(hitPt.clone());
+
+  // Vertex marker
+  const markerGeo = new THREE.SphereGeometry(Math.max(1.8, s * 0.005), 16, 16);
+  const markerMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, depthTest: false });
+  const marker = new THREE.Mesh(markerGeo, markerMat);
+  marker.position.copy(hitPt);
+  marker.renderOrder = 1000;
+  ctx.scene.add(marker);
+  areaVertexMarkers.push(marker);
+
+  // Boundary loop
+  if (areaLineMesh && ctx.scene) {
+    ctx.scene.remove(areaLineMesh);
+    areaLineMesh.geometry?.dispose();
+    areaLineMesh.material?.dispose();
+  }
+  const linePoints = [...areaPoints];
+  if (linePoints.length >= 3) linePoints.push(linePoints[0].clone());
+  const lineGeo = new THREE.BufferGeometry().setFromPoints(linePoints);
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2.5, depthTest: false });
+  areaLineMesh = new THREE.Line(lineGeo, lineMat);
+  areaLineMesh.renderOrder = 999;
+  ctx.scene.add(areaLineMesh);
+
+  // Area calculation (Shoelace formula on XY plane)
+  let areaM2 = 0;
+  let perimM = 0;
+  if (areaPoints.length >= 3) {
+    for (let i = 0; i < areaPoints.length; i++) {
+      const j = (i + 1) % areaPoints.length;
+      areaM2 += areaPoints[i].x * areaPoints[j].y;
+      areaM2 -= areaPoints[j].x * areaPoints[i].y;
+      perimM += areaPoints[i].distanceTo(areaPoints[j]);
+    }
+    areaM2 = Math.abs(areaM2) / 2;
+  } else if (areaPoints.length === 2) {
+    perimM = areaPoints[0].distanceTo(areaPoints[1]);
+  }
+
+  // Floating badge
+  let badge = document.getElementById('studio-area-badge');
+  if (!badge) {
+    badge = document.createElement('div');
+    badge.id = 'studio-area-badge';
+    badge.className = 'studio-measure-badge';
+    document.getElementById('result-viewer-wrap')?.appendChild(badge);
+  }
+  if (areaPoints.length >= 3) {
+    badge.innerHTML = `📐 Superficie: <strong>${areaM2.toLocaleString('en-US', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} m²</strong> · Perímetro: ${perimM.toFixed(1)} m <button type="button" onclick="window.clearAreaMeasure3D()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; margin-left:6px;" title="Borrar">✕</button>`;
+    window.showCadToast?.(`Polígono 3D: ${areaM2.toFixed(1)} m² (Perímetro: ${perimM.toFixed(1)} m)`);
+  } else {
+    badge.innerHTML = `Vértices: ${areaPoints.length} (Haz clic en al menos 3 puntos para cerrar m²) <button type="button" onclick="window.clearAreaMeasure3D()" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; margin-left:6px;" title="Borrar">✕</button>`;
+  }
+  const rect = ctx.renderer.domElement.getBoundingClientRect();
+  badge.style.left = `${e.clientX - rect.left + 14}px`;
+  badge.style.top = `${e.clientY - rect.top - 24}px`;
+}
+
+// --- 3. Spot Elevation / Cota de Nivel Z ---
+export function clearSpotElevations() {
+  if (spotElevationsGroup && ctx?.scene) {
+    ctx.scene.remove(spotElevationsGroup);
+    spotElevationsGroup.traverse(obj => {
+      obj.geometry?.dispose();
+      obj.material?.dispose();
+    });
+    spotElevationsGroup = null;
+  }
+}
+window.clearSpotElevations = clearSpotElevations;
+
+function handle3DSpotElevationClick(e) {
+  const hitPt = getRaycastHitPoint(e);
+  if (!hitPt) return;
+
+  if (!spotElevationsGroup) {
+    spotElevationsGroup = new THREE.Group();
+    spotElevationsGroup.name = 'spotElevationsGroup';
+    ctx.scene.add(spotElevationsGroup);
+  }
+
+  const s = ctx.modelSize || 1000;
+  const leaderH = Math.max(10, s * 0.03);
+  const targetZ = hitPt.z;
+  const topZ = targetZ + leaderH;
+
+  // Leader line
+  const lineGeo = new THREE.BufferGeometry().setFromPoints([
+    new THREE.Vector3(hitPt.x, hitPt.y, targetZ),
+    new THREE.Vector3(hitPt.x, hitPt.y, topZ)
+  ]);
+  const lineMat = new THREE.LineBasicMaterial({ color: 0x38bdf8, linewidth: 2, depthTest: false });
+  const leaderLine = new THREE.Line(lineGeo, lineMat);
+  leaderLine.renderOrder = 999;
+  spotElevationsGroup.add(leaderLine);
+
+  // Dot marker
+  const dotGeo = new THREE.SphereGeometry(Math.max(1.4, s * 0.004), 16, 16);
+  const dotMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, depthTest: false });
+  const dotMesh = new THREE.Mesh(dotGeo, dotMat);
+  dotMesh.position.copy(hitPt);
+  dotMesh.renderOrder = 1000;
+  spotElevationsGroup.add(dotMesh);
+
+  // High-resolution Canvas Sprite for Cota Nivel Z
+  const canvas = document.createElement('canvas');
+  canvas.width = 300;
+  canvas.height = 90;
+  const c2d = canvas.getContext('2d');
+  c2d.fillStyle = 'rgba(14, 16, 22, 0.92)';
+  c2d.strokeStyle = '#38bdf8';
+  c2d.lineWidth = 3;
+  c2d.beginPath();
+  c2d.roundRect(4, 4, 292, 82, 14);
+  c2d.fill();
+  c2d.stroke();
+
+  c2d.fillStyle = '#ffffff';
+  c2d.font = 'bold 32px "JetBrains Mono", monospace';
+  c2d.textAlign = 'center';
+  c2d.textBaseline = 'middle';
+  const zSign = targetZ >= 0 ? '+' : '';
+  c2d.fillText(`▼ N${zSign}${targetZ.toFixed(2)} m`, 150, 45);
+
+  const texture = new THREE.CanvasTexture(canvas);
+  const spriteMat = new THREE.SpriteMaterial({ map: texture, depthTest: false });
+  const sprite = new THREE.Sprite(spriteMat);
+  sprite.position.set(hitPt.x, hitPt.y, topZ + (s * 0.018));
+  sprite.scale.set(s * 0.1, s * 0.03, 1);
+  sprite.renderOrder = 1001;
+  spotElevationsGroup.add(sprite);
+
+  window.showCadToast?.(`Cota Nivel Z fijada: N${zSign}${targetZ.toFixed(2)} m`);
 }
 
 // URBNZD Real-time 3D Section Plane Cut Engine
@@ -1980,6 +2200,7 @@ export function toggleSectionCut3D(forceState) {
 
 export function setSectionCutPosition(constantVal) {
   sectionPlane.constant = Number(constantVal) || 0;
+  if (sectionPlaneHelper) sectionPlaneHelper.updateMatrixWorld(true);
   if (ctx?.renderer && ctx?.scene && ctx?.camera) {
     ctx.renderer.render(ctx.scene, ctx.camera);
   }
@@ -1989,6 +2210,7 @@ export function setSectionCutAxis(axis) {
   if (axis === 'x') sectionPlane.normal.set(-1, 0, 0);
   else if (axis === 'y') sectionPlane.normal.set(0, -1, 0);
   else if (axis === 'z') sectionPlane.normal.set(0, 0, -1);
+  if (sectionPlaneHelper) sectionPlaneHelper.updateMatrixWorld(true);
   if (ctx?.renderer && ctx?.scene && ctx?.camera) {
     ctx.renderer.render(ctx.scene, ctx.camera);
   }
@@ -1997,6 +2219,7 @@ export function setSectionCutAxis(axis) {
 export function invertSectionCut() {
   sectionPlane.normal.negate();
   sectionPlane.constant = -sectionPlane.constant;
+  if (sectionPlaneHelper) sectionPlaneHelper.updateMatrixWorld(true);
   if (ctx?.renderer && ctx?.scene && ctx?.camera) {
     ctx.renderer.render(ctx.scene, ctx.camera);
   }

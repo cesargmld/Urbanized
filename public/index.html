@@ -27,47 +27,113 @@
 <body class="axiom-app">
   <!-- ========================================================
        0. URBNZD ARCHITECTURAL STUDIO INTRO SPLASH
-       Minimalist architectural loader with prominent brand logo hierarchy
+       Retro-Industrial Tech HUD Loader (Authentic Brand Hierarchy)
        ======================================================== -->
-  <div class="h3l-page-loader modern-arch-loader" id="h3l-page-loader" aria-label="URBNZD Studio">
-    <div class="arch-loader-card">
-      <div class="arch-loader-spotlight"></div>
-
-      <!-- Amplia Jerarquía al Logo de Inicio -->
-      <div class="arch-loader-brand-hero">
-        <div class="arch-loader-logo-wrap">
-          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="arch-loader-hero-logo" />
+  <div class="h3l-page-loader tech-hud-loader" id="h3l-page-loader" aria-label="Loading URBNZD Studio">
+    <div class="tech-hud-card">
+      <!-- HUD Top Bar: System ID, Transfer Speed, Status -->
+      <div class="tech-hud-header">
+        <div class="tech-hud-header-left">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="tech-hud-logo" id="h3l-studio-logo" style="height:22px; width:auto; filter:brightness(0) invert(1);" />
+          <span class="tech-hud-bracket-tag">[ STUDIO INITIALIZATION ]</span>
         </div>
-        <div class="arch-loader-brand-sub">Architectural Computing · CGM Atelier</div>
-      </div>
-
-      <!-- Concentric Pulsing Rings with Live Percentage -->
-      <div class="arch-pulse-container">
-        <div class="arch-pulse-ring ring-outer"></div>
-        <div class="arch-pulse-ring ring-mid"></div>
-        <div class="arch-pulse-ring ring-core">
-          <span class="arch-loader-pct" id="h3l-pct-badge">15%</span>
+        <div class="tech-hud-header-right">
+          <span class="tech-hud-speed" id="h3l-transfer-speed">96.4 MB/S</span>
+          <span class="tech-hud-status-badge">SYS_ONLINE</span>
         </div>
       </div>
 
-      <!-- Typewriter Status Text Display -->
-      <div class="arch-loader-text-wrap">
-        <h3 class="arch-loader-title" id="h3l-status-title">
-          <span class="type-text">Iniciando estudio territorial...</span><span class="type-cursor">|</span>
-        </h3>
-        <p class="arch-loader-sub" id="h3l-status-sub">Conectando servidores cartográficos y satelitales...</p>
-      </div>
+      <!-- 6-Quadrant Tech Matrix Grid -->
+      <div class="tech-hud-grid">
+        <!-- Q1: Radial Dial / Circular Tick Progress -->
+        <div class="tech-hud-quadrant q1-dial">
+          <div class="tech-hud-quad-label">01 // FLUID PROGRESS</div>
+          <div class="tech-radial-dial">
+            <svg viewBox="0 0 100 100" class="tech-dial-svg">
+              <circle cx="50" cy="50" r="42" class="tech-dial-track"></circle>
+              <circle cx="50" cy="50" r="42" class="tech-dial-ticks" stroke-dasharray="2 4"></circle>
+              <circle cx="50" cy="50" r="42" class="tech-dial-progress" id="h3l-dial-progress-circle"></circle>
+            </svg>
+            <div class="tech-dial-center">
+              <span class="tech-dial-pct" id="h3l-pct-badge">15%</span>
+              <span class="tech-dial-sub">EXTRACTION</span>
+            </div>
+          </div>
+        </div>
 
-      <!-- Minimalist Hairline Laser Progress Bar -->
-      <div class="arch-progress-dock">
-        <div class="arch-progress-bar">
-          <div class="arch-progress-fill" id="h3l-laser-fill" style="width: 15%;"></div>
+        <!-- Q2: Layer Sources Status -->
+        <div class="tech-hud-quadrant q2-sources">
+          <div class="tech-hud-quad-label">02 // SATELLITE & GIS STREAMS</div>
+          <div class="tech-sources-list">
+            <div class="tech-source-row">
+              <span class="tech-src-name">OSM VOLUMES</span>
+              <span class="tech-src-status" id="h3l-src-osm">CONNECTING...</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">COPERNICUS DEM</span>
+              <span class="tech-src-status" id="h3l-src-dem">STREAMING...</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">HIGHWAY NETWORK</span>
+              <span class="tech-src-status" id="h3l-src-roads">READY</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">SPECTRAL CANOPY</span>
+              <span class="tech-src-status" id="h3l-src-water">SYNCHRONIZED</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3: Barcode Volume Progress -->
+        <div class="tech-hud-quadrant q3-barcode">
+          <div class="tech-hud-quad-label">03 // GEOMETRIC BUFFER</div>
+          <div class="tech-barcode-track" id="h3l-barcode-track">
+            <!-- Dynamic vertical tick bars -->
+          </div>
+          <div class="tech-barcode-meta">
+            <span id="h3l-hud-volume">1,420 / 4,890 PTS</span>
+            <span id="h3l-hud-eta">ETA: 0.6S</span>
+          </div>
+        </div>
+
+        <!-- Q4: Sector Coordinates -->
+        <div class="tech-hud-quadrant q4-coords">
+          <div class="tech-hud-quad-label">04 // TERRITORIAL DATUM</div>
+          <div class="tech-coords-display">
+            <div class="tech-coord-line"><span class="tech-dim-label">DATUM:</span> <strong>WGS84 / EPSG:4326</strong></div>
+            <div class="tech-coord-line"><span class="tech-dim-label">ELEV_SRC:</span> <strong>COPERNICUS 30M GLO</strong></div>
+            <div class="tech-coord-line"><span class="tech-dim-label">FORMAT:</span> <strong>SKETCHUP + CAD NATIVE</strong></div>
+          </div>
+        </div>
+
+        <!-- Q5: Output Engines Target -->
+        <div class="tech-hud-quadrant q5-output">
+          <div class="tech-hud-quad-label">05 // COMPATIBILITY TARGETS</div>
+          <div class="tech-targets-tags">
+            <span class="tech-target-pill">SKETCHUP .SKP</span>
+            <span class="tech-target-pill">AUTOCAD .DXF</span>
+            <span class="tech-target-pill">RHINO .3DM</span>
+            <span class="tech-target-pill">QGIS .GEOJSON</span>
+          </div>
+        </div>
+
+        <!-- Q6: Engine Live State -->
+        <div class="tech-hud-quadrant q6-status">
+          <div class="tech-hud-quad-label">06 // ENGINE PIPELINE</div>
+          <div class="tech-pipeline-title" id="h3l-status-title">INICIALIZANDO DATOS</div>
+          <div class="tech-pipeline-progress-bar">
+            <div class="tech-pipeline-progress-fill" id="h3l-laser-fill" style="width: 25%;"></div>
+          </div>
         </div>
       </div>
 
-      <!-- Technical Telemetry Badges -->
-      <div class="arch-loader-telemetry">
-        <span>Copernicus DEM</span> · <span>OpenStreetMap</span> · <span>Mallas 3D</span>
+      <!-- HUD Bottom Bar -->
+      <div class="tech-hud-footer">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" style="height:12px; width:auto; filter:brightness(0) invert(1); opacity:0.85;" />
+          <span class="tech-hud-sign" style="letter-spacing:0.12em;">URBNZD ARCHITECTURAL COMPUTING · CGM ATELIER</span>
+        </div>
+        <button type="button" class="tech-hud-btn" id="h3l-btn-skip" onclick="if(window.dismissH3lLoader) window.dismissH3lLoader();">SALTAR INTRO</button>
       </div>
     </div>
   </div>
@@ -78,65 +144,81 @@
 
       const pctBadge = document.getElementById('h3l-pct-badge');
       const laserFill = document.getElementById('h3l-laser-fill');
-      const statusTitle = document.getElementById('h3l-status-title')?.querySelector('.type-text');
-      const statusSub = document.getElementById('h3l-status-sub');
+      const dialCircle = document.getElementById('h3l-dial-progress-circle');
+      const barcodeTrack = document.getElementById('h3l-barcode-track');
+      const titleEl = document.getElementById('h3l-status-title');
+      const volEl = document.getElementById('h3l-hud-volume');
+      const etaEl = document.getElementById('h3l-hud-eta');
 
-      const steps = [
-        { pct: 18, title: 'Iniciando estudio territorial...', sub: 'Conectando Copernicus DEM y OpenStreetMap...' },
-        { pct: 45, title: 'Sincronizando topografía y satélite...', sub: 'Cargando tiles de elevación Copernicus DEM...' },
-        { pct: 82, title: 'Compilando capas cartográficas...', sub: 'Vectorizando vialidades, edificios y mallas 3D...' },
-        { pct: 100, title: 'Estudio preparado', sub: 'URBNZD Studio listo' }
-      ];
-
-      let stepIdx = 0;
-      function applyStep(s) {
-        if (pctBadge) pctBadge.textContent = s.pct + '%';
-        if (laserFill) laserFill.style.width = s.pct + '%';
-        if (statusTitle) statusTitle.textContent = s.title;
-        if (statusSub) statusSub.textContent = s.sub;
+      if (barcodeTrack && !barcodeTrack.children.length) {
+        let bars = '';
+        for (let i = 0; i < 24; i++) bars += '<span class="tech-barcode-tick"></span>';
+        barcodeTrack.innerHTML = bars;
       }
 
-      applyStep(steps[0]);
+      const circ = 263.89;
+      if (dialCircle) {
+        dialCircle.style.strokeDasharray = circ;
+        dialCircle.style.strokeDashoffset = circ;
+      }
 
+      let currentPct = 15;
+      const steps = [
+        { pct: 20, title: 'CONECTANDO REPOSITORIO OSM & DEM' },
+        { pct: 48, title: 'DESCARGANDO MALLAS URBANAS' },
+        { pct: 78, title: 'COMPILANDO TOPOGRAFÍA COPERNICUS' },
+        { pct: 100, title: 'ESTUDIO 3D PREPARADO' }
+      ];
+
+      function renderSplash(pct, title) {
+        currentPct = Math.min(100, Math.max(0, pct));
+        if (pctBadge) pctBadge.textContent = Math.round(currentPct) + '%';
+        if (laserFill) laserFill.style.width = currentPct + '%';
+        if (dialCircle) dialCircle.style.strokeDashoffset = circ - (circ * currentPct) / 100;
+        if (titleEl && title) titleEl.textContent = title;
+        if (volEl) volEl.textContent = Math.round((currentPct / 100) * 4890).toLocaleString() + ' / 4,890 PTS';
+        if (etaEl) etaEl.textContent = 'ETA: ' + Math.max(0, ((100 - currentPct) * 0.02)).toFixed(1) + 'S';
+
+        if (barcodeTrack) {
+          const activeBars = Math.round((currentPct / 100) * 24);
+          barcodeTrack.querySelectorAll('.tech-barcode-tick').forEach((b, idx) => {
+            b.classList.toggle('active', idx < activeBars);
+          });
+        }
+      }
+
+      renderSplash(steps[0].pct, steps[0].title);
+
+      let stepIdx = 0;
       let timer = setInterval(() => {
         if (stepIdx < steps.length - 2) {
           stepIdx++;
-          applyStep(steps[stepIdx]);
+          renderSplash(steps[stepIdx].pct, steps[stepIdx].title);
         }
-        // When appMap is loaded, advance to final 100% step and dismiss
         if (window.appMap) {
           clearInterval(timer);
-          applyStep(steps[steps.length - 1]);
-          setTimeout(dismiss, 320);
+          renderSplash(100, 'ESTUDIO 3D PREPARADO');
+          setTimeout(dismiss, 280);
         }
-      }, 350);
+      }, 300);
 
       function dismiss() {
         if (!loader || loader.dataset.dismissed) return;
         loader.dataset.dismissed = 'true';
         loader.classList.add('h3l-loader-exit');
+        loader.style.opacity = '0';
         setTimeout(() => {
           loader.hidden = true;
           loader.style.display = 'none';
           if (window.appMap && typeof window.appMap.invalidateSize === 'function') {
             window.appMap.invalidateSize();
           }
-        }, 280);
+        }, 220);
       }
 
+      window.dismissH3lLoader = dismiss;
       loader.addEventListener('click', dismiss);
-      // Failsafe: dismiss after max 3500ms even if network is slow
       setTimeout(dismiss, 3500);
-
-      window.replayH3lLoader = () => {
-        delete loader.dataset.dismissed;
-        loader.hidden = false;
-        loader.style.display = 'flex';
-        loader.classList.remove('h3l-loader-exit');
-        stepIdx = 0;
-        applyStep(steps[0]);
-        initStudioSplash();
-      };
     })();
   </script>
 
@@ -1419,8 +1501,9 @@
 
           <!-- Sticky Export Action -->
           <div class="drawer-sticky-bottom">
-            <button type="button" class="axiom-cta-btn" id="btn-export-tables-csv">
-              <span>📥 Exportar Cuantificación a CSV (Excel)</span>
+            <button type="button" class="axiom-cta-btn" id="btn-export-tables-csv" style="display:inline-flex; align-items:center; justify-content:center; gap:8px;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              <span>Exportar Cuantificación (.csv)</span>
             </button>
           </div>
         </aside>
@@ -1625,19 +1708,22 @@
 
         <!-- URBNZD Functional 3D Tool Dock (Pure CAD Modeling Tools - No Duplicates) -->
         <div class="rayon-tool-dock" role="toolbar" aria-label="Herramientas 3D">
-          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-3d" title="Seleccionar / Inspeccionar (V)">
+          <button type="button" class="rayon-tool-btn active" id="dock-tool-select-3d" title="Órbita y Selección 3D (V)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3l7 18 3-7 7-3L3 3z"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-3d" title="Medir Distancia 3D (D)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-dim-3d" title="Cota de Distancia Lineal (D)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="7" x2="4" y2="17"/><line x1="20" y1="7" x2="20" y2="17"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-level-3d" title="Cota de Nivel Z (Z)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-area-3d" title="Medir Polígono de Área m² (A)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 3 20 7.5 20 16.5 12 21 4 16.5 4 7.5 12 3"/><line x1="12" y1="3" x2="12" y2="21" stroke-dasharray="2 2"/></svg>
+          </button>
+          <button type="button" class="rayon-tool-btn" id="dock-tool-level-3d" title="Cota Altimétrica de Nivel Z (Z)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 12 12 22 22 12"/><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-section-3d" title="Plano de Sección / Corte (X)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-section-3d" title="Plano de Sección / Corte 3D (X)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12" stroke-dasharray="2 2"/></svg>
           </button>
-          <button type="button" class="rayon-tool-btn" id="dock-tool-export-3d" title="Capturar Imagen Render (E)">
+          <button type="button" class="rayon-tool-btn" id="dock-tool-export-3d" title="Exportar Modelo 3D (.skp / CAD)">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           </button>
         </div>
@@ -2907,7 +2993,7 @@
             <div class="rayon-segmented" id="comp-logo-seg" style="margin-top:4px;">
               <button type="button" class="rayon-seg-btn active" data-complogo="cgm">CGM Atelier</button>
               <button type="button" class="rayon-seg-btn" data-complogo="urbnzd">URBNZD</button>
-              <button type="button" class="rayon-seg-btn" data-complogo="custom">Subir 📁</button>
+              <button type="button" class="rayon-seg-btn" data-complogo="custom">Subir archivo</button>
             </div>
             <input type="file" id="comp-input-custom-logo" accept="image/*" style="display:none;">
             <p class="export-coords" style="margin-top:4px;">En el cuadro de rotulación se proyecta únicamente el logo oficial a la derecha</p>
@@ -3114,9 +3200,18 @@
         <button type="button" class="axiom-drawer-close" id="btn-close-comp-picker" style="font-size:14px;">✕</button>
       </div>
       <div style="padding:10px 16px; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; gap:8px; flex-wrap:wrap;">
-        <button type="button" class="axiom-subtle-btn" id="btn-picker-capture-3d" style="font-size:10.5px; padding:6px 10px;">📸 Capturar 3D Actual</button>
-        <button type="button" class="axiom-subtle-btn" id="btn-picker-capture-map" style="font-size:10.5px; padding:6px 10px;">🗺 Capturar 2D Actual</button>
-        <button type="button" class="axiom-subtle-btn" id="btn-picker-capture-axo" style="font-size:10.5px; padding:6px 10px;">📐 Capturar Axonometría</button>
+        <button type="button" class="axiom-subtle-btn" id="btn-picker-capture-3d" style="font-size:11px; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span>Capturar 3D actual</span>
+        </button>
+        <button type="button" class="axiom-subtle-btn" id="btn-picker-capture-map" style="font-size:11px; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/></svg>
+          <span>Capturar 2D actual</span>
+        </button>
+        <button type="button" class="axiom-subtle-btn" id="btn-picker-capture-axo" style="font-size:11px; padding:6px 12px; display:inline-flex; align-items:center; gap:6px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21"/><line x1="21" y1="21" x2="3" y2="3"/></svg>
+          <span>Capturar axonometría</span>
+        </button>
       </div>
       <div class="comp-picker-grid" id="comp-picker-grid-list">
         <!-- Render dinámico de escenas guardadas -->
@@ -3221,23 +3316,24 @@
 
       <!-- 4. FOOTER: EXPORTS & ACTION PILLS -->
       <div class="section-modal-footer">
-        <div class="section-modal-actions">
-          <button class="axiom-export-pill dl" data-section="dxf">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>AUTOCAD .DXF</span>
+        <div class="section-modal-actions" style="display:flex; align-items:center; gap:8px;">
+          <!-- Botón Primario Claro y Destacado: Descarga CAD DXF -->
+          <button class="axiom-cta-btn dl primary-sec-cad" data-section="dxf" style="padding:7px 18px; font-weight:700; background:#ffffff; color:#000000; border:none; border-radius:8px; display:inline-flex; align-items:center; gap:8px; font-size:11px; cursor:pointer;">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            <span>DESCARGAR SECCIÓN CAD (.DXF)</span>
           </button>
-          <button class="axiom-export-pill dl" data-section="svg">
+          <button class="axiom-export-pill dl" data-section="svg" title="Vectorial para Illustrator">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>ILLUSTRATOR .SVG</span>
+            <span>VECTOR .SVG</span>
           </button>
-          <button class="axiom-export-pill dl" data-section="png">
+          <button class="axiom-export-pill dl" data-section="png" title="Imagen de alta resolución">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>HIGH-RES .PNG</span>
+            <span>IMAGEN .PNG</span>
           </button>
         </div>
 
-        <button type="button" class="axiom-cta-pill" id="btn-section-modal-done">
-          <span>CLOSE SECTION DOCK</span>
+        <button type="button" class="axiom-subtle-btn" id="btn-section-modal-done" style="padding:6px 14px; font-size:10.5px;">
+          <span>Cerrar Sección</span>
         </button>
         <span id="sec-quota" style="display:none;"></span>
       </div>
@@ -3298,56 +3394,115 @@
   </div>
 
   <!-- ========================================================
-       AESTHETIC ARCHITECTURAL LOADER (LIQUID GLASS + TYPEWRITER EFFECT)
+       RETRO-INDUSTRIAL TECH HUD LOADER (IMAGE 1 GRID PREMISE)
        ======================================================== -->
-  <div class="rayon-loader-modal modern-arch-loader" id="axiom-loading-modal" hidden>
-    <div class="arch-loader-card">
-      <!-- Glow ambient background spotlight -->
-      <div class="arch-loader-spotlight"></div>
-
-      <!-- Amplia Jerarquía al Logo de Inicio -->
-      <div class="arch-loader-brand-hero">
-        <div class="arch-loader-logo-wrap">
-          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="arch-loader-hero-logo" />
+  <div class="rayon-loader-modal tech-hud-loader" id="axiom-loading-modal" hidden>
+    <div class="tech-hud-card">
+      <!-- HUD Top Bar: System ID, Transfer Speed, Status -->
+      <div class="tech-hud-header">
+        <div class="tech-hud-header-left">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" class="tech-hud-logo" style="height:22px; width:auto; filter:brightness(0) invert(1);" />
+          <span class="tech-hud-bracket-tag">[ DATA EXTRACTION ]</span>
         </div>
-        <div class="arch-loader-brand-sub">Architectural Computing · CGM Atelier</div>
-      </div>
-
-      <!-- Centered Minimalist Concentric Architectural Pulsing Rings -->
-      <div class="arch-pulse-container">
-        <div class="arch-pulse-ring ring-outer"></div>
-        <div class="arch-pulse-ring ring-mid"></div>
-        <div class="arch-pulse-ring ring-core">
-          <span class="arch-loader-pct" id="loading-pct-badge">15%</span>
+        <div class="tech-hud-header-right">
+          <span class="tech-hud-speed" id="hud-transfer-speed">48.2 MB/S</span>
+          <span class="tech-hud-status-badge">SYS_ONLINE</span>
         </div>
       </div>
 
-      <!-- Typewriter Status Text Display -->
-      <div class="arch-loader-text-wrap">
-        <h3 class="arch-loader-title" id="loading-title">
-          <span class="type-text">Iniciando cálculo territorial...</span><span class="type-cursor">|</span>
-        </h3>
-        <p class="arch-loader-sub" id="loading-sub">Conectando con servidores cartográficos y satelitales...</p>
-      </div>
+      <!-- 6-Quadrant Tech Matrix Grid -->
+      <div class="tech-hud-grid">
+        <!-- Q1: Radial Dial / Circular Tick Progress -->
+        <div class="tech-hud-quadrant q1-dial">
+          <div class="tech-hud-quad-label">01 // FLUID PROGRESS</div>
+          <div class="tech-radial-dial">
+            <svg viewBox="0 0 100 100" class="tech-dial-svg">
+              <circle cx="50" cy="50" r="42" class="tech-dial-track"></circle>
+              <circle cx="50" cy="50" r="42" class="tech-dial-ticks" stroke-dasharray="2 4"></circle>
+              <circle cx="50" cy="50" r="42" class="tech-dial-progress" id="tech-dial-progress-circle"></circle>
+            </svg>
+            <div class="tech-dial-center">
+              <span class="tech-dial-pct" id="loading-pct-badge">25%</span>
+              <span class="tech-dial-sub">EXTRACTION</span>
+            </div>
+          </div>
+        </div>
 
-      <!-- Minimalist Hairline Progress Bar -->
-      <div class="arch-progress-dock">
-        <div class="arch-progress-bar">
-          <div class="arch-progress-fill" id="axiom-laser-fill" style="width: 15%;"></div>
+        <!-- Q2: Layer Sources Status -->
+        <div class="tech-hud-quadrant q2-sources">
+          <div class="tech-hud-quad-label">02 // SATELLITE & GIS STREAMS</div>
+          <div class="tech-sources-list">
+            <div class="tech-source-row">
+              <span class="tech-src-name">OSM VOLUMES</span>
+              <span class="tech-src-status" id="load-src-osm">DOWNLOADING</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">COPERNICUS DEM</span>
+              <span class="tech-src-status" id="load-src-dem">PENDING</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">HIGHWAY NETWORK</span>
+              <span class="tech-src-status" id="load-src-roads">PENDING</span>
+            </div>
+            <div class="tech-source-row">
+              <span class="tech-src-name">SPECTRAL CANOPY</span>
+              <span class="tech-src-status" id="load-src-water">STANDBY</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Q3: Barcode Volume Progress -->
+        <div class="tech-hud-quadrant q3-barcode">
+          <div class="tech-hud-quad-label">03 // GEOMETRIC BUFFER</div>
+          <div class="tech-barcode-track" id="tech-barcode-track">
+            <!-- Dynamic vertical tick bars -->
+          </div>
+          <div class="tech-barcode-meta">
+            <span id="tech-hud-volume">1,420 / 4,890 PTS</span>
+            <span id="tech-hud-eta">ETA: 0.8S</span>
+          </div>
+        </div>
+
+        <!-- Q4: Sector Coordinates -->
+        <div class="tech-hud-quadrant q4-coords">
+          <div class="tech-hud-quad-label">04 // TERRITORIAL DATUM</div>
+          <div class="tech-coords-display">
+            <div class="tech-coord-line"><span class="tech-dim-label">COORD_N:</span> <strong id="hud-coord-lat">41°41'37.7"N</strong></div>
+            <div class="tech-coord-line"><span class="tech-dim-label">COORD_W:</span> <strong id="hud-coord-lon">44°48'05.4"E</strong></div>
+            <div class="tech-coord-line"><span class="tech-dim-label">FRAME_DIM:</span> <strong id="hud-frame-dim">1.0 × 1.0 KM</strong></div>
+          </div>
+        </div>
+
+        <!-- Q5: Output Engines Target -->
+        <div class="tech-hud-quadrant q5-output">
+          <div class="tech-hud-quad-label">05 // COMPATIBILITY TARGETS</div>
+          <div class="tech-targets-tags">
+            <span class="tech-target-pill">SKETCHUP .SKP</span>
+            <span class="tech-target-pill">AUTOCAD .DXF</span>
+            <span class="tech-target-pill">RHINO .3DM</span>
+            <span class="tech-target-pill">QGIS .GEOJSON</span>
+          </div>
+        </div>
+
+        <!-- Q6: Engine Live State -->
+        <div class="tech-hud-quadrant q6-status">
+          <div class="tech-hud-quad-label">06 // ENGINE PIPELINE</div>
+          <div class="tech-pipeline-title" id="loading-title">INITIALIZING DATA</div>
+          <div class="tech-pipeline-progress-bar">
+            <div class="tech-pipeline-progress-fill" id="axiom-laser-fill" style="width: 25%;"></div>
+          </div>
+          <div id="loading-pct" style="display:none;">25%</div>
         </div>
       </div>
 
-      <!-- Technical Telemetry Badges (Homologated, subtle sentence case) -->
-      <div class="arch-loader-telemetry" id="loading-telemetry">
-        <span>Copernicus DEM</span> · <span>OpenStreetMap</span> · <span>Mallas 3D</span>
+      <!-- HUD Bottom Bar -->
+      <div class="tech-hud-footer">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <img src="assets/urbnzd-logo.png" alt="URBNZD" style="height:12px; width:auto; filter:brightness(0) invert(1); opacity:0.85;" />
+          <span class="tech-hud-sign" style="letter-spacing:0.12em;">URBNZD ENGINE V6.0</span>
+        </div>
+        <button type="button" class="tech-hud-btn" id="btn-cancel-loading" onclick="if(window.hideLoadingModal) window.hideLoadingModal();">ABORT OPERATION</button>
       </div>
-
-      <div id="loading-pct" style="display:none;">15%</div>
-
-      <!-- Subtle Cancel / Return Button (Liquid Glass Pill) -->
-      <button type="button" class="arch-loader-cancel-btn" id="btn-cancel-loading" onclick="if(window.hideLoadingModal) window.hideLoadingModal();">
-        <span>Cancelar</span>
-      </button>
     </div>
   </div>
 
@@ -4167,21 +4322,36 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       btn.addEventListener('click', () => {
         document.querySelectorAll('#studio-sec-axis-seg .rayon-seg-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        const axis = btn.getAttribute('data-axis') || 'z';
+        const axis = btn.getAttribute('data-secaxis') || 'y';
         if (window.setSectionCutAxis) window.setSectionCutAxis(axis);
+        if (secSlider) {
+          if (axis === 'z') {
+            secSlider.min = '0';
+            secSlider.max = '200';
+            secSlider.step = '2';
+            secSlider.value = '25';
+          } else {
+            secSlider.min = '-600';
+            secSlider.max = '600';
+            secSlider.step = '5';
+            secSlider.value = '0';
+          }
+          if (secVal) secVal.textContent = secSlider.value + ' m';
+          if (window.setSectionCutPosition) window.setSectionCutPosition(parseFloat(secSlider.value));
+        }
         showCadToast('Plano de corte orientado en eje ' + axis.toUpperCase());
       });
     });
 
     secSlider?.addEventListener('input', (e) => {
       const v = parseFloat(e.target.value);
-      if (secVal) secVal.textContent = v + 'm';
+      if (secVal) secVal.textContent = v + ' m';
       if (window.setSectionCutPosition) window.setSectionCutPosition(v);
     });
 
     document.getElementById('studio-sec-invert')?.addEventListener('click', () => {
       if (window.invertSectionCut) window.invertSectionCut();
-      showCadToast('Dirección de corte invertida');
+      showCadToast('Sentido del plano de corte invertido');
     });
 
     document.getElementById('studio-sec-close')?.addEventListener('click', () => {
@@ -4193,39 +4363,33 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
 
     // 2. CAD 3D Measurement Ruler Tool
     let isMeasuringActive = false;
-    document.getElementById('dock-tool-dim-3d')?.addEventListener('click', () => {
-      isMeasuringActive = !isMeasuringActive;
-      const btn = document.getElementById('dock-tool-dim-3d');
-      btn?.classList.toggle('active', isMeasuringActive);
-      if (window.setMeasuring3DMode) {
-        window.setMeasuring3DMode(isMeasuringActive);
-      }
-      if (isMeasuringActive) {
-        showCadToast('📐 Regla CAD 3D activa: Haz clic en dos vértices del modelo para medir distancia');
-      } else {
-        if (window.clearMeasure3D) window.clearMeasure3D();
-        showCadToast('Regla CAD desactivada');
-      }
+    document.getElementById('dock-tool-select-3d')?.addEventListener('click', () => {
+      if (window.setStudioTool) window.setStudioTool('orbit');
     });
 
-    document.getElementById('dock-tool-select-3d')?.addEventListener('click', () => {
-      isMeasuringActive = false;
-      document.getElementById('dock-tool-dim-3d')?.classList.remove('active');
-      if (window.setMeasuring3DMode) window.setMeasuring3DMode(false);
-      if (window.clearMeasure3D) window.clearMeasure3D();
-      document.querySelectorAll('#preview .rayon-tool-btn').forEach(b => b.classList.remove('active'));
-      document.getElementById('dock-tool-select-3d')?.classList.add('active');
-      showCadToast('Modo Órbita y Selección 3D activo');
+    document.getElementById('dock-tool-dim-3d')?.addEventListener('click', () => {
+      if (window.setStudioTool) window.setStudioTool('measure_dist');
+    });
+
+    document.getElementById('dock-tool-area-3d')?.addEventListener('click', () => {
+      if (window.setStudioTool) window.setStudioTool('measure_area');
     });
 
     document.getElementById('dock-tool-level-3d')?.addEventListener('click', () => {
-      const notice = document.getElementById('axiom-notice-msg');
-      if (notice) {
-        notice.textContent = 'Cota de Nivel Z activa. Haz clic sobre cualquier punto del relieve o cubierta para leer su elevación.';
-        const box = document.getElementById('axiom-map-notice');
-        if (box) { box.hidden = false; setTimeout(() => { box.hidden = true; }, 3500); }
+      if (window.setStudioTool) window.setStudioTool('level_cota');
+    });
+
+    document.getElementById('dock-tool-export-3d')?.addEventListener('click', () => {
+      // Abre el panel de exportación del modelo 3D y descarga nativa SKP
+      const exportStepBtn = document.querySelector('.editor-step-btn[data-step-target="step-export"]');
+      if (exportStepBtn) exportStepBtn.click();
+      const btnSkp = document.getElementById('btn-studio-export-skp');
+      if (btnSkp) {
+        btnSkp.click();
+        showCadToast('Descargando modelo SketchUp (.skp) estándar CGM...');
+      } else {
+        showCadToast('Panel de exportación 3D (.SKP / .DXF / .OBJ) abierto');
       }
-      showCadToast('Cota de Nivel Z activa: haz clic en cualquier cubierta o punto del relieve');
     });
 
       // 3. Real-Time Astronomical Sun (NOAA/Meeus) + Manual Azimuth & Elevation Overrides
@@ -4350,8 +4514,8 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
           '</div>' +
           '<div style="display:flex; align-items:center; gap:4px;">' +
             '<span style="font-size:9.5px; color:#71717a;">' + n.time + '</span>' +
-            '<button type="button" class="btn-note-edit" data-id="' + n.id + '" title="Editar nota" style="background:none; border:none; color:#a1a1aa; cursor:pointer; font-size:11px; padding:2px 4px;">✎</button>' +
-            '<button type="button" class="btn-note-del" data-id="' + n.id + '" title="Eliminar nota" style="background:none; border:none; color:#ef4444; cursor:pointer; font-size:12px; padding:2px 4px;">✕</button>' +
+            '<button type="button" class="btn-note-edit" data-id="' + n.id + '" title="Editar nota" style="background:none; border:none; color:#a1a1aa; cursor:pointer; padding:2px 4px; display:inline-flex; align-items:center;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg></button>' +
+            '<button type="button" class="btn-note-del" data-id="' + n.id + '" title="Eliminar nota" style="background:none; border:none; color:#ef4444; cursor:pointer; padding:2px 4px; display:inline-flex; align-items:center;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>' +
           '</div>' +
         '</div>' +
         '<p class="note-text" style="margin:0; font-size:11px; color:#d4d4d8; line-height:1.4;">' + n.text + '</p>' +
@@ -5096,19 +5260,20 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         toast.id = 'cad-toast-notify';
         toast.style.cssText = `
           position: fixed;
-          bottom: 24px;
+          top: 68px;
           left: 50%;
-          transform: translateX(-50%) translateY(10px);
+          transform: translateX(-50%) translateY(-10px);
           background: rgba(18, 19, 22, 0.94);
           color: #f4f4f6;
           border: 1px solid rgba(255, 255, 255, 0.16);
-          backdrop-filter: blur(12px);
-          padding: 8px 18px;
+          backdrop-filter: blur(16px);
+          -webkit-backdrop-filter: blur(16px);
+          padding: 7px 18px;
           border-radius: 9999px;
-          font-size: 11.5px;
+          font-size: 12px;
           font-weight: 500;
           font-family: var(--font-sans, 'Inter', sans-serif);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
           z-index: 99999;
           pointer-events: none;
           opacity: 0;
@@ -5119,13 +5284,13 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         `;
         document.body.appendChild(toast);
       }
-      toast.innerHTML = `<span style="width:6px; height:6px; border-radius:50%; background:#38bdf8;"></span><span>${msg}</span>`;
+      toast.innerHTML = `<span style="width:6px; height:6px; border-radius:50%; background:#38bdf8; flex-shrink:0;"></span><span>${msg}</span>`;
       toast.style.opacity = '1';
       toast.style.transform = 'translateX(-50%) translateY(0)';
       clearTimeout(toast._timer);
       toast._timer = setTimeout(() => {
         toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(10px)';
+        toast.style.transform = 'translateX(-50%) translateY(-10px)';
       }, duration);
     }
     window.showCadToast = showCadToast;
@@ -6673,14 +6838,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
     // =====================================================
     // FUNCTIONAL TOOL DOCK BUTTON ACTIONS
     // =====================================================
-    document.getElementById('dock-tool-export-3d')?.addEventListener('click', () => {
-      const canvas = document.querySelector('#viewer canvas');
-      if (!canvas) return;
-      const a = document.createElement('a');
-      a.href = canvas.toDataURL('image/png');
-      a.download = `URBNZD_3D_Render_${Date.now()}.png`;
-      a.click();
-    });
+    // (El botón #dock-tool-export-3d descarga nativamente el modelo 3D SKP/CAD en el controlador principal)
 
     document.getElementById('dock-tool-export-map')?.addEventListener('click', () => {
       const btn = document.getElementById('btn-map-export-png') || document.getElementById('btn-export-carto-urbnz');
@@ -6778,10 +6936,21 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
                 <strong class="rayon-card-title">${s.name}</strong>
                 <span class="rayon-card-sub">${modeLabel} · Escena guardada</span>
                 <div class="rayon-card-actions">
-                  <button type="button" class="rayon-card-act-btn primary" data-ws-scene="${s.id}">⯈ Abrir</button>
-                  <button type="button" class="rayon-card-act-btn" data-act="rename-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Renombrar">✎ Renombrar</button>
-                  <button type="button" class="rayon-card-act-btn" data-act="thumb-scene" data-id="${s.id}" title="Cambiar imagen">🖼 Imagen</button>
-                  <button type="button" class="rayon-card-act-btn del" data-act="del-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Eliminar">🗑</button>
+                  <button type="button" class="rayon-card-act-btn primary" data-ws-scene="${s.id}">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Abrir</span>
+                  </button>
+                  <button type="button" class="rayon-card-act-btn" data-act="rename-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Renombrar">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <span>Renombrar</span>
+                  </button>
+                  <button type="button" class="rayon-card-act-btn" data-act="thumb-scene" data-id="${s.id}" title="Cambiar imagen">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>Imagen</span>
+                  </button>
+                  <button type="button" class="rayon-card-act-btn del" data-act="del-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Eliminar">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -6809,10 +6978,21 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
                 <strong class="rayon-card-title">${p.name}</strong>
                 <span class="rayon-card-sub">${Number(p.lat).toFixed(3)}, ${Number(p.lon).toFixed(3)} · ${p.buildings || 0} edif</span>
                 <div class="rayon-card-actions">
-                  <button type="button" class="rayon-card-act-btn primary" data-ws-proj="${p.id}">⯈ Abrir</button>
-                  <button type="button" class="rayon-card-act-btn" data-act="rename-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Renombrar">✎ Renombrar</button>
-                  <button type="button" class="rayon-card-act-btn" data-act="thumb-proj" data-id="${p.id}" title="Cambiar imagen">🖼 Imagen</button>
-                  <button type="button" class="rayon-card-act-btn del" data-act="del-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Eliminar">🗑</button>
+                  <button type="button" class="rayon-card-act-btn primary" data-ws-proj="${p.id}">
+                    <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                    <span>Abrir</span>
+                  </button>
+                  <button type="button" class="rayon-card-act-btn" data-act="rename-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Renombrar">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                    <span>Renombrar</span>
+                  </button>
+                  <button type="button" class="rayon-card-act-btn" data-act="thumb-proj" data-id="${p.id}" title="Cambiar imagen">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                    <span>Imagen</span>
+                  </button>
+                  <button type="button" class="rayon-card-act-btn del" data-act="del-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Eliminar">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -6883,10 +7063,19 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
               <div class="rayon-list-meta">Escena guardada</div>
               <div class="rayon-list-meta">${new Date(s.createdAt).toLocaleDateString()}</div>
               <div class="rayon-list-actions">
-                <button type="button" class="rayon-list-act-btn primary" data-ws-scene="${s.id}">⯈ Abrir</button>
-                <button type="button" class="rayon-list-act-btn" data-act="rename-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Renombrar">✎</button>
-                <button type="button" class="rayon-list-act-btn" data-act="thumb-scene" data-id="${s.id}" title="Cambiar imagen">🖼</button>
-                <button type="button" class="rayon-list-act-btn del" data-act="del-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Eliminar">🗑</button>
+                <button type="button" class="rayon-list-act-btn primary" data-ws-scene="${s.id}">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span>Abrir</span>
+                </button>
+                <button type="button" class="rayon-list-act-btn" data-act="rename-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Renombrar">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button type="button" class="rayon-list-act-btn" data-act="thumb-scene" data-id="${s.id}" title="Cambiar imagen">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
+                <button type="button" class="rayon-list-act-btn del" data-act="del-scene" data-id="${s.id}" data-name="${encodeURIComponent(s.name)}" title="Eliminar">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
               </div>
             </div>
           `;
@@ -6909,10 +7098,19 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
               <div class="rayon-list-meta">${p.buildings || 0} edif · ${p.relief || 0} m</div>
               <div class="rayon-list-meta">${new Date(p.updatedAt).toLocaleDateString()}</div>
               <div class="rayon-list-actions">
-                <button type="button" class="rayon-list-act-btn primary" data-ws-proj="${p.id}">⯈ Abrir</button>
-                <button type="button" class="rayon-list-act-btn" data-act="rename-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Renombrar">✎</button>
-                <button type="button" class="rayon-list-act-btn" data-act="thumb-proj" data-id="${p.id}" title="Cambiar imagen">🖼</button>
-                <button type="button" class="rayon-list-act-btn del" data-act="del-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Eliminar">🗑</button>
+                <button type="button" class="rayon-list-act-btn primary" data-ws-proj="${p.id}">
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                  <span>Abrir</span>
+                </button>
+                <button type="button" class="rayon-list-act-btn" data-act="rename-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Renombrar">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
+                </button>
+                <button type="button" class="rayon-list-act-btn" data-act="thumb-proj" data-id="${p.id}" title="Cambiar imagen">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                </button>
+                <button type="button" class="rayon-list-act-btn del" data-act="del-proj" data-id="${p.id}" data-name="${encodeURIComponent(p.name)}" title="Eliminar">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                </button>
               </div>
             </div>
           `;
