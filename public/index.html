@@ -675,7 +675,80 @@
                 <svg class="axiom-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
 
-              <div class="axiom-params-drawer" id="map-filters-list" hidden>
+              
+            </div>
+
+            <button class="axiom-cta-btn generate" id="build" type="submit">
+              <span class="label" data-i18n="build.idle">Crear modelo 3D</span>
+              <span class="spinner" aria-hidden="true"></span>
+            </button>
+          </div>
+
+          <!-- 2. TOPOGRAPHIC SECTION EXTRACTION TOOLS -->
+          <div id="section-tools" class="axiom-tool-stack" hidden>
+            <p class="axiom-hint" id="sec-hint" data-i18n="section.hint">Haz clic en el mapa para trazar la línea de corte topográfico. Doble clic para finalizar.</p>
+
+            <div class="axiom-control-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label" data-i18n="section.exag">Exageración vertical</span>
+                <span class="axiom-val" id="exag-out">2×</span>
+              </div>
+              <input id="sec-exag" type="range" min="1" max="10" step="0.5" value="2" class="axiom-range">
+            </div>
+
+            <div class="axiom-control-row">
+              <div class="axiom-row-between">
+                <span class="axiom-label" data-i18n="sec.corridor">Profundidad de proyección</span>
+                <span class="axiom-val" id="buf-out">40 m</span>
+              </div>
+              <input id="sec-buf" type="range" min="10" max="150" step="5" value="40" class="axiom-range">
+            </div>
+
+            <div class="axiom-seg" role="group" style="margin-top:4px; margin-bottom:6px;">
+              <button type="button" class="axiom-seg-item active" id="btn-sec-bldgs" aria-pressed="true"><span class="btn-bracket-label">EDIFICIOS</span></button>
+              <button type="button" class="axiom-seg-item active" id="btn-sec-trees" aria-pressed="true"><span class="btn-bracket-label">VEGETACIÓN</span></button>
+            </div>
+            <input type="checkbox" id="sec-buildings" checked hidden>
+            <input type="checkbox" id="sec-trees" checked hidden>
+
+            <div class="axiom-btn-pair">
+              <button class="axiom-subtle-btn" id="sec-clear" type="button" data-i18n="section.clear">Borrar línea</button>
+              <button class="axiom-cta-btn generate" id="sec-build" type="button" disabled style="flex:1;">
+                <span class="label" data-i18n="section.build">Generar Perfil</span>
+                <span class="spinner" aria-hidden="true"></span>
+              </button>
+            </div>
+          </div>
+
+          <p class="error" id="err" hidden></p>
+
+          <!-- Hidden Native Checkboxes Preserved for Data Engine -->
+          <div style="display:none;" aria-hidden="true">
+            <input type="checkbox" name="buildings" checked>
+            <input type="checkbox" name="extraBuildings" checked>
+            <input type="checkbox" name="commercial" checked>
+            <input type="checkbox" name="education" checked>
+            <input type="checkbox" name="health" checked>
+            <input type="checkbox" name="residential" checked>
+            <input type="checkbox" name="roads" checked>
+            <input type="checkbox" name="roads_major" checked>
+            <input type="checkbox" name="roads_minor" checked>
+            <input type="checkbox" name="roadWidth">
+            <input type="checkbox" name="bridges" checked>
+            <input type="checkbox" name="terrain" checked>
+            <input type="checkbox" name="contours" checked>
+            <input type="checkbox" name="nature" checked>
+            <input type="checkbox" name="trees" checked>
+            <input type="checkbox" name="detect" checked>
+            <input type="checkbox" name="satellite" checked>
+            <button class="nav-pill" id="acct-btn" type="button"></button>
+          </div>
+        </form>
+      </aside>
+
+      <!-- Companion Floating Flyout: Capas GIS & Parámetros 3D -->
+      <aside class="axiom-params-drawer" id="map-filters-list" hidden>
+
                 <div class="axiom-drawer-topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.08);">
                   <span style="font-size:11px; font-weight:600; color:#ffffff; letter-spacing:0.02em;">CAPAS GIS & PARÁMETROS</span>
                   <button type="button" id="btn-close-map-filters" style="background:transparent; border:none; color:#71717a; cursor:pointer; font-size:12px; padding:2px;" title="Cerrar">✕</button>
@@ -796,75 +869,7 @@
                     <input type="range" name="defaultHeight" min="3" max="30" step="1" value="8" class="axiom-range" oninput="document.getElementById('defh-out').textContent=this.value">
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <button class="axiom-cta-btn generate" id="build" type="submit">
-              <span class="label" data-i18n="build.idle">Crear modelo 3D</span>
-              <span class="spinner" aria-hidden="true"></span>
-            </button>
-          </div>
-
-          <!-- 2. TOPOGRAPHIC SECTION EXTRACTION TOOLS -->
-          <div id="section-tools" class="axiom-tool-stack" hidden>
-            <p class="axiom-hint" id="sec-hint" data-i18n="section.hint">Haz clic en el mapa para trazar la línea de corte topográfico. Doble clic para finalizar.</p>
-
-            <div class="axiom-control-row">
-              <div class="axiom-row-between">
-                <span class="axiom-label" data-i18n="section.exag">Exageración vertical</span>
-                <span class="axiom-val" id="exag-out">2×</span>
-              </div>
-              <input id="sec-exag" type="range" min="1" max="10" step="0.5" value="2" class="axiom-range">
-            </div>
-
-            <div class="axiom-control-row">
-              <div class="axiom-row-between">
-                <span class="axiom-label" data-i18n="sec.corridor">Profundidad de proyección</span>
-                <span class="axiom-val" id="buf-out">40 m</span>
-              </div>
-              <input id="sec-buf" type="range" min="10" max="150" step="5" value="40" class="axiom-range">
-            </div>
-
-            <div class="axiom-seg" role="group" style="margin-top:4px; margin-bottom:6px;">
-              <button type="button" class="axiom-seg-item active" id="btn-sec-bldgs" aria-pressed="true"><span class="btn-bracket-label">EDIFICIOS</span></button>
-              <button type="button" class="axiom-seg-item active" id="btn-sec-trees" aria-pressed="true"><span class="btn-bracket-label">VEGETACIÓN</span></button>
-            </div>
-            <input type="checkbox" id="sec-buildings" checked hidden>
-            <input type="checkbox" id="sec-trees" checked hidden>
-
-            <div class="axiom-btn-pair">
-              <button class="axiom-subtle-btn" id="sec-clear" type="button" data-i18n="section.clear">Borrar línea</button>
-              <button class="axiom-cta-btn generate" id="sec-build" type="button" disabled style="flex:1;">
-                <span class="label" data-i18n="section.build">Generar Perfil</span>
-                <span class="spinner" aria-hidden="true"></span>
-              </button>
-            </div>
-          </div>
-
-          <p class="error" id="err" hidden></p>
-
-          <!-- Hidden Native Checkboxes Preserved for Data Engine -->
-          <div style="display:none;" aria-hidden="true">
-            <input type="checkbox" name="buildings" checked>
-            <input type="checkbox" name="extraBuildings" checked>
-            <input type="checkbox" name="commercial" checked>
-            <input type="checkbox" name="education" checked>
-            <input type="checkbox" name="health" checked>
-            <input type="checkbox" name="residential" checked>
-            <input type="checkbox" name="roads" checked>
-            <input type="checkbox" name="roads_major" checked>
-            <input type="checkbox" name="roads_minor" checked>
-            <input type="checkbox" name="roadWidth">
-            <input type="checkbox" name="bridges" checked>
-            <input type="checkbox" name="terrain" checked>
-            <input type="checkbox" name="contours" checked>
-            <input type="checkbox" name="nature" checked>
-            <input type="checkbox" name="trees" checked>
-            <input type="checkbox" name="detect" checked>
-            <input type="checkbox" name="satellite" checked>
-            <button class="nav-pill" id="acct-btn" type="button"></button>
-          </div>
-        </form>
+              
       </aside>
     </div>
 
@@ -7201,6 +7206,34 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         };
       });
 
+      function openRecentProject(id) {
+        const p = viewsManager.getRecentProjects().find(item => item.id === id);
+        if (!p) return;
+        const activeModel = window.getActiveModelData?.();
+        if (activeModel && (activeModel.id === p.id || (Math.abs((activeModel.center?.lat || 0) - p.lat) < 0.001 && Math.abs((activeModel.center?.lon || 0) - p.lon) < 0.001))) {
+          switchView('result', true);
+          showCadToast(`Abriendo modelo 3D: ${p.name}`);
+        } else {
+          switchView('app', true);
+          if (window.openRecentProjectInMap) {
+            window.openRecentProjectInMap(p.lat, p.lon, p.size || 1000, p.shape || 'square', p.name);
+          } else if (window.flyToTemplateLocation) {
+            window.flyToTemplateLocation(p.lat, p.lon, p.size || 1000);
+          } else if (window.appMap) {
+            window.appMap.setView([p.lat, p.lon], 16);
+          }
+          showCadToast(`Proyecto localizado: ${p.name}`);
+        }
+      }
+
+      document.querySelectorAll('#ws-cards-grid [data-ws-proj], #ws-cards-list [data-ws-proj]').forEach(el => {
+        el.onclick = (e) => {
+          if (e.target.closest('[data-act]')) return;
+          const id = el.getAttribute('data-ws-proj') || el.closest('[data-ws-proj]')?.getAttribute('data-ws-proj');
+          openRecentProject(id);
+        };
+      });
+
       document.querySelectorAll('[data-tpl]').forEach(el => {
         el.onclick = (e) => {
           const tplKey = el.getAttribute('data-tpl');
@@ -7289,6 +7322,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         card.onclick = () => {
           if (card.getAttribute('data-action') === 'start-from-scratch') {
             switchView('app', true);
+            if (window.appMap && window.MONTERREY_DEFAULT) window.appMap.setView([window.MONTERREY_DEFAULT.lat, window.MONTERREY_DEFAULT.lon], 16);
           } else {
             if (window.hasActiveModel?.()) switchView('result', true);
             else switchView('app', true);
@@ -7365,7 +7399,10 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       });
     }
 
-    document.getElementById('ws-btn-new-model')?.addEventListener('click', () => switchView('app', true));
+    document.getElementById('ws-btn-new-model')?.addEventListener('click', () => {
+      switchView('app', true);
+      if (window.appMap && window.MONTERREY_DEFAULT) window.appMap.setView([window.MONTERREY_DEFAULT.lat, window.MONTERREY_DEFAULT.lon], 16);
+    });
     document.getElementById('ws-btn-import-urbnz')?.addEventListener('click', () => {
       document.getElementById('input-open-urbnz')?.click();
     });

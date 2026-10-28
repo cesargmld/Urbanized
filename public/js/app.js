@@ -27,12 +27,17 @@ const store = {
 
 /* ---------------- Карта ---------------- */
 
-let start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 16 };
-if (!start.lat || !start.lon || (start.lat === 0 && start.lon === 0) || !start.zoom || start.zoom < 16) {
-  start = { lat: 41.6938, lon: 44.8015, zoom: 16 };
+// Default initial territory: Monterrey, México (Macroplaza / Centro)
+const MONTERREY_DEFAULT = { lat: 25.6690, lon: -100.3120, zoom: 16 };
+window.MONTERREY_DEFAULT = MONTERREY_DEFAULT;
+
+let start = store.get('ue:view');
+if (!start || !start.lat || !start.lon || (start.lat === 0 && start.lon === 0) || Math.abs(start.lat - 41.6938) < 0.1) {
+  start = { ...MONTERREY_DEFAULT };
+  store.set('ue:view', MONTERREY_DEFAULT);
 }
-start.zoom = Math.max(16, start.zoom);
-const map = L.map('map', {  zoomControl: true, attributionControl: true, worldCopyJump: true , minZoom: 13 }).setView([start.lat, start.lon], start.zoom);
+start.zoom = Math.max(16, start.zoom || 16);
+const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true, minZoom: 13 }).setView([start.lat, start.lon], start.zoom);
 window.appMap = map;
 window.map = map;
 map.zoomControl.setPosition('topright');
@@ -909,6 +914,16 @@ window.flyToTemplateLocation = (lat, lon, size = 1200) => {
   if (sizeInput) sizeInput.value = String(size);
   map.setView([lat, lon], 15, { animate: true });
   setTimeout(() => { map.invalidateSize(); fitFrame(); }, 100);
+};
+window.openRecentProjectInMap = (lat, lon, size = 1000, shape = 'square', name = '') => {
+  if (sizeInput) sizeInput.value = String(size);
+  const q = document.getElementById('q');
+  if (q && name) q.value = name;
+  map.setView([lat, lon], 16, { animate: true });
+  setTimeout(() => {
+    map.invalidateSize();
+    fitFrame();
+  }, 100);
 };
 window.loadHydratedUrbnzModel = async (res) => {
   if (!res || !res.model) return;

@@ -12468,8 +12468,6 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
   stroke-width: 2 !important;
   flex-shrink: 0 !important;
 }
-  stroke-width: 2 !important;
-}
 
 /* 8. Logo Header: Wireframe Globe + Lowercase urbnzd */
 .axiom-brand {
@@ -12495,25 +12493,39 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
 }
 
 /* 9. Desprendimiento a la Derecha de Capas GIS con Checkboxes Estéticos */
+#map-filters-list.axiom-params-drawer,
 .axiom-params-drawer {
   position: absolute !important;
-  left: calc(100% + 14px) !important;
-  top: 0 !important;
-  width: 290px !important;
-  max-height: 85vh !important;
+  left: 360px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  width: 320px !important;
+  max-height: calc(100vh - 120px) !important;
   overflow-y: auto !important;
-  background: rgba(14, 16, 22, 0.94) !important;
+  background: rgba(14, 16, 22, 0.96) !important;
   backdrop-filter: blur(28px) saturate(180%) !important;
   -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
   border: 1px solid rgba(255, 255, 255, 0.14) !important;
-  border-radius: 12px !important;
-  padding: 14px !important;
+  border-radius: 16px !important;
+  padding: 16px !important;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-  z-index: 550 !important;
+  z-index: 520 !important;
   animation: flyoutSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
 }
+#map-filters-list[hidden],
 .axiom-params-drawer[hidden] {
   display: none !important;
+}
+@media (max-width: 900px) {
+  #map-filters-list.axiom-params-drawer,
+  .axiom-params-drawer {
+    left: 16px !important;
+    top: auto !important;
+    bottom: 80px !important;
+    transform: none !important;
+    width: calc(100% - 32px) !important;
+    max-height: 50vh !important;
+  }
 }
 @keyframes flyoutSlideIn {
   from { opacity: 0; transform: translateX(-8px); }
@@ -12523,8 +12535,8 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
 .axiom-layer-list {
   display: flex !important;
   flex-direction: column !important;
-  gap: 3px !important;
-  margin-bottom: 6px !important;
+  gap: 2px !important;
+  margin-bottom: 8px !important;
 }
 .axiom-layer-toggle-btn {
   width: 100% !important;
@@ -12574,6 +12586,126 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
 }
 .axiom-layer-toggle-btn:not(.active) .axiom-bullet {
   opacity: 0.3 !important;
+}
+
+/* 11. Refinamiento Arquitectónico Sutil para Espacio de Trabajo */
+.rayon-card-actions {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  margin-top: 8px !important;
+  padding-top: 8px !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+}
+.rayon-card-act-tools {
+  display: flex !important;
+  align-items: center !important;
+  gap: 3px !important;
+}
+.rayon-card-act-btn.primary,
+.rayon-list-act-btn.primary {
+  height: 24px !important;
+  min-height: 24px !important;
+  padding: 0 10px !important;
+  font-size: 10.5px !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.16) !important;
+  color: #f4f4f6 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 5px !important;
+  backdrop-filter: blur(12px) !important;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.rayon-card-act-btn.primary:hover,
+.rayon-list-act-btn.primary:hover {
+  background: rgba(255, 255, 255, 0.18) !important;
+  border-color: rgba(255, 255, 255, 0.32) !important;
+  color: #ffffff !important;
+  transform: translateY(-0.5px) !important;
+}
+.rayon-card-act-btn.icon-only,
+.rayon-list-act-btn.icon-only {
+  width: 24px !important;
+  min-width: 24px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  border-radius: 50% !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  color: #71717a !important;
+  opacity: 0.55 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+}
+.rayon-model-card:hover .rayon-card-act-btn.icon-only,
+.rayon-list-row:hover .rayon-list-act-btn.icon-only {
+  opacity: 0.85 !important;
+  color: #a1a1aa !important;
+}
+.rayon-card-act-btn.icon-only:hover,
+.rayon-list-act-btn.icon-only:hover {
+  opacity: 1 !important;
+  color: #ffffff !important;
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.16) !important;
+  transform: translateY(-0.5px) !important;
+}
+.rayon-card-act-btn.del.icon-only:hover,
+.rayon-list-act-btn.del.icon-only:hover {
+  background: rgba(239, 68, 68, 0.12) !important;
+  border-color: rgba(239, 68, 68, 0.25) !important;
+  color: #f87171 !important;
+}
+
+#workspace-home #ws-btn-new-model {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 14px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.06) 100%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  color: #ffffff !important;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15) !important;
+  backdrop-filter: blur(16px) !important;
+  cursor: pointer !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+#workspace-home #ws-btn-new-model:hover {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.22) 0%, rgba(255, 255, 255, 0.1) 100%) !important;
+  border-color: rgba(255, 255, 255, 0.35) !important;
+  transform: translateY(-0.5px) !important;
+}
+#workspace-home #ws-btn-import-urbnz {
+  height: 30px !important;
+  min-height: 30px !important;
+  padding: 0 13px !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  border-radius: 9999px !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  color: #d4d4d8 !important;
+  backdrop-filter: blur(16px) !important;
+  cursor: pointer !important;
+}
+#workspace-home #ws-btn-import-urbnz:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.22) !important;
+  color: #ffffff !important;
+  transform: translateY(-0.5px) !important;
 }
 
 /* 10. Mensajes Emergentes & Toasts: Liquid Glass Puro sin Emojis */
