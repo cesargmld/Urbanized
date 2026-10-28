@@ -78,12 +78,12 @@ const DICT = {
 
     // Setup Card: Mode Switcher & Tools
     'mode.model': '3D Model',
-    'mode.section': 'Topographic Section',
+    'mode.section': 'Section',
     'shape.label': 'Base shape',
     'shape.square': 'Square',
     'shape.circle': 'Circle',
     'setup.area': 'Area to extract',
-    'setup.filters': 'Parameters, GIS Layers & Sensitivity',
+    'setup.filters': 'Layers & Filters',
 
     // Setup Card Groups
     'setup.bldgHeader': 'Buildings & Facilities',
@@ -762,12 +762,12 @@ const DICT = {
 
     // Tarjeta de Configuración: Modos y Herramientas
     'mode.model': 'Modelo 3D',
-    'mode.section': 'Corte Topográfico',
+    'mode.section': 'Sección',
     'shape.label': 'Forma de la base',
     'shape.square': 'Cuadrado',
     'shape.circle': 'Círculo',
     'setup.area': 'Área a extraer',
-    'setup.filters': 'Parámetros, Capas GIS y Sensibilidad',
+    'setup.filters': 'Capas & Filtros',
 
     // Grupos de Tarjeta de Configuración
     'setup.bldgHeader': 'Edificios y Equipamiento',

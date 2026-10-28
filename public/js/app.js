@@ -27,12 +27,12 @@ const store = {
 
 /* ---------------- Карта ---------------- */
 
-let start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 15 };
-if (!start.lat || !start.lon || (start.lat === 0 && start.lon === 0)) {
-  start = { lat: 41.6938, lon: 44.8015, zoom: 15 };
+let start = store.get('ue:view') ?? { lat: 41.6938, lon: 44.8015, zoom: 16 };
+if (!start.lat || !start.lon || (start.lat === 0 && start.lon === 0) || !start.zoom || start.zoom < 16) {
+  start = { lat: 41.6938, lon: 44.8015, zoom: 16 };
 }
-start.zoom = Math.max(12, start.zoom);
-const map = L.map('map', {  zoomControl: true, attributionControl: true, worldCopyJump: true , minZoom: 12 }).setView([start.lat, start.lon], start.zoom);
+start.zoom = Math.max(16, start.zoom);
+const map = L.map('map', {  zoomControl: true, attributionControl: true, worldCopyJump: true , minZoom: 13 }).setView([start.lat, start.lon], start.zoom);
 window.appMap = map;
 window.map = map;
 map.zoomControl.setPosition('topright');

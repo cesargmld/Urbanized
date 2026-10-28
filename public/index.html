@@ -193,8 +193,13 @@
        ======================================================== -->
   <header class="axiom-topbar">
     <div class="axiom-topbar-left">
-      <div class="axiom-brand" id="axiom-brand-btn" role="button" tabindex="0" data-switchview="workspace-home" style="cursor:pointer;" title="URBNZD">
-        <img src="assets/urbnzd-logo.png" alt="URBNZD" class="axiom-header-logo" />
+      <div class="axiom-brand" id="axiom-brand-btn" role="button" tabindex="0" data-switchview="workspace-home" style="cursor:pointer;" title="urbnzd">
+        <svg class="axiom-brand-globe" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="2" y1="12" x2="22" y2="12"/>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+        <span class="axiom-brand-text">urbnzd</span>
       </div>
 
       <!-- Clean Minimal Search Bar (Only visible on Map view) -->
@@ -264,11 +269,6 @@
       <button type="button" class="lang-single-btn" id="btn-lang-toggle" title="Switch language / Cambiar idioma" aria-label="Language">
         <svg class="header-action-icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
         <span id="lang-current-label" class="btn-bracket-label">en</span>
-      </button>
-
-      <!-- Homologated Circular Workspace Trigger Icon (100% matched with workspace avatar) -->
-      <button type="button" class="axiom-header-avatar-btn map-rail-avatar-btn" id="btn-topbar-workspace" data-switchview="workspace-home" title="Espacio de trabajo">
-        <span class="rayon-user-avatar">C</span>
       </button>
     </div>
   </header>
@@ -520,12 +520,14 @@
          VIEW 1: MAP SELECTION & PARAMETERS (#app)
          ====================================================== -->
     <div id="app" class="screen-layer active">
-      <!-- Universal Left Avatar Rail (Persistent across all modes: workspace/profile trigger) -->
-      <nav class="map-left-rail" id="map-left-rail" aria-label="Rail de navegación">
-        <button type="button" class="map-rail-avatar-btn" id="btn-map-avatar" data-switchview="workspace-home" title="Espacio de trabajo">
-          <span class="rayon-user-avatar">C</span>
+      <!-- Workspace Pill on Map (Matches media_1793160397235_1fef55d5.png with liquid glass) -->
+      <div class="map-workspace-dock" id="map-workspace-dock">
+        <button type="button" class="rayon-user-dropdown" id="btn-map-avatar" data-switchview="workspace-home" title="Espacio de trabajo">
+          <div class="rayon-user-avatar">C</div>
+          <span class="rayon-user-name">César · Cgm Atelier</span>
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-      </nav>
+      </div>
 
       <div id="map"></div>
       <div class="frame" id="frame">
@@ -635,7 +637,7 @@
             </button>
             <button type="button" class="axiom-seg-item" data-mode="section" aria-pressed="false">
               <svg class="seg-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-              <span class="btn-bracket-label" data-i18n="mode.section">Corte topográfico</span>
+              <span class="btn-bracket-label" data-i18n="mode.section">Sección</span>
             </button>
           </div>
 
@@ -667,80 +669,100 @@
             <div class="axiom-filter-accordion">
               <button type="button" class="axiom-filter-trigger" id="btn-map-filters" aria-expanded="false">
                 <span class="axiom-filter-trigger-left">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/></svg>
-                  <span data-i18n="setup.filters">Parámetros, Capas GIS y Sensibilidad</span>
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="14" y2="12"/><line x1="4" y1="18" x2="18" y2="18"/></svg>
+                  <span data-i18n="setup.filters">Capas & Filtros</span>
                 </span>
-                <svg class="axiom-chevron" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                <svg class="axiom-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="6 9 12 15 18 9"/></svg>
               </button>
 
               <div class="axiom-params-drawer" id="map-filters-list" hidden>
+                <div class="axiom-drawer-topbar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; padding-bottom:6px; border-bottom:1px solid rgba(255,255,255,0.08);">
+                  <span style="font-size:11px; font-weight:600; color:#ffffff; letter-spacing:0.02em;">CAPAS GIS & PARÁMETROS</span>
+                  <button type="button" id="btn-close-map-filters" style="background:transparent; border:none; color:#71717a; cursor:pointer; font-size:12px; padding:2px;" title="Cerrar">✕</button>
+                </div>
+
                 <span class="axiom-sub-header" data-i18n="setup.bldgHeader">Edificios y Equipamiento</span>
-                <div class="axiom-dot-list">
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="buildings">
+                <div class="axiom-layer-list">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="buildings">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#f4f4f6;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.bldgVolumes">Volúmenes de edificios</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="commercial">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="commercial">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#a8a29e;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.commercial">Comercios y oficinas</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="education">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="education">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#64748b;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.education">Escuelas y equipamiento</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="health">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="health">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#78716c;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.health">Salud y hospitales</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="residential">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="residential">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#e4e4e7;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.residential">Vivienda residencial</span>
                   </button>
                 </div>
 
-                <span class="axiom-sub-header" style="margin-top:6px;" data-i18n="setup.infraHeader">Infraestructura Vial</span>
-                <div class="axiom-dot-list">
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="roads_major">
+                <span class="axiom-sub-header" style="margin-top:8px;" data-i18n="setup.infraHeader">Infraestructura Vial</span>
+                <div class="axiom-layer-list">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="roads_major">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#d4d4d8;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.roadsMajor">Avenidas y vías principales</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="roads_minor">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="roads_minor">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#71717a;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.roadsMinor">Calles secundarias y peatonales</span>
                   </button>
-                  <button type="button" class="axiom-dot-item" data-mapfilter="roadWidth">
+                  <button type="button" class="axiom-layer-toggle-btn" data-mapfilter="roadWidth">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.roadWidth">Calles con ancho real 3D</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="bridges">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="bridges">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#94a3b8;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.bridges">Puentes y pasos elevados</span>
                   </button>
                 </div>
 
-                <span class="axiom-sub-header" style="margin-top:6px;" data-i18n="setup.topoHeader">Topografía, Agua y Vegetación</span>
-                <div class="axiom-dot-list">
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="terrain">
+                <span class="axiom-sub-header" style="margin-top:8px;" data-i18n="setup.topoHeader">Topografía, Agua y Vegetación</span>
+                <div class="axiom-layer-list">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="terrain">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#52525b;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.terrain">Malla de terreno 3D (DEM)</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="contours">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="contours">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#a1a1aa;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.contours">Curvas de nivel topográficas</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="nature">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="nature">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#6ba5b8;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.nature">Cuerpos de agua y parques</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="trees">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="trees">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#849684;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.trees">Árboles 3D (OSM)</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="detect">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="detect">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#798e79;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.detect">Detección satelital de vegetación</span>
                   </button>
-                  <button type="button" class="axiom-dot-item active" data-mapfilter="satellite">
+                  <button type="button" class="axiom-layer-toggle-btn active" data-mapfilter="satellite">
+                    <span class="axiom-layer-chk"><svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6"><polyline points="20 6 9 17 4 12"/></svg></span>
                     <span class="axiom-bullet" style="--dot-color:#71717a;"></span>
                     <span class="axiom-dot-text" data-i18n="setup.satellite">Textura aérea satelital</span>
                   </button>
@@ -3476,15 +3498,20 @@
 
   <!-- Modal: Explorar Nueva Ubicación en Mapa -->
   <div id="modal-return-map" class="axiom-modal-overlay" hidden>
-    <div class="axiom-modal-dialog" style="max-width:400px; background:#121215; border:1px solid rgba(255,255,255,0.12); border-radius:12px; box-shadow:0 24px 60px rgba(0,0,0,0.85); padding:20px;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px;">
-        <h3 style="font-size:14px; font-weight:600; color:#ffffff; margin:0;" data-i18n="modal.returnTitle">Explorar en Mapa</h3>
-        <button type="button" class="axiom-modal-close-btn" id="modal-return-close" aria-label="Cerrar" style="background:transparent; border:none; color:#71717a; cursor:pointer; font-size:14px;">✕</button>
+    <div class="axiom-modal-dialog" style="max-width:420px;">
+      <div class="axiom-modal-header">
+        <div class="axiom-modal-title-wrap">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"/><line x1="8" y1="2" x2="8" y2="18"/><line x1="16" y1="6" x2="16" y2="22"/></svg>
+          <h3 data-i18n="modal.returnTitle">Explorar en Mapa</h3>
+        </div>
+        <button type="button" class="axiom-modal-close-btn" id="modal-return-close" aria-label="Cerrar">✕</button>
       </div>
-      <p style="margin:0 0 16px; font-size:12px; color:#a1a1aa; line-height:1.5;" data-i18n="modal.returnDesc">Podrás buscar otra ciudad o trazar un nuevo polígono territorial. Tu modelo actual permanecerá disponible en tu sesión.</p>
-      <div style="display:flex; align-items:center; justify-content:flex-end; gap:8px;">
-        <button type="button" class="axiom-btn-secondary" id="modal-btn-stay" style="padding:6px 14px; font-size:11.5px; border-radius:6px;" data-i18n="modal.returnStay">Permanecer</button>
-        <button type="button" class="rayon-share-btn" id="modal-btn-confirm-map" style="padding:6px 14px; font-size:11.5px; border-radius:6px;" data-i18n="modal.returnConfirm">Ir al Mapa</button>
+      <div class="axiom-modal-body">
+        <p style="margin:0; font-size:12px; color:#a1a1aa; line-height:1.6;" data-i18n="modal.returnDesc">Podrás buscar otra ciudad o trazar un nuevo polígono territorial. Tu modelo actual permanecerá disponible en tu sesión.</p>
+      </div>
+      <div class="axiom-modal-actions">
+        <button type="button" class="axiom-btn-secondary" id="modal-btn-stay" data-i18n="modal.returnStay">Permanecer</button>
+        <button type="button" class="axiom-btn-primary" id="modal-btn-confirm-map" data-i18n="modal.returnConfirm">Ir al Mapa</button>
       </div>
     </div>
   </div>
@@ -3765,6 +3792,11 @@
           filterList.hidden = !isHidden;
           filterTrigger.setAttribute('aria-expanded', String(isHidden));
           filterTrigger.classList.toggle('open', isHidden);
+        });
+        document.getElementById('btn-close-map-filters')?.addEventListener('click', () => {
+          filterList.hidden = true;
+          filterTrigger.setAttribute('aria-expanded', 'false');
+          filterTrigger.classList.remove('open');
         });
       }
 
@@ -5289,39 +5321,23 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       if (!toast) {
         toast = document.createElement('div');
         toast.id = 'cad-toast-notify';
-        toast.style.cssText = `
-          position: fixed;
-          top: 68px;
-          left: 50%;
-          transform: translateX(-50%) translateY(-10px);
-          background: rgba(18, 19, 22, 0.94);
-          color: #f4f4f6;
-          border: 1px solid rgba(255, 255, 255, 0.16);
-          backdrop-filter: blur(16px);
-          -webkit-backdrop-filter: blur(16px);
-          padding: 7px 18px;
-          border-radius: 9999px;
-          font-size: 12px;
-          font-weight: 500;
-          font-family: var(--font-sans, 'Inter', sans-serif);
-          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-          z-index: 99999;
-          pointer-events: none;
-          opacity: 0;
-          transition: opacity 0.2s ease, transform 0.2s ease;
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        `;
+        toast.className = 'axiom-hud-toast';
         document.body.appendChild(toast);
       }
-      toast.innerHTML = `<span style="width:6px; height:6px; border-radius:50%; background:#38bdf8; flex-shrink:0;"></span><span>${msg}</span>`;
-      toast.style.opacity = '1';
-      toast.style.transform = 'translateX(-50%) translateY(0)';
+      const cleanMsg = String(msg).replace(/[⚠️✓•\u{1F300}-\u{1F9FF}]/gu, '').trim();
+      toast.innerHTML = `<span class="axiom-hud-toast-icon"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></span><span class="axiom-hud-toast-text">${cleanMsg}</span>`;
+      toast.hidden = false;
+      toast.style.display = 'flex';
+      setTimeout(() => toast.classList.add('visible'), 10);
       clearTimeout(toast._timer);
       toast._timer = setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(-10px)';
+        toast.classList.remove('visible');
+        setTimeout(() => {
+          if (!toast.classList.contains('visible')) {
+            toast.hidden = true;
+            toast.style.display = 'none';
+          }
+        }, 220);
       }, duration);
     }
     window.showCadToast = showCadToast;

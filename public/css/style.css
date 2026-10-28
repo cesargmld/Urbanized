@@ -12369,3 +12369,251 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
   stroke-width: 1.8 !important;
 }
 
+/* ========================================================
+   v8.3 ARCHITECTURAL ALIGNMENTS & LIQUID GLASS HOMOLOGATION
+   ======================================================== */
+
+/* 6. Centrado a la Izquierda del Cuadro de Creación 3D */
+.axiom-setup-card,
+#axiom-setup-card {
+  position: absolute !important;
+  left: 24px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  bottom: auto !important;
+  width: 320px !important;
+  max-width: calc(100vw - 48px) !important;
+  max-height: calc(100vh - 100px) !important;
+  overflow: visible !important;
+  z-index: 500 !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+@media (max-width: 768px) {
+  .axiom-setup-card,
+  #axiom-setup-card {
+    top: auto !important;
+    bottom: 16px !important;
+    transform: none !important;
+    left: 12px !important;
+    right: 12px !important;
+    width: auto !important;
+  }
+}
+
+/* 7. Workspace Dropdown Pill on Map (Liquid Glass - 1:1 Workspace media_1793160397235_1fef55d5.png) */
+.map-workspace-dock {
+  position: absolute !important;
+  top: 16px !important;
+  left: 24px !important;
+  z-index: 520 !important;
+}
+#btn-map-avatar,
+.map-workspace-dock #btn-map-avatar,
+.map-workspace-dock .rayon-user-dropdown {
+  width: auto !important;
+  min-width: auto !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 3px 12px 3px 4px !important;
+  background: rgba(14, 16, 22, 0.78) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 9999px !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  color: #ffffff !important;
+}
+#btn-map-avatar:hover,
+.map-workspace-dock .rayon-user-dropdown:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+  border-color: rgba(255, 255, 255, 0.25) !important;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.65) !important;
+}
+#btn-map-avatar .rayon-user-avatar,
+.map-workspace-dock .rayon-user-avatar {
+  width: 24px !important;
+  height: 24px !important;
+  min-width: 24px !important;
+  min-height: 24px !important;
+  border-radius: 50% !important;
+  background: #27272a !important;
+  color: #ffffff !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+}
+#btn-map-avatar .rayon-user-name,
+.map-workspace-dock .rayon-user-name {
+  display: inline-block !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  color: #f4f4f6 !important;
+  white-space: nowrap !important;
+}
+#btn-map-avatar svg,
+.map-workspace-dock svg {
+  display: inline-block !important;
+  width: 10px !important;
+  height: 10px !important;
+  color: rgba(255, 255, 255, 0.6) !important;
+  stroke-width: 2 !important;
+  flex-shrink: 0 !important;
+}
+  stroke-width: 2 !important;
+}
+
+/* 8. Logo Header: Wireframe Globe + Lowercase urbnzd */
+.axiom-brand {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  cursor: pointer !important;
+}
+.axiom-brand-globe {
+  width: 15px !important;
+  height: 15px !important;
+  stroke: #ffffff !important;
+  stroke-width: 1.8 !important;
+  flex-shrink: 0 !important;
+}
+.axiom-brand-text {
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.03em !important;
+  color: #ffffff !important;
+  text-transform: lowercase !important;
+  font-family: var(--font-sans, -apple-system, sans-serif) !important;
+}
+
+/* 9. Desprendimiento a la Derecha de Capas GIS con Checkboxes Estéticos */
+.axiom-params-drawer {
+  position: absolute !important;
+  left: calc(100% + 14px) !important;
+  top: 0 !important;
+  width: 290px !important;
+  max-height: 85vh !important;
+  overflow-y: auto !important;
+  background: rgba(14, 16, 22, 0.94) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 12px !important;
+  padding: 14px !important;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  z-index: 550 !important;
+  animation: flyoutSlideIn 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.axiom-params-drawer[hidden] {
+  display: none !important;
+}
+@keyframes flyoutSlideIn {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+
+.axiom-layer-list {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 3px !important;
+  margin-bottom: 6px !important;
+}
+.axiom-layer-toggle-btn {
+  width: 100% !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  padding: 5px 8px !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  text-align: left !important;
+}
+.axiom-layer-toggle-btn:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+.axiom-layer-chk {
+  width: 14px !important;
+  height: 14px !important;
+  border-radius: 3px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  flex-shrink: 0 !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+  border: 1px solid rgba(255, 255, 255, 0.22) !important;
+  transition: all 0.15s ease !important;
+}
+.axiom-layer-chk svg {
+  display: none !important;
+  stroke: #090a0f !important;
+}
+.axiom-layer-toggle-btn.active .axiom-layer-chk {
+  background: #ffffff !important;
+  border-color: #ffffff !important;
+}
+.axiom-layer-toggle-btn.active .axiom-layer-chk svg {
+  display: block !important;
+}
+.axiom-layer-toggle-btn.active .axiom-dot-text {
+  color: #ffffff !important;
+  font-weight: 500 !important;
+}
+.axiom-layer-toggle-btn:not(.active) .axiom-dot-text {
+  color: rgba(255, 255, 255, 0.38) !important;
+}
+.axiom-layer-toggle-btn:not(.active) .axiom-bullet {
+  opacity: 0.3 !important;
+}
+
+/* 10. Mensajes Emergentes & Toasts: Liquid Glass Puro sin Emojis */
+.axiom-hud-toast {
+  position: fixed !important;
+  top: 64px !important;
+  left: 50% !important;
+  transform: translateX(-50%) translateY(-6px) !important;
+  background: rgba(14, 16, 22, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(160%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(160%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.14) !important;
+  border-radius: 9999px !important;
+  padding: 5px 14px 5px 10px !important;
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 7px !important;
+  color: #f4f4f6 !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  font-family: var(--font-sans, -apple-system, sans-serif) !important;
+  z-index: 999999 !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+  transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1) !important;
+}
+.axiom-hud-toast.visible {
+  opacity: 1 !important;
+  transform: translateX(-50%) translateY(0) !important;
+}
+.axiom-hud-toast-icon {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  color: #a1a1aa !important;
+  flex-shrink: 0 !important;
+}
+.axiom-hud-toast-text {
+  letter-spacing: -0.01em !important;
+  white-space: nowrap !important;
+}
+
