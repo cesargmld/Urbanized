@@ -608,7 +608,7 @@ button {
   font-weight: 500;
   color: rgba(255, 255, 255, 0.5);
   letter-spacing: -0.01em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .lang-pill {
   background: rgba(255, 255, 255, 0.04);
@@ -857,7 +857,7 @@ button {
   font-size: 10.5px;
   font-weight: 600;
   color: var(--text-dim);
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.04em;
 }
 .card-header-row {
@@ -1603,7 +1603,7 @@ input[type="range"]::-webkit-slider-thumb {
 .illu-title {
   font-size: 10px;
   font-weight: 700;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.05em;
   color: var(--text-dim);
 }
@@ -1787,7 +1787,7 @@ input[type="range"]::-webkit-slider-thumb {
 .results li.search-preview-item .search-badge-type {
   font-size: 9.5px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.04em;
   padding: 1px 6px;
   border-radius: 4px;
@@ -1842,7 +1842,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.45);
   letter-spacing: 0.08em;
-  text-transform: uppercase;
+  text-transform: none;
   display: block;
 }
 .mono-coords {
@@ -1969,7 +1969,7 @@ input[type="range"]::-webkit-slider-thumb {
   font-size: 9.5px;
   color: var(--text-dim);
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .sec-stat-val {
   font-family: var(--font-mono);
@@ -2774,7 +2774,7 @@ input[type="range"]::-webkit-slider-thumb {
 .axiom-label {
   font-size: 11px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.05em;
   color: #71717a;
 }
@@ -2903,7 +2903,7 @@ input[type="range"]::-webkit-slider-thumb,
 .axiom-sub-header {
   font-size: 10px;
   font-weight: 600;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.08em;
   color: #a1a1aa;
   margin-top: 8px;
@@ -3040,7 +3040,7 @@ input[type="range"]::-webkit-slider-thumb,
 .axiom-sum-label {
   font-size: 9.5px;
   color: #71717a;
-  text-transform: uppercase;
+  text-transform: none;
   letter-spacing: 0.03em;
 }
 .axiom-sum-val {
@@ -3269,7 +3269,7 @@ input[type="range"]::-webkit-slider-thumb,
   font-weight: 600;
   letter-spacing: 0.16em;
   color: #a1a1aa;
-  text-transform: uppercase;
+  text-transform: none;
 }
 .axiom-loading-pct {
   font-family: var(--font-mono);
@@ -4981,7 +4981,7 @@ input[type="range"]::-webkit-slider-thumb,
   font-weight: 600;
   letter-spacing: 0.08em;
   color: #38bdf8;
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .ws-hero-title {
@@ -6110,7 +6110,7 @@ input[type="range"]::-webkit-slider-thumb,
 
 .rayon-list-header {
   font-size: 10.5px;
-  text-transform: uppercase;
+  text-transform: none;
   color: #71717a;
   letter-spacing: 0.06em;
   font-weight: 700;
@@ -6865,7 +6865,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 600 !important;
   letter-spacing: 0.06em !important;
   color: #71717a !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 .sec-stat-val {
   font-family: var(--font-mono) !important;
@@ -7041,7 +7041,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 700;
   letter-spacing: 0.1em;
   color: #ffffff;
-  text-transform: uppercase;
+  text-transform: none;
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.95);
   text-align: center;
   padding: 2px 6px;
@@ -7192,7 +7192,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
 .stepper-sub {
   font-size: 9.5px;
   letter-spacing: 0.12em;
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--accent-sage);
 }
 .axiom-action-circles {
@@ -7307,7 +7307,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 700 !important;
   letter-spacing: 0.12em !important;
   color: #ffffff !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   text-shadow: 0 1px 4px rgba(0, 0, 0, 0.95);
   text-align: center;
   padding: 1px 5px !important;
@@ -7840,7 +7840,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 11.5px !important;
   font-weight: 500 !important;
   letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   color: rgba(255, 255, 255, 0.5) !important;
   padding: 5px 14px !important;
   border-radius: 9999px !important;
@@ -7863,7 +7863,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 10.5px !important;
   font-weight: 500 !important;
   letter-spacing: 0.04em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   border: 1px solid rgba(255, 255, 255, 0.2) !important;
   border-radius: 9999px !important;
   background: transparent !important;
@@ -7878,7 +7878,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 10.5px !important;
   font-weight: 500 !important;
   letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   color: rgba(255, 255, 255, 0.5) !important;
   background: transparent !important;
   border: 1px solid transparent !important;
@@ -7911,7 +7911,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 10.5px !important;
   font-weight: 500 !important;
   letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   color: rgba(255, 255, 255, 0.6) !important;
 }
 
@@ -7920,7 +7920,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 10px !important;
   font-weight: 500 !important;
   letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 
 .axiom-cta-btn.generate {
@@ -7928,7 +7928,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 11px !important;
   font-weight: 500 !important;
   letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   padding: 11px 16px !important;
 }
 
@@ -7943,7 +7943,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-family: 'Helvetica Now Display', sans-serif !important;
   font-weight: 500 !important;
   letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 
 .map-hud-coord {
@@ -7979,7 +7979,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 500 !important;
   font-size: 9px !important;
   letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   border: 1px solid rgba(255, 255, 255, 0.3) !important;
   border-radius: 9999px !important;
   padding: 1px 7px !important;
@@ -8006,7 +8006,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-family: 'Helvetica Now Display', sans-serif;
   font-weight: 500;
   letter-spacing: 0.06em;
-  text-transform: uppercase;
+  text-transform: none;
   transition: all 0.15s ease;
 }
 
@@ -8080,7 +8080,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 10px !important;
   font-weight: 500 !important;
   letter-spacing: 0.05em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   background: rgba(255, 255, 255, 0.04) !important;
   border: 1px solid rgba(255, 255, 255, 0.12) !important;
   border-radius: 9px !important;
@@ -8373,7 +8373,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 600 !important;
   letter-spacing: 0.18em !important;
   color: #ffffff !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 .brand-hero-credit {
   font-family: var(--font-mono, monospace) !important;
@@ -8929,7 +8929,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-family: 'Helvetica Now Display', sans-serif !important;
   font-weight: 500 !important;
   letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   transition: all 0.15s ease !important;
 }
 
@@ -9309,7 +9309,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 10px !important;
   font-weight: 500 !important;
   letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   color: rgba(255, 255, 255, 0.52) !important;
   background: transparent !important;
   transition: color 0.15s ease, background-color 0.15s ease !important;
@@ -9446,7 +9446,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 500 !important;
   letter-spacing: 0.08em !important;
   color: rgba(255, 255, 255, 0.85) !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 
 /* En los rieles laterales de Studio 3D, Cartografía 2D, Axonometría y Composición */
@@ -9487,7 +9487,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-weight: 500 !important;
   letter-spacing: 0.04em !important;
   color: rgba(255, 255, 255, 0.65) !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   line-height: 1 !important;
 }
 
@@ -9535,7 +9535,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   font-size: 9px !important;
   font-weight: 500 !important;
   letter-spacing: 0.08em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
   color: rgba(255, 255, 255, 0.65) !important;
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5) !important;
   z-index: 1000 !important;
@@ -9759,7 +9759,7 @@ input[type="range"].axiom-range:hover::-webkit-slider-thumb {
   color: rgba(255, 255, 255, 0.55) !important;
   margin: 0 !important;
   padding: 0 !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 #section-guidance .axiom-guidance-inner {
   border-radius: 2px !important;
@@ -10539,7 +10539,7 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   font-size: 8px !important;
   letter-spacing: 0.12em !important;
   color: rgba(255, 255, 255, 0.45) !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 
 .h3l-progress-dock {
@@ -10576,7 +10576,7 @@ body:has(#section-modal:not([hidden])) .cgm-credit-subtle {
   font-size: 7.5px !important;
   letter-spacing: 0.16em !important;
   color: rgba(255, 255, 255, 0.4) !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 
 /* 2. STRICT ZERO-JUMP LOCKED SETUP CARD (IDENTICAL 254px TOOLS HEIGHT) */
@@ -11817,7 +11817,7 @@ body, button, input, select, textarea, span, p, h1, h2, h3 {
   font-weight: 500 !important;
   color: rgba(255, 255, 255, 0.5) !important;
   letter-spacing: 0.06em !important;
-  text-transform: uppercase !important;
+  text-transform: none !important;
 }
 
 /* 2. CIRCULAR WORKSPACE AVATAR (HOMOLOGADO CON INTERFAZ RAYON) */
@@ -13123,3 +13123,6 @@ input[type="range"]::-moz-range-thumb {
   color: #38bdf8;
   font-weight: 600;
 }
+
+/* Hide duplicate corner GPS coordinates - only center bounding box DMS is shown */
+.map-hud-coord { display: none !important; }

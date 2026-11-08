@@ -25,7 +25,7 @@ const DICT = {
     'nav.savedViews': 'Project Saved Scenes & .urbnz',
 
     // Workspace Home (Rayon Dark Mode)
-    'ws.badge': 'RAYON-INSPIRED ARCHITECTURAL & GIS WORKSPACE',
+    'ws.badge': 'Workspace arquitectónico & cartografía GIS',
     'ws.title': 'URBNZD Studio Workspace',
     'ws.subtitle': 'Manage your urban 3D models, analytical QGIS cartography sheets, and exploded axonometries, or open a native .urbnz project file from your computer.',
     'ws.newMap': 'Extract New Area on Map',
@@ -490,10 +490,10 @@ const DICT = {
 
     'modal.hubTitle': 'URBANIZED · Project Hub',
     'modal.hubInfo': 'Loaded Environment Information',
-    'modal.hubLoc': 'LOCATION',
-    'modal.hubDim': 'DIMENSIONS',
-    'modal.hubBldg': 'BUILDINGS / RELIEF',
-    'modal.hubEco': 'ECOSYSTEM / BIOME',
+    'modal.hubLoc': 'Ubicación',
+    'modal.hubDim': 'Dimensiones',
+    'modal.hubBldg': 'Edificios / relieve',
+    'modal.hubEco': 'Ecosistema / bioma',
     'modal.hubCallout': 'Safe Workspace: The project is preserved in local memory to freely toggle between 2D sheets, axonometries, and the 3D model.',
     'modal.hubReset': 'Reset Project',
     'modal.hubViews': 'View Saved Views',
@@ -507,12 +507,12 @@ const DICT = {
     'modal.viewsClose': 'Close',
 
     // Topographic Section Modal
-    'secmodal.tag': 'TOPOGRAPHIC SECTION & URBAN PROFILE',
+    'secmodal.tag': 'Corte topográfico y perfil urbano',
     'secmodal.title': 'Elevation Profile & Levels',
-    'secmodal.len': 'TOTAL DISTANCE',
-    'secmodal.max': 'MAX ELEVATION',
-    'secmodal.min': 'MIN ELEVATION',
-    'secmodal.drop': 'ELEVATION DROP',
+    'secmodal.len': 'Distancia total',
+    'secmodal.max': 'Cota máxima',
+    'secmodal.min': 'Cota mínima',
+    'secmodal.drop': 'Desnivel acumulado',
 
     // Viewer Hints
     'viewer.hint': 'Drag to orbit · Scroll to zoom',
@@ -546,7 +546,7 @@ const DICT = {
     'acct.checkoutOff': 'Payments are not available yet.',
     'acct.legal': 'Service provided with lifetime credit access.',
     'acct.soonTitle': 'Credits',
-    'acct.soonBadge': 'FREE BETA',
+    'acct.soonBadge': 'Beta gratuita',
     'acct.soonText': 'Everything is currently free within standard limits.',
     'acct.signout': 'Sign out',
     'acct.err.email': 'Please enter a valid email.',
@@ -709,7 +709,7 @@ const DICT = {
     'nav.savedViews': 'Escenas Guardadas y .urbnz',
 
     // Workspace Home (Rayon Dark Mode)
-    'ws.badge': 'WORKSPACE ARQUITECTÓNICO & CARTOGRAFÍA GIS',
+    'ws.badge': 'Workspace arquitectónico & cartografía GIS',
     'ws.title': 'Espacio de Trabajo URBNZD',
     'ws.subtitle': 'Gestiona tus modelos urbanos 3D, láminas de cartografía QGIS y axonometrías explotadas, o abre un archivo nativo .urbnz desde tu equipo.',
     'ws.newMap': 'Extraer Nueva Zona en Mapa',
@@ -1174,10 +1174,10 @@ const DICT = {
 
     'modal.hubTitle': 'URBANIZED · Centro del Proyecto',
     'modal.hubInfo': 'Información del Entorno Cargado',
-    'modal.hubLoc': 'UBICACIÓN',
-    'modal.hubDim': 'DIMENSIONES',
-    'modal.hubBldg': 'EDIFICIOS / RELIEVE',
-    'modal.hubEco': 'ECOSISTEMA / BIOMA',
+    'modal.hubLoc': 'Ubicación',
+    'modal.hubDim': 'Dimensiones',
+    'modal.hubBldg': 'Edificios / relieve',
+    'modal.hubEco': 'Ecosistema / bioma',
     'modal.hubCallout': 'Espacio de Trabajo Seguro: El proyecto se conserva en memoria local para alternar libremente entre láminas 2D, axonométricas y modelo 3D.',
     'modal.hubReset': 'Reiniciar Proyecto',
     'modal.hubViews': 'Ver Vistas Guardadas',
@@ -1191,12 +1191,12 @@ const DICT = {
     'modal.viewsClose': 'Cerrar',
 
     // Modal de Corte Topográfico
-    'secmodal.tag': 'CORTE TOPOGRÁFICO Y PERFIL URBANO',
+    'secmodal.tag': 'Corte topográfico y perfil urbano',
     'secmodal.title': 'Perfil de Elevación y Cotas',
-    'secmodal.len': 'DISTANCIA TOTAL',
-    'secmodal.max': 'COTA MÁXIMA',
-    'secmodal.min': 'COTA MÍNIMA',
-    'secmodal.drop': 'DESNIVEL ACUMULADO',
+    'secmodal.len': 'Distancia total',
+    'secmodal.max': 'Cota máxima',
+    'secmodal.min': 'Cota mínima',
+    'secmodal.drop': 'Desnivel acumulado',
 
     // Ayudas de Vista
     'viewer.hint': 'Arrastra para orbitar · Rueda para zoom',
@@ -1230,7 +1230,7 @@ const DICT = {
     'acct.checkoutOff': 'Pasarela de pagos temporalmente no requerida.',
     'acct.legal': 'Servicio profesional con acceso permanente a descargas.',
     'acct.soonTitle': 'Créditos',
-    'acct.soonBadge': 'BETA GRATUITA',
+    'acct.soonBadge': 'Beta gratuita',
     'acct.soonText': 'Todas las descargas y herramientas son de uso libre actualmente.',
     'acct.signout': 'Cerrar sesión',
     'acct.err.email': 'Por favor ingresa un email válido.',

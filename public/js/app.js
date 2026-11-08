@@ -28,16 +28,16 @@ const store = {
 /* ---------------- Карта ---------------- */
 
 // Default initial territory: Monterrey, México (Macroplaza / Centro)
-const MONTERREY_DEFAULT = { lat: 25.6690, lon: -100.3120, zoom: 16 };
+const MONTERREY_DEFAULT = { lat: 25.6690, lon: -100.3120, zoom: 14 };
 window.MONTERREY_DEFAULT = MONTERREY_DEFAULT;
 
 let start = store.get('ue:view');
-if (!start || !start.lat || !start.lon || (start.lat === 0 && start.lon === 0) || Math.abs(start.lat - 41.6938) < 0.1) {
+if (!start || !start.lat || !start.lon || (start.lat === 0 && start.lon === 0) || Math.abs(start.lat - 41.6938) < 0.1 || Math.abs(start.lat - 39.9042) < 0.5) {
   start = { ...MONTERREY_DEFAULT };
   store.set('ue:view', MONTERREY_DEFAULT);
 }
-start.zoom = Math.max(16, start.zoom || 16);
-const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true, minZoom: 13 }).setView([start.lat, start.lon], start.zoom);
+start.zoom = 14;
+const map = L.map('map', { zoomControl: true, attributionControl: true, worldCopyJump: true, minZoom: 10 }).setView([start.lat, start.lon], 14);
 window.appMap = map;
 window.map = map;
 map.zoomControl.setPosition('topright');
@@ -145,15 +145,12 @@ function drawFrame() {
     frameDms.textContent = `${toDMS(c.lat, true)}, ${toDMS(c.lng, false)}`;
   }
 
-  // 2. Image 1 Corner DMS Coordinates
+  // 2. Corner DMS Coordinates hidden to prevent duplication
   try {
-    const bounds = map.getBounds();
-    const nw = bounds.getNorthWest();
-    const sw = bounds.getSouthWest();
     const nwEl = $('#map-coord-nw');
-    if (nwEl) nwEl.textContent = `${toDMS(nw.lat, true)}, ${toDMS(nw.lng, false)}`;
+    if (nwEl) nwEl.style.display = 'none';
     const swEl = $('#map-coord-sw');
-    if (swEl) swEl.textContent = `${toDMS(sw.lat, true)}, ${toDMS(sw.lng, false)}`;
+    if (swEl) swEl.style.display = 'none';
   } catch (e) {}
 
   // 3. Image 1 Dynamic Architectural Scale Indicator

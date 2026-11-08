@@ -60,7 +60,7 @@
       <div class="brand-hero-progress-section">
         <div class="brand-hero-progress-meta">
           <div class="brand-hero-status-wrap">
-            <span class="brand-hero-status-lbl">ETAPA:</span>
+            <span class="brand-hero-status-lbl">Etapa:</span>
             <span class="brand-hero-status-txt" id="h3l-status-title">Conectando repositorio OSM & DEM</span>
           </div>
           <div class="brand-hero-pct-wrap">
@@ -74,7 +74,7 @@
 
         <div class="brand-hero-telemetry-row">
           <div class="brand-telemetry-item">
-            <span class="brand-tele-k">DATUM</span>
+            <span class="brand-tele-k">Datum</span>
             <span class="brand-tele-v">WGS84 / EPSG:4326</span>
           </div>
           <div class="brand-telemetry-item">
@@ -82,12 +82,12 @@
             <span class="brand-tele-v">COPERNICUS GLO-30</span>
           </div>
           <div class="brand-telemetry-item">
-            <span class="brand-tele-k">SPEED</span>
+            <span class="brand-tele-k">Speed</span>
             <span class="brand-tele-v" id="h3l-transfer-speed">96.4 MB/S</span>
           </div>
           <div class="brand-telemetry-item">
-            <span class="brand-tele-k">TARGET</span>
-            <span class="brand-tele-v">SKETCHUP (.SKP)</span>
+            <span class="brand-tele-k">Target</span>
+            <span class="brand-tele-v">SketchUp (.skp)</span>
           </div>
         </div>
       </div>
@@ -129,10 +129,10 @@
 
       let currentPct = 15;
       const steps = [
-        { pct: 20, title: 'CONECTANDO REPOSITORIO OSM & DEM' },
-        { pct: 48, title: 'DESCARGANDO MALLAS URBANAS' },
-        { pct: 78, title: 'COMPILANDO TOPOGRAFÍA COPERNICUS' },
-        { pct: 100, title: 'ESTUDIO 3D PREPARADO' }
+        { pct: 20, title: 'Conectando repositorio OSM & DEM' },
+        { pct: 48, title: 'Descargando mallas urbanas' },
+        { pct: 78, title: 'Compilando topografía Copernicus' },
+        { pct: 100, title: 'Estudio 3D preparado' }
       ];
 
       function renderSplash(pct, title) {
@@ -162,7 +162,7 @@
         }
         if (window.appMap) {
           clearInterval(timer);
-          renderSplash(100, 'ESTUDIO 3D PREPARADO');
+          renderSplash(100, 'Estudio 3D preparado');
           setTimeout(dismiss, 280);
         }
       }, 300);
@@ -539,8 +539,8 @@
       </div>
 
       <!-- HUD Corner GPS Coordinates (Image 1 Format) -->
-      <div class="map-hud-coord top-left" id="map-coord-nw">0°00'00.0"N, 0°00'00.0"W</div>
-      <div class="map-hud-coord bottom-left" id="map-coord-sw">0°00'00.0"N, 0°00'00.0"W</div>
+      <div class="map-hud-coord top-left" id="map-coord-nw" style="display:none !important;">0°00'00.0"N, 0°00'00.0"W</div>
+      <div class="map-hud-coord bottom-left" id="map-coord-sw" style="display:none !important;">0°00'00.0"N, 0°00'00.0"W</div>
 
       <!-- Live Dynamic Architectural Scale Bar + Real ERA5 Wind Rose (Open-Meteo 30yr) -->
       <div class="map-arch-scale-card" id="map-arch-scale">
@@ -558,7 +558,7 @@
               <circle cx="32" cy="32" r="2" fill="#090a0d" stroke="#ffffff" stroke-width="1"/>
             </svg>
             <div class="arch-wind-meta">
-              <span class="arch-wind-tag">WIND ERA5</span>
+              <span class="arch-wind-tag">Viento ERA5</span>
               <strong class="arch-wind-val" id="arch-wind-dom">NNE · 3.4 m/s</strong>
             </div>
           </div>
@@ -568,7 +568,7 @@
           <!-- Architectural Scale Indicator -->
           <div class="arch-scale-main">
             <div class="arch-scale-header">
-              <span class="arch-scale-tag">SCALE</span>
+              <span class="arch-scale-tag">Escala</span>
               <b class="arch-scale-ratio" id="arch-scale-ratio">1:1,000</b>
               <span class="arch-scale-metric" id="arch-scale-metric">1 cm = 10 m</span>
             </div>
@@ -599,7 +599,7 @@
       <!-- Architectural HUD Guidance for Section Drawing -->
       <div class="axiom-section-guidance" id="section-guidance" hidden>
         <div class="axiom-guidance-inner">
-          <span class="axiom-guidance-tag">CAD SECTION</span>
+          <span class="axiom-guidance-tag">Sección CAD</span>
           <span class="axiom-guidance-text" id="guidance-msg">Click Point A, then Point B on the map to cut topographic section</span>
         </div>
       </div>
@@ -1784,13 +1784,13 @@
           <div style="width:1px; height:24px; background:rgba(255,255,255,0.12);"></div>
           <!-- Sol NOAA Status -->
           <div style="display:flex; flex-direction:column;">
-            <span style="font-size:8.5px; color:#71717a; text-transform:uppercase; letter-spacing:0.04em;">SOL NOAA</span>
+            <span style="font-size:8.5px; color:#71717a; text-transform: none; letter-spacing:0.04em;">SOL NOAA</span>
             <strong id="studio-sun-dom" style="font-size:10.5px; color:#38bdf8; font-weight:600;">21 JUN · 14:00</strong>
           </div>
           <div style="width:1px; height:24px; background:rgba(255,255,255,0.12);"></div>
           <!-- Coordenadas & Escala -->
           <div style="display:flex; flex-direction:column;">
-            <span style="font-size:8.5px; color:#71717a; text-transform:uppercase; letter-spacing:0.04em;">SITIO</span>
+            <span style="font-size:8.5px; color:#71717a; text-transform: none; letter-spacing:0.04em;">SITIO</span>
             <span id="studio-site-coords" style="font-size:10.5px; color:#e4e4e7;">—</span>
           </div>
         </div>
@@ -1867,7 +1867,7 @@
         <!-- Group: Propiedades de Selección (Custom Properties) -->
         <div class="rayon-accordion-group" id="inspector-group-properties">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">PROPIEDADES DE SELECCIÓN</span>
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform: none;">PROPIEDADES DE SELECCIÓN</span>
             <span id="inspector-sel-badge" style="font-size:9.5px; padding:2px 6px; border-radius:4px; background:rgba(255,255,255,0.08); color:#a1a1aa;">Polígono General</span>
           </div>
 
@@ -1938,7 +1938,7 @@
         <!-- Group: Orientación Cámara & Escenas Guardadas -->
         <div class="rayon-accordion-group" style="border-bottom:none;">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;">ESCENAS & CÁMARA 3D</span>
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform: none;">ESCENAS & CÁMARA 3D</span>
             <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene" title="Congelar escena actual (+ Escena)" style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:#38bdf8; cursor:pointer;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span>+ Guardar Escena</span>
@@ -1954,7 +1954,7 @@
           </div>
           <div style="margin-top:10px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
-              <span style="font-size:10px; color:#71717a; text-transform:uppercase; letter-spacing:0.05em;" data-i18n="inspector.savedViews">Vistas Guardadas</span>
+              <span style="font-size:10px; color:#71717a; text-transform: none; letter-spacing:0.05em;" data-i18n="inspector.savedViews">Vistas Guardadas</span>
               <span id="inspector-scenes-count" style="font-size:9.5px; color:#52525b;">1 escena</span>
             </div>
             <div id="inspector-scenes-list" style="display:flex; flex-direction:column; gap:4px;">
@@ -2394,7 +2394,7 @@
         <!-- Grupo 3: Escenas del Proyecto (Sincronizadas con 3D y Axo) -->
         <div class="rayon-accordion-group">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;" data-i18n="inspector.savedViews">Vistas Guardadas</span>
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform: none;" data-i18n="inspector.savedViews">Vistas Guardadas</span>
             <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene-map" title="Guardar escena cartográfica actual" style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:#38bdf8; cursor:pointer;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span data-i18n="inspector.saveSceneBtn">+ Guardar Escena</span>
@@ -2888,7 +2888,7 @@
         <!-- Grupo 3: Escenas del Proyecto (Sincronizadas con 3D y 2D) -->
         <div class="rayon-accordion-group">
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;">
-            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform:uppercase;" data-i18n="inspector.savedViews">Vistas Guardadas</span>
+            <span style="font-size:10px; font-weight:700; color:#94a3b8; letter-spacing:0.06em; text-transform: none;" data-i18n="inspector.savedViews">Vistas Guardadas</span>
             <button type="button" class="rayon-icon-btn" id="btn-inspector-save-scene-illu" title="Guardar escena axonométrica actual" style="display:inline-flex; align-items:center; gap:4px; font-size:10.5px; padding:3px 8px; border-radius:4px; border:1px solid rgba(56,189,248,0.3); background:rgba(56,189,248,0.08); color:#38bdf8; cursor:pointer;">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
               <span data-i18n="inspector.saveSceneBtn">+ Guardar Escena</span>
@@ -3146,7 +3146,7 @@
                     <polygon points="12,4 15,12 12,10" fill="#18181b"/>
                     <polygon points="12,4 9,12 12,10" fill="none" stroke="#18181b" stroke-width="0.8"/>
                   </svg>
-                  <span style="font-size:8px; font-weight:700; color:#18181b; letter-spacing:0.1em;">NORTE</span>
+                  <span style="font-size:8px; font-weight:700; color:#18181b; letter-spacing:0.1em;">Norte</span>
                 </div>
                 <div id="comp-sheet-scalebar">
                   <div style="display:flex; align-items:center; width:140px; height:4px; background:#18181b;">
@@ -3163,7 +3163,7 @@
               </div>
 
               <!-- Right: Professional Title Block (Right side: ONLY THE LOGO) -->
-              <div id="comp-sheet-titleblock" style="display:flex; border:1px solid #18181b; background:#ffffff; font-size:9px; color:#18181b; text-transform:uppercase;">
+              <div id="comp-sheet-titleblock" style="display:flex; border:1px solid #18181b; background:#ffffff; font-size:9px; color:#18181b; text-transform:none;">
                 <div style="padding:4px 10px; border-right:1px solid #18181b; display:flex; flex-direction:column; justify-content:center;">
                   <span style="font-size:7px; color:#71717a; letter-spacing:0.05em;">Proyecto</span>
                   <strong id="compositor-tb-project" style="font-size:9.5px; font-weight:700;">Plan Maestro Urbano</strong>
@@ -3179,7 +3179,7 @@
                 </div>
                 <div id="compositor-tb-logo-container" style="padding:4px 14px; background:#18181b; color:#ffffff; display:flex; align-items:center; justify-content:center; min-width:85px; cursor:pointer;" title="Logo Oficial del Pliego">
                   <img id="compositor-tb-logo-img" src="" alt="Logo" style="max-height:36px; max-width:85px; object-fit:contain; display:none;">
-                  <span id="compositor-tb-logo-text" style="font-size:10px; font-weight:800; letter-spacing:0.12em; color:#ffffff;">CGM ATELIER</span>
+                  <span id="compositor-tb-logo-text" style="font-size:10px; font-weight:800; letter-spacing:0.12em; color:#ffffff;">CGM Atelier</span>
                 </div>
               </div>
             </div>
@@ -3275,7 +3275,7 @@
   </div>
 
   <!-- Ultra-Subtle Architectural Author Signature -->
-  <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="cgm-credit-subtle" title="CGM Atelier">made by cgm atelier</a>
+  <a href="https://www.instagram.com/cgmatelier/" target="_blank" rel="noopener noreferrer" class="cgm-credit-subtle" title="CGM Atelier">Made by CGM Atelier</a>
 
   <!-- ========================================================
        FOCUSED TOPOGRAPHIC SECTION MODAL (Estilo Imagen 4)
@@ -3307,19 +3307,19 @@
           <div class="section-layer-filters" role="group" aria-label="Section Layers">
             <button type="button" class="sec-layer-btn active" data-seclayer="ground" title="Toggle ground surface">
               <span class="sec-filter-indicator"></span>
-              <span>TERRAIN</span>
+              <span>Terreno</span>
             </button>
             <button type="button" class="sec-layer-btn active" data-seclayer="buildings" title="Toggle corridor buildings">
               <span class="sec-filter-indicator"></span>
-              <span>BUILDINGS</span>
+              <span>Edificaciones</span>
             </button>
             <button type="button" class="sec-layer-btn active" data-seclayer="grid" title="Toggle elevation datum grid">
               <span class="sec-filter-indicator"></span>
-              <span>DATUM GRID</span>
+              <span>Cuadrícula datum</span>
             </button>
             <button type="button" class="sec-layer-btn active" data-seclayer="trees" title="Toggle tree canopies">
               <span class="sec-filter-indicator"></span>
-              <span>CANOPY</span>
+              <span>Arbolado</span>
             </button>
           </div>
 
@@ -3344,27 +3344,27 @@
       <!-- 3. TELEMETRY & METRIC KPIS (6-Column Architectural CAD Ribbon) -->
       <div class="section-telemetry-ribbon" style="grid-template-columns: repeat(6, 1fr);">
         <div class="sec-stat-item">
-          <span class="sec-stat-label">TOTAL DISTANCE (L)</span>
+          <span class="sec-stat-label">Distancia total (L)</span>
           <b class="sec-stat-val" id="sec-stat-len">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">MAX ELEVATION</span>
+          <span class="sec-stat-label">Elevación máx.</span>
           <b class="sec-stat-val" id="sec-stat-max">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">MIN ELEVATION</span>
+          <span class="sec-stat-label">Elevación mín.</span>
           <b class="sec-stat-val" id="sec-stat-min">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">TOTAL RELIEF (ΔH)</span>
+          <span class="sec-stat-label">Desnivel total (ΔH)</span>
           <b class="sec-stat-val" id="sec-stat-drop">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">MEAN / MAX SLOPE</span>
+          <span class="sec-stat-label">Pendiente media / máx.</span>
           <b class="sec-stat-val" id="sec-stat-slope">—</b>
         </div>
         <div class="sec-stat-item">
-          <span class="sec-stat-label">VERTICAL EXAG.</span>
+          <span class="sec-stat-label">Exag. vertical</span>
           <b class="sec-stat-val" id="sec-stat-exag">2.0×</b>
         </div>
       </div>
@@ -3375,15 +3375,15 @@
           <!-- Botón Primario Claro y Destacado: Descarga CAD DXF -->
           <button class="axiom-cta-btn dl primary-sec-cad" data-section="dxf" style="padding:7px 18px; font-weight:700; background:#ffffff; color:#000000; border:none; border-radius:8px; display:inline-flex; align-items:center; gap:8px; font-size:11px; cursor:pointer;">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>DESCARGAR SECCIÓN CAD (.DXF)</span>
+            <span>Descargar sección CAD (.dxf)</span>
           </button>
           <button class="axiom-export-pill dl" data-section="svg" title="Vectorial para Illustrator">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>VECTOR .SVG</span>
+            <span>Vector .svg</span>
           </button>
           <button class="axiom-export-pill dl" data-section="png" title="Imagen de alta resolución">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            <span>IMAGEN .PNG</span>
+            <span>Imagen .png</span>
           </button>
         </div>
 
@@ -3457,7 +3457,7 @@
       <div class="tech-hud-header">
         <div class="tech-hud-header-left">
           <img src="assets/urbnzd-logo.png" alt="URBNZD" class="tech-hud-logo" style="height:22px; width:auto; filter:brightness(0) invert(1);" />
-          <span class="tech-hud-bracket-tag">[ DATA EXTRACTION ]</span>
+          <span class="tech-hud-bracket-tag">[ Extracción de datos ]</span>
         </div>
         <div class="tech-hud-header-right">
           <span class="tech-hud-speed" id="hud-transfer-speed">48.2 MB/S</span>
@@ -3469,7 +3469,7 @@
       <div class="tech-hud-grid">
         <!-- Q1: Radial Dial / Circular Tick Progress -->
         <div class="tech-hud-quadrant q1-dial">
-          <div class="tech-hud-quad-label">01 // FLUID PROGRESS</div>
+          <div class="tech-hud-quad-label">01 // Progreso fluido</div>
           <div class="tech-radial-dial">
             <svg viewBox="0 0 100 100" class="tech-dial-svg">
               <circle cx="50" cy="50" r="42" class="tech-dial-track"></circle>
@@ -3478,37 +3478,37 @@
             </svg>
             <div class="tech-dial-center">
               <span class="tech-dial-pct" id="loading-pct-badge">25%</span>
-              <span class="tech-dial-sub">EXTRACTION</span>
+              <span class="tech-dial-sub">Extracción</span>
             </div>
           </div>
         </div>
 
         <!-- Q2: Layer Sources Status -->
         <div class="tech-hud-quadrant q2-sources">
-          <div class="tech-hud-quad-label">02 // SATELLITE & GIS STREAMS</div>
+          <div class="tech-hud-quad-label">02 // Satélite & flujos GIS</div>
           <div class="tech-sources-list">
             <div class="tech-source-row">
-              <span class="tech-src-name">OSM VOLUMES</span>
-              <span class="tech-src-status" id="load-src-osm">DOWNLOADING</span>
+              <span class="tech-src-name">Volúmenes OSM</span>
+              <span class="tech-src-status" id="load-src-osm">Descargando</span>
             </div>
             <div class="tech-source-row">
-              <span class="tech-src-name">COPERNICUS DEM</span>
-              <span class="tech-src-status" id="load-src-dem">PENDING</span>
+              <span class="tech-src-name">Copernicus DEM</span>
+              <span class="tech-src-status" id="load-src-dem">Pendiente</span>
             </div>
             <div class="tech-source-row">
-              <span class="tech-src-name">HIGHWAY NETWORK</span>
-              <span class="tech-src-status" id="load-src-roads">PENDING</span>
+              <span class="tech-src-name">Red vial</span>
+              <span class="tech-src-status" id="load-src-roads">Pendiente</span>
             </div>
             <div class="tech-source-row">
-              <span class="tech-src-name">SPECTRAL CANOPY</span>
-              <span class="tech-src-status" id="load-src-water">STANDBY</span>
+              <span class="tech-src-name">Malla vegetal</span>
+              <span class="tech-src-status" id="load-src-water">En espera</span>
             </div>
           </div>
         </div>
 
         <!-- Q3: Barcode Volume Progress -->
         <div class="tech-hud-quadrant q3-barcode">
-          <div class="tech-hud-quad-label">03 // GEOMETRIC BUFFER</div>
+          <div class="tech-hud-quad-label">03 // Búfer geométrico</div>
           <div class="tech-barcode-track" id="tech-barcode-track">
             <!-- Dynamic vertical tick bars -->
           </div>
@@ -3520,7 +3520,7 @@
 
         <!-- Q4: Sector Coordinates -->
         <div class="tech-hud-quadrant q4-coords">
-          <div class="tech-hud-quad-label">04 // TERRITORIAL DATUM</div>
+          <div class="tech-hud-quad-label">04 // Datum territorial</div>
           <div class="tech-coords-display">
             <div class="tech-coord-line"><span class="tech-dim-label">COORD_N:</span> <strong id="hud-coord-lat">41°41'37.7"N</strong></div>
             <div class="tech-coord-line"><span class="tech-dim-label">COORD_W:</span> <strong id="hud-coord-lon">44°48'05.4"E</strong></div>
@@ -3530,19 +3530,19 @@
 
         <!-- Q5: Output Engines Target -->
         <div class="tech-hud-quadrant q5-output">
-          <div class="tech-hud-quad-label">05 // COMPATIBILITY TARGETS</div>
+          <div class="tech-hud-quad-label">05 // Formatos compatibles</div>
           <div class="tech-targets-tags">
-            <span class="tech-target-pill">SKETCHUP .SKP</span>
-            <span class="tech-target-pill">AUTOCAD .DXF</span>
-            <span class="tech-target-pill">RHINO .3DM</span>
-            <span class="tech-target-pill">QGIS .GEOJSON</span>
+            <span class="tech-target-pill">SketchUp .skp</span>
+            <span class="tech-target-pill">AutoCAD .dxf</span>
+            <span class="tech-target-pill">Rhino .3dm</span>
+            <span class="tech-target-pill">QGIS .geojson</span>
           </div>
         </div>
 
         <!-- Q6: Engine Live State -->
         <div class="tech-hud-quadrant q6-status">
-          <div class="tech-hud-quad-label">06 // ENGINE PIPELINE</div>
-          <div class="tech-pipeline-title" id="loading-title">INITIALIZING DATA</div>
+          <div class="tech-hud-quad-label">06 // Flujo del motor</div>
+          <div class="tech-pipeline-title" id="loading-title">Inicializando datos</div>
           <div class="tech-pipeline-progress-bar">
             <div class="tech-pipeline-progress-fill" id="axiom-laser-fill" style="width: 25%;"></div>
           </div>
@@ -3556,7 +3556,7 @@
           <img src="assets/urbnzd-logo.png" alt="URBNZD" style="height:12px; width:auto; filter:brightness(0) invert(1); opacity:0.85;" />
           <span class="tech-hud-sign" style="letter-spacing:0.12em;">URBNZD ENGINE V6.0</span>
         </div>
-        <button type="button" class="tech-hud-btn" id="btn-cancel-loading" onclick="if(window.hideLoadingModal) window.hideLoadingModal();">ABORT OPERATION</button>
+        <button type="button" class="tech-hud-btn" id="btn-cancel-loading" onclick="if(window.hideLoadingModal) window.hideLoadingModal();">Cancelar operación</button>
       </div>
     </div>
   </div>
@@ -3742,7 +3742,7 @@
 
         <!-- Workspaces Management Section -->
         <div style="border-top:1px solid rgba(255,255,255,0.08); padding-top:12px;">
-          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:6px; font-weight:600; letter-spacing:0.04em; text-transform:uppercase;">Tus Espacios de Trabajo (Workspaces)</label>
+          <label style="display:block; color:#a1a1aa; font-size:11px; margin-bottom:6px; font-weight:600; letter-spacing:0.04em; text-transform: none;">Tus Espacios de Trabajo (Workspaces)</label>
           <div style="display:flex; gap:6px; margin-bottom:10px;">
             <select id="select-active-workspace" class="rayon-select" style="flex:1; font-size:12px; height:32px;">
               <option value="Personal">Personal</option>
@@ -4634,7 +4634,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         '<div style="display:flex; justify-content:space-between; align-items:center;">' +
           '<div style="display:flex; align-items:center; gap:6px;">' +
             '<strong style="font-size:11px; color:#ffffff;">' + n.author + '</strong>' +
-            '<span style="font-size:8.5px; background:rgba(56,189,248,0.12); color:#38bdf8; padding:1px 5px; border-radius:3px; text-transform:uppercase;">' + n.tag + '</span>' +
+            '<span style="font-size:8.5px; background:rgba(56,189,248,0.12); color:#38bdf8; padding:1px 5px; border-radius:3px; text-transform: none;">' + n.tag + '</span>' +
           '</div>' +
           '<div style="display:flex; align-items:center; gap:4px;">' +
             '<span style="font-size:9.5px; color:#71717a;">' + n.time + '</span>' +
@@ -5911,10 +5911,10 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       // Ensure appropriate number of viewports for layout
       const targetCount = parseInt(page.layout, 10) || 1;
       const defaultLabels = {
-        '1': ['01 PLANO MAESTRO GENERAL'],
+        '1': ['01 Plano maestro general'],
         '2': ['01 Planta general 2D', '02 Axonometría isométrica'],
-        '3': ['01 PLANO GENERAL', '02 AXONOMETRÍA', '03 DETALLE DE SECCIÓN'],
-        '4': ['01 EMPLAZAMIENTO & TOPO', '02 TRAZADO VIAL', '03 USOS MIXTOS', '04 MASA CONSTRUIDA']
+        '3': ['01 Plano general', '02 Axonometría', '03 Detalle de sección'],
+        '4': ['01 Emplazamiento & topo', '02 Trazado vial', '03 Usos mixtos', '04 Masa construida']
       };
 
       const labels = defaultLabels[page.layout] || ['01 VISTA'];
@@ -5932,7 +5932,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
 
       containers.forEach(container => {
         container.innerHTML = `
-          <div style="font-size:10px; color:#94a3b8; font-weight:600; text-transform:uppercase; margin-bottom:4px; display:flex; justify-content:space-between;">
+          <div style="font-size:10px; color:#94a3b8; font-weight:600; text-transform: none; margin-bottom:4px; display:flex; justify-content:space-between;">
             <span>Asignación de Vistas (${targetCount})</span>
             <span style="color:#38bdf8;">1: ${page.scale}</span>
           </div>
@@ -6413,7 +6413,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         // default: CGM Atelier
         imgEl.style.display = 'none';
         textEl.style.display = 'block';
-        textEl.textContent = 'CGM ATELIER';
+        textEl.textContent = 'CGM Atelier';
       }
     }
 
@@ -6461,7 +6461,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       const compMeasure = document.getElementById('comp-measure-text');
       if (compMeasure) compMeasure.textContent = page.name + ' · ' + (page.format === '90x60' ? '90 × 60 cm' : page.format) + ' · Escala 1:' + page.scale;
 
-      if (titleEl) titleEl.textContent = 'PLIEGO 0' + (activeSheetPageIndex + 1) + ' · ' + page.format.toUpperCase() + ' ' + (page.orient === 'landscape' ? 'HORIZONTAL' : 'VERTICAL');
+      if (titleEl) titleEl.textContent = 'Pliego 0' + (activeSheetPageIndex + 1) + ' · ' + (page.format === '90x60' ? '90 × 60 cm' : page.format) + ' · ' + (page.orient === 'landscape' ? 'Horizontal' : 'Vertical');
       document.querySelectorAll('#compositor-scale-badge').forEach(badge => badge.textContent = 'Escala: 1:' + page.scale);
       if (tbProj) tbProj.textContent = page.titleProject || 'Plan Maestro Urbano';
       if (tbLoc) tbLoc.textContent = page.titleLoc || 'Monterrey, N.L., México';
@@ -6590,7 +6590,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
           // Empty Viewport Block with Centered + Asignar Vista button
           return '<div class="comp-vp-block comp-vp-empty" style="' + gridAreaStyle + ' position:relative; background:#fbfbfb; border:1px dashed #a1a1aa; border-radius:2px; overflow:hidden; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px; box-shadow:inset 0 0 12px rgba(0,0,0,0.02);">' +
             '<div style="width:100%; display:flex; justify-content:space-between; align-items:center; position:absolute; top:6px; left:8px; right:8px; padding-right:16px;">' +
-              '<span style="font-size:8px; font-weight:700; color:#71717a; font-family:monospace, monospace; text-transform:uppercase;">' + (vp.label || 'BLOQUE ' + (idx + 1)) + '</span>' +
+              '<span style="font-size:8px; font-weight:700; color:#71717a; font-family:monospace, monospace; text-transform: none;">' + (vp.label || 'BLOQUE ' + (idx + 1)) + '</span>' +
               (page.viewports.length > 1 ? '<button type="button" class="btn-comp-del-vp" data-vp-idx="' + idx + '" title="Eliminar bloque" style="background:none; border:none; color:#ef4444; font-size:10px; cursor:pointer;">✕</button>' : '') +
             '</div>' +
             '<button type="button" class="comp-vp-add-btn" data-vp-idx="' + idx + '" style="background:#18181b; color:#ffffff; border:1px dashed #38bdf8; border-radius:4px; padding:8px 16px; font-size:11px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px; box-shadow:0 2px 8px rgba(0,0,0,0.08);">' +
@@ -6780,7 +6780,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
 
       ctx.font = 'bold 12px "JetBrains Mono", sans-serif';
       ctx.textAlign = 'center';
-      ctx.fillText('NORTE', northX, northY + 52);
+      ctx.fillText('Norte', northX, northY + 52);
 
       // Graphic Scale Bar
       const scaleX = northX + 90;
@@ -6826,7 +6826,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       ctx.textAlign = 'left';
       ctx.fillStyle = '#71717a';
       ctx.font = '600 13px "JetBrains Mono", sans-serif';
-      ctx.fillText('PROYECTO', tbX + 20, tbY + 32);
+      ctx.fillText('Proyecto', tbX + 20, tbY + 32);
 
       ctx.fillStyle = '#18181b';
       ctx.font = 'bold 22px "JetBrains Mono", sans-serif';
@@ -6840,7 +6840,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       ctx.textAlign = 'center';
       ctx.fillStyle = '#71717a';
       ctx.font = '600 13px "JetBrains Mono", sans-serif';
-      ctx.fillText('ESCALA', tbX + 505, tbY + 36);
+      ctx.fillText('Escala', tbX + 505, tbY + 36);
       ctx.fillStyle = '#18181b';
       ctx.font = 'bold 20px "JetBrains Mono", sans-serif';
       ctx.fillText(`1:${page.scale}`, tbX + 505, tbY + 76);
@@ -6848,7 +6848,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
       // Sheet number box
       ctx.fillStyle = '#71717a';
       ctx.font = '600 13px "JetBrains Mono", sans-serif';
-      ctx.fillText('PLIEGO', tbX + 665, tbY + 36);
+      ctx.fillText('Pliego', tbX + 665, tbY + 36);
       ctx.fillStyle = '#18181b';
       ctx.font = 'bold 24px "JetBrains Mono", sans-serif';
       ctx.fillText(`PL-0${activeSheetPageIndex + 1}`, tbX + 665, tbY + 76);
@@ -7283,7 +7283,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
           } else if (window.flyToTemplateLocation) {
             window.flyToTemplateLocation(p.lat, p.lon, p.size || 1000);
           } else if (window.appMap) {
-            window.appMap.setView([p.lat, p.lon], 16);
+            window.appMap.setView([p.lat, p.lon], 14);
           }
           showCadToast(`Proyecto localizado: ${p.name}`);
         }
@@ -7385,7 +7385,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         card.onclick = () => {
           if (card.getAttribute('data-action') === 'start-from-scratch') {
             switchView('app', true);
-            if (window.appMap && window.MONTERREY_DEFAULT) window.appMap.setView([window.MONTERREY_DEFAULT.lat, window.MONTERREY_DEFAULT.lon], 16);
+            if (window.appMap && window.MONTERREY_DEFAULT) window.appMap.setView([window.MONTERREY_DEFAULT.lat, window.MONTERREY_DEFAULT.lon], 14);
           } else {
             if (window.hasActiveModel?.()) switchView('result', true);
             else switchView('app', true);
@@ -7464,7 +7464,7 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
 
     document.getElementById('ws-btn-new-model')?.addEventListener('click', () => {
       switchView('app', true);
-      if (window.appMap && window.MONTERREY_DEFAULT) window.appMap.setView([window.MONTERREY_DEFAULT.lat, window.MONTERREY_DEFAULT.lon], 16);
+      if (window.appMap && window.MONTERREY_DEFAULT) window.appMap.setView([window.MONTERREY_DEFAULT.lat, window.MONTERREY_DEFAULT.lon], 14);
     });
     document.getElementById('ws-btn-import-urbnz')?.addEventListener('click', () => {
       document.getElementById('input-open-urbnz')?.click();
