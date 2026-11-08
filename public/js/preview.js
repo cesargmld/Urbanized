@@ -29,7 +29,19 @@ export const studioState = {
     edgeOpacity: 0.45
   },
   pins: {
-    visible: false // Pines apagados en modelo abierto 3D navegable (solo en edición)
+    visible: false
+  },
+  trees: {
+    style: 'sphere',
+    scale: 1.0,
+    density: 100,
+    color: 'salvia'
+  },
+  trees: {
+    style: 'sphere',
+    scale: 1.0,
+    density: 100,
+    color: 'salvia'
   }
 };
 
@@ -447,6 +459,119 @@ function createDashedHairline(p1, p2, s) {
   return line;
 }
 
+
+const TREE_COLOR_MAP = {
+  salvia: 0x5a7a5e,     // Verde Salvia Arquitectónico mate
+  oliva: 0x71816d,      // Verde Oliva Técnico CAD
+  monochrome: 0x32363e, // Grafito Arquitectónico
+  balsa: 0xc8b293,      // Madera Balsa Maqueta
+  white: 0xf4f4f6,      // Maqueta Yeso Blanco
+};
+
+function mergeSimpleBufferGeometries(geos) {
+  const nonIndexed = geos.map(g => (g.index ? g.toNonIndexed() : g));
+  let totalVerts = 0;
+  for (const g of nonIndexed) totalVerts += g.attributes.position.count;
+
+  const positions = new Float32Array(totalVerts * 3);
+  const normals = new Float32Array(totalVerts * 3);
+
+  let offset = 0;
+  for (const g of nonIndexed) {
+    positions.set(g.attributes.position.array, offset * 3);
+    if (g.attributes.normal) {
+      normals.set(g.attributes.normal.array, offset * 3);
+    }
+    offset += g.attributes.position.count;
+  }
+
+  const merged = new THREE.BufferGeometry();
+  merged.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  merged.setAttribute('normal', new THREE.BufferAttribute(normals, 3));
+  merged.computeVertexNormals();
+  return merged;
+}
+
+export function createTreeGeometry(style = 'sphere') {
+  // Tronco base cilíndrico fino (eje Z: base en 0, altura 0.38)
+  const trunkGeo = new THREE.CylinderGeometry(0.08, 0.12, 0.38, 8);
+  trunkGeo.rotateX(Math.PI / 2);
+  trunkGeo.translate(0, 0, 0.19);
+
+  let canopyGeo;
+  if (style === 'cone') {
+    // Cono arquitectónico piramidal / Pino
+    canopyGeo = new THREE.ConeGeometry(0.70, 1.25, 8);
+    canopyGeo.rotateX(Math.PI / 2);
+    canopyGeo.translate(0, 0, 0.35 + 0.625);
+  } else if (style === 'cylinder') {
+    // Álamo / Ciprés columnar esbelto
+    canopyGeo = new THREE.CylinderGeometry(0.32, 0.42, 1.35, 8);
+    canopyGeo.rotateX(Math.PI / 2);
+    canopyGeo.translate(0, 0, 0.25 + 0.675);
+  } else if (style === 'faceted') {
+    // Modern Low-Poly Dodecaedro
+    canopyGeo = new THREE.DodecahedronGeometry(0.70);
+    canopyGeo.translate(0, 0, 0.35 + 0.65);
+  } else if (style === 'pyramid') {
+    // Clásico Minimalista Unit Tree
+    return meshGeometry([UNIT_TREE]);
+  } else {
+    // Default 'sphere': Copa esférica estilizada arquitectónica
+    canopyGeo = new THREE.IcosahedronGeometry(0.70, 2);
+    canopyGeo.translate(0, 0, 0.38 + 0.65);
+  }
+
+  return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+}
+
+export function rebuildTrees3D(model = ctx?.lastModel, isMaqueta = ctx?.isMaqueta) {
+  if (!ctx || !ctx.layerGroups || !model || !model.trees?.length) return;
+  const isNolli = !!ctx.isNolli;
+  ctx.layerGroups.trees.clear();
+  if (isNolli) return;
+
+  const style = studioState.trees?.style || 'sphere';
+  const scale = studioState.trees?.scale || 1.0;
+  const density = (studioState.trees?.density || 100) / 100;
+  const colHex = TREE_COLOR_MAP[studioState.trees?.color] || (typeof studioState.trees?.color === 'string' ? parseInt(studioState.trees.color.replace('#', '0x'), 16) : 0x5a7a5e);
+
+  const unit = createTreeGeometry(style);
+  const treeMat = isMaqueta
+    ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
+    : new THREE.MeshLambertMaterial({ color: colHex });
+
+  const treeList = (density < 0.99)
+    ? model.trees.filter((_, idx) => (idx % Math.round(1 / density) === 0))
+    : model.trees;
+
+  const trees = new THREE.InstancedMesh(unit, treeMat, treeList.length);
+  const mtx = new THREE.Matrix4();
+  treeList.forEach((t, i) => {
+    const tx = t.x ?? t.pos?.[0] ?? 0;
+    const ty = t.y ?? t.pos?.[1] ?? 0;
+    const tz = t.z ?? t.pos?.[2] ?? 0;
+    const tr = (t.r || 3.5) * scale;
+    const th = (t.h || 7.0) * scale;
+    trees.setMatrixAt(i, mtx.makeScale(tr, tr, th).setPosition(tx, ty, tz));
+  });
+  trees.instanceMatrix.needsUpdate = true;
+  ctx.layerGroups.trees.add(trees);
+}
+
+export function setTreeOptions3D(opts = {}) {
+  if (!studioState.trees) {
+    studioState.trees = { style: 'sphere', scale: 1.0, density: 100, color: 'salvia' };
+  }
+  if (opts.style !== undefined) studioState.trees.style = opts.style;
+  if (opts.scale !== undefined) studioState.trees.scale = Number(opts.scale);
+  if (opts.density !== undefined) studioState.trees.density = Number(opts.density);
+  if (opts.color !== undefined) studioState.trees.color = opts.color;
+
+  rebuildTrees3D();
+}
+window.setTreeOptions3D = setTreeOptions3D;
+
 export function showModel(container, model, { keepCamera = false, chunkMode = false } = {}) {
   ctx ??= init(container || document.getElementById('viewer'));
   ctx.lastModel = model;
@@ -763,23 +888,9 @@ export function showModel(container, model, { keepCamera = false, chunkMode = fa
     }
   }
 
-  // 7. Trees (hidden in Nolli mode for pure architectural full/empty contrast)
+  // 7. Trees (Editable architectural vegetation)
   if (model.trees?.length && !isNolli) {
-    const unit = meshGeometry([UNIT_TREE]);
-    const treeMat = isMaqueta
-      ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
-      : new THREE.MeshLambertMaterial({ color: 0x22c55e });
-    const trees = new THREE.InstancedMesh(unit, treeMat, model.trees.length);
-    const mtx = new THREE.Matrix4();
-    model.trees.forEach((t, i) => {
-      const tx = t.x ?? t.pos?.[0] ?? 0;
-      const ty = t.y ?? t.pos?.[1] ?? 0;
-      const tz = t.z ?? t.pos?.[2] ?? 0;
-      const tr = t.r || 3.5;
-      const th = t.h || 7;
-      trees.setMatrixAt(i, mtx.makeScale(tr, tr, th).setPosition(tx, ty, tz));
-    });
-    layerGroups.trees.add(trees);
+    rebuildTrees3D(model, isMaqueta);
   }
 
   // 8. Bridges

@@ -1,6 +1,6 @@
 import { buildModel, redetectTrees } from './data.js?v=6.0';
 import { FORMATS, stlScale } from './exporters.js?v=6.0';
-import { setCameraView, toggleMaquetaMode, isMaquetaModeActive, setLayerVisibility, setLayerOpacity, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.2';
+import { setCameraView, toggleMaquetaMode, setTreeOptions3D, isMaquetaModeActive, setLayerVisibility, setLayerOpacity, getLayerStats, setWalkRings, setFloraZoneHighlight, updateSatelliteTexture, setContourOptions, setBuildingFinish, renderFeasibilityVolume, loadProject3DFile, studioState } from './preview.js?v=6.2';
 import { pinStore, PIN_COLORS, PIN_TYPES } from './pins.js?v=1.0';
 import { feasibilityStore } from './feasibility.js?v=1.0';
 import { MAP_GRID_STEPS } from './mapplan.js?v=6.0';
@@ -2036,6 +2036,64 @@ document.querySelectorAll('.layer-eye-btn').forEach((btn) => {
   });
 });
 
+// --- Personalización de Arbolado 3D (Studio) y 2D (Cartografía) ---
+// 3D Tree Listeners
+document.getElementById('studio-tree-style-select')?.addEventListener('change', (e) => {
+  if (window.setTreeOptions3D) window.setTreeOptions3D({ style: e.target.value });
+});
+
+document.getElementById('studio-tree-scale-slider')?.addEventListener('input', (e) => {
+  const val = parseFloat(e.target.value);
+  const out = document.getElementById('studio-tree-scale-val');
+  if (out) out.textContent = `${val.toFixed(1)}×`;
+  if (window.setTreeOptions3D) window.setTreeOptions3D({ scale: val });
+});
+
+document.querySelectorAll('#studio-tree-density-group .tree-density-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#studio-tree-density-group .tree-density-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const density = parseInt(btn.getAttribute('data-density'), 10);
+    if (window.setTreeOptions3D) window.setTreeOptions3D({ density });
+  });
+});
+
+document.querySelectorAll('#studio-tree-palette-group .tree-color-dot').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#studio-tree-palette-group .tree-color-dot').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const colorKey = btn.getAttribute('data-color');
+    if (window.setTreeOptions3D) window.setTreeOptions3D({ color: colorKey });
+  });
+});
+
+// 2D Cartography Extra Tree Listeners (Tab 3)
+document.getElementById('map-tree-scale')?.addEventListener('input', (e) => {
+  const val = parseFloat(e.target.value);
+  const out = document.getElementById('map-tree-scale-val');
+  if (out) out.textContent = `${val.toFixed(1)}×`;
+  if (mapOpts) {
+    if (!mapOpts.overlays) mapOpts.overlays = {};
+    mapOpts.overlays.treeScale = val;
+    renderLayerStackControls();
+    renderMap();
+  }
+});
+
+document.querySelectorAll('#map-tree-density-group .tree-density-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('#map-tree-density-group .tree-density-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    const d = parseInt(btn.getAttribute('data-tree-density'), 10);
+    if (mapOpts) {
+      if (!mapOpts.overlays) mapOpts.overlays = {};
+      mapOpts.overlays.treeDensity = d;
+      renderLayerStackControls();
+      renderMap();
+    }
+  });
+});
+
 // 3. Sliders de Opacidad en tiempo real
 document.querySelectorAll('.layer-opacity-slider').forEach((slider) => {
   slider.addEventListener('input', (e) => {
@@ -3408,8 +3466,13 @@ function renderLayerStackControls() {
     const hasHatchOption = key === 'buildings' || key === 'green';
     const curHatch = mapOpts.layerHatches[key] || 'none';
 
+    const isTreeLayer = key === 'trees';
+    const curTreeStyle = mapOpts.overlays?.treeStyle || mapOpts.treeStyle || 'branching';
+    const curTreeScale = Number(mapOpts.overlays?.treeScale || mapOpts.treeScale || 1.0);
+    const curTreeDensity = Number(mapOpts.overlays?.treeDensity || mapOpts.treeDensity || 100);
+
     return `
-      <div class="axiom-layer-item" data-layerkey="${key}" draggable="false">
+      <div class="axiom-layer-item ${isTreeLayer ? 'is-tree-item' : ''}" data-layerkey="${key}" draggable="false">
         <div class="axiom-layer-head">
           <span class="layer-drag-handle" draggable="true" title="Arrastrar para reordenar capa">⠿</span>
           <label class="axiom-layer-left">
@@ -3434,6 +3497,28 @@ function renderLayerStackControls() {
           <input type="range" min="0" max="100" step="5" value="${opPercent}" class="axiom-range axiom-layer-op-slider" title="Opacidad de capa">
           <span class="axiom-layer-op-val">${opPercent}%</span>
         </div>
+        ${isTreeLayer ? `
+          <div class="axiom-tree-controls-row">
+            <div class="axiom-row-between" style="gap:6px; margin-bottom:4px;">
+              <select class="layer-tree-style-select axiom-lang-select" style="font-size:10px; height:22px; flex:1;" title="Estilo gráfico 2D">
+                <option value="branching" ${curTreeStyle === 'branching' ? 'selected' : ''}>Ramificación</option>
+                <option value="crown_hatch" ${curTreeStyle === 'crown_hatch' ? 'selected' : ''}>Rayado radial</option>
+                <option value="stipple" ${curTreeStyle === 'stipple' ? 'selected' : ''}>Punteado CAD</option>
+                <option value="detailed" ${curTreeStyle === 'detailed' ? 'selected' : ''}>Doble anillo</option>
+                <option value="minimal" ${curTreeStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
+              </select>
+              <div class="tree-density-btn-group" style="scale:0.88; transform-origin:right center;">
+                <button type="button" class="tree-density-btn ${curTreeDensity === 50 ? 'active' : ''}" data-layer-density="50" title="50% densidad">50%</button>
+                <button type="button" class="tree-density-btn ${curTreeDensity === 100 ? 'active' : ''}" data-layer-density="100" title="100% densidad">100%</button>
+              </div>
+            </div>
+            <div class="axiom-row-between" style="font-size:10px; color:#a1a1aa;">
+              <span>Escala</span>
+              <input type="range" min="0.5" max="2.0" step="0.1" value="${curTreeScale}" class="layer-tree-scale-slider axiom-range" style="width:85px;" title="Escala arbolado 2D">
+              <span class="layer-tree-scale-val">${curTreeScale.toFixed(1)}×</span>
+            </div>
+          </div>
+        ` : ''}
       </div>
     `;
   }).join('');
@@ -3485,6 +3570,46 @@ function renderLayerStackControls() {
       mapOpts.layerHatches[key] = hatchSel.value;
       renderMap();
     });
+
+    if (key === 'trees') {
+      const treeStyleSel = itemEl.querySelector('.layer-tree-style-select');
+      const treeScaleSld = itemEl.querySelector('.layer-tree-scale-slider');
+      const treeScaleTxt = itemEl.querySelector('.layer-tree-scale-val');
+
+      treeStyleSel?.addEventListener('change', (e) => {
+        if (!mapOpts.overlays) mapOpts.overlays = {};
+        mapOpts.overlays.treeStyle = e.target.value;
+        const mainSel = document.getElementById('map-tree-style');
+        if (mainSel) mainSel.value = e.target.value;
+        renderMap();
+      });
+
+      treeScaleSld?.addEventListener('input', (e) => {
+        const val = parseFloat(e.target.value);
+        if (treeScaleTxt) treeScaleTxt.textContent = `${val.toFixed(1)}×`;
+        if (!mapOpts.overlays) mapOpts.overlays = {};
+        mapOpts.overlays.treeScale = val;
+        const mainSld = document.getElementById('map-tree-scale');
+        const mainTxt = document.getElementById('map-tree-scale-val');
+        if (mainSld) mainSld.value = val;
+        if (mainTxt) mainTxt.textContent = `${val.toFixed(1)}×`;
+        renderMap();
+      });
+
+      itemEl.querySelectorAll('[data-layer-density]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const d = parseInt(btn.getAttribute('data-layer-density'), 10);
+          itemEl.querySelectorAll('[data-layer-density]').forEach(b => b.classList.remove('active'));
+          btn.classList.add('active');
+          if (!mapOpts.overlays) mapOpts.overlays = {};
+          mapOpts.overlays.treeDensity = d;
+          document.querySelectorAll('#map-tree-density-group .tree-density-btn').forEach(b => {
+            b.classList.toggle('active', parseInt(b.getAttribute('data-tree-density'), 10) === d);
+          });
+          renderMap();
+        });
+      });
+    }
 
     visCb?.addEventListener('change', () => {
       if (key === 'relief') {

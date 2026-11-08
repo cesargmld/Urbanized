@@ -429,11 +429,17 @@ export function mapSVG(model, o) {
         }
         parts.push(`<path d="${d}"/>`);
       }
-    if (o.layers.trees)
-      for (const t of model.trees) {
-        const len = t.h * k * 0.55;
-        parts.push(`<circle cx="${f(t.x + ux * len + h)}" cy="${f(h - t.y - uy * len)}" r="${f(t.r * 0.9)}"/>`);
+    if (o.layers.trees) {
+      const scaleMul = Number(o.treeScale || o.overlays?.treeScale || 1.0);
+      const density = Number(o.treeDensity || o.overlays?.treeDensity || 100) / 100;
+      const shadowTrees = (density < 0.99)
+        ? model.trees.filter((_, idx) => (idx % Math.round(1 / density) === 0))
+        : model.trees;
+      for (const t of shadowTrees) {
+        const len = (t.h * scaleMul) * k * 0.55;
+        parts.push(`<circle cx="${f(t.x + ux * len + h)}" cy="${f(h - t.y - uy * len)}" r="${f(t.r * scaleMul * 0.9)}"/>`);
       }
+    }
     const shFill = getLayerFill('shadows', c.shadow);
     return gl('SHADOWS', `fill="${shFill}" fill-rule="nonzero" opacity="${o.shadows.strength}"`, parts.join(''));
   })();
@@ -441,20 +447,28 @@ export function mapSVG(model, o) {
   // 8. Árboles con estilos arquitectónicos seleccionables
   layerSnippets.trees = (() => {
     if (!o.layers.trees || !model.trees.length) return '';
-    const style = o.overlays?.treeStyle || o.treeStyle || 'branching';
-    const glyphs = model.trees.map((t) => {
-      const cx = f(t.x + h), cy = f(h - t.y), r = f(t.r);
+    const style = o.treeStyle || o.overlays?.treeStyle || 'branching';
+    const scaleMul = Number(o.treeScale || o.overlays?.treeScale || 1.0);
+    const density = Number(o.treeDensity || o.overlays?.treeDensity || 100) / 100;
+    const treeCol = o.treeColor || o.overlays?.treeColor || c.tree;
+
+    const treeList = (density < 0.99)
+      ? model.trees.filter((_, idx) => (idx % Math.round(1 / density) === 0))
+      : model.trees;
+
+    const glyphs = treeList.map((t) => {
+      const cx = f(t.x + h), cy = f(h - t.y), r = f((t.r || 3.5) * scaleMul);
       const rad = Number(r);
       if (style === 'crown_hatch') {
-        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}" fill-opacity="0.35"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.12)}"/><path d="M${f(Number(cx) - rad * 0.7)},${cy}L${f(Number(cx) + rad * 0.7)},${cy} M${cx},${f(Number(cy) - rad * 0.7)}L${cx},${f(Number(cy) + rad * 0.7)}" stroke="${c.text}" stroke-width="${pen(0.12)}"/></g>`;
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.32"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.12)}"/><path d="M${f(Number(cx) - rad * 0.7)},${cy}L${f(Number(cx) + rad * 0.7)},${cy} M${cx},${f(Number(cy) - rad * 0.7)}L${cx},${f(Number(cy) + rad * 0.7)}" stroke="${c.text}" stroke-width="${pen(0.12)}"/></g>`;
       } else if (style === 'stipple') {
-        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.tree}" stroke-width="${pen(0.18)}" stroke-dasharray="${pen(0.5)} ${pen(0.5)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.55)}" fill="${c.tree}" fill-opacity="0.65"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.16))}" fill="${c.text}"/></g>`;
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${treeCol}" stroke-width="${pen(0.18)}" stroke-dasharray="${pen(0.5)} ${pen(0.5)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.55)}" fill="${treeCol}" fill-opacity="0.65"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.16))}" fill="${c.text}"/></g>`;
       } else if (style === 'branching') {
-        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}" opacity="0.45"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.8)}" x2="${cx}" y2="${f(Number(cy) - rad * 0.4)}" stroke="${c.text}" stroke-width="${pen(0.16)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.1)}" x2="${f(Number(cx) - rad * 0.55)}" y2="${f(Number(cy) - rad * 0.35)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.25)}" x2="${f(Number(cx) + rad * 0.55)}" y2="${f(Number(cy) - rad * 0.25)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/></g>`;
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" opacity="0.45"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.8)}" x2="${cx}" y2="${f(Number(cy) - rad * 0.4)}" stroke="${c.text}" stroke-width="${pen(0.16)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.1)}" x2="${f(Number(cx) - rad * 0.55)}" y2="${f(Number(cy) - rad * 0.35)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.25)}" x2="${f(Number(cx) + rad * 0.55)}" y2="${f(Number(cy) - rad * 0.25)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/></g>`;
       } else if (style === 'detailed') {
-        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}" opacity="0.25"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.14)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.6)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.15))}" fill="${c.text}"/></g>`;
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" opacity="0.25"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.14)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.6)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.15))}" fill="${c.text}"/></g>`;
       } else {
-        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${c.tree}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.5, rad * 0.22))}" fill="${c.text}"/></g>`;
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.65"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.5, rad * 0.22))}" fill="${c.text}"/></g>`;
       }
     }).join('');
     return gl('TREES', '', glyphs);

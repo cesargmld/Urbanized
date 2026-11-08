@@ -1009,6 +1009,44 @@
                   <input type="range" min="0" max="100" value="100" step="1" class="layer-opacity-slider" data-layer-opacity="trees" title="Opacidad vegetación">
                   <span class="layer-opacity-val" id="val-op-trees">100%</span>
                 </div>
+                <div class="studio-tree-config-box" id="studio-tree-config-box">
+                  <div class="studio-tree-row">
+                    <span class="studio-tree-sublabel">Geometría 3D</span>
+                    <select id="studio-tree-style-select" class="axiom-lang-select studio-tree-select" title="Forma de arbolado 3D">
+                      <option value="sphere" selected>Esfera maqueta suave</option>
+                      <option value="cone">Cono / Pino arquitectónico</option>
+                      <option value="cylinder">Cilindro / Álamo columnar</option>
+                      <option value="faceted">Dodecaedro facetado</option>
+                      <option value="pyramid">Piramidal minimalista</option>
+                    </select>
+                  </div>
+                  <div class="studio-tree-row">
+                    <div class="studio-tree-sublabel-group">
+                      <span class="studio-tree-sublabel">Escala</span>
+                      <span class="studio-tree-val" id="studio-tree-scale-val">1.0×</span>
+                    </div>
+                    <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="axiom-range studio-tree-slider" id="studio-tree-scale-slider" title="Escala del arbolado 3D">
+                  </div>
+                  <div class="studio-tree-row">
+                    <span class="studio-tree-sublabel">Densidad</span>
+                    <div class="tree-density-btn-group" id="studio-tree-density-group">
+                      <button type="button" class="tree-density-btn" data-density="25">25%</button>
+                      <button type="button" class="tree-density-btn" data-density="50">50%</button>
+                      <button type="button" class="tree-density-btn" data-density="75">75%</button>
+                      <button type="button" class="tree-density-btn active" data-density="100">100%</button>
+                    </div>
+                  </div>
+                  <div class="studio-tree-row">
+                    <span class="studio-tree-sublabel">Tonalidad maqueta</span>
+                    <div class="tree-palette-group" id="studio-tree-palette-group">
+                      <button type="button" class="tree-color-dot active" data-color="salvia" title="Verde salvia mate" style="background:#5a7a5e;"></button>
+                      <button type="button" class="tree-color-dot" data-color="oliva" title="Verde oliva técnico" style="background:#71816d;"></button>
+                      <button type="button" class="tree-color-dot" data-color="monochrome" title="Grafito monocromo" style="background:#32363e;"></button>
+                      <button type="button" class="tree-color-dot" data-color="balsa" title="Madera balsa maqueta" style="background:#c8b293;"></button>
+                      <button type="button" class="tree-color-dot" data-color="white" title="Yeso blanco maqueta" style="background:#f4f4f6;"></button>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <!-- 5. Vialidades Principales -->
@@ -2149,6 +2187,22 @@
                   <option value="stipple">Hatch de puntos</option>
                   <option value="detailed">Doble anillo concéntrico</option>
                 </select>
+              </div>
+              <div class="axiom-row-between" style="margin-top:6px;">
+                <div class="studio-tree-sublabel-group">
+                  <span class="axiom-label">Escala arbolado 2D</span>
+                  <span class="studio-tree-val" id="map-tree-scale-val">1.0×</span>
+                </div>
+                <input type="range" min="0.5" max="2.0" step="0.1" value="1.0" class="axiom-range" id="map-tree-scale" style="width:110px;" title="Escala del arbolado 2D">
+              </div>
+              <div class="axiom-row-between" style="margin-top:6px;">
+                <span class="axiom-label">Densidad arbolado 2D</span>
+                <div class="tree-density-btn-group" id="map-tree-density-group">
+                  <button type="button" class="tree-density-btn" data-tree-density="25">25%</button>
+                  <button type="button" class="tree-density-btn" data-tree-density="50">50%</button>
+                  <button type="button" class="tree-density-btn" data-tree-density="75">75%</button>
+                  <button type="button" class="tree-density-btn active" data-tree-density="100">100%</button>
+                </div>
               </div>
             </div>
 
