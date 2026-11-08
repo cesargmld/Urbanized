@@ -46,7 +46,7 @@ export const studioState = {
 };
 
 function init(container) {
-  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: false });
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true });
   renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFSoftShadowMap;
@@ -56,6 +56,16 @@ function init(container) {
   scene.background = new THREE.Color(0x0c0c0e);
   const camera = new THREE.PerspectiveCamera(35, 1, 1, 20000);
   camera.up.set(0, 0, 1);
+
+  window.capture3DSnapshot = () => {
+    try {
+      renderer.render(scene, camera);
+      return renderer.domElement.toDataURL('image/jpeg', 0.92);
+    } catch(err) {
+      console.warn('capture3DSnapshot error:', err);
+      return null;
+    }
+  };
   const controls = new OrbitControls(camera, renderer.domElement);
   controls.enableDamping = true;
   controls.maxPolarAngle = Math.PI * 0.49;

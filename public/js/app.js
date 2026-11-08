@@ -840,6 +840,7 @@ function renderMeta(m) {
 }
 
 async function showResult(m) {
+  window.showResult = showResult;
   hideLoadingModal();
   setMode('model');
   renderMeta(m);

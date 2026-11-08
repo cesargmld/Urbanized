@@ -6241,94 +6241,232 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
 
     let activeCompPickerVpIdx = 0;
 
+    // SVG Architectural Fallback Preview Generator
+    function createCompPreviewSvg(tag, bg, title, subtitle) {
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="800" height="520" viewBox="0 0 800 520">
+        <rect width="800" height="520" fill="${bg}"/>
+        <defs>
+          <pattern id="cadGrid_${tag}" width="40" height="40" patternUnits="userSpaceOnUse">
+            <path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="800" height="520" fill="url(#cadGrid_${tag})"/>
+        <circle cx="400" cy="220" r="90" fill="none" stroke="rgba(56,189,248,0.2)" stroke-width="2" stroke-dasharray="4 4"/>
+        <rect x="330" y="165" width="140" height="110" fill="rgba(56,189,248,0.08)" stroke="#38bdf8" stroke-width="2"/>
+        <text x="400" y="230" fill="#38bdf8" font-family="'JetBrains Mono', monospace" font-size="28" font-weight="700" text-anchor="middle">${tag}</text>
+        <text x="400" y="340" fill="#f4f4f6" font-family="'Inter', sans-serif" font-size="20" font-weight="600" text-anchor="middle">${title}</text>
+        <text x="400" y="370" fill="#71717a" font-family="'Inter', sans-serif" font-size="13" text-anchor="middle">${subtitle}</text>
+        <text x="400" y="480" fill="rgba(255,255,255,0.3)" font-family="'JetBrains Mono', monospace" font-size="11" text-anchor="middle">URBNZD · CGM ATELIER</text>
+      </svg>`;
+      return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    }
+
+    // Capture 3D model snapshot reliably
+    function getComp3DSnapshot() {
+      if (window.capture3DSnapshot) {
+        const u = window.capture3DSnapshot();
+        if (u) return u;
+      }
+      const c = document.querySelector('#viewer canvas');
+      if (c && c.width > 0) {
+        try { return c.toDataURL('image/jpeg', 0.9); } catch(e){}
+      }
+      return createCompPreviewSvg('3D', '#090a0f', '01 Vista 3D Modelo', 'Perspectiva arquitectónica tridimensional');
+    }
+
+    // Capture 2D analytical cartography reliably
+    function getComp2DSnapshot() {
+      const img = document.querySelector('#map-flat img');
+      if (img && img.src && !img.src.endsWith('/') && !img.src.startsWith('about:')) {
+        return img.src;
+      }
+      const m = window.currentModel || window.model;
+      if (m && window.mapMod) {
+        try {
+          const svg = window.mapMod.mapSVG(m, window.mapOpts || window.mapMod.presetOptions('classic'));
+          return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        } catch(e){}
+      }
+      return createCompPreviewSvg('2D', '#111827', '01 Planta General 2D', 'Cartografía analítica QGIS con vialidades');
+    }
+
+    // Capture Axonometry drawing reliably
+    function getCompAxoSnapshot() {
+      const c = document.getElementById('illu-canvas');
+      if (c && c.width > 0) {
+        try {
+          const u = c.toDataURL('image/png');
+          if (u && u.length > 500) return u;
+        } catch(e){}
+      }
+      return createCompPreviewSvg('AXO', '#0f172a', '02 Axonometría Isométrica', 'Despiece axonométrico técnico');
+    }
+
+    // Capture Nolli map reliably
+    function getCompNolliSnapshot() {
+      const m = window.currentModel || window.model;
+      if (m && window.mapMod) {
+        try {
+          const svg = window.mapMod.mapSVG(m, window.mapMod.presetOptions('figure'));
+          return 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+        } catch(e){}
+      }
+      return createCompPreviewSvg('NOLLI', '#18181b', 'Plano Nolli (B/N)', 'Diagrama morfológico de lleno y vacío urbano');
+    }
+
+    // Assign thumbnail and label to currently selected viewport block
+    function assignViewToActiveCompViewport(thumbUrl, label, sceneId = null) {
+      const page = sheetPages[activeSheetPageIndex];
+      if (!page || !page.viewports[activeCompPickerVpIdx]) return;
+      page.viewports[activeCompPickerVpIdx].thumbnail = thumbUrl;
+      page.viewports[activeCompPickerVpIdx].sceneId = sceneId;
+      page.viewports[activeCompPickerVpIdx].label = label;
+      
+      const modal = document.getElementById('modal-comp-pick-scene');
+      if (modal) modal.style.display = 'none';
+      
+      updateCompositorSheetView();
+      renderSheetViewports();
+      showCadToast('✓ ' + label + ' asignada al bloque');
+    }
+
     // Open scene picker modal for a specific viewport block
     function openCompPickerForViewport(vpIdx) {
       activeCompPickerVpIdx = vpIdx;
       const modal = document.getElementById('modal-comp-pick-scene');
       if (!modal) return;
 
-      const scenesList = document.getElementById('comp-picker-scenes-list');
-      if (scenesList) {
+      const gridList = document.getElementById('comp-picker-grid-list') || document.getElementById('comp-picker-scenes-list');
+      if (gridList) {
         const views = viewsManager.getViews();
-        if (!views.length) {
-          scenesList.innerHTML = '<span style="color:#71717a; font-size:11px; padding:8px;">No hay escenas guardadas aún. Usa los botones rápidos de arriba para capturar en vivo o guarda una escena desde el modelo.</span>';
-        } else {
-          scenesList.innerHTML = views.map(v => {
-            const thumbHtml = v.thumbnail 
-              ? '<img src="' + v.thumbnail + '" style="width:52px; height:36px; object-fit:cover; border-radius:3px; border:1px solid rgba(255,255,255,0.12);" alt="">'
-              : '<div style="width:52px; height:36px; background:#27272a; border-radius:3px; display:flex; align-items:center; justify-content:center; color:#71717a; font-size:10px;">' + (v.mode === 'result' ? '3D' : v.mode === 'mapper' ? '2D' : 'AXO') + '</div>';
-            return '<div style="display:flex; align-items:center; justify-content:space-between; padding:8px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-radius:4px; gap:10px;">' +
-              '<div style="display:flex; align-items:center; gap:8px; overflow:hidden;">' +
-                thumbHtml +
-                '<div style="overflow:hidden;">' +
-                  '<div style="font-size:11.5px; font-weight:600; color:#f4f4f6; white-space:nowrap; text-overflow:ellipsis; overflow:hidden;">' + v.name + '</div>' +
-                  '<div style="font-size:9.5px; color:#71717a;">' + (v.mode === 'result' ? 'Modelo 3D' : v.mode === 'mapper' ? 'Cartografía 2D' : 'Axonometría') + ' · ' + new Date(v.createdAt).toLocaleDateString() + '</div>' +
-                '</div>' +
-              '</div>' +
-              '<button type="button" class="axiom-subtle-btn btn-assign-saved-scene" data-scene-id="' + v.id + '" style="font-size:10px; padding:4px 10px; flex:none; background:#38bdf8; color:#000; font-weight:700;">Asignar</button>' +
-            '</div>';
-          }).join('');
 
-          scenesList.querySelectorAll('.btn-assign-saved-scene').forEach(btn => {
-            btn.addEventListener('click', () => {
-              const sId = btn.getAttribute('data-scene-id');
-              const v = views.find(item => item.id === sId);
-              if (v) {
-                const page = sheetPages[activeSheetPageIndex];
-                if (page.viewports[activeCompPickerVpIdx]) {
-                  page.viewports[activeCompPickerVpIdx].sceneId = v.id;
-                  page.viewports[activeCompPickerVpIdx].thumbnail = v.thumbnail;
-                  page.viewports[activeCompPickerVpIdx].label = v.name;
-                  modal.style.display = 'none';
-                  updateCompositorSheetView();
-                  showCadToast('✓ Escena "' + v.name + '" asignada al bloque');
-                }
-              }
-            });
-          });
+        // 1. Built-in architectural presets
+        const presets = [
+          {
+            id: 'preset_2d_general',
+            name: '01 Planta general 2D',
+            desc: 'Cartografía analítica QGIS con usos de suelo y vialidades',
+            type: 'Cartografía 2D',
+            accent: '#38bdf8',
+            getThumb: getComp2DSnapshot
+          },
+          {
+            id: 'preset_3d_isometria',
+            name: '02 Axonometría isométrica',
+            desc: 'Despiece axonométrico con capas de relieve, masa y arbolado',
+            type: 'Axonometría 3D',
+            accent: '#a855f7',
+            getThumb: getCompAxoSnapshot
+          },
+          {
+            id: 'preset_3d_modelo',
+            name: '03 Vista 3D modelo',
+            desc: 'Perspectiva tridimensional con asoleamiento astronómico',
+            type: 'Modelo 3D',
+            accent: '#10b981',
+            getThumb: getComp3DSnapshot
+          },
+          {
+            id: 'preset_2d_nolli',
+            name: '04 Plano Nolli urbano',
+            desc: 'Morfología de llenos y vacíos urbanos en blanco y negro',
+            type: 'Nolli QGIS',
+            accent: '#f59e0b',
+            getThumb: getCompNolliSnapshot
+          }
+        ];
+
+        let cardsHtml = presets.map((p, pIdx) => {
+          const thumb = p.getThumb();
+          return `
+            <div class="comp-picker-card" data-preset-idx="${pIdx}">
+              <div style="position:relative; width:100%; height:110px; background:#09090b; overflow:hidden;">
+                <img src="${thumb}" class="comp-picker-thumb" style="width:100%; height:100%; object-fit:cover; display:block;" alt="${p.name}">
+                <span style="position:absolute; top:6px; left:8px; font-size:8.5px; font-weight:700; color:${p.accent}; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); padding:2px 6px; border-radius:3px; border:1px solid rgba(255,255,255,0.1);">${p.type}</span>
+              </div>
+              <div class="comp-picker-meta" style="padding:10px;">
+                <div class="comp-picker-name" style="font-size:12px; font-weight:700; color:#ffffff; margin-bottom:2px;">${p.name}</div>
+                <div style="font-size:10px; color:#a1a1aa; line-height:1.3; margin-bottom:8px;">${p.desc}</div>
+                <button type="button" class="axiom-btn-primary" style="width:100%; font-size:11px; padding:6px 10px; justify-content:center; border-radius:4px; font-weight:600;">Asignar al Bloque</button>
+              </div>
+            </div>
+          `;
+        }).join('');
+
+        // 2. Saved user scenes
+        if (views.length > 0) {
+          cardsHtml += views.map(v => {
+            const thumb = v.thumbnail || createCompPreviewSvg('ESCENA', '#1e1e24', v.name, 'Escena guardada');
+            const modeName = v.mode === 'result' ? 'Modelo 3D' : v.mode === 'mapper' ? 'Cartografía 2D' : 'Axonometría';
+            return `
+              <div class="comp-picker-card" data-saved-scene-id="${v.id}">
+                <div style="position:relative; width:100%; height:110px; background:#09090b; overflow:hidden;">
+                  <img src="${thumb}" class="comp-picker-thumb" style="width:100%; height:100%; object-fit:cover; display:block;" alt="${v.name}">
+                  <span style="position:absolute; top:6px; left:8px; font-size:8.5px; font-weight:700; color:#38bdf8; background:rgba(0,0,0,0.7); backdrop-filter:blur(4px); padding:2px 6px; border-radius:3px; border:1px solid rgba(255,255,255,0.1);">${modeName}</span>
+                </div>
+                <div class="comp-picker-meta" style="padding:10px;">
+                  <div class="comp-picker-name" style="font-size:12px; font-weight:700; color:#ffffff; margin-bottom:2px;">${v.name}</div>
+                  <div style="font-size:10px; color:#a1a1aa; line-height:1.3; margin-bottom:8px;">Guardada el ${new Date(v.createdAt).toLocaleDateString()}</div>
+                  <button type="button" class="axiom-btn-primary" style="width:100%; font-size:11px; padding:6px 10px; justify-content:center; border-radius:4px; font-weight:600;">Asignar al Bloque</button>
+                </div>
+              </div>
+            `;
+          }).join('');
         }
+
+        gridList.innerHTML = cardsHtml;
+
+        // Wire preset click events
+        gridList.querySelectorAll('[data-preset-idx]').forEach(card => {
+          card.addEventListener('click', () => {
+            const idx = parseInt(card.getAttribute('data-preset-idx'), 10);
+            const p = presets[idx];
+            if (p) {
+              const thumb = p.getThumb();
+              assignViewToActiveCompViewport(thumb, p.name);
+            }
+          });
+        });
+
+        // Wire saved scene click events
+        gridList.querySelectorAll('[data-saved-scene-id]').forEach(card => {
+          card.addEventListener('click', () => {
+            const sId = card.getAttribute('data-saved-scene-id');
+            const v = views.find(item => item.id === sId);
+            if (v) {
+              const thumb = v.thumbnail || createCompPreviewSvg('ESCENA', '#1e1e24', v.name, 'Escena guardada');
+              assignViewToActiveCompViewport(thumb, v.name, v.id);
+            }
+          });
+        });
       }
 
       modal.style.display = 'flex';
     }
     window.openCompPickerForViewport = openCompPickerForViewport;
 
-    // Helper to capture live canvas and assign to viewport
-    function captureLiveCanvasToViewport(canvasSelector, label) {
-      const canvas = document.querySelector(canvasSelector);
-      if (!canvas) {
-        showCadToast('No se encontró el lienzo correspondiente');
-        return;
-      }
-      try {
-        const dataUrl = canvas.toDataURL('image/jpeg', 0.88);
-        const page = sheetPages[activeSheetPageIndex];
-        if (page.viewports[activeCompPickerVpIdx]) {
-          page.viewports[activeCompPickerVpIdx].thumbnail = dataUrl;
-          page.viewports[activeCompPickerVpIdx].sceneId = null;
-          page.viewports[activeCompPickerVpIdx].label = label;
-          document.getElementById('modal-comp-pick-scene').style.display = 'none';
-          updateCompositorSheetView();
-          showCadToast('✓ ' + label + ' capturada y vinculada al bloque');
-        }
-      } catch (err) {
-        console.error('Error capturing canvas:', err);
-        showCadToast('Error al capturar imagen del lienzo');
-      }
-    }
+    // Direct Modal Quick Capture Button Handlers
+    document.getElementById('btn-picker-capture-3d')?.addEventListener('click', () => {
+      const thumb = getComp3DSnapshot();
+      assignViewToActiveCompViewport(thumb, '01 Vista 3D Modelo');
+    });
+    document.getElementById('btn-picker-capture-map')?.addEventListener('click', () => {
+      const thumb = getComp2DSnapshot();
+      assignViewToActiveCompViewport(thumb, '01 Planta General 2D');
+    });
+    document.getElementById('btn-picker-capture-axo')?.addEventListener('click', () => {
+      const thumb = getCompAxoSnapshot();
+      assignViewToActiveCompViewport(thumb, '02 Axonometría Isométrica');
+    });
 
-    // Modal Live Capture Handlers
-    document.getElementById('btn-pick-live-3d')?.addEventListener('click', () => {
-      captureLiveCanvasToViewport('#viewer canvas', '01 VISTA 3D MODELO');
-    });
-    document.getElementById('btn-pick-live-2d')?.addEventListener('click', () => {
-      captureLiveCanvasToViewport('#map-canvas, #viewer canvas', '02 PLANO CARTOGRAFÍA 2D');
-    });
-    document.getElementById('btn-pick-live-axo')?.addEventListener('click', () => {
-      captureLiveCanvasToViewport('#illu-canvas, #viewer canvas', '03 AXONOMETRÍA ISOMÉTRICA');
-    });
+    // Close Modal Events
     document.getElementById('btn-close-comp-picker')?.addEventListener('click', () => {
       document.getElementById('modal-comp-pick-scene').style.display = 'none';
+    });
+    document.getElementById('modal-comp-pick-scene')?.addEventListener('click', (e) => {
+      if (e.target.id === 'modal-comp-pick-scene') {
+        e.target.style.display = 'none';
+      }
     });
 
     // Add Viewport Block button
@@ -6704,8 +6842,8 @@ Superficie del Lote: <strong>${Math.round(lotM2).toLocaleString()} m²</strong><
         ctx.fillText(`ESC 1:${page.scale}`, x + w - 16, y + 28);
 
         // Image content
-        let src = null;
-        if (vp.sceneId) {
+        let src = vp.thumbnail || null;
+        if (!src && vp.sceneId) {
           const v = views.find(item => item.id === vp.sceneId);
           if (v && v.thumbnail) src = v.thumbnail;
         }
