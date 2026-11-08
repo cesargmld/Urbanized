@@ -858,7 +858,7 @@ async function showResult(m) {
   const targetWorkspaceView = window.pendingTargetView || 'result';
   window.pendingTargetView = null;
   if (window.switchWorkspaceView) {
-    window.switchWorkspaceView(targetWorkspaceView);
+    window.switchWorkspaceView(targetWorkspaceView, true);
   }
 
   const { showModel, triggerResize } = await import('./preview.js?v=6.0');
@@ -3501,10 +3501,15 @@ function renderLayerStackControls() {
           <div class="axiom-tree-controls-row">
             <div class="axiom-row-between" style="gap:6px; margin-bottom:4px;">
               <select class="layer-tree-style-select axiom-lang-select" style="font-size:10px; height:22px; flex:1;" title="Estilo gráfico 2D">
+                <option value="auto" ${curTreeStyle === 'auto' ? 'selected' : ''}>Auto Especies</option>
+                <option value="encino" ${curTreeStyle === 'encino' ? 'selected' : ''}>Encino Roble</option>
+                <option value="ebano" ${curTreeStyle === 'ebano' ? 'selected' : ''}>Ébano</option>
+                <option value="mezquite" ${curTreeStyle === 'mezquite' ? 'selected' : ''}>Mezquite</option>
+                <option value="anacahuita" ${curTreeStyle === 'anacahuita' ? 'selected' : ''}>Anacahuita</option>
+                <option value="sabino" ${curTreeStyle === 'sabino' ? 'selected' : ''}>Sabino / Ahuehuete</option>
                 <option value="branching" ${curTreeStyle === 'branching' ? 'selected' : ''}>Ramificación</option>
                 <option value="crown_hatch" ${curTreeStyle === 'crown_hatch' ? 'selected' : ''}>Rayado radial</option>
                 <option value="stipple" ${curTreeStyle === 'stipple' ? 'selected' : ''}>Punteado CAD</option>
-                <option value="detailed" ${curTreeStyle === 'detailed' ? 'selected' : ''}>Doble anillo</option>
                 <option value="minimal" ${curTreeStyle === 'minimal' ? 'selected' : ''}>Minimal</option>
               </select>
               <div class="tree-density-btn-group" style="scale:0.88; transform-origin:right center;">

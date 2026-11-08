@@ -107,6 +107,29 @@ const BIOMES = {
       { name: 'Tejón Europeo / Americano', latin: 'Meles meles', class: 'Mustélido excavador nocturno', status: 'Común' }
     ]
   },
+  TAMAULIPAN_MATORRAL: {
+    id: 'tamaulipan_matorral',
+    name: 'Matorral Tamaulipeco & Llanura del Noreste (Monterrey)',
+    climate: 'Semiseco cálido con canícula e inviernos variables (BSh / Cwa)',
+    canopy: 'Dosel esclerófilo de encinos, ébanos y leguminosas nativas (6 - 18 m)',
+    soil: 'Vertisoles y calcisoles pedregosos ricos en carbonato de calcio',
+    flora: [
+      { name: 'Encino Roble / Siempreverde', latin: 'Quercus polymorpha / virginiana', type: 'Árbol perennifolio majestuoso', note: 'Especie clave urbana y de parque en Monterrey; copa densa globosa', key: 'encino' },
+      { name: 'Ébano del Noreste', latin: 'Ebenopsis ebano', type: 'Árbol leguminoso esclerófilo', note: 'Madera oscura noble, copa aparasolada densa verde olivo', key: 'ebano' },
+      { name: 'Mezquite Norteño', latin: 'Prosopis glandulosa', type: 'Árbol aparasolado xerófilo', note: 'Copa extendida horizontal baja, follaje plumoso etéreo', key: 'mezquite' },
+      { name: 'Anacahuita (Flor de NL)', latin: 'Cordia boissieri', type: 'Árbol pequeño / arbusto noble', note: 'Flor blanca insignia del estado de Nuevo León, copa compacta', key: 'anacahuita' },
+      { name: 'Sabino / Ahuehuete', latin: 'Taxodium mucronatum', type: 'Árbol ribereño centenario', note: 'Habita márgenes del Río Santa Catarina y fuentes; gran porte', key: 'sabino' },
+      { name: 'Palo Blanco', latin: 'Celtis laevigata', type: 'Árbol caducifolio esbelto', note: 'Tronco liso grisáceo, copa globosa amplia de sombra fresca', key: 'paloblanco' },
+      { name: 'Huizache', latin: 'Vachellia farnesiana', type: 'Árbol aromático plumoso', note: 'Flores esféricas doradas, copa aparasolada abierta', key: 'huizache' }
+    ],
+    fauna: [
+      { name: 'Oso Negro Americano', latin: 'Ursus americanus eremicus', class: 'Mamífero mayor emblemático de NL', status: 'Protegido' },
+      { name: 'Halcón Cola Roja', latin: 'Buteo jamaicensis', class: 'Rapaz territorial de cañadas', status: 'Residente' },
+      { name: 'Pecarí de Collar / Javelina', latin: 'Dicotyles tajacu', class: 'Ungulado autóctono gregario', status: 'Común' },
+      { name: 'Cotorra Serrana Oriental', latin: 'Rhynchopsitta terrisi', class: 'Psitácido endémico de la Sierra Madre', status: 'En peligro' },
+      { name: 'Tlacuache Norteño', latin: 'Didelphis virginiana', class: 'Marsupial nativo nocturno', status: 'Común' }
+    ]
+  },
   XEROPHYTIC_DESERT: {
     id: 'xerophytic_desert',
     name: 'Matorral Xerófilo & Semidesierto',
@@ -185,6 +208,16 @@ export function classifyEcosystem(lat, lon, elevation = 0, nameHint = '') {
 
   // High elevation override
   if (elevation > 3300) return BIOMES.ALPINE_PUNA;
+
+  // Noreste de México / Matorral Tamaulipeco (Monterrey, San Pedro, Guadalupe, Saltillo bajo, Reynosa)
+  const isNortheastMexico =
+    (lat >= 23.8 && lat <= 28.5 && lon >= -102.0 && lon <= -97.5) ||
+    /monterrey|nuevo leon|nuevo león|san pedro|guadalupe|apodaca|santa catarina|san nicolas|garza garcia|cumbres|mitras|chipinque|fundidora|santiago nl|saltillo|reynosa|matamoros|tamaulipas/.test(text);
+
+  if (isNortheastMexico) {
+    if (elevation >= 1900) return BIOMES.PINE_OAK; // Solo en altas cumbres de la Sierra Madre
+    return BIOMES.TAMAULIPAN_MATORRAL;
+  }
 
   // Deserts & Xerophytic zones
   const isDesertRegion =

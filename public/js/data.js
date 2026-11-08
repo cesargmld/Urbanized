@@ -1,3 +1,57 @@
+
+export function classifyTreeSpecies(tags = {}, x = 0, y = 0, lat = 25.6866, lon = -100.3161) {
+  const tStr = [
+    tags.species,
+    tags['species:es'],
+    tags['species:en'],
+    tags.genus,
+    tags.taxon,
+    tags.name,
+    tags['name:es']
+  ].filter(Boolean).join(' ').toLowerCase();
+
+  if (/quercus|encino|roble|oak/.test(tStr)) {
+    return { key: 'encino', name: 'Encino Roble / Verde (Quercus polymorpha)' };
+  }
+  if (/ebenopsis|ebano|ébano|ebony/.test(tStr)) {
+    return { key: 'ebano', name: 'Ébano del Noreste (Ebenopsis ebano)' };
+  }
+  if (/prosopis|mezquite|mesquite/.test(tStr)) {
+    return { key: 'mezquite', name: 'Mezquite Norteño (Prosopis glandulosa)' };
+  }
+  if (/cordia|anacahuita|wild olive/.test(tStr)) {
+    return { key: 'anacahuita', name: 'Anacahuita (Cordia boissieri)' };
+  }
+  if (/taxodium|sabino|ahuehuete|bald cypress/.test(tStr)) {
+    return { key: 'sabino', name: 'Sabino / Ahuehuete (Taxodium mucronatum)' };
+  }
+  if (/celtis|palo blanco|hackberry|sugarberry/.test(tStr)) {
+    return { key: 'paloblanco', name: 'Palo Blanco (Celtis laevigata)' };
+  }
+  if (/vachellia|acacia|huizache/.test(tStr)) {
+    return { key: 'huizache', name: 'Huizache (Vachellia farnesiana)' };
+  }
+
+  // Distribución botánica nativa para Noreste de México (Monterrey y valles metropolitanos):
+  // 42% Encino Roble / Siempreverde
+  // 25% Ébano del Noreste
+  // 15% Mezquite Norteño
+  // 10% Anacahuita
+  // 8% Sabino / Ahuehuete (Ribereño)
+  const hash = Math.abs(Math.floor(x * 127 + y * 311)) % 100;
+  if (hash < 42) {
+    return { key: 'encino', name: 'Encino Roble / Verde (Quercus polymorpha)' };
+  } else if (hash < 67) {
+    return { key: 'ebano', name: 'Ébano del Noreste (Ebenopsis ebano)' };
+  } else if (hash < 82) {
+    return { key: 'mezquite', name: 'Mezquite Norteño (Prosopis glandulosa)' };
+  } else if (hash < 92) {
+    return { key: 'anacahuita', name: 'Anacahuita (Cordia boissieri)' };
+  } else {
+    return { key: 'sabino', name: 'Sabino / Ahuehuete (Taxodium mucronatum)' };
+  }
+}
+
 // Загрузка данных местности и сборка модели.
 // Здания, дороги, вода, зелень — OpenStreetMap (Overpass API).
 // Рельеф — Terrain Tiles (Mapzen / AWS Open Data, формат terrarium).
@@ -1596,7 +1650,15 @@ export function redetectTrees(model, sensitivity) {
     const inFrame = found.filter((t) => model.frame.inside(t.x, t.y));
     trees = d.osmTrees.concat(d.osmTrees.length ? inFrame.filter((t) => !near(t)) : inFrame).slice(0, MAX_TREES);
   }
-  model.trees = trees.map((t) => ({ ...t, z: d.ground(t.x, t.y) }));
+  model.trees = trees.map((t) => {
+    const sp = t.species ? { key: t.species, name: t.speciesName } : classifyTreeSpecies({}, t.x, t.y, model.center?.lat, model.center?.lon);
+    return {
+      ...t,
+      z: d.ground(t.x, t.y),
+      species: sp.key,
+      speciesName: sp.name
+    };
+  });
   if (model.stats) model.stats.trees = model.trees.length;
   return model;
 }

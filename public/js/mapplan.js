@@ -444,13 +444,22 @@ export function mapSVG(model, o) {
     return gl('SHADOWS', `fill="${shFill}" fill-rule="nonzero" opacity="${o.shadows.strength}"`, parts.join(''));
   })();
 
-  // 8. Árboles con estilos arquitectónicos seleccionables
+  // 8. Árboles con identificación botánica y simbología arquitectónica
   layerSnippets.trees = (() => {
     if (!o.layers.trees || !model.trees.length) return '';
-    const style = o.treeStyle || o.overlays?.treeStyle || 'branching';
+    const style = o.treeStyle || o.overlays?.treeStyle || 'auto';
     const scaleMul = Number(o.treeScale || o.overlays?.treeScale || 1.0);
     const density = Number(o.treeDensity || o.overlays?.treeDensity || 100) / 100;
-    const treeCol = o.treeColor || o.overlays?.treeColor || c.tree;
+    const defaultTreeCol = o.treeColor || o.overlays?.treeColor || c.tree;
+
+    const SPECIES_2D_COLORS = {
+      encino: '#4f6d54',
+      ebano: '#556350',
+      mezquite: '#798a68',
+      anacahuita: '#6d806f',
+      sabino: '#3d5743',
+      paloblanco: '#5f7860'
+    };
 
     const treeList = (density < 0.99)
       ? model.trees.filter((_, idx) => (idx % Math.round(1 / density) === 0))
@@ -459,13 +468,34 @@ export function mapSVG(model, o) {
     const glyphs = treeList.map((t) => {
       const cx = f(t.x + h), cy = f(h - t.y), r = f((t.r || 3.5) * scaleMul);
       const rad = Number(r);
-      if (style === 'crown_hatch') {
+      const spKey = t.species || 'encino';
+      const treeCol = (style === 'auto' && SPECIES_2D_COLORS[spKey]) ? SPECIES_2D_COLORS[spKey] : defaultTreeCol;
+
+      // Determinación de glifo (según especie en modo auto o según selección directa)
+      const glyphType = (style === 'auto') ? spKey : style;
+
+      if (glyphType === 'encino') {
+        // Encino Roble: Corona globosa con ramas en cruz a 45° y anillo concéntrico
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.38"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.14)}"/><path d="M${f(Number(cx) - rad * 0.75)},${cy}L${f(Number(cx) + rad * 0.75)},${cy} M${cx},${f(Number(cy) - rad * 0.75)}L${cx},${f(Number(cy) + rad * 0.75)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.35)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/></g>`;
+      } else if (glyphType === 'ebano') {
+        // Ébano: Doble contorno concéntrico técnico con núcleo denso verde olivo
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.45"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.14)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.65)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.18))}" fill="${c.text}"/></g>`;
+      } else if (glyphType === 'mezquite') {
+        // Mezquite: Aparasolado con ramas abiertas asimétricas y copa ligera
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.28"/><line x1="${cx}" y1="${cy}" x2="${f(Number(cx) - rad * 0.85)}" y2="${f(Number(cy) - rad * 0.45)}" stroke="${c.text}" stroke-width="${pen(0.13)}" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${f(Number(cx) + rad * 0.85)}" y2="${f(Number(cy) - rad * 0.45)}" stroke="${c.text}" stroke-width="${pen(0.13)}" stroke-linecap="round"/><line x1="${cx}" y1="${cy}" x2="${cx}" y2="${f(Number(cy) + rad * 0.8)}" stroke="${c.text}" stroke-width="${pen(0.13)}" stroke-linecap="round"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.16))}" fill="${c.text}"/></g>`;
+      } else if (glyphType === 'anacahuita') {
+        // Anacahuita: Corona con micro-flor central de 5 puntas
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.32"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.12)}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.5, rad * 0.22))}" fill="${c.text}"/><path d="M${cx},${f(Number(cy) - rad * 0.4)}L${f(Number(cx) + rad * 0.38)},${f(Number(cy) - rad * 0.12)}L${f(Number(cx) + rad * 0.24)},${f(Number(cy) + rad * 0.36)}L${f(Number(cx) - rad * 0.24)},${f(Number(cy) + rad * 0.36)}L${f(Number(cx) - rad * 0.38)},${f(Number(cy) - rad * 0.12)}Z" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/></g>`;
+      } else if (glyphType === 'sabino') {
+        // Sabino / Ahuehuete: Núcleo estrellado concéntrico con anillos de gran porte
+        return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.4"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.15)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.5)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.12)}"/><path d="M${f(Number(cx) - rad * 0.8)},${cy}L${f(Number(cx) + rad * 0.8)},${cy} M${cx},${f(Number(cy) - rad * 0.8)}L${cx},${f(Number(cy) + rad * 0.8)} M${f(Number(cx) - rad * 0.56)},${f(Number(cy) - rad * 0.56)}L${f(Number(cx) + rad * 0.56)},${f(Number(cy) + rad * 0.56)} M${f(Number(cx) - rad * 0.56)},${f(Number(cy) + rad * 0.56)}L${f(Number(cx) + rad * 0.56)},${f(Number(cy) - rad * 0.56)}" stroke="${c.text}" stroke-width="${pen(0.1)}"/></g>`;
+      } else if (glyphType === 'crown_hatch') {
         return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.32"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.12)}"/><path d="M${f(Number(cx) - rad * 0.7)},${cy}L${f(Number(cx) + rad * 0.7)},${cy} M${cx},${f(Number(cy) - rad * 0.7)}L${cx},${f(Number(cy) + rad * 0.7)}" stroke="${c.text}" stroke-width="${pen(0.12)}"/></g>`;
-      } else if (style === 'stipple') {
+      } else if (glyphType === 'stipple') {
         return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${treeCol}" stroke-width="${pen(0.18)}" stroke-dasharray="${pen(0.5)} ${pen(0.5)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.55)}" fill="${treeCol}" fill-opacity="0.65"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.16))}" fill="${c.text}"/></g>`;
-      } else if (style === 'branching') {
+      } else if (glyphType === 'branching') {
         return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" opacity="0.45"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.8)}" x2="${cx}" y2="${f(Number(cy) - rad * 0.4)}" stroke="${c.text}" stroke-width="${pen(0.16)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.1)}" x2="${f(Number(cx) - rad * 0.55)}" y2="${f(Number(cy) - rad * 0.35)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/><line x1="${cx}" y1="${f(Number(cy) + rad * 0.25)}" x2="${f(Number(cx) + rad * 0.55)}" y2="${f(Number(cy) - rad * 0.25)}" stroke="${c.text}" stroke-width="${pen(0.12)}" stroke-linecap="round"/></g>`;
-      } else if (style === 'detailed') {
+      } else if (glyphType === 'detailed') {
         return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" opacity="0.25"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="${c.text}" stroke-width="${pen(0.14)}"/><circle cx="${cx}" cy="${cy}" r="${f(rad * 0.6)}" fill="none" stroke="${c.text}" stroke-width="${pen(0.1)}"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.4, rad * 0.15))}" fill="${c.text}"/></g>`;
       } else {
         return `<g><circle cx="${cx}" cy="${cy}" r="${r}" fill="${treeCol}" fill-opacity="0.65"/><circle cx="${cx}" cy="${cy}" r="${f(Math.max(0.5, rad * 0.22))}" fill="${c.text}"/></g>`;

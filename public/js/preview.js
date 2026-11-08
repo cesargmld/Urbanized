@@ -460,6 +460,19 @@ function createDashedHairline(p1, p2, s) {
 }
 
 
+const SPECIES_COLOR_MAP = {
+  encino: 0x4f6d54,     // Verde Salvia Encino profundo
+  ebano: 0x556350,      // Verde Olivo Oscuro Ébano
+  mezquite: 0x798a68,   // Verde Claro Plumoso Mezquite
+  anacahuita: 0x6d806f, // Verde Suave Anacahuita
+  sabino: 0x3d5743,     // Verde Ribereño Profundo Sabino
+  paloblanco: 0x5f7860, // Verde Neutro Palo Blanco
+  huizache: 0x828f68,   // Verde Dorado Huizache
+  minimal_sphere: 0x5a7a5e,
+  faceted: 0x5a7a5e,
+  pyramid: 0x5a7a5e
+};
+
 const TREE_COLOR_MAP = {
   salvia: 0x5a7a5e,     // Verde Salvia Arquitectónico mate
   oliva: 0x71816d,      // Verde Oliva Técnico CAD
@@ -492,36 +505,92 @@ function mergeSimpleBufferGeometries(geos) {
   return merged;
 }
 
-export function createTreeGeometry(style = 'sphere') {
-  // Tronco base cilíndrico fino (eje Z: base en 0, altura 0.38)
-  const trunkGeo = new THREE.CylinderGeometry(0.08, 0.12, 0.38, 8);
-  trunkGeo.rotateX(Math.PI / 2);
-  trunkGeo.translate(0, 0, 0.19);
-
-  let canopyGeo;
-  if (style === 'cone') {
-    // Cono arquitectónico piramidal / Pino
-    canopyGeo = new THREE.ConeGeometry(0.70, 1.25, 8);
-    canopyGeo.rotateX(Math.PI / 2);
-    canopyGeo.translate(0, 0, 0.35 + 0.625);
-  } else if (style === 'cylinder') {
-    // Álamo / Ciprés columnar esbelto
-    canopyGeo = new THREE.CylinderGeometry(0.32, 0.42, 1.35, 8);
-    canopyGeo.rotateX(Math.PI / 2);
-    canopyGeo.translate(0, 0, 0.25 + 0.675);
-  } else if (style === 'faceted') {
-    // Modern Low-Poly Dodecaedro
-    canopyGeo = new THREE.DodecahedronGeometry(0.70);
-    canopyGeo.translate(0, 0, 0.35 + 0.65);
-  } else if (style === 'pyramid') {
-    // Clásico Minimalista Unit Tree
+export function createTreeGeometry(style = 'auto') {
+  if (style === 'pyramid') {
     return meshGeometry([UNIT_TREE]);
-  } else {
-    // Default 'sphere': Copa esférica estilizada arquitectónica
-    canopyGeo = new THREE.IcosahedronGeometry(0.70, 2);
-    canopyGeo.translate(0, 0, 0.38 + 0.65);
   }
 
+  if (style === 'faceted') {
+    const trunkGeo = new THREE.CylinderGeometry(0.08, 0.12, 0.38, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.19);
+    const canopyGeo = new THREE.DodecahedronGeometry(0.70);
+    canopyGeo.translate(0, 0, 0.35 + 0.65);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  if (style === 'minimal_sphere') {
+    const trunkGeo = new THREE.CylinderGeometry(0.08, 0.12, 0.38, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.19);
+    const canopyGeo = new THREE.IcosahedronGeometry(0.70, 2);
+    canopyGeo.translate(0, 0, 0.38 + 0.65);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  // --- ESPECIES NATIVAS REALES (MORFOLOGÍA FIEL A LA ESPECIE) ---
+  if (style === 'mezquite') {
+    // Mezquite Norteño: Tronco bajo ramificado con copa aparasolada horizontal muy extendida
+    const trunkGeo = new THREE.CylinderGeometry(0.09, 0.14, 0.26, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.13);
+    const canopyGeo = new THREE.CylinderGeometry(1.05, 0.55, 0.38, 10);
+    canopyGeo.rotateX(Math.PI / 2);
+    canopyGeo.translate(0, 0, 0.25 + 0.19);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  if (style === 'ebano') {
+    // Ébano del Noreste: Tronco oscuro robusto con copa aparasolada-globosa densa
+    const trunkGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.36, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.18);
+    const canopyGeo = new THREE.DodecahedronGeometry(0.78);
+    canopyGeo.scale(1.0, 1.0, 0.82);
+    canopyGeo.translate(0, 0, 0.35 + 0.55);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  if (style === 'anacahuita') {
+    // Anacahuita: Árbol compacto bajo de flor blanca, copa redondeada regular
+    const trunkGeo = new THREE.CylinderGeometry(0.07, 0.10, 0.25, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.125);
+    const canopyGeo = new THREE.IcosahedronGeometry(0.55, 2);
+    canopyGeo.translate(0, 0, 0.25 + 0.50);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  if (style === 'sabino') {
+    // Sabino / Ahuehuete: Tronco cónico con contrafuertes y copa majestuosa de gran escala
+    const trunkGeo = new THREE.CylinderGeometry(0.13, 0.24, 0.48, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.24);
+    const canopyGeo = new THREE.ConeGeometry(0.88, 1.35, 10);
+    canopyGeo.rotateX(Math.PI / 2);
+    canopyGeo.translate(0, 0, 0.45 + 0.675);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  if (style === 'paloblanco') {
+    // Palo Blanco: Fuste esbelto liso y copa elipsoidal alta
+    const trunkGeo = new THREE.CylinderGeometry(0.08, 0.10, 0.52, 8);
+    trunkGeo.rotateX(Math.PI / 2);
+    trunkGeo.translate(0, 0, 0.26);
+    const canopyGeo = new THREE.IcosahedronGeometry(0.62, 2);
+    canopyGeo.scale(0.85, 0.85, 1.25);
+    canopyGeo.translate(0, 0, 0.50 + 0.65);
+    return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
+  }
+
+  // Default 'encino' (o 'auto' para encino base): Encino Roble / Verde
+  // Tronco robusto y copa globosa ancha y densa majestuosa
+  const trunkGeo = new THREE.CylinderGeometry(0.12, 0.16, 0.36, 8);
+  trunkGeo.rotateX(Math.PI / 2);
+  trunkGeo.translate(0, 0, 0.18);
+  const canopyGeo = new THREE.IcosahedronGeometry(0.82, 2);
+  canopyGeo.scale(1.15, 1.15, 0.88); // Achatado en Z, extendido en X/Y
+  canopyGeo.translate(0, 0, 0.35 + 0.60);
   return mergeSimpleBufferGeometries([trunkGeo, canopyGeo]);
 }
 
@@ -531,32 +600,70 @@ export function rebuildTrees3D(model = ctx?.lastModel, isMaqueta = ctx?.isMaquet
   ctx.layerGroups.trees.clear();
   if (isNolli) return;
 
-  const style = studioState.trees?.style || 'sphere';
+  const style = studioState.trees?.style || 'auto';
   const scale = studioState.trees?.scale || 1.0;
   const density = (studioState.trees?.density || 100) / 100;
-  const colHex = TREE_COLOR_MAP[studioState.trees?.color] || (typeof studioState.trees?.color === 'string' ? parseInt(studioState.trees.color.replace('#', '0x'), 16) : 0x5a7a5e);
-
-  const unit = createTreeGeometry(style);
-  const treeMat = isMaqueta
-    ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
-    : new THREE.MeshLambertMaterial({ color: colHex });
+  const customColorKey = studioState.trees?.color;
+  const forceCustomColor = customColorKey && customColorKey !== 'salvia' && TREE_COLOR_MAP[customColorKey];
 
   const treeList = (density < 0.99)
     ? model.trees.filter((_, idx) => (idx % Math.round(1 / density) === 0))
     : model.trees;
 
-  const trees = new THREE.InstancedMesh(unit, treeMat, treeList.length);
-  const mtx = new THREE.Matrix4();
-  treeList.forEach((t, i) => {
-    const tx = t.x ?? t.pos?.[0] ?? 0;
-    const ty = t.y ?? t.pos?.[1] ?? 0;
-    const tz = t.z ?? t.pos?.[2] ?? 0;
-    const tr = (t.r || 3.5) * scale;
-    const th = (t.h || 7.0) * scale;
-    trees.setMatrixAt(i, mtx.makeScale(tr, tr, th).setPosition(tx, ty, tz));
-  });
-  trees.instanceMatrix.needsUpdate = true;
-  ctx.layerGroups.trees.add(trees);
+  if (style === 'auto') {
+    // Agrupación y renderizado multiespecie fidedigno a la botánica regional
+    const groups = {};
+    treeList.forEach((t) => {
+      const spKey = t.species || 'encino';
+      if (!groups[spKey]) groups[spKey] = [];
+      groups[spKey].push(t);
+    });
+
+    const mtx = new THREE.Matrix4();
+    for (const [spKey, list] of Object.entries(groups)) {
+      const unit = createTreeGeometry(spKey);
+      let colHex = SPECIES_COLOR_MAP[spKey] || 0x4f6d54;
+      if (forceCustomColor) colHex = TREE_COLOR_MAP[customColorKey];
+
+      const treeMat = isMaqueta
+        ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
+        : new THREE.MeshLambertMaterial({ color: colHex });
+
+      const instMesh = new THREE.InstancedMesh(unit, treeMat, list.length);
+      list.forEach((t, i) => {
+        const tx = t.x ?? t.pos?.[0] ?? 0;
+        const ty = t.y ?? t.pos?.[1] ?? 0;
+        const tz = t.z ?? t.pos?.[2] ?? 0;
+        const tr = (t.r || 3.5) * scale;
+        const th = (t.h || 7.0) * scale;
+        instMesh.setMatrixAt(i, mtx.makeScale(tr, tr, th).setPosition(tx, ty, tz));
+      });
+      instMesh.instanceMatrix.needsUpdate = true;
+      ctx.layerGroups.trees.add(instMesh);
+    }
+  } else {
+    // Selección directa de especie o geometría específica
+    const unit = createTreeGeometry(style);
+    let colHex = SPECIES_COLOR_MAP[style] || 0x4f6d54;
+    if (forceCustomColor) colHex = TREE_COLOR_MAP[customColorKey];
+
+    const treeMat = isMaqueta
+      ? new THREE.MeshStandardMaterial({ color: 0xf4f4f5, roughness: 0.95, metalness: 0.01 })
+      : new THREE.MeshLambertMaterial({ color: colHex });
+
+    const trees = new THREE.InstancedMesh(unit, treeMat, treeList.length);
+    const mtx = new THREE.Matrix4();
+    treeList.forEach((t, i) => {
+      const tx = t.x ?? t.pos?.[0] ?? 0;
+      const ty = t.y ?? t.pos?.[1] ?? 0;
+      const tz = t.z ?? t.pos?.[2] ?? 0;
+      const tr = (t.r || 3.5) * scale;
+      const th = (t.h || 7.0) * scale;
+      trees.setMatrixAt(i, mtx.makeScale(tr, tr, th).setPosition(tx, ty, tz));
+    });
+    trees.instanceMatrix.needsUpdate = true;
+    ctx.layerGroups.trees.add(trees);
+  }
 }
 
 export function setTreeOptions3D(opts = {}) {
