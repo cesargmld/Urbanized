@@ -836,17 +836,14 @@ export function setLayerOpacity(key, opacity) {
     const g = ctx.layerGroups[k];
     if (g) {
       g.traverse((obj) => {
-        if (obj.isMesh && obj.material) {
-          obj.material.transparent = num < 0.99;
-          obj.material.opacity = num;
-          obj.material.needsUpdate = true;
-        }
-        if (obj.isLine || obj.isLineSegments) {
-          if (obj.material) {
-            obj.material.transparent = num < 0.99;
-            obj.material.opacity = num;
-            obj.material.needsUpdate = true;
+        if ((obj.isMesh || obj.isLine || obj.isLineSegments) && obj.material) {
+          const mat = obj.material;
+          const needsTrans = num < 0.999;
+          if (mat.transparent !== needsTrans) {
+            mat.transparent = needsTrans;
+            mat.needsUpdate = true; // Only recompile shader if boolean state changed
           }
+          mat.opacity = num; // Fast uniform update without recompilation
         }
       });
     }

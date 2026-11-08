@@ -2802,9 +2802,9 @@ function renderIlluLayerStackControls() {
     const isVisible = illu.state?.layers?.[key] !== false;
 
     return `
-      <div class="axiom-layer-item" data-illukey="${key}" draggable="true">
+      <div class="axiom-layer-item" data-illukey="${key}" draggable="false">
         <div class="axiom-layer-head">
-          <span class="layer-drag-handle" title="Arrastrar para sobreponer capa">⠿</span>
+          <span class="layer-drag-handle" draggable="true" title="Arrastrar para sobreponer capa">⠿</span>
           <label class="axiom-layer-left">
             <input type="checkbox" class="layer-vis-cb" ${isVisible ? 'checked' : ''}>
             <span class="axiom-layer-icon">${info.icon}</span>
@@ -3409,9 +3409,9 @@ function renderLayerStackControls() {
     const curHatch = mapOpts.layerHatches[key] || 'none';
 
     return `
-      <div class="axiom-layer-item" data-layerkey="${key}" draggable="true">
+      <div class="axiom-layer-item" data-layerkey="${key}" draggable="false">
         <div class="axiom-layer-head">
-          <span class="layer-drag-handle" title="Arrastrar para reordenar capa">⠿</span>
+          <span class="layer-drag-handle" draggable="true" title="Arrastrar para reordenar capa">⠿</span>
           <label class="axiom-layer-left">
             <input type="checkbox" class="layer-vis-cb" ${isVisible ? 'checked' : ''}>
             <span class="axiom-layer-icon">${info.icon}</span>
@@ -3507,11 +3507,17 @@ function renderLayerStackControls() {
     slider?.addEventListener('pointerdown', (e) => e.stopPropagation());
     slider?.addEventListener('mousedown', (e) => e.stopPropagation());
     slider?.addEventListener('dragstart', (e) => { e.preventDefault(); e.stopPropagation(); });
+    let opRaf = null;
     slider?.addEventListener('input', () => {
       const val = Number(slider.value) / 100;
       mapOpts.layerOpacities[key] = val;
       if (valText) valText.textContent = `${slider.value}%`;
-      renderMap();
+      if (!opRaf) {
+        opRaf = requestAnimationFrame(() => {
+          renderMap();
+          opRaf = null;
+        });
+      }
     });
 
     btnUp?.addEventListener('click', () => {

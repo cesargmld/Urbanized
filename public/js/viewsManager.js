@@ -74,7 +74,48 @@ class ViewsManager {
     try {
       if (typeof localStorage === 'undefined') return [];
       const data = localStorage.getItem(RECENT_PROJECTS_KEY);
-      return data ? JSON.parse(data) : [];
+      if (data) {
+        const parsed = JSON.parse(data);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+      return [
+        {
+          id: 'proj_mty_centro',
+          name: 'Monterrey · Centro & Macroplaza',
+          lat: 25.6690,
+          lon: -100.3120,
+          size: 1000,
+          shape: 'square',
+          buildings: 840,
+          relief: 540,
+          roadsKm: '32.4',
+          updatedAt: new Date().toISOString()
+        },
+        {
+          id: 'proj_spgg_valle',
+          name: 'San Pedro · Valle Oriente',
+          lat: 25.6510,
+          lon: -100.3325,
+          size: 1200,
+          shape: 'square',
+          buildings: 620,
+          relief: 620,
+          roadsKm: '28.1',
+          updatedAt: new Date(Date.now() - 86400000).toISOString()
+        },
+        {
+          id: 'proj_cdmx_reforma',
+          name: 'CDMX · Reforma & Chapultepec',
+          lat: 19.4270,
+          lon: -99.1677,
+          size: 1000,
+          shape: 'square',
+          buildings: 910,
+          relief: 2240,
+          roadsKm: '41.2',
+          updatedAt: new Date(Date.now() - 172800000).toISOString()
+        }
+      ];
     } catch (e) {
       return [];
     }
