@@ -1,20 +1,17 @@
 const fs = require('fs');
-const path = require('path');
 const vm = require('vm');
-
-const repoDir = 'C:\\Users\\Cesar Gonzalez\\.gemini\\antigravity\\scratch\\urbanized_repo';
-const html = fs.readFileSync(path.join(repoDir, 'public', 'index.html'), 'utf8');
-
-const scripts = [...html.matchAll(/<script(?![^>]*src=)[^>]*>([\s\S]*?)<\/script>/gi)];
-scripts.forEach((m, idx) => {
+const html = fs.readFileSync('public/index.html', 'utf8');
+const scriptRegex = /<script\b[^>]*>([\s\S]*?)<\/script>/gi;
+let match, idx = 0;
+while ((match = scriptRegex.exec(html)) !== null) {
+  idx++;
+  const tag = match[0].split('>')[0];
+  const code = match[1];
+  if (tag.includes('src=') || tag.includes('type="importmap"')) continue;
   try {
-    new vm.SourceTextModule(m[1], { context: vm.createContext({}) });
-    console.log(`✓ Inline Script #${idx + 1} syntax OK as module`);
-  } catch (err) {
-    if (err.name === 'SyntaxError') {
-      console.error(`✗ Inline Script #${idx + 1} SYNTAX ERROR:`, err.message);
-    } else {
-      console.log(`✓ Inline Script #${idx + 1} parsed OK (${err.message})`);
-    }
+    new vm.Script(code);
+    console.log('Script #' + idx + ' (' + tag + '): OK');
+  } catch (e) {
+    console.error('ERROR in script #' + idx + ':', e.message);
   }
-});
+}

@@ -1,24 +1,28 @@
+const { spawnSync } = require('child_process');
 const fs = require('fs');
-const path = require('path');
-const vm = require('vm');
 
-const repoDir = 'C:\\Users\\Cesar Gonzalez\\.gemini\\antigravity\\scratch\\urbanized_repo';
+const files = [
+  'public/js/data.js',
+  'public/js/exporters.js',
+  'public/js/preview.js',
+  'public/js/pins.js',
+  'public/js/feasibility.js',
+  'public/js/mapplan.js',
+  'public/js/biodiversity.js',
+  'public/js/i18n.js',
+  'public/js/section.js',
+  'public/js/illustrate.js',
+  'public/js/viewsManager.js',
+  'public/js/billing.js',
+  'public/js/pricing.js',
+  'public/js/app.js'
+];
 
-function checkModule(filePath) {
-  try {
-    const code = fs.readFileSync(filePath, 'utf8');
-    // Using vm.Script with module detection
-    new vm.SourceTextModule(code, { context: vm.createContext({}) });
-    console.log(`✓ Module syntax OK: ${path.basename(filePath)}`);
-  } catch (err) {
-    if (err.name === 'SyntaxError') {
-      console.error(`✗ Module syntax ERROR in ${path.basename(filePath)}:`, err);
-    } else {
-      console.log(`✓ Module parsed (non-syntax error: ${err.message}): ${path.basename(filePath)}`);
-    }
+for (const f of files) {
+  const res = spawnSync('node', ['--check', f], { encoding: 'utf8' });
+  if (res.status !== 0) {
+    console.error('SYNTAX ERROR in', f, res.stderr);
+  } else {
+    console.log('OK:', f);
   }
 }
-
-checkModule(path.join(repoDir, 'public', 'js', 'preview.js'));
-checkModule(path.join(repoDir, 'public', 'js', 'mapplan.js'));
-checkModule(path.join(repoDir, 'public', 'js', 'app.js'));

@@ -68,10 +68,25 @@ async function parseImportedSkp(arrayBuffer) {
       glbBytes = skp.toInstancedGLB(instancedScene, { textures: false });
     }
     return glbBytes.buffer.slice(glbBytes.byteOffset, glbBytes.byteOffset + glbBytes.byteLength);
-  } catch {
-    const skpScene = skp.buildScene(arrayBuffer, { respectEdgeVisibility: true });
-    const glbBytes = skp.toGLB(skpScene, { textures: false });
-    return glbBytes.buffer.slice(glbBytes.byteOffset, glbBytes.byteOffset + glbBytes.byteLength);
+  } catch (errClient) {
+    try {
+      const skpScene = skp.buildScene(arrayBuffer, { respectEdgeVisibility: true });
+      const glbBytes = skp.toGLB(skpScene, { textures: false });
+      return glbBytes.buffer.slice(glbBytes.byteOffset, glbBytes.byteOffset + glbBytes.byteLength);
+    } catch (errFallback) {
+      // Server-side fallback via /api/convert-skp
+      try {
+        const resp = await fetch('/api/convert-skp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/octet-stream' },
+          body: arrayBuffer,
+        });
+        if (resp.ok) {
+          return await resp.arrayBuffer();
+        }
+      } catch (errServer) {}
+      throw new Error('No se pudo procesar el archivo .skp directamente. Guarda el modelo en SketchUp como versión 2017-2021 o expórtalo a .glb/.obj.');
+    }
   }
 }
 
@@ -241,10 +256,10 @@ async function compileNativeSkp(pack, opts = {}) {
             const uv2 = [(x2 * tx + y2 * ty) / tileW, (z2 - bMinZ) / tileH];
             addTexturedTri(g, p0, p1, p2, uv0, uv1, uv2, wallMat);
           } else {
-            const uv0 = [x0 / 16.0, y0 / 16.0];
-            const uv1 = [x1 / 16.0, y1 / 16.0];
-            const uv2 = [x2 / 16.0, y2 / 16.0];
-            addTexturedTri(g, p0, p1, p2, uv0, uv1, uv2, matRoofDeck);
+            const uv0 = [Math.max(0, Math.min(1, (Q[i] + w / 2) / w)), Math.max(0, Math.min(1, 1.0 - (Q[i + 2] + h / 2) / h))];
+            const uv1 = [Math.max(0, Math.min(1, (Q[i + 3] + w / 2) / w)), Math.max(0, Math.min(1, 1.0 - (Q[i + 5] + h / 2) / h))];
+            const uv2 = [Math.max(0, Math.min(1, (Q[i + 6] + w / 2) / w)), Math.max(0, Math.min(1, 1.0 - (Q[i + 8] + h / 2) / h))];
+            addTexturedTri(g, p0, p1, p2, uv0, uv1, uv2, matTerrainSat);
           }
         }
       }, { name: bName, layer: tagEstructura, material: wallMat });

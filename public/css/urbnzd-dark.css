@@ -786,3 +786,199 @@ body.drawer-collapsed .bar-bottom {
   background: #252836 !important;
   color: #ffffff !important;
 }
+
+/* --------------------------------------------------------------------------
+   8. PHASE-GATING & BILINGUAL UI CONTROLS
+   -------------------------------------------------------------------------- */
+/* Hide all post-model tools during select phase */
+.uz-post-model.uz-hidden,
+.uz-post-model[style*="display: none"] {
+  display: none !important;
+}
+
+/* Language switch button on Left Rail bottom */
+.uz-lang-btn {
+  width: 36px;
+  height: 28px;
+  border-radius: var(--uz-radius-sm);
+  background: #181a24;
+  border: 1px solid var(--uz-border-subtle);
+  color: var(--uz-text-primary);
+  font-family: var(--uz-font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.uz-lang-btn:hover {
+  background: #252838;
+  border-color: var(--uz-border-strong);
+}
+
+/* Language toggle pill in Drawer Header */
+.uz-lang-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #181a24;
+  border: 1px solid var(--uz-border-subtle);
+  border-radius: var(--uz-radius-pill);
+  padding: 3px 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+}
+.uz-lang-pill:hover {
+  border-color: var(--uz-border-strong);
+}
+.uz-lang-opt {
+  font-size: 11px;
+  font-family: var(--uz-font-mono);
+  font-weight: 600;
+  color: var(--uz-text-muted);
+  transition: color 0.15s ease;
+}
+.uz-lang-opt.active {
+  color: #ffffff;
+  font-weight: 700;
+}
+.uz-lang-sep {
+  font-size: 10px;
+  color: var(--uz-border-subtle);
+}
+
+/* --------------------------------------------------------------------------
+   9. MOUNTED NATIVE LAYER LIST (TAB 1) & NATIVE SITE REPORT (TAB 3)
+   -------------------------------------------------------------------------- */
+.uz-layers-mount {
+  width: 100%;
+}
+.uz-layers-mount #layerList {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 6px !important;
+  width: 100% !important;
+}
+.uz-layers-mount .layer-row {
+  background: var(--uz-bg-card) !important;
+  border: 1px solid var(--uz-border-subtle) !important;
+  border-radius: var(--uz-radius-md) !important;
+  padding: 8px 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  transition: background 0.15s ease, border-color 0.15s ease !important;
+}
+.uz-layers-mount .layer-row:hover {
+  background: var(--uz-bg-card-hover) !important;
+  border-color: var(--uz-border-strong) !important;
+}
+.uz-layers-mount .layer-left {
+  display: flex !important;
+  align-items: center !important;
+  gap: 8px !important;
+  color: var(--uz-text-primary) !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+}
+.uz-layers-mount .layer-left svg,
+.uz-layers-mount .layer-left img {
+  width: 16px !important;
+  height: 16px !important;
+  opacity: 0.8 !important;
+}
+.uz-layers-mount .layer-right {
+  display: flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+}
+.uz-layers-mount .layer-count {
+  font-size: 11px !important;
+  font-family: var(--uz-font-mono) !important;
+  color: var(--uz-text-muted) !important;
+}
+
+/* Mounted Native Analysis & Site Report (Tab 3) - 100% Scientific Data Preservation */
+.uz-analysis-mount {
+  width: 100%;
+}
+.uz-analysis-mount #modelRight {
+  display: flex !important;
+  flex-direction: column !important;
+  gap: 12px !important;
+  position: static !important;
+  width: 100% !important;
+  max-width: 100% !important;
+  right: auto !important;
+  top: auto !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border: none !important;
+  padding: 0 !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+.uz-analysis-mount #modelRight[hidden] {
+  display: flex !important;
+}
+.uz-analysis-mount #modelRight .report-h {
+  display: none !important; /* replaced by Drawer Section header */
+}
+.uz-analysis-mount #modelRight .card {
+  background: var(--uz-bg-card) !important;
+  border: 1px solid var(--uz-border-subtle) !important;
+  border-radius: var(--uz-radius-md) !important;
+  padding: 14px 16px !important;
+  color: var(--uz-text-primary) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25) !important;
+}
+.uz-analysis-mount #modelRight .card h3 {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
+  color: var(--uz-text-secondary) !important;
+  margin-bottom: 8px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+.uz-analysis-mount #modelRight .stat-big b {
+  font-size: 28px !important;
+  font-weight: 700 !important;
+  font-family: var(--uz-font-mono) !important;
+  color: #ffffff !important;
+}
+.uz-analysis-mount #modelRight .stat-big span {
+  font-size: 12px !important;
+  color: var(--uz-text-muted) !important;
+}
+.uz-analysis-mount #modelRight .sparkline,
+.uz-analysis-mount #modelRight svg,
+.uz-analysis-mount #modelRight canvas {
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+}
+.uz-analysis-mount #modelRight table,
+.uz-analysis-mount #modelRight dl {
+  width: 100% !important;
+  font-size: 12px !important;
+  color: var(--uz-text-secondary) !important;
+}
+.uz-analysis-mount #modelRight dt {
+  color: var(--uz-text-muted) !important;
+}
+.uz-analysis-mount #modelRight dd {
+  color: var(--uz-text-primary) !important;
+  font-weight: 600 !important;
+  font-family: var(--uz-font-mono) !important;
+}
+.uz-analysis-mount #modelRight .chip,
+.uz-analysis-mount #modelRight .tag {
+  background: #20222e !important;
+  border: 1px solid var(--uz-border-subtle) !important;
+  color: var(--uz-text-primary) !important;
+}
+
