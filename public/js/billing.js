@@ -1,347 +1,491 @@
-// Кредиты и оплата на странице: вход по ссылке из письма, пакеты кредитов (Paddle), списание при скачивании.
-// Если сервер без базы (или его нет — старый хостинг), режим выключен и работает прежний дневной лимит.
-import { t, lang, locale } from './i18n.js?v=4.1';
-import { PACKS, parseModelId, FREE_PER_DAY, FREE_AREA_KM2, BLOCK_KM2, CREDITS_PER_BLOCK, CREDITS_PER_EXTRA, USD_PER_CREDIT } from './pricing.js?v=4.1';
+// URBNZD — Terrain, Climate, Hydrology & Site Design Studio
+// 100% Client-Side Engine: Native SketchUp (.skp) Import & Export with Embedded Satellite & Building Facade Textures,
+// plus Binary glTF 2.0 (.glb) Textured 3D Export.
+import { siteId } from './pricing.js';
+import * as skp from './openskp.bundle.js';
+import {
+  buildTerrainTexturePNG,
+  buildFacadeTexturePNG,
+  buildRoofTexturePNG,
+  compileTexturedGLB,
+} from './textured3d.js';
 
-export const state = { billing: false, checkout: false, freeLimit: FREE_PER_DAY, freeLeft: FREE_PER_DAY, counted: [], paid: [], user: null };
-const listeners = new Set();
-export const onChange = (fn) => listeners.add(fn);
-let openArea = () => {};
-export const onOpenArea = (fn) => { openArea = fn; };
-const emit = () => listeners.forEach((fn) => fn(state));
-
-const api = async (path, body) => {
-  const res = await fetch(path, body ? { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body), credentials: 'same-origin' } : { cache: 'no-store', credentials: 'same-origin' });
-  const ct = res.headers.get('content-type') ?? '';
-  if (!ct.includes('json')) throw new Error(`api ${res.status}`);
-  return { status: res.status, data: await res.json() };
-};
-
-// обезличенная статистика для админки: «сколько раз за сутки», без устройства и пользователя
-export function track(kind) {
-  if (!state.billing) return;
-  fetch('/api/track', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ kind }), keepalive: true }).catch(() => {});
-}
-
-export async function refresh() {
-  state.billing = false;
-  state.freeLeft = 999999;
-  state.freeLimit = 999999;
-  emit();
-  return state;
-}
-
-/** Скачивание участка: списывает кредиты или бесплатный слот. Если нужно заплатить — открывает окно. */
-export async function charge(modelId) {
-  return { ok: true };
-}
-
-/* ---------- окно аккаунта ---------- */
+const state = { site: null };
 
 let dlg = null;
 const el = (tag, attrs = {}, ...kids) => {
-  const n = document.createElement(tag);
+  const e = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
-    if (k === 'class') n.className = v;
-    else if (k.startsWith('on')) n.addEventListener(k.slice(2), v);
-    else if (v != null) n.setAttribute(k, v);
+    if (k.startsWith('on')) e.addEventListener(k.slice(2), v);
+    else if (v != null && v !== false) e.setAttribute(k, v);
   }
-  for (const k of kids.flat()) if (k != null) n.append(k);
-  return n;
+  for (const k of kids.flat()) if (k != null && k !== false) e.append(k);
+  return e;
 };
 
-function ensureDialog() {
-  if (dlg) return dlg;
-  dlg = el('dialog', { class: 'acct', 'aria-labelledby': 'acct-title' });
-  dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); }); // щелчок по фону
-  document.body.append(dlg);
+function dialog(...content) {
+  if (!dlg) {
+    dlg = el('dialog', { class: 'acct' });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg) dlg.close(); });
+    document.body.append(dlg);
+  }
+  dlg.replaceChildren(
+    el('button', { class: 'acct-x', type: 'button', 'aria-label': 'Close', onclick: () => dlg.close() }, '×'),
+    ...content.flat().filter((k) => k != null && k !== false),
+  );
+  if (!dlg.open) dlg.showModal();
   return dlg;
 }
 
-const usd = (v) => `$${v % 1 ? v.toFixed(2) : v}`;
-// формы слова «кредит» по правилам языка: one / few / many (в казахском и татарском форма одна)
-export function creditsLabel(n) {
-  let form = 'many';
+function openAccount() {
+  dialog(
+    el('h3', {}, 'URBNZD Studio'),
+    el('p', {}, 'All terrain resolutions (up to ×20 Terrain Pro), site sizes (up to 5 km), live hydrological/solar/wind simulations, and textured 3D exports (.skp, .glb, .3dm, .dxf, GIS & laser-cut) are unlocked in your workspace.'),
+  );
+}
+
+const NEW_SITE = 'lf:newSite';
+function newSite(e) {
+  e?.preventDefault();
+  e?.stopImmediatePropagation();
+  if (!confirm('Start a new site? The current model and its settings will be closed. Save the project first (File → Save project) if you need it.')) return;
+  try { sessionStorage.setItem(NEW_SITE, '1'); } catch { /* private mode */ }
+  history.replaceState(null, '', `${location.pathname}#app`);
+  location.reload();
+}
+
+/**
+ * Parses an imported binary SketchUp (.skp) file in the browser using openskp
+ * and returns a GLB ArrayBuffer ready for Three.js GLTFLoader.
+ */
+async function parseImportedSkp(arrayBuffer) {
   try {
-    const c = new Intl.PluralRules(lang).select(n);
-    form = c === 'one' ? 'one' : c === 'few' ? 'few' : 'many';
-  } catch { form = n === 1 ? 'one' : 'many'; }
-  return t(`credits.${form}`, { n });
-}
-
-let view = 'buy', ctx = {};
-export function open(next = 'buy', context = {}) {
-  view = state.user || next === 'restore' ? next : 'signin';
-  if (next === 'buy' && !state.user) view = 'signin';
-  // пока оплата не подключена — честная заглушка «скоро», без входа и покупки (кроме входа ради промокода)
-  if (!state.checkout && !state.user && !context.promo) view = 'soon';
-  ctx = context;
-  render();
-  if (!dlg.open) dlg.showModal();
-}
-
-function rules() {
-  return el('ul', { class: 'acct-rules' },
-    el('li', {}, t('price.rule.free', { n: FREE_PER_DAY, km: FREE_AREA_KM2 })),
-    el('li', {}, t('price.rule.extra', { c: creditsLabel(CREDITS_PER_EXTRA) })),
-    el('li', {}, t('price.rule.size', { km: BLOCK_KM2, c: creditsLabel(CREDITS_PER_BLOCK), usd: usd(CREDITS_PER_BLOCK * USD_PER_CREDIT) })),
-    el('li', {}, t('price.rule.keep')));
-}
-
-function render() {
-  const d = ensureDialog();
-  d.innerHTML = '';
-  const append = d.append.bind(d);
-  d.append = (...nodes) => append(...nodes.filter((n) => n != null)); // пропускаем пустые блоки
-  const close = el('button', { class: 'acct-close', type: 'button', 'aria-label': t('acct.close'), onclick: () => d.close() }, '×');
-  const need = ctx.need ? el('p', { class: 'acct-need' }, t('acct.need', { c: creditsLabel(ctx.need) })) : null;
-
-  if (view === 'soon') {
-    const list = el('div', { class: 'acct-packs' });
-    for (const p of PACKS)
-      list.append(el('div', { class: 'acct-pack is-soon' }, el('span', { class: 'acct-pack-credits' }, creditsLabel(p.credits)), el('b', {}, usd(p.usd)), el('small', {}, t('acct.perCredit', { usd: usd(p.usd / p.credits) }))));
-    d.append(close, el('h3', { id: 'acct-title' }, t('acct.soonTitle'), ' ', el('span', { class: 'badge badge-dark' }, t('acct.soonBadge'))), need,
-      el('p', {}, t('acct.soonText')), list, rules(), el('p', { class: 'acct-legal muted' }, t('acct.legal')));
-  } else if (view === 'signin') {
-    const input = el('input', { type: 'email', required: '', placeholder: 'you@example.com', autocomplete: 'email', value: ctx.email ?? '' });
-    const msg = el('p', { class: 'acct-msg', role: 'status' });
-    const btn = el('button', { class: 'btn btn-dark btn-block', type: 'submit' }, t('acct.sendLink'));
-    const form = el('form', {
-      class: 'acct-form',
-      onsubmit: async (e) => {
-        e.preventDefault();
-        btn.disabled = true;
-        msg.textContent = '';
-        try {
-          const { data } = await api('/api/auth/request', { email: input.value, lang });
-          if (data.ok) { ctx.email = input.value; view = 'sent'; ctx.devLink = data.devLink; render(); return; }
-          msg.textContent = t(`acct.err.${data.reason}`, {}) || t('acct.err.generic');
-        } catch { msg.textContent = t('acct.err.generic'); }
-        btn.disabled = false;
-      },
-    }, input, btn, msg);
-    const promo = ctx.promo ? el('p', { class: 'acct-need' }, t('promo.signin', { code: ctx.promo })) : null;
-    d.append(close, el('h3', { id: 'acct-title' }, t('acct.signinTitle')), promo ?? need, el('p', { class: 'muted' }, t('acct.signinText')), form,
-      ctx.promo ? null : promoForm(),
-      el('button', { class: 'acct-link', type: 'button', onclick: () => { view = 'restore'; render(); } }, t('acct.restoreLink')), rules());
-  } else if (view === 'sent') {
-    d.append(close, el('h3', { id: 'acct-title' }, t('acct.sentTitle')), el('p', {}, t('acct.sentText', { email: ctx.email })),
-      ctx.devLink ? el('p', { class: 'muted' }, el('a', { href: ctx.devLink }, 'dev: open link')) : null);
-  } else if (view === 'restore') {
-    const input = el('input', { type: 'text', required: '', placeholder: 'txn_01…', autocomplete: 'off' });
-    const msg = el('p', { class: 'acct-msg', role: 'status' });
-    const form = el('form', {
-      class: 'acct-form',
-      onsubmit: async (e) => {
-        e.preventDefault();
-        msg.textContent = '';
-        try {
-          const { data } = await api('/api/auth/restore', { txn: input.value, lang });
-          msg.textContent = data.ok ? t('acct.restoreSent', { email: data.masked }) : t(`acct.err.${data.reason}`) || t('acct.err.generic');
-        } catch { msg.textContent = t('acct.err.generic'); }
-      },
-    }, input, el('button', { class: 'btn btn-dark btn-block', type: 'submit' }, t('acct.restoreBtn')), msg);
-    d.append(close, el('h3', { id: 'acct-title' }, t('acct.restoreTitle')), el('p', { class: 'muted' }, t('acct.restoreText')), form,
-      el('button', { class: 'acct-link', type: 'button', onclick: () => { view = 'signin'; render(); } }, t('acct.back')));
-  } else {
-    const u = state.user;
-    const list = el('div', { class: 'acct-packs' });
-    for (const p of PACKS) {
-      const price = el('b', { 'data-pack': p.id }, usd(p.usd));
-      list.append(el('button', {
-        class: 'acct-pack', type: 'button', disabled: state.checkout ? null : '',
-        onclick: () => buy(p.id),
-      }, el('span', { class: 'acct-pack-credits' }, creditsLabel(p.credits)), price, el('small', {}, t('acct.perCredit', { usd: usd(p.usd / p.credits) }))));
-    }
-    d.append(close, el('h3', { id: 'acct-title' }, t('acct.buyTitle')), need,
-      el('p', { class: 'acct-balance' }, t('acct.balance', { c: creditsLabel(u?.credits ?? 0), email: u?.email ?? '' })),
-      ctx.promoAdded ? el('p', { class: 'acct-promo-ok' }, t('promo.added', { c: creditsLabel(ctx.promoAdded) })) : null,
-      list,
-      state.checkout ? null : el('p', { class: 'acct-soon' }, t('acct.soonText')),
-      myAreas(),
-      promoForm(),
-      rules(),
-      el('p', { class: 'acct-legal muted' }, t('acct.legal')),
-      el('button', { class: 'acct-link', type: 'button', onclick: logout }, t('acct.signout')));
-    localizePrices();
-  }
-}
-
-/* ---------- мои участки ---------- */
-
-function myAreas() {
-  const areas = state.areas ?? [];
-  if (!areas.length) return null;
-  const fmtDate = new Intl.DateTimeFormat(locale(), { dateStyle: 'medium' });
-  const list = el('ul', { class: 'acct-areas' });
-  for (const a of areas.slice(0, 30)) {
-    const p = parseModelId(a.id);
-    if (!p) continue;
-    const km = (p.size / 1000).toFixed(2);
-    list.append(el('li', {},
-      el('span', { class: 'acct-area-name' }, `${p.lat.toFixed(4)}, ${p.lon.toFixed(4)}`),
-      el('span', { class: 'acct-area-meta' }, `${p.shape === 'circle' ? '⌀ ' + km : km + ' × ' + km} ${t('km')} · ${fmtDate.format(a.at)}`),
-      el('button', { class: 'btn btn-line btn-sm acct-area-open', type: 'button', onclick: () => { dlg.close(); openArea(a.id); } }, t('acct.areaOpen'))));
-  }
-  return el('div', { class: 'acct-areas-box' }, el('h4', {}, t('acct.areasTitle')), el('p', { class: 'muted' }, t('acct.areasText')), list);
-}
-
-/* ---------- промокоды ---------- */
-
-// код из ссылки ?promo=… ждёт входа здесь, даже если человек ушёл за письмом
-const PROMO_KEY = 'ue:promo';
-const pendingPromo = {
-  get: () => { try { return localStorage.getItem(PROMO_KEY) ?? ''; } catch { return ''; } },
-  set: (v) => { try { if (v) localStorage.setItem(PROMO_KEY, v); else localStorage.removeItem(PROMO_KEY); } catch { /* приватный режим */ } },
-};
-const errText = (key) => { const s = t(key); return s === key ? t('acct.err.generic') : s; };
-
-async function redeem(code) {
-  const { data } = await api('/api/promo/redeem', { code });
-  if (data.ok && state.user) { state.user.credits = data.credits; emit(); }
-  return data;
-}
-
-function promoForm() {
-  const input = el('input', { type: 'text', placeholder: t('promo.placeholder'), autocomplete: 'off', autocapitalize: 'characters', spellcheck: 'false', maxlength: '32', required: '', value: ctx.promoCode ?? '' });
-  const btn = el('button', { class: 'btn btn-dark', type: 'submit' }, t('promo.apply'));
-  const msg = el('p', { class: 'acct-msg', role: 'status' }, ctx.promoError ? errText(`promo.err.${ctx.promoError}`) : '');
-  const form = el('form', {
-    class: 'acct-promo-form',
-    onsubmit: async (e) => {
-      e.preventDefault();
-      btn.disabled = true;
-      msg.textContent = '';
-      // без входа код запоминается и применяется сразу после входа по ссылке из письма
-      if (!state.user) {
-        const code = input.value.trim().toUpperCase();
-        if (!/^[A-Z0-9-]{3,32}$/.test(code)) { msg.textContent = t('promo.err.notfound'); btn.disabled = false; return; }
-        pendingPromo.set(code);
-        ctx = { ...ctx, promo: code };
-        render();
-        return;
-      }
-      try {
-        const data = await redeem(input.value);
-        if (data.ok) { ctx = { ...ctx, promoAdded: data.added, promoError: null, promoCode: '' }; render(); return; }
-        msg.textContent = errText(`promo.err.${data.reason}`);
-      } catch { msg.textContent = t('acct.err.generic'); }
-      btn.disabled = false;
-    },
-  }, input, btn);
-  const box = el('details', { class: 'acct-promo' }, el('summary', {}, t('promo.toggle')), form, msg);
-  if (ctx.promoError || ctx.promoCode) box.open = true;
-  return box;
-}
-
-/* ---------- Paddle ---------- */
-
-let paddleReady = null, paddleCfg = null;
-// языки окна оплаты Paddle; казахский и татарский — по-русски
-const PADDLE_LOCALE = { en: 'en', ru: 'ru', es: 'es', pt: 'pt', de: 'de', fr: 'fr', kk: 'ru', tt: 'ru' };
-function loadPaddle() {
-  paddleReady ??= (async () => {
-    const { data } = await api('/api/paddle/config');
-    if (!data.enabled) throw new Error('checkout off');
-    paddleCfg = data;
-    await new Promise((resolve, reject) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
-      s.onload = resolve; s.onerror = reject;
-      document.head.append(s);
-    });
-    if (data.environment === 'sandbox') window.Paddle.Environment.set('sandbox');
-    window.Paddle.Initialize({
-      token: data.token,
-      eventCallback: (ev) => { if (ev.name === 'checkout.completed') afterPurchase(); },
-    });
-    return window.Paddle;
-  })();
-  paddleReady.catch(() => { paddleReady = null; });
-  return paddleReady;
-}
-
-// цены в валюте покупателя (Paddle сам определяет страну)
-async function localizePrices() {
-  if (!state.checkout) return;
-  try {
-    const P = await loadPaddle();
-    const res = await P.PricePreview({ items: paddleCfg.packs.map((p) => ({ priceId: p.priceId, quantity: 1 })) });
-    for (const li of res.data.details.lineItems) {
-      const pack = paddleCfg.packs.find((p) => p.priceId === li.price.id);
-      const b = dlg?.querySelector(`[data-pack="${pack?.id}"]`);
-      if (b) b.textContent = li.formattedTotals.total;
-    }
-  } catch { /* остаются цены в долларах */ }
-}
-
-async function buy(packId) {
-  try {
-    const P = await loadPaddle();
-    const pack = paddleCfg.packs.find((p) => p.id === packId);
-    dlg.close();
-    P.Checkout.open({
-      items: [{ priceId: pack.priceId, quantity: 1 }],
-      customer: state.user ? { email: state.user.email } : undefined,
-      customData: state.user ? { email: state.user.email } : undefined,
-      settings: { displayMode: 'overlay', theme: 'light', locale: PADDLE_LOCALE[lang] ?? 'en' },
-    });
-  } catch {
-    alertMsg(t('acct.checkoutOff'));
-  }
-}
-
-// кредиты начисляет уведомление Paddle — ждём его несколько секунд
-async function afterPurchase() {
-  const before = state.user?.credits ?? 0;
-  for (let i = 0; i < 15; i++) {
-    await new Promise((r) => setTimeout(r, 2000));
-    await refresh();
-    if ((state.user?.credits ?? 0) > before) break;
-  }
-}
-
-async function logout() {
-  try { await api('/api/auth/logout', {}); } catch { /* всё равно сбрасываем */ }
-  state.user = null;
-  dlg?.close();
-  emit();
-}
-
-function alertMsg(text) {
-  ensureDialog();
-  dlg.innerHTML = '';
-  dlg.append(el('button', { class: 'acct-close', type: 'button', onclick: () => dlg.close() }, '×'), el('p', {}, text));
-  if (!dlg.open) dlg.showModal();
-}
-
-// вход по ссылке из письма: ?login=<токен>
-// и промокод по ссылке: ?promo=<код> — применяется сразу или после входа
-export async function handleLoginLink() {
-  const params = new URLSearchParams(location.search);
-  const token = params.get('login');
-  const promoParam = params.get('promo');
-  if (promoParam) pendingPromo.set(promoParam.trim().toUpperCase().slice(0, 32));
-  if (token || promoParam) {
-    params.delete('login');
-    params.delete('promo');
-    history.replaceState(null, '', `${location.pathname}${params.size ? `?${params}` : ''}${location.hash}`);
-  }
-  if (token) {
+    const instancedScene = skp.buildInstancedScene(arrayBuffer, { respectEdgeVisibility: true });
+    let glbBytes;
     try {
-      const { data } = await api('/api/auth/verify', { token });
-      if (data.ok) { state.user = data.user; emit(); }
-      else { alertMsg(t('acct.err.expired')); return; }
-    } catch { alertMsg(t('acct.err.generic')); return; }
+      glbBytes = skp.toInstancedGLB(instancedScene, { textures: true });
+    } catch {
+      glbBytes = skp.toInstancedGLB(instancedScene, { textures: false });
+    }
+    return glbBytes.buffer.slice(glbBytes.byteOffset, glbBytes.byteOffset + glbBytes.byteLength);
+  } catch (errClient) {
+    try {
+      const skpScene = skp.buildScene(arrayBuffer, { respectEdgeVisibility: true });
+      const glbBytes = skp.toGLB(skpScene, { textures: false });
+      return glbBytes.buffer.slice(glbBytes.byteOffset, glbBytes.byteOffset + glbBytes.byteLength);
+    } catch (errFallback) {
+      // Server-side fallback via /api/convert-skp
+      try {
+        const resp = await fetch('/api/convert-skp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/octet-stream' },
+          body: arrayBuffer,
+        });
+        if (resp.ok) {
+          return await resp.arrayBuffer();
+        }
+      } catch (errServer) {}
+      throw new Error('No se pudo procesar el archivo .skp directamente. Guarda el modelo en SketchUp como versión 2017-2021 o expórtalo a .glb/.obj.');
+    }
   }
-  const code = state.billing ? pendingPromo.get() : '';
-  if (!code) { if (token) open('buy'); return; }
-  if (!state.user) { open('signin', { promo: code }); return; }
-  try {
-    const data = await redeem(code);
-    if (data.reason !== 'rate') pendingPromo.set('');
-    open('buy', data.ok ? { promoAdded: data.added } : { promoError: data.reason, promoCode: code });
-  } catch { open('buy', { promoError: 'generic', promoCode: code }); }
 }
 
-export const rerender = () => { if (dlg?.open) render(); };
+/**
+ * Compiles a native binary SketchUp (.skp) file 100% in the browser using openskp,
+ * embedding high-resolution Satellite Orthophoto textures on the 3D terrain mesh
+ * and seamless Architectural Facade & Roof textures on the 3D buildings.
+ */
+async function compileNativeSkp(pack, opts = {}) {
+  const lf = window.__LF_STATE || {};
+  const U = lf.U || { area: pack.area };
+  const M2I = skp.METRES_TO_INCHES || 39.37007874015748;
+  const stats = pack.grid ? pack.grid.stats() : { min: 0 };
+  const zMin = Number(stats.min || 0);
+  const w = U.area ? U.area.w : 1000;
+  const h = U.area ? U.area.h : 1000;
+  const toIn = (x, y, z) => [x * M2I, y * M2I, (z - zMin) * M2I];
+
+  // Generate embedded PNG textures for Terrain Satellite + Building Facades & Roofs
+  const [texTerrain, texGlass, texRes, texMasonry, texRoof] = await Promise.all([
+    buildTerrainTexturePNG(pack, U),
+    buildFacadeTexturePNG('glass'),
+    buildFacadeTexturePNG('residential'),
+    buildFacadeTexturePNG('masonry'),
+    buildRoofTexturePNG(),
+  ]);
+
+  const builder = skp.create();
+
+  // 1. Register Textured & Standard Materials (must precede all addLayer / addGroup calls in openskp)
+  const matTerrainSat    = builder.addTextureMaterial('Mat_Terreno_Satelital', texTerrain, 'terrain_satellite.png', 1.0, 1.0);
+  const matFacadeGlass   = builder.addTextureMaterial('Mat_Fachada_Cristal',   texGlass,   'facade_glass.png',      1.0, 1.0);
+  const matFacadeRes     = builder.addTextureMaterial('Mat_Fachada_Residencial', texRes,   'facade_residential.png', 1.0, 1.0);
+  const matFacadeMasonry = builder.addTextureMaterial('Mat_Fachada_Mamposteria', texMasonry, 'facade_masonry.png',  1.0, 1.0);
+  const matRoofDeck      = builder.addTextureMaterial('Mat_Cubierta_Edificio', texRoof,    'roof_detail.png',       1.0, 1.0);
+
+  const matPisoPorcelanato = builder.addMaterial('Mat_Piso_Porcelanato', [230, 226, 218, 255], 1.0);
+  const matMuroBlanco      = builder.addMaterial('Mat_Muro_Blanco',      [242, 242, 240, 255], 1.0);
+  const matAluminioNegro   = builder.addMaterial('Mat_Aluminio_Negro',   [25,  25,  28,  255], 1.0);
+  const matCristalClaro    = builder.addMaterial('Mat_Cristal_Claro',    [140, 200, 230, 90],  0.35);
+  const matMadera          = builder.addMaterial('Mat_Madera',           [155, 105, 65,  255], 1.0);
+
+  // 2. Standard Architectural Layers / Tags
+  const tagLosa       = builder.addLayer('01_Losa_y_Pisos',                  { color: [230, 226, 218, 255] });
+  const tagEstructura = builder.addLayer('02_Estructura_y_Nucleos',          { color: [200, 200, 205, 255] });
+  const tagMuros      = builder.addLayer('03_Muros_Tablaroca_Interiores',    { color: [242, 242, 240, 255] });
+  const tagCanceleria = builder.addLayer('04_Canceleria_y_Mamparas_Cristal', { color: [140, 200, 230, 255] });
+  const tagPlafones   = builder.addLayer('05_Plafones_e_Iluminacion',        { color: [45,  48,  55,  255] });
+  const tagMobiliario = builder.addLayer('06_Mobiliario_y_Equipos',          { color: [155, 105, 65,  255] });
+
+  const toW = pack.toW || ((x, z) => [x, -z]);
+  const elevAt = pack.elev || (() => zMin);
+
+  const addTexturedTri = (g, p0, p1, p2, uv0, uv1, uv2, mat) => {
+    const pins = [
+      [p0, uv0],
+      [p1, uv1],
+      [p2, uv2],
+    ];
+    try {
+      g.addFace([p0, p1, p2], { material: mat, backMaterial: mat, frontUv: pins, backUv: pins });
+    } catch {
+      try {
+        g.addFace([p0, p1, p2], { material: mat, backMaterial: mat });
+      } catch {}
+    }
+  };
+
+  // 3. 3D Terrain Mesh with 1:1 UV-Mapped Satellite Orthophoto
+  const tm = pack.meshes && pack.meshes.terrain;
+  if (tm && tm.P && tm.quads && tm.quads.length > 0) {
+    builder.addGroup((g) => {
+      const P = tm.P;
+      const Q = tm.quads;
+      const vPt = (idx) => {
+        const [wx, wy] = toW(P[3 * idx], P[3 * idx + 1]);
+        return toIn(wx, wy, P[3 * idx + 2]);
+      };
+      const vUV = (idx) => [
+        Math.max(0, Math.min(1, (P[3 * idx] + w / 2) / w)),
+        Math.max(0, Math.min(1, 1.0 - (P[3 * idx + 1] + h / 2) / h)),
+      ];
+      for (let i = 0; i < Q.length; i += 4) {
+        const i0 = Q[i], i1 = Q[i + 1], i2 = Q[i + 2], i3 = Q[i + 3];
+        const p0 = vPt(i0), p1 = vPt(i1), p2 = vPt(i2), p3 = vPt(i3);
+        const u0 = vUV(i0), u1 = vUV(i1), u2 = vUV(i2), u3 = vUV(i3);
+        addTexturedTri(g, p0, p1, p2, u0, u1, u2, matTerrainSat);
+        addTexturedTri(g, p0, p2, p3, u0, u2, u3, matTerrainSat);
+      }
+    }, { name: 'Terreno_Satelital_3D', layer: tagLosa, material: matTerrainSat });
+  }
+
+  // 4. 3D Road Surfaces
+  const rm = pack.meshes && pack.meshes.roads;
+  if (Array.isArray(rm) && rm.length > 0) {
+    builder.addGroup((g) => {
+      for (const item of rm) {
+        const Q = item.tris;
+        if (!Q) continue;
+        for (let i = 0; i < Q.length; i += 9) {
+          const [x0, y0] = toW(Q[i], Q[i + 2]);
+          const [x1, y1] = toW(Q[i + 3], Q[i + 5]);
+          const [x2, y2] = toW(Q[i + 6], Q[i + 8]);
+          try {
+            g.addFace(
+              [toIn(x0, y0, Q[i + 1]), toIn(x1, y1, Q[i + 4]), toIn(x2, y2, Q[i + 7])],
+              { material: matAluminioNegro, backMaterial: matAluminioNegro },
+            );
+          } catch {}
+        }
+      }
+    }, { name: 'Vialidades_3D', layer: tagLosa, material: matAluminioNegro });
+  }
+
+  // 5. 3D Buildings in Independent Groups with Detailed Facade & Roof Textures
+  const bm = pack.meshes && pack.meshes.buildings;
+  if (Array.isArray(bm) && bm.length > 0) {
+    const tileW = 14.0; // 4 bays * 3.5m
+    const tileH = 12.8; // 4 floors * 3.2m
+    const bldSlice = bm.slice(0, 1500);
+    for (let idx = 0; idx < bldSlice.length; idx++) {
+      const b = bldSlice[idx];
+      const Q = b.tris;
+      if (!Q || Q.length < 9) continue;
+
+      const hMeters = Number((b.attrs && b.attrs.height_m) || 8);
+      const osmId = Number((b.attrs && b.attrs.osm_id) || idx);
+      let wallMat = matFacadeRes;
+      if (hMeters >= 18 || (osmId % 5 === 0 && hMeters >= 10)) {
+        wallMat = matFacadeGlass;
+      } else if (osmId % 3 === 0) {
+        wallMat = matFacadeMasonry;
+      }
+
+      let bMinZ = Infinity;
+      for (let i = 1; i < Q.length; i += 3) {
+        if (Q[i] < bMinZ) bMinZ = Q[i];
+      }
+
+      const bName = `Edificio_${idx + 1}_${(b.attrs && b.attrs.osm_id) || idx + 1}`;
+      builder.addGroup((g) => {
+        for (let i = 0; i < Q.length; i += 9) {
+          const [x0, y0] = toW(Q[i], Q[i + 2]);
+          const [x1, y1] = toW(Q[i + 3], Q[i + 5]);
+          const [x2, y2] = toW(Q[i + 6], Q[i + 8]);
+          const z0 = Q[i + 1], z1 = Q[i + 4], z2 = Q[i + 7];
+
+          const p0 = toIn(x0, y0, z0);
+          const p1 = toIn(x1, y1, z1);
+          const p2 = toIn(x2, y2, z2);
+
+          // Normal in Z-up metric space
+          const ux = x1 - x0, uy = y1 - y0, uz = z1 - z0;
+          const vx = x2 - x0, vy = y2 - y0, vz = z2 - z0;
+          const nx = uy * vz - uz * vy;
+          const ny = uz * vx - ux * vz;
+          const nz = ux * vy - uy * vx;
+          const nLen = Math.hypot(nx, ny, nz) || 1;
+          const absNz = Math.abs(nz / nLen);
+
+          if (absNz < 0.45) {
+            const tLen = Math.hypot(nx, ny) || 1;
+            const tx = -ny / tLen;
+            const ty = nx / tLen;
+            const uv0 = [(x0 * tx + y0 * ty) / tileW, (z0 - bMinZ) / tileH];
+            const uv1 = [(x1 * tx + y1 * ty) / tileW, (z1 - bMinZ) / tileH];
+            const uv2 = [(x2 * tx + y2 * ty) / tileW, (z2 - bMinZ) / tileH];
+            addTexturedTri(g, p0, p1, p2, uv0, uv1, uv2, wallMat);
+          } else {
+            const uv0 = [Math.max(0, Math.min(1, (Q[i] + w / 2) / w)), Math.max(0, Math.min(1, 1.0 - (Q[i + 2] + h / 2) / h))];
+            const uv1 = [Math.max(0, Math.min(1, (Q[i + 3] + w / 2) / w)), Math.max(0, Math.min(1, 1.0 - (Q[i + 5] + h / 2) / h))];
+            const uv2 = [Math.max(0, Math.min(1, (Q[i + 6] + w / 2) / w)), Math.max(0, Math.min(1, 1.0 - (Q[i + 8] + h / 2) / h))];
+            addTexturedTri(g, p0, p1, p2, uv0, uv1, uv2, matTerrainSat);
+          }
+        }
+      }, { name: bName, layer: tagEstructura, material: wallMat });
+    }
+  }
+
+  // 6. Water Bodies, Rivers & Lakes -> 04_Canceleria_y_Mamparas_Cristal (Mat_Cristal_Claro)
+  const waterVectors = (pack.vectors || []).filter((v) => ['water', 'river', 'lakes', 'sea', 'slr'].includes(v.key));
+  for (const wLayer of waterVectors) {
+    let wIdx = 0;
+    for (const item of (wLayer.items || []).slice(0, 200)) {
+      if (item.type !== 'poly' || !item.outer || item.outer.length < 6) continue;
+      wIdx++;
+      builder.addGroup((g) => {
+        const pts = [];
+        const zConst = item.z !== undefined ? item.z : elevAt(item.outer[0], item.outer[1]) + 0.12;
+        for (let i = 0; i < item.outer.length; i += 2) {
+          const [wx, wy] = toW(item.outer[i], item.outer[i + 1]);
+          pts.push(toIn(wx, wy, zConst));
+        }
+        if (pts.length >= 3) {
+          try {
+            g.addFace(pts, { material: matCristalClaro, backMaterial: matCristalClaro });
+          } catch {}
+        }
+      }, { name: `Agua_${wLayer.key}_${wIdx}`, layer: tagCanceleria, material: matCristalClaro });
+    }
+  }
+
+  // 7. Design Elements (Plazas, Canopies, Skywalks)
+  const designVectors = (pack.vectors || []).filter((v) => v.key === 'design');
+  for (const dLayer of designVectors) {
+    const isCanopy = (dLayer.name || '').toLowerCase().includes('canop');
+    const isDeck = (dLayer.name || '').toLowerCase().includes('skywalk');
+    const targetTag = isCanopy ? tagPlafones : isDeck ? tagEstructura : tagLosa;
+    const targetMat = isCanopy ? matAluminioNegro : isDeck ? matMadera : matPisoPorcelanato;
+    let dIdx = 0;
+    for (const item of dLayer.items || []) {
+      if (item.type !== 'poly' || !item.outer || item.outer.length < 6) continue;
+      dIdx++;
+      const hOffset = isCanopy ? Number((item.attrs && item.attrs.clear_height_m) || 3.5) : isDeck ? Number((item.attrs && item.attrs.height_m) || 4.0) : 0.15;
+      builder.addGroup((g) => {
+        const pts = [];
+        const baseZ = elevAt(item.outer[0], item.outer[1]) + hOffset;
+        for (let i = 0; i < item.outer.length; i += 2) {
+          const [wx, wy] = toW(item.outer[i], item.outer[i + 1]);
+          pts.push(toIn(wx, wy, baseZ));
+        }
+        if (pts.length >= 3) {
+          try {
+            g.addFace(pts, { material: targetMat, backMaterial: targetMat });
+          } catch {}
+        }
+      }, { name: `Diseno_${dIdx}`, layer: targetTag, material: targetMat });
+    }
+  }
+
+  // 8. 3D Trees & Vegetation -> 06_Mobiliario_y_Equipos (Mat_Madera)
+  const treeLayer = (pack.vectors || []).find((v) => v.key === 'trees');
+  if (treeLayer && Array.isArray(treeLayer.items) && treeLayer.items.length > 0) {
+    const trees = treeLayer.items.slice(0, 600);
+    builder.addGroup((g) => {
+      for (const t of trees) {
+        const [wx, wy] = toW(t.x || 0, t.z || 0);
+        const zGround = opts.draped !== false ? elevAt(t.x || 0, t.z || 0) : zMin;
+        const r = Math.max(1.2, (t.r || 2.5) * 0.75);
+        const hTree = Math.max(3.0, t.h || 6.0);
+        const zBase = zGround + hTree * 0.25;
+        const zTop = zGround + hTree;
+        const p1 = toIn(wx - r, wy - r, zBase);
+        const p2 = toIn(wx + r, wy - r, zBase);
+        const p3 = toIn(wx + r, wy + r, zBase);
+        const p4 = toIn(wx - r, wy + r, zBase);
+        const top = toIn(wx, wy, zTop);
+        try {
+          g.addFace([p1, p2, top], { material: matMadera, backMaterial: matMadera });
+          g.addFace([p2, p3, top], { material: matMadera, backMaterial: matMadera });
+          g.addFace([p3, p4, top], { material: matMadera, backMaterial: matMadera });
+          g.addFace([p4, p1, top], { material: matMadera, backMaterial: matMadera });
+        } catch {}
+      }
+    }, { name: 'Vegetacion_3D_Arbolado', layer: tagMobiliario, material: matMadera });
+  }
+
+  const skpBytes = builder.toBytes();
+  return new Blob([skpBytes], { type: 'application/octet-stream' });
+}
+
+function toggleCartographyStudio() {
+  let pane = document.getElementById('urbnzd-carto-pane');
+  if (pane) {
+    const isHidden = pane.hidden;
+    pane.hidden = !isHidden;
+    return;
+  }
+  const lf = window.__LF_STATE || {};
+  const area = (lf.U && lf.U.area) || (window.__selmap && window.__selmap.sel) || {};
+  const qParams = new URLSearchParams();
+  if (area.lat && area.lon) {
+    qParams.set('lat', Number(area.lat).toFixed(5));
+    qParams.set('lon', Number(area.lon).toFixed(5));
+  }
+  qParams.set('embedded', '1');
+  pane = el(
+    'div',
+    {
+      id: 'urbnzd-carto-pane',
+      style:
+        'position:fixed;inset:0;z-index:180;background:#08090b;display:flex;flex-direction:column;',
+    },
+    el(
+      'div',
+      {
+        style:
+          'height:44px;background:rgba(14,16,18,0.96);border-bottom:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:space-between;padding:0 16px;font-family:var(--f-ui, sans-serif);color:#fff;',
+      },
+      el(
+        'div',
+        { style: 'display:flex;align-items:center;gap:10px;' },
+        el('img', {
+          src: 'media/urbnzd-logo.png',
+          alt: 'URBNZD',
+          style: 'height:16px;width:auto;filter:brightness(0) invert(1);',
+        }),
+        el(
+          'span',
+          {
+            style:
+              'font-size:12px;color:rgba(255,255,255,0.65);font-weight:600;letter-spacing:0.04em;text-transform:uppercase;',
+          },
+          'Cartografía 2D · Axonometría · Láminas Arquitectónicas',
+        ),
+      ),
+      el(
+        'button',
+        {
+          type: 'button',
+          class: 'pill-btn primary',
+          style:
+            'height:32px;padding:0 14px;font-size:12.5px;background:#d6ff4f;color:#111310;border-color:#d6ff4f;cursor:pointer;',
+          onclick: () => {
+            pane.hidden = true;
+          },
+        },
+        '← Volver a Terreno 3D, Clima & Diseño',
+      ),
+    ),
+    el('iframe', {
+      src: '/cartography/index.html?' + qParams.toString(),
+      style: 'flex:1;width:100%;border:0;background:#08090b;',
+      title: 'URBNZD Cartografía 2D & Axonometría',
+    }),
+  );
+  document.body.appendChild(pane);
+}
+
+function mount() {
+  const actions = document.querySelector('#app .top-actions');
+  if (actions && !document.querySelector('.lf-carto-switch')) {
+    const cb = el(
+      'button',
+      {
+        class: 'pill-btn lf-carto-switch',
+        type: 'button',
+        title: 'Abrir estudio de Cartografía 2D, Axonometría y Composición de Láminas URBNZD',
+        onclick: toggleCartographyStudio,
+      },
+      el('span', { class: 'lbl-opt' }, 'Cartografía 2D & Láminas'),
+    );
+    cb.prepend(
+      document
+        .createRange()
+        .createContextualFragment(
+          '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><line x1="3" y1="9" x2="21" y2="9" stroke="currentColor" stroke-width="1.8"/><line x1="9" y1="21" x2="9" y2="9" stroke="currentColor" stroke-width="1.8"/></svg>',
+        ),
+    );
+    actions.prepend(cb);
+  }
+  if (actions && !document.querySelector('.lf-new')) {
+    const nb = el(
+      'button',
+      { class: 'pill-btn lf-new', type: 'button', title: 'Choose a new site: back to the search, everything reset', onclick: newSite },
+      el('span', {}, 'New site'),
+    );
+    nb.prepend(document.createRange().createContextualFragment('<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M12 5v14M5 12h14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>'));
+    actions.prepend(nb);
+  }
+  document.getElementById('btnNew')?.addEventListener('click', newSite, true);
+
+  for (const a of document.querySelectorAll('[data-account]')) {
+    a.addEventListener('click', (e) => { e.preventDefault(); openAccount(); });
+  }
+}
+
+function satelliteByCoverage() {
+  const sm = window.__selmap, covers = window.__lfCovers, seg = document.getElementById('mapBase');
+  if (!sm?.map || !covers || !seg) return;
+  const update = () => {
+    const c = sm.map.getCenter(), ok = covers(c.lng, c.lat).length > 0;
+    seg.classList.toggle('lf-nosat', !ok);
+    if (!ok && sm.base === 'sat') sm.setBase('map');
+  };
+  sm.map.on('moveend', update);
+  update();
+}
+
+// Register hooks for URBNZD Studio
+window.LF_BUILD = async (tier, sel) => {
+  state.site = { id: siteId(sel), sel: { ...sel } };
+  return true;
+};
+window.LF_PAY = async () => true;
+window.LF_ACCOUNT = openAccount;
+window.LF_PARSE_SKP = parseImportedSkp;
+window.LF_EXPORT_SKP = compileNativeSkp;
+window.LF_EXPORT_GLB = async (pack) => {
+  const lf = window.__LF_STATE || {};
+  return await compileTexturedGLB(pack, lf.U || { area: pack.area });
+};
+
+mount();
+satelliteByCoverage();
+
+try {
+  if (sessionStorage.getItem(NEW_SITE)) {
+    sessionStorage.removeItem(NEW_SITE);
+    setTimeout(() => document.getElementById('q')?.focus(), 800);
+  }
+} catch { /* private mode */ }

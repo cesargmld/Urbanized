@@ -377,7 +377,7 @@ class ViewsManager {
     };
 
     const payload = {
-      app: 'Urbanized Architectural Studio · CGM Atelier',
+      app: 'Urbanized Architectural Studio · URBNZD Studio',
       format: 'urbnz',
       version: '2.5',
       savedAt: new Date().toISOString(),

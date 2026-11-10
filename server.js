@@ -352,7 +352,7 @@ const server = http.createServer(async (req, res) => {
       const skpBytes = builder.toBytes();
       res.writeHead(200, {
         'Content-Type': 'application/octet-stream',
-        'Content-Disposition': 'attachment; filename="Proyecto_URBNZD_CGM.skp"',
+        'Content-Disposition': 'attachment; filename="Proyecto_URBNZD.skp"',
         'Access-Control-Allow-Origin': '*',
       });
       res.end(Buffer.from(skpBytes));

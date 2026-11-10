@@ -835,7 +835,7 @@ export function mapSVG(model, o) {
   // 4. Sello Editorial Sutil en Lámina (Opcional)
   if (o.overlays?.studioStamp !== false) {
     extras.push(
-      `<text x="${f(size)}" y="${f(-fs * 0.45)}" text-anchor="end" fill="${c.text}" opacity="0.42" font-family="JetBrains Mono, monospace" font-size="${f(fs * 0.46)}" font-weight="500" letter-spacing="0.06em">URBANIZED · CGM ATELIER · ${model.center.lat.toFixed(4)}°N ${model.center.lon.toFixed(4)}°E</text>`
+      `<text x="${f(size)}" y="${f(-fs * 0.45)}" text-anchor="end" fill="${c.text}" opacity="0.42" font-family="JetBrains Mono, monospace" font-size="${f(fs * 0.46)}" font-weight="500" letter-spacing="0.06em">URBANIZED · URBNZD STUDIO · ${model.center.lat.toFixed(4)}°N ${model.center.lon.toFixed(4)}°E</text>`
     );
   }
 
@@ -854,7 +854,7 @@ export function mapSVG(model, o) {
   <rect x="${f(vx)}" y="${f(vy)}" width="${f(vw)}" height="${f(vh)}" fill="#000000" filter="url(#arch-noise)" style="mix-blend-mode: overlay; pointer-events: none;"/>` : '';
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<!-- Urbanized · CGM Atelier · ${model.center.lat.toFixed(6)}, ${model.center.lon.toFixed(6)} · ${size} x ${size} m · 1:${scale} -->
+<!-- Urbanized · URBNZD Studio · ${model.center.lat.toFixed(6)}, ${model.center.lon.toFixed(6)} · ${size} x ${size} m · 1:${scale} -->
 <svg xmlns="http://www.w3.org/2000/svg" width="${f(mmW)}mm" height="${f(mmH)}mm" viewBox="${f(vx)} ${f(vy)} ${f(vw)} ${f(vh)}">
 <defs>
 <clipPath id="frame">${frameShape}</clipPath>
@@ -868,7 +868,7 @@ ${groups.join('\n')}
 <g id="FRAME" fill="none" stroke="${c.text}" stroke-width="${pen(0.28)}">${frameShape}</g>
 ${extras.join('\n')}
 ${grainOverlay}
-<!-- ${esc('© OpenStreetMap contributors · Made by CGM Atelier')} -->
+<!-- ${esc('© OpenStreetMap contributors · Made by URBNZD Studio')} -->
 </svg>`;
 }
 

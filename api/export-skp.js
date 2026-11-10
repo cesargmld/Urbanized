@@ -125,7 +125,7 @@ export default async function handler(req, res) {
 
     const skpBytes = builder.toBytes();
     res.setHeader('Content-Type', 'application/octet-stream');
-    res.setHeader('Content-Disposition', 'attachment; filename="Proyecto_URBNZD_CGM.skp"');
+    res.setHeader('Content-Disposition', 'attachment; filename="Proyecto_URBNZD.skp"');
     return res.status(200).send(Buffer.from(skpBytes));
   } catch (err) {
     console.error('Error compilando SKP en Vercel:', err);

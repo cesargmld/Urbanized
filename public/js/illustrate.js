@@ -1043,7 +1043,7 @@ export function createIllustrator(canvas, model) {
 
       const nx = width - 54, ny = 58;
 
-      // Seamless transparent north indicator without contrasting box (CGM Atelier standard)
+      // Seamless transparent north indicator without contrasting box (URBNZD Studio standard)
 
       ctx.translate(nx, ny);
       ctx.rotate(northAngle);
@@ -1306,13 +1306,13 @@ export function createIllustrator(canvas, model) {
       ctx.restore();
     }
 
-    // 5. Sello sutil de autoría en lámina (CGM ATELIER)
+    // 5. Sello sutil de autoría en lámina (URBNZD STUDIO)
     ctx.save();
     ctx.font = '500 8.5px "JetBrains Mono", monospace';
     ctx.fillStyle = txtColor;
     ctx.globalAlpha = 0.36;
     ctx.textAlign = 'right';
-    ctx.fillText('URBANIZED STUDIO · CGM ATELIER', width - 18, height - 12);
+    ctx.fillText('URBANIZED STUDIO · URBNZD STUDIO', width - 18, height - 12);
     ctx.restore();
   }
 

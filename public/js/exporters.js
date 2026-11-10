@@ -763,7 +763,7 @@ export function toGeoJSON(model) {
   return new Blob([JSON.stringify(fc, null, 2)], { type: 'application/geo+json' });
 }
 
-/* ---------------- SketchUp Nativo (.skp) con Tags CGM Atelier & Materiales D5 Render ---------------- */
+/* ---------------- SketchUp Nativo (.skp) con Tags URBNZD Studio & Materiales D5 Render ---------------- */
 export async function toSKP(model) {
   try {
     const skp = await import('./openskp.bundle.js?v=7.1');
@@ -772,14 +772,14 @@ export async function toSKP(model) {
 
     const builder = skp.create();
 
-    // 1. Materiales Diferenciados Estándar CGM Atelier (Listos para D5 Render)
+    // 1. Materiales Diferenciados Estándar URBNZD Studio (Listos para D5 Render)
     const matMuroBlanco = builder.addMaterial('Mat_Muro_Blanco', [242, 242, 240, 255], 1.0);
     const matPisoPorcelanato = builder.addMaterial('Mat_Piso_Porcelanato', [230, 226, 218, 255], 1.0);
     const matAluminioNegro = builder.addMaterial('Mat_Aluminio_Negro', [25, 25, 28, 255], 1.0);
     const matCristalClaro = builder.addMaterial('Mat_Cristal_Claro', [140, 200, 230, 90], 0.35);
     const matMadera = builder.addMaterial('Mat_Madera', [155, 105, 65, 255], 1.0);
 
-    // 2. Tags Estándar Obligatorios CGM Atelier
+    // 2. Tags Estándar Obligatorios URBNZD Studio
     const tagLosa = builder.addLayer('01_Losa_y_Pisos', { color: [230, 226, 218, 255] });
     const tagEstructura = builder.addLayer('02_Estructura_y_Nucleos', { color: [200, 200, 205, 255] });
     const tagMuros = builder.addLayer('03_Muros_Tablaroca_Interiores', { color: [242, 242, 240, 255] });

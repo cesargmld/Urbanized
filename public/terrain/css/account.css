@@ -1,0 +1,67 @@
+/* Account, credits and the payment of a site's downloads (js/billing.js) */
+dialog.acct {
+  width: min(440px, calc(100vw - 32px)); max-height: calc(100svh - 40px); overflow: auto;
+  padding: 26px 24px 22px; border: 1px solid rgba(255, 255, 255, .12); border-radius: 22px;
+  background: #121411; color: #eef0ea; font: 14px/1.5 'Manrope', system-ui, sans-serif;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, .6);
+}
+dialog.acct::backdrop { background: rgba(5, 6, 5, .62); backdrop-filter: blur(6px); }
+.acct h3 { margin: 0 0 10px; font: 500 24px/1.2 'Urbanist', 'Manrope', system-ui, sans-serif; letter-spacing: -.01em; }
+.acct h4 { margin: 20px 0 8px; font: 500 12px/1 'JetBrains Mono', ui-monospace, monospace; letter-spacing: .1em; text-transform: uppercase; color: #d6ff4f; }
+.acct p { margin: 0 0 12px; color: #c9ccc4; }
+.acct a { color: #d6ff4f; }
+.acct-x { position: absolute; top: 12px; right: 12px; width: 32px; height: 32px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .06); color: #eef0ea; font-size: 20px; line-height: 1; cursor: pointer; }
+.acct-x:hover { background: rgba(255, 255, 255, .14); }
+.acct-form { display: flex; flex-direction: column; gap: 12px; margin: 6px 0 10px; }
+.acct input[type=email], .acct input[type=text] {
+  width: 100%; padding: 12px 14px; border-radius: 12px; border: 1px solid rgba(255, 255, 255, .16);
+  background: rgba(255, 255, 255, .04); color: #eef0ea; font: inherit; font-size: 16px; outline: none;
+}
+.acct input:focus { border-color: #d6ff4f; }
+.acct-consent, .acct-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #b5b9b0; }
+.acct-consent input, .acct-check input { margin-top: 3px; accent-color: #d6ff4f; }
+.acct-btn {
+  padding: 11px 18px; border-radius: 999px; border: 1px solid rgba(255, 255, 255, .18); background: none;
+  color: #eef0ea; font: 600 14px/1 'Manrope', system-ui, sans-serif; cursor: pointer;
+}
+.acct-btn:hover { border-color: rgba(255, 255, 255, .4); }
+.acct-btn.primary { background: #d6ff4f; border-color: #d6ff4f; color: #11140a; }
+.acct-btn.primary:hover { filter: brightness(1.06); }
+.acct-btn.danger { color: #ff8a80; border-color: rgba(255, 138, 128, .35); }
+.acct-btn:disabled { opacity: .5; cursor: default; }
+.acct-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 6px; }
+.acct-row input { flex: 1; min-width: 140px; }
+.acct-note { min-height: 1em; font-size: 13px; color: #d6ff4f !important; }
+.acct-small { font-size: 12.5px; color: #858a81 !important; }
+.acct-email { color: #858a81 !important; font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 13px; }
+.acct-balance { display: flex; align-items: baseline; gap: 10px; margin: 4px 0 10px; }
+.acct-balance b { font: 300 52px/1 'Urbanist', 'Manrope', system-ui, sans-serif; color: #d6ff4f; }
+.acct-balance span { color: #b5b9b0; }
+.acct-packs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+.acct-pack {
+  display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 12px 14px; border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, .1); background: rgba(255, 255, 255, .03); color: #eef0ea; font: inherit; text-align: left; cursor: pointer;
+}
+.acct-pack:hover { border-color: #d6ff4f; background: rgba(214, 255, 79, .06); }
+.acct-pack b { font-size: 15px; }
+.acct-pack span { color: #d6ff4f; font-weight: 700; font-size: 16px; }
+.acct-pack i { font-style: normal; color: #858a81; font-size: 12px; }
+/* the account pill in the app's top bar and the price note in the download panel */
+.acct-pill span { white-space: nowrap; }
+.acct-site:empty { display: none; }
+.acct-site { margin: 0 0 10px !important; }
+/* the site tiers in the site panel and on the landing: three, priced in credits */
+#tiers.tiers { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+#tiers .tier-seg { display: block; }
+#tiers .tier-seg b, #tiers .tier-seg em { white-space: nowrap; }
+#tiers .tier-seg em { font-size: 13px; margin-top: 2px; }
+#lPrice.l-price { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 680px) { #lPrice.l-price { grid-template-columns: 1fr; } }
+/* no scale bar: it showed in the perspective view too, where a scale means nothing */
+#scalebar { display: none !important; }
+/* the model: no search (a new place starts over with New site, top right) */
+#app[data-phase="model"] #searchForm { visibility: hidden; pointer-events: none; }
+#app:not([data-phase="model"]) .lf-new, #app[data-mode="design"] .lf-new { display: none; }
+/* Satellite only over national orthophotos; no imagery layer on a model without one */
+#mapBase.lf-nosat { display: none !important; }
+#app.lf-noimg [data-gkey="imagery"], #app.lf-noimg [data-key="satellite"], #app.lf-noimg [data-group="imagery"], #app.lf-noimg #epochNav { display: none !important; }
